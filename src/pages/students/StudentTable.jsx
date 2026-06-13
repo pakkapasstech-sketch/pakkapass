@@ -38,7 +38,7 @@ const StudentTable = ({ students = [] }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const studentsPerPage = 10;
+  const studentsPerPage = 5;
 
   useEffect(() => {
     setCurrentPage(1);

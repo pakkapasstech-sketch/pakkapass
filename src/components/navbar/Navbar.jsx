@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
+import { DateRange } from 'react-date-range';
 import {
   HiOutlineMenu,
   HiOutlineCalendar,
@@ -15,6 +17,8 @@ import { useSidebar } from '../../contexts/SidebarContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import Avatar from '../common/Avatar';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 
 import '../../styles/navbar.css';
 
@@ -25,7 +29,15 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
   const { isDark, toggleTheme } = useTheme();
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection',
+    },
+  ]);
   return (
     <header className={`navbar ${isCollapsed ? 'navbar-collapsed' : 'navbar-expanded'}`}>
       <div className="navbar-left">
@@ -67,11 +79,31 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
           )}
         </button>
 
-        <button className="navbar-date-btn">
-          <HiOutlineCalendar className="navbar-small-icon" />
+        <div className="navbar-date-picker">
+          <button className="navbar-date-btn" onClick={() => setShowCalendar(!showCalendar)}>
+            <HiOutlineCalendar className="navbar-small-icon" />
 
-          <span className="navbar-date-text">May 20 – May 26, 2025</span>
-        </button>
+            <span className="navbar-date-text">
+              {format(dateRange[0].startDate, 'MMM dd, yyyy')} -{' '}
+              {format(dateRange[0].endDate, 'MMM dd, yyyy')}
+            </span>
+          </button>
+
+          {showCalendar && (
+            <div className="navbar-calendar-dropdown">
+              <DateRange
+                ranges={dateRange}
+                onChange={(item) => setDateRange([item.selection])}
+                editableDateInputs
+                moveRangeOnFirstSelection={false}
+                showMonthAndYearPickers
+                showDateDisplay={false}
+                months={2}
+                direction="horizontal"
+              />
+            </div>
+          )}
+        </div>
 
         <button className="navbar-icon-btn navbar-bell-btn">
           <HiOutlineBell className="navbar-icon" />

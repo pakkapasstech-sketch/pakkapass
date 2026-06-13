@@ -1,0 +1,141 @@
+.pdf-table-toolbar {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pdf-search-input {
+  width: 360px;
+  max-width: 100%;
+  height: 44px;
+
+  padding: 0 16px;
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  background: var(--color-main-bg);
+
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.pdf-search-input:focus {
+  outline: none;
+  border-color: #6366f1;
+
+  box-shadow:
+    0 0 0 4px rgba(99,102,241,.12);
+}
+
+.pdf-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdf-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #fef2f2;
+  color: #dc2626;
+
+  font-size: 20px;
+
+  flex-shrink: 0;
+}
+
+.pdf-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.pdf-title:hover {
+  color: #4f46e5;
+}
+
+.pdf-meta {
+  margin-top: 4px;
+
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.pdf-management-page {
+  padding: 24px;
+  margin-top: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pdf-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pdf-header p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.upload-pdf-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  height: 44px;
+  padding: 0 20px;
+
+  border-radius: 12px;
+
+  background: #4f46e5;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.upload-pdf-btn:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+}
+
+@media (max-width: 768px) {
+  .pdf-management-page {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .pdf-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pdf-search-input {
+    width: 100%;
+  }
+}

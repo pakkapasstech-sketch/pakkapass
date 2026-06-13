@@ -214,6 +214,134 @@
   background: rgba(99,102,241,.04);
 }
 
+/* Date Picker Wrapper */
+.navbar-date-picker {
+  position: relative;
+}
+
+/* Calendar Popup */
+.navbar-calendar-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  z-index: 1000;
+
+  background: var(--card-bg, #fff);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.12),
+    0 8px 16px rgba(15, 23, 42, 0.08);
+
+  animation: calendarFade 0.25s ease;
+}
+
+/* Animation */
+@keyframes calendarFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main calendar */
+.rdrCalendarWrapper {
+  border-radius: 20px;
+  font-family: inherit;
+  background: transparent;
+}
+
+/* Month & year header */
+.rdrMonthAndYearWrapper {
+  padding: 18px 20px;
+  height: auto;
+}
+
+/* Month title */
+.rdrMonthAndYearPickers select {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Week labels */
+.rdrWeekDay {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* Days */
+.rdrDayNumber span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Hover */
+.rdrDay:hover .rdrDayNumber span {
+  color: #2563eb;
+}
+
+/* Selected range */
+.rdrStartEdge,
+.rdrEndEdge,
+.rdrInRange {
+  background: #2563eb !important;
+}
+
+/* Start & End dates */
+.rdrStartEdge,
+.rdrEndEdge {
+  border-radius: 12px !important;
+}
+
+/* Selected text */
+.rdrDayStartOfMonth .rdrDayNumber span,
+.rdrDayEndOfMonth .rdrDayNumber span,
+.rdrDaySelected .rdrDayNumber span {
+  color: white !important;
+}
+
+/* Today's date */
+.rdrDayToday .rdrDayNumber span::after {
+  background: #2563eb;
+}
+
+/* Input fields */
+.rdrDateDisplayWrapper {
+  background: #f8fafc;
+  padding: 14px;
+}
+
+.rdrDateDisplayItem {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+}
+
+.rdrDateDisplayItem input {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Navigation arrows */
+.rdrNextPrevButton {
+  background: #f1f5f9;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.rdrNextPrevButton:hover {
+  background: #e2e8f0;
+}
 /* ==========================================
    NOTIFICATION
 ========================================== */

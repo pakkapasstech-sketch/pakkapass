@@ -6,6 +6,10 @@ import DashboardPage from '../pages/dashboard/DashboardPage';
 import PlaceholderPage from '../pages/shared/PlaceholderPage';
 import StudentManagementPage from '../pages/students/StudentManagementPage';
 import StudentDetailsPage from '../pages/students/StudentDetailsPage';
+import VideoManagementPage from '../pages/content/videoManagement';
+import PdfManagementPage from '../pages/content/pdfManagement';
+import ReferralManagementPage from '../pages/referral/referralManagementPage';
+import SubscriptionManagementPage from '../pages/subscription/SubscriptionMangementPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -17,12 +21,12 @@ const AppRoutes = () => (
         <Route path="students/:id" element={<StudentDetailsPage />} />
         <Route path="parents" element={<PlaceholderPage title="Parent Management" />} />
         <Route path="content" element={<PlaceholderPage title="Content Management" />} />
-        <Route path="content/videos" element={<PlaceholderPage title="Video Management" />} />
-        <Route path="content/pdfs" element={<PlaceholderPage title="PDF Management" />} />
+        <Route path="content/videos" element={<VideoManagementPage/>} />
+        <Route path="content/pdfs" element={<PdfManagementPage />} />
         <Route path="analytics" element={<PlaceholderPage title="Analytics Center" />} />
-        <Route path="subscriptions" element={<PlaceholderPage title="Subscription Management" />} />
+        <Route path="subscriptions" element={<SubscriptionManagementPage/>} />
         <Route path="payments" element={<PlaceholderPage title="Payments & Revenue" />} />
-        <Route path="referrals" element={<PlaceholderPage title="Referral & Promo Codes" />} />
+        <Route path="referrals" element={<ReferralManagementPage/>} />
         <Route path="partners" element={<PlaceholderPage title="Partner Management" />} />
         <Route path="downloads" element={<PlaceholderPage title="App Downloads" />} />
         <Route path="notifications" element={<PlaceholderPage title="Notifications" />} />
