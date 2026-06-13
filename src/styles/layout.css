@@ -1,0 +1,86 @@
+/* ==========================
+   DASHBOARD LAYOUT
+========================== */
+
+.dashboard-layout {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-main-bg);
+}
+
+/* ==========================
+   OVERLAY
+========================== */
+
+.dashboard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+/* ==========================
+   MAIN CONTENT
+========================== */
+
+.dashboard-main {
+  position: fixed;
+  top: 72px;
+  right: 0;
+  bottom: 0;
+
+  overflow-y: auto;
+
+  background: var(--color-main-bg);
+
+  transition:
+    left 0.3s ease,
+    width 0.3s ease;
+
+  scrollbar-width: thin;
+}
+
+/* Sidebar Expanded */
+
+.dashboard-main-expanded {
+  left: 260px;
+}
+
+/* Sidebar Collapsed */
+
+.dashboard-main-collapsed {
+  left: 72px;
+}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+.dashboard-main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-main::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 999px;
+}
+
+.dashboard-main::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 1024px) {
+  .dashboard-main-expanded,
+  .dashboard-main-collapsed {
+    left: 0;
+  }
+}

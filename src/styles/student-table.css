@@ -1,0 +1,144 @@
+.student-table-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.student-table-wrapper {
+  overflow-x: auto;
+}
+
+.student-table {
+  width: 100%;
+  min-width: 1300px;
+  border-collapse: collapse;
+}
+
+.student-table thead tr {
+  background: #f8fafc;
+}
+
+.student-table th {
+  padding: 14px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-table td {
+  padding: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.student-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.student-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.student-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.plan-badge {
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.table-actions button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.view-btn {
+  color: #4f46e5;
+  background: #eef2ff;
+}
+
+.edit-btn {
+  color: #d97706;
+  background: #fef3c7;
+}
+
+.delete-btn {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.empty-table {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.pagination {
+  border-top: 1px solid #e5e7eb;
+  padding: 15px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-buttons button {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.active-page {
+  background: #4f46e5 !important;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

@@ -1,0 +1,311 @@
+/* ==========================================
+   TABLE CARD
+========================================== */
+
+.data-table-container {
+  display: flex;
+  flex-direction: column;
+
+  height: 420px;
+
+  padding: 16px;
+
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+
+  background: var(--color-card);
+
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+
+  transition: all .25s ease;
+
+  overflow: hidden;
+}
+
+.data-table-container:hover {
+  box-shadow:
+    0 12px 24px rgba(0,0,0,.08);
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.data-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 18px;
+}
+
+.data-table-title {
+  font-size: 16px;
+  font-weight: 700;
+
+  color: var(--color-text-primary);
+}
+
+.data-table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.data-table-export-btn,
+.data-table-view-all {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  transition: all .2s ease;
+}
+
+.data-table-export-btn {
+  border: 1px solid var(--color-border);
+}
+
+.data-table-export-btn:hover {
+  background: rgba(99,102,241,.08);
+}
+
+.data-table-view-all {
+  color: #4f46e5;
+}
+
+.data-table-view-all:hover {
+  background: rgba(99,102,241,.08);
+}
+
+/* ==========================================
+   SEARCH
+========================================== */
+
+.data-table-search {
+  margin-bottom: 10px;
+}
+
+/* ==========================================
+   TABLE WRAPPER
+========================================== */
+
+.data-table-wrapper {
+  flex: 1;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+
+  scrollbar-width: thin;
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.data-table {
+  width: 100%;
+  min-width: 700px; /* Enables horizontal scroll */
+  border-collapse: collapse;
+}
+
+.data-table-head-row {
+  background: var(--color-main-bg);
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+.data-table-th {
+  position: sticky;
+  top: 0;
+
+  background: var(--color-main-bg);
+
+  padding: 12px 14px;
+
+  text-align: left;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: .04em;
+  text-transform: uppercase;
+
+  color: var(--color-text-muted);
+
+  z-index: 10;
+}
+
+.data-table-th-sortable {
+  cursor: pointer;
+}
+
+.data-table-th-sortable:hover {
+  color: #4f46e5;
+}
+
+/* ==========================================
+   ROWS
+========================================== */
+
+.data-table-row {
+  border-bottom: 1px solid var(--color-border);
+
+  transition: background .2s ease;
+}
+
+.data-table-row:hover {
+  background: rgba(99,102,241,.04);
+}
+
+.data-table-td {
+  padding: 12px 14px;
+
+  font-size: 13px;
+
+  color: var(--color-text-secondary);
+
+  white-space: nowrap;
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
+
+.data-table-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.data-table-view-btn,
+.data-table-edit-btn,
+.data-table-delete-btn {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  transition: all .2s ease;
+}
+
+.data-table-view-btn {
+  color: #4f46e5;
+  background: #eef2ff;
+}
+
+.data-table-view-btn:hover {
+  background: #e0e7ff;
+}
+
+.data-table-edit-btn {
+  color: #d97706;
+  background: #fff7ed;
+}
+
+.data-table-edit-btn:hover {
+  background: #ffedd5;
+}
+
+.data-table-delete-btn {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.data-table-delete-btn:hover {
+  background: #fee2e2;
+}
+
+/* ==========================================
+   PAGINATION
+========================================== */
+
+.data-table-pagination {
+  margin-top: 16px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status-pending {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.status-failed {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-default {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.data-table-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-table-loading-line {
+  height: 40px;
+  border-radius: 10px;
+  background: #e5e7eb;
+
+  animation: pulse 1.5s infinite;
+}
+
+
+.data-table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.data-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 999px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}

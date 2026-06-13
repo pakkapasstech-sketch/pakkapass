@@ -1,0 +1,32 @@
+.chart-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  transition: all .3s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+
+.chart-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.chart-body {
+  margin-top: 20px;
+  height: 280px;
+}
+
+.tooltip-card {
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}

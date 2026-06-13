@@ -1,0 +1,457 @@
+/* ==========================================
+   BASE CARD
+========================================== */
+
+.card {
+  background: var(--color-card);
+
+  border: 1px solid var(--color-border);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.06);
+
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 24px rgba(0,0,0,.08);
+}
+
+/* ==========================================
+   STAT CARD
+========================================== */
+
+.stat-card {
+  background: var(--color-card);
+
+  border: 1px solid var(--color-border);
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.06);
+
+  transition: all .25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 24px rgba(0,0,0,.08);
+}
+
+.stat-title {
+  margin-top: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  color: var(--color-text-secondary);
+}
+
+.stat-value {
+  margin-top: 4px;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  line-height: 1.1;
+
+  color: var(--color-text-primary);
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 10px;
+}
+
+.stat-trend-positive {
+  color: #10b981;
+}
+
+.stat-trend-negative {
+  color: #ef4444;
+}
+
+.stat-trend-value {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stat-trend-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================
+   ANALYTICS CARD
+========================================== */
+
+.analytics-card {
+  background: var(--color-card);
+
+  border: 1px solid var(--color-border);
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.06);
+
+  transition: all .25s ease;
+}
+
+.analytics-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 24px rgba(0,0,0,.08);
+}
+
+.analytics-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.analytics-content {
+  flex: 1;
+}
+
+.analytics-title {
+  font-size: 12px;
+  font-weight: 500;
+
+  color: var(--color-text-secondary);
+}
+
+.analytics-value {
+  margin-top: 2px;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  color: var(--color-text-primary);
+}
+
+.analytics-subtitle {
+  margin-top: 10px;
+
+  font-size: 11px;
+
+  color: var(--color-text-muted);
+}
+
+.analytics-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  margin-top: 8px;
+}
+
+.analytics-sparkline {
+  height: 48px;
+  margin-top: 12px;
+}
+
+/* ==========================================
+   ICONS
+========================================== */
+
+.icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  flex-shrink: 0;
+}
+
+.icon-box-sm {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-box-md {
+  width: 48px;
+  height: 48px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-trend {
+  width: 14px;
+  height: 14px;
+}
+
+.analytics-card-loading {
+  min-height: 140px;
+}
+
+/* ==========================================
+   STUDENTS BY STATE CARD
+========================================== */
+
+.chart-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  transition: all .25s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0,0,0,.08);
+}
+
+.chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.chart-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.chart-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: transparent;
+  border: none;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #6366f1;
+  cursor: pointer;
+}
+
+.chart-link:hover {
+  color: #4f46e5;
+}
+
+.state-layout {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+}
+
+.map-placeholder {
+  height: 260px;
+
+  border-radius: 16px;
+
+  background: linear-gradient(
+    135deg,
+    #eef2ff,
+    #f5f3ff
+  );
+
+  border: 1px dashed #c7d2fe;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #6366f1;
+}
+
+.state-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.state-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 8px 0;
+}
+
+.state-row:hover {
+  background: rgba(99,102,241,.03);
+  border-radius: 10px;
+}
+
+.state-rank {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #eef2ff;
+  color: #6366f1;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.state-name {
+  width: 120px;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: var(--color-text-primary);
+}
+
+.state-progress-wrapper {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 10px;
+
+  border-radius: 999px;
+
+  overflow: hidden;
+
+  background: #e5e7eb;
+}
+
+.progress-fill {
+  height: 100%;
+
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    #6366f1,
+    #8b5cf6
+  );
+
+  transition: width .4s ease;
+}
+
+.state-count {
+  width: 70px;
+
+  text-align: right;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: var(--color-text-primary);
+}
+
+/* DARK MODE */
+
+.dark .map-placeholder {
+  background: linear-gradient(
+    135deg,
+    #1e293b,
+    #312e81
+  );
+
+  border-color: #4f46e5;
+}
+
+.dark .progress-bar {
+  background: #374151;
+}
+
+.dark .state-rank {
+  background: rgba(99,102,241,.15);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 992px) {
+  .state-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .map-placeholder {
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-card {
+    padding: 18px;
+  }
+
+  .state-row {
+    flex-wrap: wrap;
+  }
+
+  .state-name {
+    width: 100%;
+  }
+
+  .state-progress-wrapper {
+    width: 100%;
+  }
+}
+
+.state-progress-bar {
+  flex: 1;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.state-progress-fill {
+  height: 100%;
+  display: block;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    #6366f1,
+    #8b5cf6
+  );
+
+  transition: width 0.4s ease;
+}

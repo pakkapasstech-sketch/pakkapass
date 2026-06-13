@@ -1,0 +1,165 @@
+/* =========================
+   DASHBOARD PAGE
+========================= */
+
+.dashboard-page {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100%;
+  background: var(--color-main-bg);
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.dashboard-error {
+  padding: 32px;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.dashboard-stats-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+/* =========================
+   CHARTS
+========================= */
+
+.dashboard-chart-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+/* =========================
+   TABLES
+========================= */
+.dashboard-table-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+}
+
+.dashboard-table-grid > * {
+  height: 100%;
+}
+
+@media (min-width: 1200px) {
+  .dashboard-table-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* =========================
+   PERFORMANCE
+========================= */
+
+.dashboard-performance-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* =========================
+   STUDENT CELL
+========================= */
+
+.dashboard-student-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-student-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* =========================
+   REFERRAL CODE
+========================= */
+
+.dashboard-referral-code {
+  font-weight: 600;
+  color: #6366f1;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.dashboard-modal-content {
+  max-height: 500px;
+  overflow: auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f8fafc;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.dark .dashboard-modal-content {
+  background: #111827;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (min-width: 640px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-performance-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-chart-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dashboard-performance-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .dashboard-table-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.dashboard-modal-content {
+  margin: 0;
+
+  padding: 20px;
+
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  font-size: 13px;
+  line-height: 1.6;
+
+  overflow-x: auto;
+}
+
+.dark .dashboard-modal-content {
+  background: #111827;
+}
