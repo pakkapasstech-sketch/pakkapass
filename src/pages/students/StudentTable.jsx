@@ -17,9 +17,7 @@ const StatusBadge = ({ status }) => {
   };
 
   return (
-    <span
-      className={`rounded-md px-2 py-1 text-[11px] font-medium ${styles[status]}`}
-    >
+    <span className={`rounded-md px-2 py-1 text-[11px] font-medium ${styles[status]}`}>
       {status}
     </span>
   );
@@ -46,129 +44,110 @@ const StudentTable = ({ students = [] }) => {
 
   const totalStudents = students.length;
 
-  const totalPages = Math.ceil(
-    totalStudents / studentsPerPage
-  );
+  const totalPages = Math.ceil(totalStudents / studentsPerPage);
 
-  const startIndex =
-    (currentPage - 1) * studentsPerPage;
+  const startIndex = (currentPage - 1) * studentsPerPage;
 
-  const endIndex =
-    startIndex + studentsPerPage;
+  const endIndex = startIndex + studentsPerPage;
 
-  const currentStudents =
-    students.slice(startIndex, endIndex);
+  const currentStudents = students.slice(startIndex, endIndex);
 
   const getVisiblePages = () => {
     let start = Math.max(currentPage - 2, 1);
     let end = Math.min(currentPage + 2, totalPages);
 
-    return Array.from(
-      { length: end - start + 1 },
-      (_, i) => start + i
-    );
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-white shadow-sm">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[1400px]">
+    <div className="student-table-card">
+      <div className="student-table-wrapper">
+        <table className="student-table">
           <thead>
-            <tr className="border-b border-[var(--color-border)] bg-slate-50">
-              <th className="px-4 py-4 text-left text-xs font-semibold">#</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Student Name</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Mobile Number</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Class</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Board</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Institution</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">State</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Subscription Plan</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Status</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Registered On</th>
-              <th className="px-4 py-4 text-left text-xs font-semibold">Actions</th>
+            <tr>
+              <th></th>
+              <th>Student Name</th>
+              <th>Mobile Number</th>
+              <th>Class</th>
+              <th>Board</th>
+              <th>Institution</th>
+              <th>State</th>
+              <th>Subscription Plan</th>
+              <th>Status</th>
+              <th>Registered On</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
             {currentStudents.length > 0 ? (
               currentStudents.map((student, index) => (
-                <tr
-                  key={student.id}
-                  className="border-b border-gray-100 hover:bg-slate-50"
-                >
-                  <td className="px-4 py-4 text-sm">
-                    {startIndex + index + 1}
-                  </td>
+                <tr key={student.id}>
+                  <td>{startIndex + index + 1}</td>
 
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
+                  <td>
+                    <div className="student-user">
                       <img
                         src={
                           student.photo ||
-                          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            student.name
-                          )}`
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`
                         }
                         alt={student.name}
-                        className="h-10 w-10 rounded-full object-cover"
+                        className="student-avatar"
                       />
 
                       <div>
-                        <p className="text-sm font-medium">
-                          {student.name}
-                        </p>
+                        <div>
+                          <div className="student-name">{student.name}</div>
+                        </div>
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-4 py-4 text-sm">
-                    {student.mobile}
+                  <td>{student.mobile}</td>
+
+                  <td>{student.class}</td>
+
+                  <td>{student.board}</td>
+
+                  <td>{student.institution}</td>
+
+                  <td>{student.state}</td>
+
+                  <td>
+                    <span className="plan-badge">{student.plan}</span>
                   </td>
 
-                  <td className="px-4 py-4 text-sm">
-                    {student.class}
+                  <td>
+                    <span
+                      className={`status-badge ${
+                        student.status === 'Active'
+                          ? 'status-active'
+                          : student.status === 'Inactive'
+                            ? 'status-inactive'
+                            : 'status-pending'
+                      }`}
+                    >
+                      {student.status}
+                    </span>
                   </td>
 
-                  <td className="px-4 py-4 text-sm">
-                    {student.board}
-                  </td>
+                  <td>{student.registeredOn}</td>
 
-                  <td className="px-4 py-4 text-sm">
-                    {student.institution}
-                  </td>
-
-                  <td className="px-4 py-4 text-sm">
-                    {student.state}
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <PlanBadge plan={student.plan} />
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <StatusBadge status={student.status} />
-                  </td>
-
-                  <td className="px-4 py-4 text-sm">
-                    {student.registeredOn}
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <div className="flex gap-2">
+                  <td>
+                    <div className="table-actions">
                       <button
-                        className="rounded-lg p-2 text-indigo-600 hover:bg-indigo-50"
-                        onClick={() =>
-                          navigate(`/students/${student.id}`)
-                        }
+                        className="view-btn"
+                        onClick={() => navigate(`/students/${student.id}`)}
                       >
                         <HiOutlineEye />
                       </button>
 
-                      <button className="rounded-lg p-2 text-amber-600 hover:bg-amber-50">
+                      <button className="edit-btn">
                         <HiOutlinePencil />
                       </button>
 
-                      <button className="rounded-lg p-2 text-red-600 hover:bg-red-50">
+                      <button className="delete-btn">
                         <HiOutlineTrash />
                       </button>
                     </div>
@@ -177,10 +156,7 @@ const StudentTable = ({ students = [] }) => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="11"
-                  className="py-10 text-center text-gray-500"
-                >
+                <td colSpan="11" className="empty-table">
                   No students found
                 </td>
               </tr>
@@ -190,21 +166,14 @@ const StudentTable = ({ students = [] }) => {
       </div>
 
       {totalStudents > 0 && (
-        <div className="flex flex-col gap-3 border-t border-[var(--color-border)] px-6 py-4 md:flex-row md:items-center md:justify-between">
-          <p className="text-xs text-gray-500">
-            Showing {startIndex + 1} to{' '}
-            {Math.min(endIndex, totalStudents)} of{' '}
-            {totalStudents} students
+        <div className="pagination">
+          <p>
+            Showing {startIndex + 1} to {Math.min(endIndex, totalStudents)} of {totalStudents}{' '}
+            students
           </p>
 
-          <div className="flex items-center gap-2">
-            <button
-              className="rounded border p-2 hover:bg-gray-50 disabled:opacity-50"
-              disabled={currentPage === 1}
-              onClick={() =>
-                setCurrentPage((prev) => prev - 1)
-              }
-            >
+          <div className="pagination-buttons">
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => prev - 1)}>
               <HiOutlineChevronLeft />
             </button>
 
@@ -212,22 +181,15 @@ const StudentTable = ({ students = [] }) => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`rounded px-3 py-1 ${
-                  currentPage === page
-                    ? 'bg-indigo-600 text-white'
-                    : 'hover:bg-gray-100'
-                }`}
+                className={currentPage === page ? 'active-page' : ''}
               >
                 {page}
               </button>
             ))}
 
             <button
-              className="rounded border p-2 hover:bg-gray-50 disabled:opacity-50"
               disabled={currentPage === totalPages}
-              onClick={() =>
-                setCurrentPage((prev) => prev + 1)
-              }
+              onClick={() => setCurrentPage((prev) => prev + 1)}
             >
               <HiOutlineChevronRight />
             </button>

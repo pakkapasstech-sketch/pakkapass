@@ -2,81 +2,266 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { HiOutlineAcademicCap, HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+
+import {
+  HiOutlineMail,
+  HiOutlineLockClosed,
+  HiOutlineEye,
+  HiOutlineEyeOff,
+  HiOutlineChartBar,
+  HiOutlineShieldCheck,
+  HiOutlineUserGroup,
+} from 'react-icons/hi';
+
 import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
+
+import logo from '../../assets/PP Final Logo Tagline White 02 1.svg';
+
+import '../../styles/login.css';
 
 const LoginPage = () => {
-  const { login } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [role, setRole] = useState('admin');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: { email: 'superadmin@pakkapass.com', password: 'admin123' },
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (data) => {
-    setLoading(true);
     try {
-      await login(data);
-      toast.success('Welcome back!');
+      setLoading(true);
+
+      await login({
+        ...data,
+        role,
+      });
+
+      toast.success('Welcome Back!');
       navigate('/');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--color-main-bg)] p-4">
-      <button onClick={toggleTheme} className="fixed top-4 right-4 rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
-        {isDark ? <HiOutlineSun className="h-5 w-5" /> : <HiOutlineMoon className="h-5 w-5" />}
-      </button>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl dark:bg-[var(--color-card)]"
-      >
-        <div className="mb-8 flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600">
-            <HiOutlineAcademicCap className="h-7 w-7 text-white" />
-          </div>
-          <h1 className="mt-4 text-2xl font-bold text-[var(--color-text-primary)]">PakkaPass Admin</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">Sign in to your account</p>
+    <div className="login-page">
+      {/* LEFT PANEL */}
+
+      <div className="login-left">
+        <div className="brand">
+          <img src={logo} alt="PakkaPass" className="brand-logo" />
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-xs font-medium text-[var(--color-text-secondary)]">Email</label>
-            <input
-              {...register('email', { required: 'Email is required' })}
-              type="email"
-              className="w-full rounded-lg border border-[var(--color-border)] px-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:bg-gray-800"
-            />
-            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
+
+        <div className="hero-content">
+          <h1>
+            One Platform.
+            <br />
+            <span>Every Learner. Every Role.</span>
+          </h1>
+
+          <p>
+            PakkaPass brings students, parents, partners and institutions together on a unified
+            platform for smarter learning and management.
+          </p>
+
+          <div className="feature-list">
+            <div className="feature">
+              <HiOutlineChartBar />
+
+              <div>
+                <h4>Smart Analytics</h4>
+
+                <p>Real-time insights and reports</p>
+              </div>
+            </div>
+
+            <div className="feature">
+              <HiOutlineShieldCheck />
+
+              <div>
+                <h4>Secure & Reliable</h4>
+
+                <p>Enterprise-grade security</p>
+              </div>
+            </div>
+
+            <div className="feature">
+              <HiOutlineUserGroup />
+
+              <div>
+                <h4>Role Based Access</h4>
+
+                <p>Admins, Partners & Parents</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-[var(--color-text-secondary)]">Password</label>
-            <input
-              {...register('password', { required: 'Password is required' })}
-              type="password"
-              className="w-full rounded-lg border border-[var(--color-border)] px-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:bg-gray-800"
+
+          {/* Dashboard Preview 
+
+          <div className="dashboard-preview">
+            <img
+              src="/dashboard-preview.png"
+              alt="Dashboard Preview"
             />
-            {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
+          </div>*/}
+        </div>
+      </div>
+
+      {/* RIGHT PANEL */}
+
+      <div className="login-right">
+        <motion.div
+          className="login-card"
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.4,
+          }}
+        >
+          <h2>Welcome Back!</h2>
+
+          <p className="subtitle">Sign in to continue to your PakkaPass dashboard</p>
+
+          {/* Role Switch */}
+
+          <div className="role-tabs">
+            <button
+              type="button"
+              onClick={() => setRole('admin')}
+              className={role === 'admin' ? 'active-role' : ''}
+            >
+              Admin
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRole('partner')}
+              className={role === 'partner' ? 'active-role' : ''}
+            >
+              Partner
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRole('parent')}
+              className={role === 'parent' ? 'active-role' : ''}
+            >
+              Parent
+            </button>
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-        <p className="mt-6 text-center text-[10px] text-[var(--color-text-muted)]">
-          Demo: superadmin@pakkapass.com / admin123
-        </p>
-      </motion.div>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* EMAIL */}
+
+            <div className="input-group">
+              <HiOutlineMail className="input-icon" />
+
+              <input
+                type="email"
+                placeholder="Email Address"
+                {...register('email', {
+                  required: 'Email is required',
+                })}
+              />
+            </div>
+
+            {errors.email && <span className="error">{errors.email.message}</span>}
+
+            {/* PASSWORD */}
+
+            <div className="input-group">
+              <HiOutlineLockClosed className="input-icon" />
+
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                {...register('password', {
+                  required: 'Password is required',
+                })}
+              />
+
+              <button
+                type="button"
+                className="eye-btn"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}
+              </button>
+            </div>
+
+            {errors.password && <span className="error">{errors.password.message}</span>}
+
+            {/* OPTIONS */}
+
+            <div className="login-options">
+              <label>
+                <input type="checkbox" />
+                Remember me
+              </label>
+
+              <button type="button" className="forgot-link">
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* LOGIN BUTTON */}
+
+            <button type="submit" disabled={loading} className="signin-btn">
+              {loading ? 'Signing In...' : 'Sign In'}
+            </button>
+
+            <div className="divider">
+              <span>or</span>
+            </div>
+
+            {/* GOOGLE */}
+
+            <button type="button" className="google-btn">
+              Continue with Google
+            </button>
+          </form>
+
+          <p className="contact-admin">
+            Don't have an account?
+            <span> Contact your administrator</span>
+          </p>
+        </motion.div>
+        <div className="login-footer-bar">
+          <div className="secure-login">
+            <HiOutlineShieldCheck />
+            <span>Secure Login</span>
+          </div>
+
+          <div className="footer-separator"></div>
+
+          <p className="footer-text">
+            By continuing, you agree to our
+            <span> Terms of Service </span>
+            and
+            <span> Privacy Policy</span>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

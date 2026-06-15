@@ -1,39 +1,86 @@
+/* ==========================================
+   TABLE CARD
+========================================== */
+
 .student-table-card {
-  background: #fff;
-  border-radius: 14px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-card);
 }
 
 .student-table-wrapper {
   overflow-x: auto;
 }
 
+/* ==========================================
+   TABLE
+========================================== */
+
 .student-table {
   width: 100%;
-  min-width: 1300px;
+  min-width: 1150px;
   border-collapse: collapse;
 }
 
 .student-table thead tr {
-  background: #f8fafc;
+  background: var(--color-table-header);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .student-table th {
-  padding: 14px;
+  padding: 12px 14px;
   text-align: left;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 .student-table td {
-  padding: 14px;
-  border-top: 1px solid #f1f5f9;
+  padding: 12px 14px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.student-table tbody tr {
+  transition: background .2s ease;
 }
 
 .student-table tbody tr:hover {
-  background: #f8fafc;
+  background: var(--color-hover-bg);
 }
+
+/* ==========================================
+   COLUMN WIDTHS
+========================================== */
+
+.student-table th:first-child,
+.student-table td:first-child {
+  width: 50px;
+}
+
+.student-table th:last-child,
+.student-table td:last-child {
+  width: 130px;
+}
+
+.student-table td:nth-child(2) {
+  min-width: 220px;
+}
+
+.student-table td:nth-child(6) {
+  min-width: 180px;
+}
+
+/* ==========================================
+   STUDENT INFO
+========================================== */
 
 .student-user {
   display: flex;
@@ -42,103 +89,198 @@
 }
 
 .student-avatar {
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--color-border);
 }
 
-.plan-badge {
-  background: #eef2ff;
-  color: #4338ca;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+.student-name {
+  font-size: 13px;
   font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ==========================================
+   BADGES
+========================================== */
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .status-badge {
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .status-active {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .status-inactive {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
 }
+
+.status-pending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
 
 .table-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
 }
 
 .table-actions button {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
+
   border: none;
   border-radius: 8px;
+
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all .2s ease;
+}
+
+.table-actions button svg {
+  width: 16px;
+  height: 16px;
 }
 
 .view-btn {
-  color: #4f46e5;
-  background: #eef2ff;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .edit-btn {
-  color: #d97706;
-  background: #fef3c7;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .delete-btn {
-  color: #dc2626;
-  background: #fee2e2;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
 }
+
+.view-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
 
 .empty-table {
+  padding: 50px;
   text-align: center;
-  padding: 40px;
-  color: #64748b;
+  color: var(--color-text-secondary);
+  font-size: 14px;
 }
 
+/* ==========================================
+   PAGINATION
+========================================== */
+
 .pagination {
-  border-top: 1px solid #e5e7eb;
-  padding: 15px 20px;
+  border-top: 1px solid var(--color-border);
+
+  padding: 14px 18px;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+}
+
+.pagination p {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .pagination-buttons {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
 }
 
 .pagination-buttons button {
-  width: 35px;
-  height: 35px;
-  border: 1px solid #d1d5db;
-  background: white;
+  min-width: 32px;
+  height: 32px;
+
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+
   border-radius: 8px;
+
   cursor: pointer;
+
+  color: var(--color-text-primary);
+
+  transition: all .2s ease;
+}
+
+.pagination-buttons button:hover:not(:disabled) {
+  background: var(--color-hover-bg);
+}
+
+.pagination-buttons button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
 }
 
 .active-page {
-  background: #4f46e5 !important;
-  color: white;
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  border-color: var(--color-primary) !important;
 }
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
 
 @media (max-width: 768px) {
   .pagination {
     flex-direction: column;
     gap: 12px;
+    align-items: flex-start;
+  }
+
+  .student-table {
+    min-width: 950px;
   }
 }
