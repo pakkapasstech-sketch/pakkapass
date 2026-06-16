@@ -1,19 +1,56 @@
-/* ==========================
-   STUDENT DETAILS DASHBOARD
-========================== */
+/* ==========================================
+   STUDENT DETAILS VARIABLES
+========================================== */
 
-.student-dashboard {
-  padding: 24px;
-  min-height: 100vh;
-  background: var(--color-background, #f8fafc);
+:root {
+  --student-page-padding: 24px;
+  --student-gap: 24px;
+
+  --student-card-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.04);
+
+  --student-avatar-gradient:
+    linear-gradient(
+      135deg,
+      #ebebed,
+      #ffffff
+    );
+
+  --student-progress-gradient:
+    linear-gradient(
+      90deg,
+      #6366f1,
+      #8b5cf6
+    );
+
+  --student-success-bg: #dcfce7;
+  --student-success: #16a34a;
+
+  --student-danger-bg: #fee2e2;
+  --student-danger: #dc2626;
 }
 
-/* ==========================
+/* ==========================================
+   PAGE
+========================================== */
+
+.student-dashboard {
+  min-height: 100vh;
+
+  padding: var(--student-page-padding);
+
+  background: var(
+    --color-main-bg,
+    #f8fafc
+  );
+}
+
+/* ==========================================
    TOP BAR
-========================== */
+========================================== */
 
 .student-topbar {
-  margin-bottom: 24px;
+  margin-bottom: var(--student-gap);
 }
 
 .back-link {
@@ -24,20 +61,24 @@
   border: none;
   background: transparent;
 
-  color: #6366f1;
+  color: var(--color-primary);
+
   font-size: 14px;
   font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    color var(--transition-fast);
 }
 
 .back-link:hover {
-  color: #4f46e5;
+  color: var(--color-primary-dark);
 }
 
-/* ==========================
+/* ==========================================
    TABS
-========================== */
+========================================== */
 
 .student-tabs {
   display: flex;
@@ -45,31 +86,41 @@
 
   overflow-x: auto;
 
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  margin-bottom: var(--student-gap);
 
-  margin-bottom: 24px;
+  border-bottom:
+    1px solid var(--color-border);
+
+  scrollbar-width: none;
+}
+
+.student-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .student-tab {
   position: relative;
 
+  padding: 14px 0;
+
   border: none;
   background: transparent;
 
-  padding: 14px 0;
+  white-space: nowrap;
 
-  color: #6b7280;
+  color: var(--color-text-secondary);
 
   font-size: 14px;
   font-weight: 500;
 
   cursor: pointer;
 
-  white-space: nowrap;
+  transition:
+    color var(--transition-fast);
 }
 
 .student-tab.active {
-  color: #6366f1;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -84,100 +135,110 @@
   width: 100%;
   height: 2px;
 
-  background: #6366f1;
+  background: var(--color-primary);
 }
 
-/* ==========================
-   MAIN LAYOUT
-========================== */
+/* ==========================================
+   MAIN GRID
+========================================== */
 
 .student-layout {
   display: grid;
-  grid-template-columns: 300px 1fr 420px;
-  gap: 24px;
+
+  grid-template-columns:
+    300px
+    minmax(0, 1fr)
+    420px;
+
+  gap: var(--student-gap);
 
   align-items: start;
 }
 
-/* ==========================
-   SIDEBAR PROFILE
-========================== */
+/* ==========================================
+   SIDEBAR CARD
+========================================== */
 
 .student-sidebar {
-  background: var(--color-surface, #ffffff);
-
-  border: 1px solid var(--color-border, #e5e7eb);
-
-  border-radius: 20px;
-
-  padding: 24px;
-
   position: sticky;
   top: 24px;
 
+  padding: 24px;
+
+  background: var(--color-card);
+
+  border:
+    1px solid var(--color-border);
+
+  border-radius: 20px;
+
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.04);
+    var(--student-card-shadow);
 }
 
 .student-avatar {
-  width: 80px;
-  height: 80px;
-
-  border-radius: 50%;
-
-  background: linear-gradient(
-    135deg,
-    #6366f1,
-    #8b5cf6
-  );
-
-  color: white;
-
-  font-size: 28px;
-  font-weight: 700;
+  width: 72px;
+  height: 72px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  border-radius: 50%;
+
+  background:
+    var(--student-avatar-gradient);
+
+  color: var(--color-text-primary);
+
+  font-size: 28px;
+  font-weight: 700;
+
   box-shadow:
-    0 10px 30px rgba(99, 102, 241, 0.35);
+    0 10px 30px
+    rgba(160, 160, 163, 0.35);
 }
 
 .student-sidebar h2 {
   margin-top: 18px;
 
-  font-size: 24px;
+  font-size:
+    clamp(22px, 3vw, 24px);
+
   font-weight: 700;
 
-  color: var(--color-text-primary, #111827);
+  color:
+    var(--color-text-primary);
 }
 
 .student-code {
   margin-top: 6px;
 
-  color: #94a3b8;
-
   font-size: 13px;
+
+  color:
+    var(--color-text-muted);
 }
 
 .student-class {
   margin-top: 10px;
 
-  color: #6366f1;
-
   font-size: 13px;
   font-weight: 600;
+
+  color: var(--color-primary);
 }
+
+/* ==========================================
+   STATUS BADGE
+========================================== */
 
 .student-status {
   display: inline-flex;
-
   align-items: center;
   gap: 6px;
 
   margin-top: 14px;
-
   padding: 8px 14px;
 
   border-radius: 999px;
@@ -187,18 +248,24 @@
 }
 
 .student-status.active {
-  background: #dcfce7;
-  color: #16a34a;
+  background:
+    var(--student-success-bg);
+
+  color:
+    var(--student-success);
 }
 
 .student-status.inactive {
-  background: #fee2e2;
-  color: #dc2626;
+  background:
+    var(--student-danger-bg);
+
+  color:
+    var(--student-danger);
 }
 
-/* ==========================
+/* ==========================================
    STUDENT META
-========================== */
+========================================== */
 
 .student-meta {
   margin-top: 24px;
@@ -213,34 +280,38 @@
 
   margin-bottom: 4px;
 
-  color: #64748b;
-
   font-size: 12px;
+
+  color:
+    var(--color-text-muted);
 }
 
 .student-meta p {
-  color: var(--color-text-primary, #111827);
+  margin: 0;
 
   font-size: 14px;
 
-  margin: 0;
+  color:
+    var(--color-text-primary);
 }
 
-/* ==========================
-   CONTENT CARDS
-========================== */
+/* ==========================================
+   CONTENT SECTIONS
+========================================== */
 
 .student-section {
-  background: var(--color-surface, #ffffff);
+  padding: 24px;
 
-  border: 1px solid var(--color-border, #e5e7eb);
+  background:
+    var(--color-card);
+
+  border:
+    1px solid var(--color-border);
 
   border-radius: 20px;
 
-  padding: 24px;
-
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.04);
+    var(--student-card-shadow);
 }
 
 .student-section h3 {
@@ -249,92 +320,76 @@
   font-size: 16px;
   font-weight: 700;
 
-  color: var(--color-text-primary, #111827);
+  color:
+    var(--color-text-primary);
 }
 
-/* ==========================
+/* ==========================================
    INFO LIST
-========================== */
+========================================== */
 
-.info-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.info-item {
-  display: flex;
-
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 14px 0;
-
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.info-item span {
-  color: #64748b;
-
-  font-size: 13px;
-}
-
-.info-item strong {
-  color: var(--color-text-primary, #111827);
-
-  font-size: 14px;
-}
-
-/* ==========================
-   LAST LOGIN
-========================== */
-
-.last-login {
-  margin-top: 28px;
-
-  color: #94a3b8;
-
-  font-size: 12px;
-}
-
-/* ==========================
-   ACTIVITY
-========================== */
-
+.info-list,
 .activity-list {
   display: flex;
   flex-direction: column;
 }
 
+.info-item,
 .activity-item {
   display: flex;
-
   justify-content: space-between;
+  align-items: center;
 
   padding: 14px 0;
 
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom:
+    1px solid
+    var(--color-border-light);
 }
 
+.info-item:last-child,
 .activity-item:last-child {
   border-bottom: none;
 }
 
+.info-item span,
 .activity-item span {
-  color: #64748b;
+  color:
+    var(--color-text-secondary);
+
+  font-size: 13px;
+}
+
+.info-item strong {
+  font-size: 14px;
+
+  color:
+    var(--color-text-primary);
 }
 
 .activity-item strong {
-  color: #16a34a;
+  color:
+    var(--student-success);
+
   font-weight: 700;
 }
 
-/* ==========================
+/* ==========================================
+   LAST LOGIN
+========================================== */
+
+.last-login {
+  margin-top: 28px;
+
+  font-size: 12px;
+
+  color:
+    var(--color-text-muted);
+}
+
+/* ==========================================
    SUBJECT USAGE
-========================== */
+========================================== */
 
 .usage-title {
   margin-top: 32px;
@@ -346,7 +401,6 @@
 
 .usage-header {
   display: flex;
-
   justify-content: space-between;
 
   margin-bottom: 8px;
@@ -358,11 +412,12 @@
   width: 100%;
   height: 8px;
 
-  border-radius: 999px;
-
   overflow: hidden;
 
-  background: #e5e7eb;
+  border-radius: 999px;
+
+  background:
+    var(--color-border);
 }
 
 .bar span {
@@ -370,63 +425,55 @@
 
   height: 100%;
 
-  border-radius: 999px;
+  border-radius: inherit;
 
-  background: linear-gradient(
-    90deg,
-    #6366f1,
-    #8b5cf6
-  );
+  background:
+    var(--student-progress-gradient);
 }
 
-/* ==========================
+/* ==========================================
    NOT FOUND
-========================== */
+========================================== */
 
 .student-not-found {
-  text-align: center;
   padding: 80px 20px;
+  text-align: center;
 }
 
-/* ==========================
+/* ==========================================
    DARK MODE
-========================== */
+========================================== */
 
-[data-theme='dark'] .student-sidebar,
-[data-theme='dark'] .student-section {
+.dark .student-sidebar,
+.dark .student-section {
   background: #111827;
   border-color: #374151;
 }
 
-[data-theme='dark'] .student-sidebar h2,
-[data-theme='dark'] .student-section h3,
-[data-theme='dark'] .info-item strong,
-[data-theme='dark'] .student-meta p {
-  color: #f9fafb;
-}
-
-[data-theme='dark'] .info-item,
-[data-theme='dark'] .activity-item {
+.dark .info-item,
+.dark .activity-item {
   border-color: #374151;
 }
 
-[data-theme='dark'] .bar {
+.dark .bar {
   background: #374151;
 }
 
-/* ==========================
-   RESPONSIVE
-========================== */
+/* ==========================================
+   LAPTOP
+========================================== */
 
 @media (max-width: 1400px) {
   .student-layout {
-    grid-template-columns: 280px 1fr;
-  }
-
-  .student-section:last-child {
-    grid-column: span 2;
+    grid-template-columns:
+      280px
+      minmax(0, 1fr);
   }
 }
+
+/* ==========================================
+   TABLET
+========================================== */
 
 @media (max-width: 1024px) {
   .student-layout {
@@ -436,11 +483,11 @@
   .student-sidebar {
     position: static;
   }
-
-  .student-section:last-child {
-    grid-column: auto;
-  }
 }
+
+/* ==========================================
+   MOBILE
+========================================== */
 
 @media (max-width: 768px) {
   .student-dashboard {
@@ -448,21 +495,52 @@
   }
 
   .student-tabs {
-    gap: 18px;
+    gap: 20px;
   }
 
-  .student-sidebar,
-  .student-section {
-    padding: 18px;
+  .student-section,
+  .student-sidebar {
+    padding: 20px;
+  }
+
+  .info-item,
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .student-dashboard {
+    padding: 12px;
+  }
+
+  .student-section,
+  .student-sidebar {
+    padding: 16px;
+    border-radius: var(--radius-lg);
   }
 
   .student-avatar {
-    width: 70px;
-    height: 70px;
-    font-size: 24px;
+    width: 60px;
+    height: 60px;
+
+    font-size: 22px;
+  }
+
+  .student-tab,
+  .info-item span,
+  .activity-item span,
+  .student-meta p {
+    font-size: 13px;
   }
 
   .student-sidebar h2 {
-    font-size: 20px;
+    font-size: 22px;
   }
 }

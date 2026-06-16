@@ -1,23 +1,66 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 const SidebarContext = createContext(null);
 
-export const SidebarProvider = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState({ content: true });
+export const SidebarProvider = ({
+  children,
+}) => {
+  const [isCollapsed, setIsCollapsed] =
+    useState(false);
+
+  const [isMobileOpen, setIsMobileOpen] =
+    useState(false);
+
+  const [expandedMenus, setExpandedMenus] =
+    useState({
+      content: true,
+    });
 
   useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth < 1024) setIsCollapsed(true);
-      else if (window.innerWidth >= 1280) setIsCollapsed(false);
+    const handleResize = () => {
+      const isMobile =
+        window.innerWidth < 1024;
+
+      if (isMobile) {
+        setIsCollapsed(false);
+      } else {
+        setIsMobileOpen(false);
+      }
     };
-    onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+
+    handleResize();
+
+    window.addEventListener(
+      'resize',
+      handleResize
+    );
+
+    return () =>
+      window.removeEventListener(
+        'resize',
+        handleResize
+      );
   }, []);
 
-  const toggleMenu = (id) => setExpandedMenus((p) => ({ ...p, [id]: !p[id] }));
+  const toggleSidebar = () =>
+    setIsCollapsed((prev) => !prev);
+
+  const toggleMobileSidebar = () =>
+    setIsMobileOpen((prev) => !prev);
+
+  const closeMobileSidebar = () =>
+    setIsMobileOpen(false);
+
+  const toggleMenu = (id) =>
+    setExpandedMenus((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
 
   return (
     <SidebarContext.Provider
@@ -25,10 +68,10 @@ export const SidebarProvider = ({ children }) => {
         isCollapsed,
         isMobileOpen,
         expandedMenus,
-        setIsCollapsed,
-        toggleSidebar: () => setIsCollapsed((p) => !p),
-        toggleMobileSidebar: () => setIsMobileOpen((p) => !p),
-        closeMobileSidebar: () => setIsMobileOpen(false),
+
+        toggleSidebar,
+        toggleMobileSidebar,
+        closeMobileSidebar,
         toggleMenu,
       }}
     >
@@ -38,7 +81,14 @@ export const SidebarProvider = ({ children }) => {
 };
 
 export const useSidebar = () => {
-  const ctx = useContext(SidebarContext);
-  if (!ctx) throw new Error('useSidebar must be used within SidebarProvider');
-  return ctx;
+  const context =
+    useContext(SidebarContext);
+
+  if (!context) {
+    throw new Error(
+      'useSidebar must be used within SidebarProvider'
+    );
+  }
+
+  return context;
 };

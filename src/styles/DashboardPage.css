@@ -1,165 +1,270 @@
-/* =========================
+/* ==========================================
+   DASHBOARD PAGE VARIABLES
+========================================== */
+
+:root {
+  --dashboard-spacing: 24px;
+  --dashboard-gap: 20px;
+  --table-gap: 16px;
+  --modal-max-height: 500px;
+}
+
+/* ==========================================
    DASHBOARD PAGE
-========================= */
+========================================== */
 
 .dashboard-page {
-  padding: 24px;
+  min-height: 100%;
+
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  min-height: 100%;
+  gap: var(--dashboard-spacing);
+
+  padding: var(--dashboard-spacing);
+
   background: var(--color-main-bg);
 }
 
-/* =========================
-   ERROR
-========================= */
+/* ==========================================
+   ERROR SECTION
+========================================== */
 
 .dashboard-error {
   padding: 32px;
 }
 
-/* =========================
-   STATS
-========================= */
+/* ==========================================
+   STATS GRID
+========================================== */
 
 .dashboard-stats-grid {
   display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: var(--dashboard-gap);
+
+  grid-template-columns: repeat(
+    1,
+    minmax(0, 1fr)
+  );
 }
 
-/* =========================
-   CHARTS
-========================= */
+/* ==========================================
+   CHART GRID
+========================================== */
 
 .dashboard-chart-grid {
   display: grid;
-  gap: 24px;
+  gap: var(--dashboard-spacing);
+
   grid-template-columns: 1fr;
 }
 
-/* =========================
-   TABLES
-========================= */
+/* ==========================================
+   TABLE GRID
+========================================== */
+
 .dashboard-table-grid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(3, 1fr);
+  gap: var(--table-gap);
+
   align-items: stretch;
+
+  grid-template-columns: repeat(
+    1,
+    minmax(0, 1fr)
+  );
 }
 
 .dashboard-table-grid > * {
   height: 100%;
+  min-width: 0;
 }
 
-@media (min-width: 1200px) {
-  .dashboard-table-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* =========================
-   PERFORMANCE
-========================= */
+/* ==========================================
+   PERFORMANCE GRID
+========================================== */
 
 .dashboard-performance-grid {
   display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dashboard-gap);
+
+  grid-template-columns: repeat(
+    1,
+    minmax(0, 1fr)
+  );
 }
 
-/* =========================
+/* ==========================================
    STUDENT CELL
-========================= */
+========================================== */
 
 .dashboard-student-cell {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  min-width: 0;
 }
 
 .dashboard-student-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-/* =========================
+/* ==========================================
    REFERRAL CODE
-========================= */
+========================================== */
 
 .dashboard-referral-code {
   font-weight: 600;
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
-/* =========================
-   MODAL
-========================= */
+/* ==========================================
+   MODAL CONTENT
+========================================== */
 
 .dashboard-modal-content {
-  max-height: 500px;
+  max-height: var(--modal-max-height);
+
   overflow: auto;
+
   padding: 20px;
-  border-radius: 12px;
-  background: #f8fafc;
+
+  border-radius: var(--radius-md);
+
+  background: var(--color-surface);
+
   font-size: 13px;
   line-height: 1.6;
 }
+
+/* ==========================================
+   DARK MODE
+========================================== */
 
 .dark .dashboard-modal-content {
   background: #111827;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* ==========================================
+   SMALL TABLET
+========================================== */
 
 @media (min-width: 640px) {
   .dashboard-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
   }
 
   .dashboard-performance-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
   }
 }
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (min-width: 768px) {
+  .dashboard-table-grid {
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/* ==========================================
+   LAPTOP
+========================================== */
 
 @media (min-width: 1024px) {
   .dashboard-chart-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
   }
 
   .dashboard-performance-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(
+      4,
+      minmax(0, 1fr)
+    );
   }
 }
+
+/* ==========================================
+   DESKTOP
+========================================== */
 
 @media (min-width: 1280px) {
   .dashboard-stats-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(
+      4,
+      minmax(0, 1fr)
+    );
   }
 
   .dashboard-table-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
+  }
+
+  .dashboard-performance-grid {
+    grid-template-columns: repeat(
+      6,
+      minmax(0, 1fr)
+    );
   }
 }
 
-.dashboard-modal-content {
-  margin: 0;
+/* ==========================================
+   MOBILE
+========================================== */
 
-  padding: 20px;
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 16px;
+    gap: 16px;
+  }
 
-  border-radius: 12px;
+  .dashboard-error {
+    padding: 24px;
+  }
 
-  background: #f8fafc;
-
-  font-size: 13px;
-  line-height: 1.6;
-
-  overflow-x: auto;
+  .dashboard-modal-content {
+    padding: 16px;
+  }
 }
 
-.dark .dashboard-modal-content {
-  background: #111827;
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .dashboard-page {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .dashboard-modal-content {
+    padding: 14px;
+    font-size: 12px;
+  }
+
+  .dashboard-student-cell {
+    gap: 8px;
+  }
 }

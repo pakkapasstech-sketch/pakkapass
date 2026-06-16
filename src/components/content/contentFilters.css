@@ -1,0 +1,118 @@
+/* ==========================================
+   CONTENT FILTER VARIABLES
+========================================== */
+
+:root {
+  --filter-gap: 12px;
+  --filter-padding: 20px;
+
+  --filter-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06);
+
+  --filter-focus-ring:
+    0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+/* ==========================================
+   FILTER CONTAINER
+========================================== */
+
+.content-filters {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(180px, 1fr)
+    );
+
+  gap: var(--filter-gap);
+
+  padding: var(--filter-padding);
+
+  background: var(--color-card);
+
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+
+  box-shadow: var(--filter-shadow);
+}
+
+/* ==========================================
+   FILTER SELECT
+========================================== */
+
+.content-filters select {
+  width: 100%;
+  height: 44px;
+
+  padding: 0 14px;
+
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-md);
+
+  background:
+    var(--color-card);
+
+  color:
+    var(--color-text-primary);
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.content-filters select:focus {
+  border-color:
+    var(--color-primary);
+
+  box-shadow:
+    var(--filter-focus-ring);
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 768px) {
+  .content-filters {
+    padding: 16px;
+    gap: 10px;
+
+    grid-template-columns:
+      repeat(
+        auto-fit,
+        minmax(160px, 1fr)
+      );
+  }
+
+  .content-filters select {
+    font-size: 13px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .content-filters {
+    padding: 14px;
+
+    grid-template-columns: 1fr;
+  }
+
+  .content-filters select {
+    height: 42px;
+    font-size: 13px;
+  }
+}

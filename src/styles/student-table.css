@@ -1,17 +1,55 @@
 /* ==========================================
+   TABLE VARIABLES
+========================================== */
+
+:root {
+  --table-card-shadow:
+    0 8px 30px rgba(15, 23, 42, 0.06);
+
+  --table-row-hover:
+    rgba(99, 102, 241, 0.04);
+
+  --table-header-bg:
+    #f8fafc;
+
+  --pagination-active:
+    var(--color-primary);
+
+  --pagination-hover:
+    rgba(99, 102, 241, 0.08);
+}
+
+/* ==========================================
    TABLE CARD
 ========================================== */
 
 .student-table-card {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-card);
+
+  background: var(--color-card);
+
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+
+  box-shadow: var(--table-card-shadow);
 }
+
+/* ==========================================
+   TABLE WRAPPER
+========================================== */
 
 .student-table-wrapper {
   overflow-x: auto;
+  width: 100%;
+}
+
+.student-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.student-table-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.3);
 }
 
 /* ==========================================
@@ -20,134 +58,161 @@
 
 .student-table {
   width: 100%;
-  min-width: 1150px;
-  border-collapse: collapse;
+  min-width: 1300px;
+
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.student-table thead tr {
-  background: var(--color-table-header);
+/* ==========================================
+   HEADER
+========================================== */
+
+.student-table thead th {
+  position: sticky;
+  top: 0;
+
+  padding: 18px 20px;
+
+  background: var(--table-header-bg);
+
   border-bottom: 1px solid var(--color-border);
+
+  color: var(--color-text-secondary);
+
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  text-align: left;
+  white-space: nowrap;
+
+  z-index: 1;
 }
 
-.student-table th {
-  padding: 12px 14px;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
+/* ==========================================
+   BODY
+========================================== */
+
+.student-table tbody td {
+  padding: 18px 20px;
+
+  border-bottom:
+    1px solid
+    var(--color-border-light);
+
+  color:
+    var(--color-text-primary);
+
+  font-size: 14px;
+
   white-space: nowrap;
 }
 
-.student-table td {
-  padding: 12px 14px;
-  border-top: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-  font-size: 13px;
-  vertical-align: middle;
-}
-
 .student-table tbody tr {
-  transition: background .2s ease;
+  transition:
+    background var(--transition-fast);
 }
 
 .student-table tbody tr:hover {
-  background: var(--color-hover-bg);
+  background:
+    var(--table-row-hover);
+}
+
+.student-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* ==========================================
-   COLUMN WIDTHS
-========================================== */
-
-.student-table th:first-child,
-.student-table td:first-child {
-  width: 50px;
-}
-
-.student-table th:last-child,
-.student-table td:last-child {
-  width: 130px;
-}
-
-.student-table td:nth-child(2) {
-  min-width: 220px;
-}
-
-.student-table td:nth-child(6) {
-  min-width: 180px;
-}
-
-/* ==========================================
-   STUDENT INFO
+   STUDENT CELL
 ========================================== */
 
 .student-user {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+
+  min-width: 220px;
 }
 
 .student-avatar {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--color-border);
+
+  border: 2px solid #ffffff;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .student-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--color-text-primary);
+
+  color:
+    var(--color-text-primary);
 }
 
 /* ==========================================
-   BADGES
+   PLAN BADGE
 ========================================== */
 
 .plan-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
 
-  padding: 4px 8px;
+  padding: 6px 12px;
 
   border-radius: 999px;
 
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  background:
+    rgba(99, 102, 241, 0.1);
 
-  font-size: 11px;
-  font-weight: 700;
+  color:
+    var(--color-primary);
+
+  font-size: 12px;
+  font-weight: 600;
 }
+
+/* ==========================================
+   STATUS BADGE
+========================================== */
 
 .status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  padding: 4px 8px;
+  min-width: 84px;
+
+  padding: 6px 12px;
 
   border-radius: 999px;
 
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .status-active {
-  background: var(--color-success-bg);
-  color: var(--color-success);
+  background: #dcfce7;
+  color: #15803d;
 }
 
 .status-inactive {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .status-pending {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
+  background: #fef3c7;
+  color: #d97706;
 }
 
 /* ==========================================
@@ -157,49 +222,48 @@
 .table-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-.table-actions button {
-  width: 30px;
-  height: 30px;
-
-  border: none;
-  border-radius: 8px;
-
-  cursor: pointer;
+.view-btn,
+.edit-btn,
+.delete-btn {
+  width: 36px;
+  height: 36px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  transition: all .2s ease;
-}
+  border: none;
+  border-radius: 12px;
 
-.table-actions button svg {
-  width: 16px;
-  height: 16px;
+  background:
+    var(--color-main-bg);
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .view-btn {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  color: #2563eb;
 }
 
 .edit-btn {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
+  color: #d97706;
 }
 
 .delete-btn {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
+  color: #dc2626;
 }
 
 .view-btn:hover,
 .edit-btn:hover,
 .delete-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 /* ==========================================
@@ -207,10 +271,14 @@
 ========================================== */
 
 .empty-table {
-  padding: 50px;
+  padding: 80px 20px !important;
+
   text-align: center;
-  color: var(--color-text-secondary);
-  font-size: 14px;
+
+  color:
+    var(--color-text-muted);
+
+  font-size: 15px;
 }
 
 /* ==========================================
@@ -218,69 +286,136 @@
 ========================================== */
 
 .pagination {
-  border-top: 1px solid var(--color-border);
-
-  padding: 14px 18px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
+
+  padding: 20px 24px;
+
+  border-top:
+    1px solid
+    var(--color-border);
+
+  background:
+    var(--color-card);
 }
 
 .pagination p {
-  font-size: 12px;
-  color: var(--color-text-secondary);
+  color:
+    var(--color-text-secondary);
+
+  font-size: 13px;
 }
 
 .pagination-buttons {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .pagination-buttons button {
-  min-width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
 
-  border: 1px solid var(--color-border);
-  background: var(--color-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  border-radius: 8px;
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius: 12px;
+
+  background:
+    var(--color-card);
+
+  color:
+    var(--color-text-secondary);
+
+  font-size: 14px;
+  font-weight: 600;
 
   cursor: pointer;
 
-  color: var(--color-text-primary);
-
-  transition: all .2s ease;
+  transition:
+    all var(--transition-fast);
 }
 
 .pagination-buttons button:hover:not(:disabled) {
-  background: var(--color-hover-bg);
+  background:
+    var(--pagination-hover);
+
+  color:
+    var(--color-primary);
+
+  border-color:
+    rgba(99, 102, 241, 0.15);
+}
+
+.pagination-buttons button.active-page {
+  background:
+    var(--pagination-active);
+
+  border-color:
+    var(--pagination-active);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 20px
+    rgba(99, 102, 241, 0.25);
 }
 
 .pagination-buttons button:disabled {
-  opacity: .45;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.active-page {
-  background: var(--color-primary) !important;
-  color: #fff !important;
-  border-color: var(--color-primary) !important;
-}
-
 /* ==========================================
-   RESPONSIVE
+   TABLET
 ========================================== */
 
 @media (max-width: 768px) {
+  .student-table-card {
+    border-radius: 20px;
+  }
+
   .pagination {
     flex-direction: column;
-    gap: 12px;
     align-items: flex-start;
   }
 
-  .student-table {
-    min-width: 950px;
+  .pagination-buttons {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .student-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .student-name {
+    font-size: 13px;
+  }
+
+  .pagination {
+    padding: 16px;
+  }
+
+  .pagination-buttons button {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
   }
 }

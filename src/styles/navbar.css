@@ -1,4 +1,29 @@
 /* ==========================================
+   NAVBAR VARIABLES
+========================================== */
+
+:root {
+  --navbar-height: 72px;
+
+  --navbar-bg: rgba(255, 255, 255, 0.92);
+  --navbar-dark-bg: rgba(17, 24, 39, 0.92);
+
+  --navbar-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.03);
+
+  --navbar-hover-bg: rgba(99, 102, 241, 0.08);
+  --navbar-hover-border: rgba(99, 102, 241, 0.15);
+  --navbar-border-hover: rgba(99, 102, 241, 0.25);
+
+  --calendar-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.12),
+    0 8px 16px rgba(15, 23, 42, 0.08);
+
+  --notification-size: 18px;
+}
+
+/* ==========================================
    NAVBAR
 ========================================== */
 
@@ -8,28 +33,33 @@
   right: 0;
   z-index: 30;
 
+  height: var(--navbar-height);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  height: 72px;
   padding: 0 24px;
 
-  background: rgba(255,255,255,0.92);
+  background: var(--navbar-bg);
   backdrop-filter: blur(18px);
 
   border-bottom: 1px solid var(--color-border);
 
-  box-shadow:
-    0 1px 2px rgba(0,0,0,.04),
-    0 4px 12px rgba(0,0,0,.03);
+  box-shadow: var(--navbar-shadow);
 
-  transition: all .3s ease;
+  transition:
+    left var(--transition-normal),
+    background var(--transition-normal);
 }
 
 .dark .navbar {
-  background: rgba(17,24,39,.92);
+  background: var(--navbar-dark-bg);
 }
+
+/* ==========================================
+   SIDEBAR STATES
+========================================== */
 
 .navbar-expanded {
   left: 260px;
@@ -39,45 +69,50 @@
   left: 72px;
 }
 
-@media (max-width: 1024px) {
-  .navbar-expanded,
-  .navbar-collapsed {
-    left: 0;
-  }
-}
-
 /* ==========================================
-   LEFT
+   LEFT SECTION
 ========================================== */
 
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 18px;
-}
 
-.navbar-title {
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--color-text-primary);
+  min-width: 0;
 }
 
 .navbar-title-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  min-width: 0;
+}
+
+.navbar-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: clamp(18px, 2vw, 20px);
+  font-weight: 700;
+  line-height: 1.2;
+
+  color: var(--color-text-primary);
 }
 
 .navbar-subtitle {
   margin-top: 3px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   font-size: 13px;
   line-height: 1.4;
 
   color: var(--color-text-secondary);
 }
-
 
 /* ==========================================
    BREADCRUMBS
@@ -87,7 +122,6 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 4px;
 
   margin-bottom: 4px;
@@ -101,6 +135,8 @@
 .navbar-breadcrumb-link {
   font-size: 12px;
   color: var(--color-text-muted);
+
+  transition: color var(--transition-fast);
 }
 
 .navbar-breadcrumb-link:hover {
@@ -117,15 +153,15 @@
 }
 
 /* ==========================================
-   RIGHT
+   RIGHT SECTION
 ========================================== */
 
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 8px;
+
   flex-shrink: 0;
-  white-space: nowrap;
 }
 
 /* ==========================================
@@ -142,16 +178,22 @@
   align-items: center;
   justify-content: center;
 
-  border-radius: 12px;
-
   border: 1px solid transparent;
+  border-radius: var(--radius-md);
 
-  transition: all .25s ease;
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .navbar-icon-btn:hover {
-  background: rgba(99,102,241,.08);
-  border-color: rgba(99,102,241,.15);
+  background: var(--navbar-hover-bg);
+  border-color: var(--navbar-hover-border);
 
   transform: translateY(-1px);
 }
@@ -167,7 +209,7 @@
 }
 
 /* ==========================================
-   MOBILE / DESKTOP MENU
+   MOBILE & DESKTOP BUTTONS
 ========================================== */
 
 .navbar-mobile-btn {
@@ -178,28 +220,20 @@
   display: flex;
 }
 
-@media (max-width: 1024px) {
-  .navbar-mobile-btn {
-    display: flex;
-  }
-
-  .navbar-desktop-btn {
-    display: none;
-  }
-}
-
 /* ==========================================
-   DATE
+   DATE BUTTON
 ========================================== */
 
+.navbar-date-picker {
+  position: relative;
+}
+
 .navbar-date-btn {
+  height: 40px;
+
   display: flex;
   align-items: center;
   gap: 8px;
-
-  white-space: nowrap;
-
-  height: 40px;
 
   padding: 0 12px;
 
@@ -207,38 +241,45 @@
   border-radius: 10px;
 
   background: var(--color-card);
+
+  white-space: nowrap;
+
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .navbar-date-btn:hover {
-  border-color: rgba(99,102,241,.25);
-  background: rgba(99,102,241,.04);
+  border-color: var(--navbar-border-hover);
+  background: var(--navbar-hover-bg);
 }
 
-/* Date Picker Wrapper */
-.navbar-date-picker {
-  position: relative;
-}
+/* ==========================================
+   CALENDAR DROPDOWN
+========================================== */
 
-/* Calendar Popup */
 .navbar-calendar-dropdown {
   position: absolute;
   top: 60px;
   right: 0;
   z-index: 1000;
 
-  background: var(--card-bg, #fff);
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  border-radius: 20px;
   overflow: hidden;
 
-  box-shadow:
-    0 20px 40px rgba(15, 23, 42, 0.12),
-    0 8px 16px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+
+  background: var(--color-card);
+
+  box-shadow: var(--calendar-shadow);
 
   animation: calendarFade 0.25s ease;
 }
 
-/* Animation */
+/* ==========================================
+   CALENDAR ANIMATION
+========================================== */
+
 @keyframes calendarFade {
   from {
     opacity: 0;
@@ -251,79 +292,73 @@
   }
 }
 
-/* Main calendar */
+/* ==========================================
+   DATE RANGE PICKER OVERRIDES
+========================================== */
+
 .rdrCalendarWrapper {
-  border-radius: 20px;
-  font-family: inherit;
   background: transparent;
+  border-radius: var(--radius-xl);
+  font-family: inherit;
 }
 
-/* Month & year header */
 .rdrMonthAndYearWrapper {
-  padding: 18px 20px;
   height: auto;
+  padding: 18px 20px;
 }
 
-/* Month title */
 .rdrMonthAndYearPickers select {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
-/* Week labels */
 .rdrWeekDay {
   font-size: 12px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
-/* Days */
 .rdrDayNumber span {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
-/* Hover */
 .rdrDay:hover .rdrDayNumber span {
-  color: #2563eb;
+  color: var(--color-info);
 }
 
-/* Selected range */
 .rdrStartEdge,
 .rdrEndEdge,
 .rdrInRange {
-  background: #2563eb !important;
+  background: var(--color-info) !important;
 }
 
-/* Start & End dates */
 .rdrStartEdge,
 .rdrEndEdge {
-  border-radius: 12px !important;
+  border-radius: var(--radius-md) !important;
 }
 
-/* Selected text */
+.rdrDaySelected .rdrDayNumber span,
 .rdrDayStartOfMonth .rdrDayNumber span,
-.rdrDayEndOfMonth .rdrDayNumber span,
-.rdrDaySelected .rdrDayNumber span {
-  color: white !important;
+.rdrDayEndOfMonth .rdrDayNumber span {
+  color: #ffffff !important;
 }
 
-/* Today's date */
 .rdrDayToday .rdrDayNumber span::after {
-  background: #2563eb;
+  background: var(--color-info);
 }
 
-/* Input fields */
 .rdrDateDisplayWrapper {
-  background: #f8fafc;
   padding: 14px;
+  background: var(--color-surface);
 }
 
 .rdrDateDisplayItem {
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
   box-shadow: none;
 }
 
@@ -332,43 +367,41 @@
   font-weight: 500;
 }
 
-/* Navigation arrows */
 .rdrNextPrevButton {
-  background: #f1f5f9;
+  background: var(--color-surface);
   border-radius: 10px;
-  transition: 0.2s;
+
+  transition: background var(--transition-fast);
 }
 
 .rdrNextPrevButton:hover {
-  background: #e2e8f0;
+  background: var(--color-border);
 }
+
 /* ==========================================
-   NOTIFICATION
+   NOTIFICATION BADGE
 ========================================== */
 
 .navbar-notification-count {
   position: absolute;
-
   top: -3px;
   right: -3px;
 
-  min-width: 18px;
-  height: 18px;
+  min-width: var(--notification-size);
+  height: var(--notification-size);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  border: 2px solid var(--color-card);
   border-radius: 999px;
 
-  background: #ef4444;
-
-  color: white;
+  background: var(--color-danger);
+  color: #ffffff;
 
   font-size: 10px;
   font-weight: 700;
-
-  border: 2px solid var(--color-card);
 }
 
 /* ==========================================
@@ -386,16 +419,17 @@
 
   padding: 6px 10px;
 
+  border: 1px solid transparent;
   border-radius: 14px;
 
-  border: 1px solid transparent;
-
-  transition: all .25s ease;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .navbar-profile-btn:hover {
-  background: rgba(99,102,241,.08);
-  border-color: rgba(99,102,241,.12);
+  background: var(--navbar-hover-bg);
+  border-color: var(--navbar-hover-border);
 }
 
 .navbar-user-name {
@@ -413,27 +447,23 @@
 }
 
 /* ==========================================
-   DROPDOWN
+   PROFILE DROPDOWN
 ========================================== */
 
 .navbar-dropdown {
   position: absolute;
-
-  right: 0;
   top: calc(100% + 10px);
+  right: 0;
 
   width: 220px;
-
   padding: 12px;
 
+  border: 1px solid var(--color-border);
   border-radius: 14px;
 
   background: var(--color-card);
 
-  border: 1px solid var(--color-border);
-
-  box-shadow:
-    0 20px 40px rgba(0,0,0,.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .navbar-dropdown-name {
@@ -445,7 +475,6 @@
   margin-top: 4px;
 
   font-size: 12px;
-
   color: var(--color-text-secondary);
 }
 
@@ -453,86 +482,268 @@
   display: block;
 
   margin-top: 12px;
-
   padding: 10px;
 
   border-radius: 10px;
 
-  transition: all .2s ease;
+  transition: background var(--transition-fast);
 }
 
 .navbar-dropdown-link:hover {
-  background: rgba(99,102,241,.08);
+  background: var(--navbar-hover-bg);
 }
-
 /* ==========================================
-   DOWNLOAD BUTTON
+   DOWNLOAD REPORT BUTTON
 ========================================== */
 
 .navbar-download-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 
-  white-space: nowrap;
+  height: 42px;
+  padding: 0 18px;
 
-  height: 40px;
+  border: none;
+  border-radius: 12px;
 
-  padding: 0 14px;
+  background: linear-gradient(
+    135deg,
+    #312e81,
+    #4338ca
+  );
 
-  border-radius: 10px;
-
-  background: #4f46e5;
-  color: white;
+  color: #ffffff;
 
   font-size: 13px;
   font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px
+    rgba(67, 56, 202, 0.25);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .navbar-download-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+
+  background: linear-gradient(
+    135deg,
+    #3730a3,
+    #4f46e5
+  );
 
   box-shadow:
-    0 8px 24px rgba(79,70,229,.35);
+    0 12px 28px
+    rgba(67, 56, 202, 0.35);
 }
 
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 1400px) {
-  .navbar-date-text {
-    display: none;
-  }
+.navbar-download-btn:active {
+  transform: translateY(0);
 }
 
-@media (max-width: 1200px) {
-  .navbar-download-text {
-    display: none;
-  }
+.navbar-download-btn:focus-visible {
+  outline: none;
 
-  .navbar-user-name {
-    display: none;
-  }
+  box-shadow:
+    0 0 0 4px
+      rgba(99, 102, 241, 0.2),
+    0 8px 20px
+      rgba(67, 56, 202, 0.25);
 }
 
-@media (max-width: 992px) {
-  .navbar-breadcrumbs {
-    display: none;
-  }
-}
+/* Icon */
+.navbar-download-btn .navbar-small-icon {
+  width: 18px;
+  height: 18px;
 
-.navbar-theme-btn,
-.navbar-bell-btn {
   flex-shrink: 0;
 }
 
-.navbar-user-name {
+.navbar-download-text {
   white-space: nowrap;
 }
 
-.navbar-right {
+/* Mobile */
+@media (max-width: 768px) {
+  .navbar-download-btn {
+    width: 42px;
+    padding: 0;
+    border-radius: 12px;
+  }
+
+  .navbar-download-text {
+    display: none;
+  }
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1024px) {
+  .navbar-expanded,
+  .navbar-collapsed {
+    left: 0;
+  }
+
+  .navbar-mobile-btn {
+    display: flex;
+  }
+
+  .navbar-desktop-btn {
+    display: none;
+  }
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 768px) {
+  .navbar {
+    height: 64px;
+    padding: 0 12px;
+  }
+
+  .navbar-left {
+    flex: 1;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .navbar-right {
+    gap: 4px;
+  }
+
+  .navbar-title {
+    font-size: 16px;
+    max-width: 140px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .navbar-subtitle,
+  .navbar-breadcrumbs,
+  .navbar-date-text,
+  .navbar-user-name,
+  .navbar-chevron,
+  .navbar-download-btn {
+    display: none;
+  }
+
+  .navbar-icon-btn,
+  .navbar-date-btn,
+  .navbar-profile-btn {
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+  }
+
+  .navbar-date-btn {
+    border: none;
+    background: transparent;
+  }
+
+  .navbar-profile-btn {
+    border: none;
+    background: transparent;
+  }
+
+  .navbar-calendar-dropdown {
+    right: 0;
+    width: min(95vw, 340px);
+  }
+
+  .rdrCalendarWrapper {
+    width: 100%;
+  }
+
+  .rdrMonths {
+    flex-direction: column !important;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .navbar {
+    height: 60px;
+    padding: 0 10px;
+  }
+
+  .navbar-title {
+    font-size: 15px;
+    max-width: 110px;
+  }
+
+  .navbar-icon-btn,
+  .navbar-date-btn,
+  .navbar-profile-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .navbar-small-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .navbar-notification-count {
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+
+  .navbar-calendar-dropdown {
+    right: -10px;
+    width: calc(100vw - 20px);
+  }
+}
+/* Hide mobile button on desktop */
+.navbar-mobile-btn {
+  display: none;
+}
+
+/* Show desktop button on desktop */
+.navbar-desktop-btn {
   display: flex;
-  align-items: center;
-  gap: 10px;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 1024px) {
+  .navbar-mobile-btn {
+    display: flex;
+  }
+
+  .navbar-desktop-btn {
+    display: none;
+  }
 }

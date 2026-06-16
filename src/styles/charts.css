@@ -1,32 +1,110 @@
+/* ==========================================
+   CHART VARIABLES
+========================================== */
+
+:root {
+  --chart-height: 280px;
+  --chart-padding: 20px;
+  --chart-tooltip-padding: 12px;
+}
+
+/* ==========================================
+   CHART CARD
+========================================== */
+
 .chart-card {
+  padding: var(--chart-padding);
+
   background: var(--color-card);
+
   border: 1px solid var(--color-border);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.08);
-  transition: all .3s ease;
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
 .chart-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  box-shadow: var(--shadow-md);
 }
 
+/* ==========================================
+   CHART TITLE
+========================================== */
+
 .chart-title {
-  font-size: 15px;
+  font-size: clamp(14px, 2vw, 16px);
   font-weight: 700;
+  line-height: 1.4;
+
   color: var(--color-text-primary);
 }
 
+/* ==========================================
+   CHART BODY
+========================================== */
+
 .chart-body {
   margin-top: 20px;
-  height: 280px;
+
+  width: 100%;
+  height: var(--chart-height);
+
+  overflow: hidden;
 }
 
+/* ==========================================
+   TOOLTIP CARD
+========================================== */
+
 .tooltip-card {
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
+  padding: var(--chart-tooltip-padding);
+
   background: var(--color-card);
-  padding: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  box-shadow: var(--shadow-md);
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET
+========================================== */
+
+@media (max-width: 768px) {
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-body {
+    height: 240px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .chart-card {
+    padding: 14px;
+  }
+
+  .chart-body {
+    height: 220px;
+    margin-top: 16px;
+  }
+
+  .tooltip-card {
+    padding: 10px;
+  }
+
+  .chart-title {
+    font-size: 14px;
+  }
 }

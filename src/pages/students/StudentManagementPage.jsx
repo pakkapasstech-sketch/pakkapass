@@ -51,10 +51,10 @@ const StudentManagementPage = () => {
 
   return (
     <div className="student-management-page">
-  <div className="page-header">
+  {/*<div className="page-header">
     <h1>Student Management</h1>
     <p>Manage and view all registered students.</p>
-  </div>
+  </div>*/}
 
   <StudentFilters onFilterChange={setFilters} />
 

@@ -1,0 +1,248 @@
+/* ==========================================
+   FILTER DROPDOWN VARIABLES
+========================================== */
+
+:root {
+  --dropdown-menu-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.12);
+
+  --dropdown-hover-bg:
+    var(--color-surface);
+
+  --dropdown-focus-border:
+    var(--color-primary);
+
+  --dropdown-add-hover:
+    rgba(79, 70, 229, 0.08);
+
+  --dropdown-z-index: 100;
+}
+
+/* ==========================================
+   DROPDOWN WRAPPER
+========================================== */
+
+.filter-dropdown {
+  position: relative;
+}
+
+/* ==========================================
+   TRIGGER BUTTON
+========================================== */
+
+.filter-trigger {
+  width: 100%;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 14px;
+
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-md);
+
+  background:
+    var(--color-card);
+
+  color:
+    var(--color-text-primary);
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.filter-trigger:hover {
+  border-color:
+    var(--dropdown-focus-border);
+}
+
+.filter-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   DROPDOWN MENU
+========================================== */
+
+.filter-menu {
+  position: absolute;
+
+  top: 52px;
+  left: 0;
+  z-index: var(--dropdown-z-index);
+
+  width: 100%;
+
+  overflow: hidden;
+
+  background:
+    var(--color-card);
+
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius: 14px;
+
+  box-shadow:
+    var(--dropdown-menu-shadow);
+}
+
+/* ==========================================
+   SEARCH SECTION
+========================================== */
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px;
+
+  border-bottom:
+    1px solid
+    var(--color-border);
+}
+
+.filter-search input {
+  flex: 1;
+
+  border: none;
+  background: transparent;
+
+  color:
+    var(--color-text-primary);
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+.filter-search input::placeholder {
+  color:
+    var(--color-text-muted);
+}
+
+/* ==========================================
+   OPTIONS
+========================================== */
+
+.filter-options {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.filter-option {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border: none;
+  background: transparent;
+
+  text-align: left;
+
+  color:
+    var(--color-text-primary);
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast);
+}
+
+.filter-option:hover {
+  background:
+    var(--dropdown-hover-bg);
+}
+
+/* ==========================================
+   ADD BUTTON
+========================================== */
+
+.filter-add-btn {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 14px;
+
+  border: none;
+  border-top:
+    1px solid
+    var(--color-border);
+
+  background: transparent;
+
+  color:
+    var(--color-primary);
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast);
+}
+
+.filter-add-btn:hover {
+  background:
+    var(--dropdown-add-hover);
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+.filter-options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+  background:
+    rgba(100, 116, 139, 0.35);
+
+  border-radius: 999px;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .filter-trigger,
+  .filter-option,
+  .filter-search input,
+  .filter-add-btn {
+    font-size: 13px;
+  }
+
+  .filter-search {
+    padding: 10px;
+  }
+
+  .filter-option,
+  .filter-add-btn {
+    padding: 12px;
+  }
+
+  .filter-menu {
+    border-radius: var(--radius-md);
+  }
+}

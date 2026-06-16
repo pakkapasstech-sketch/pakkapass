@@ -1,29 +1,212 @@
+/* ==========================================
+   STUDENT MANAGEMENT VARIABLES
+========================================== */
+
+:root {
+  --student-page-padding: 24px;
+  --student-page-gap: 24px;
+  --student-section-gap: 20px;
+}
+
+/* ==========================================
+   PAGE
+========================================== */
+
 .student-management-page {
-  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--student-section-gap);
+
+  padding: var(--student-page-padding);
+  margin-top: 16px;
+
+  min-height: 100%;
+}
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.page-header {
+  margin-bottom: 8px;
 }
 
 .page-header h1 {
-  font-size: 24px;
+  font-size: clamp(24px, 4vw, 30px);
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text-primary);
 }
 
 .page-header p {
   margin-top: 6px;
-  color: #6b7280;
+
   font-size: 14px;
+  color: var(--color-text-secondary);
 }
-.student-management-page {
-  padding: 24px;
-  margin-top: 20px;
+
+/* ==========================================
+   FILTER SECTION
+========================================== */
+
+.student-filters {
+  margin-top: 4px;
 }
+
+/* ==========================================
+   STATS GRID
+========================================== */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(240px, 1fr)
+    );
+
+  gap: 20px;
+
+  width: 100%;
+}
+
+/* ==========================================
+   STAT CARD
+========================================== */
+
+.student-stat-card {
+  min-height: 140px;
+
+  padding: 20px;
+
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+
+  background: var(--color-card);
+
+  box-shadow:
+    0 4px 20px
+    rgba(0, 0, 0, 0.04);
+
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.student-stat-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 12px 30px
+    rgba(0, 0, 0, 0.08);
+}
+
+.student-stat-card .icon-box-md {
+  width: 48px;
+  height: 48px;
+
+  border-radius: 14px;
+}
+
+.student-stat-card .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.student-stat-card .stat-title {
+  margin-top: 16px;
+
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.student-stat-card .stat-value {
+  margin-top: 6px;
+
+  font-size: clamp(26px, 4vw, 30px);
+  font-weight: 700;
+
+  color: var(--color-text-primary);
+}
+
+.student-stat-card .stat-trend {
+  margin-top: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  flex-wrap: wrap;
+}
+
+.student-stat-card .stat-trend-value {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.student-stat-card .stat-trend-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================
+   TABLE SECTION
+========================================== */
+
+.student-table-card {
+  margin-top: 4px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
 
 @media (max-width: 768px) {
   .student-management-page {
     padding: 16px;
     gap: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .student-stat-card {
+    min-height: auto;
+    padding: 18px;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .student-management-page {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .student-stat-card {
+    padding: 16px;
+  }
+
+  .student-stat-card .stat-value {
+    font-size: 24px;
   }
 }

@@ -1,0 +1,237 @@
+/* ==========================================
+   CONTENT TREE VARIABLES
+========================================== */
+
+:root {
+  --tree-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06);
+
+  --tree-hover-bg:
+    rgba(187, 219, 255, 0.08);
+
+  --tree-active-bg:
+    #f0eeff;
+
+  --tree-scrollbar:
+    rgba(100, 116, 139, 0.4);
+
+  --tree-icon-color:
+    #f59e0b;
+}
+
+/* ==========================================
+   TREE CONTAINER
+========================================== */
+
+.content-tree {
+  min-height: 500px;
+  max-height: calc(100vh - 260px);
+
+  overflow-y: auto;
+
+  padding: 20px;
+
+  background: var(--color-card);
+
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+
+  box-shadow: var(--tree-shadow);
+}
+
+/* ==========================================
+   TREE TITLE
+========================================== */
+
+.tree-title {
+  margin-bottom: 24px;
+
+  font-size:
+    clamp(16px, 2vw, 18px);
+
+  font-weight: 700;
+
+  color:
+    var(--color-text-primary);
+}
+
+/* ==========================================
+   TREE WRAPPER
+========================================== */
+
+.tree-wrapper,
+.tree-node,
+.tree-children {
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-wrapper {
+  gap: 4px;
+}
+
+/* ==========================================
+   TREE ROW
+========================================== */
+
+.tree-row {
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 12px;
+
+  border-radius:
+    var(--radius-md);
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.tree-row:hover {
+  background:
+    var(--tree-hover-bg);
+}
+
+.tree-row.active {
+  background:
+    var(--tree-active-bg);
+}
+
+.tree-row.active .tree-label {
+  color:
+    var(--color-primary);
+
+  font-weight: 600;
+}
+
+/* ==========================================
+   CONTENT ROW
+========================================== */
+
+.tree-content-row {
+  color:
+    var(--color-primary);
+}
+
+/* ==========================================
+   ICONS
+========================================== */
+
+.tree-arrow,
+.tree-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.tree-arrow {
+  width: 18px;
+  color: var(--color-text-muted);
+}
+
+.tree-icon {
+  font-size: 18px;
+  color: var(--tree-icon-color);
+}
+
+/* ==========================================
+   LABEL
+========================================== */
+
+.tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 14px;
+
+  color:
+    var(--color-text-primary);
+}
+
+/* ==========================================
+   ANIMATION
+========================================== */
+
+.tree-children {
+  animation:
+    treeOpen
+    0.2s ease;
+}
+
+@keyframes treeOpen {
+  from {
+    opacity: 0;
+    transform:
+      translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0);
+  }
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+.content-tree::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-tree::-webkit-scrollbar-thumb {
+  background:
+    var(--tree-scrollbar);
+
+  border-radius: 999px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 768px) {
+  .content-tree {
+    min-height: auto;
+    max-height: 500px;
+
+    padding: 16px;
+  }
+
+  .tree-title {
+    margin-bottom: 20px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .content-tree {
+    padding: 14px;
+  }
+
+  .tree-row {
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .tree-label {
+    font-size: 13px;
+  }
+
+  .tree-icon {
+    font-size: 16px;
+  }
+}

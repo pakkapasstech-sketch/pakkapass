@@ -1,4 +1,15 @@
 /* ==========================================
+   MODAL VARIABLES
+========================================== */
+
+:root {
+  --modal-padding: 24px;
+  --modal-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  --modal-backdrop: rgba(15, 23, 42, 0.55);
+  --modal-hover-bg: rgba(99, 102, 241, 0.08);
+}
+
+/* ==========================================
    MODAL WRAPPER
 ========================================== */
 
@@ -11,24 +22,23 @@
   align-items: center;
   justify-content: center;
 
-  padding: 24px;
+  padding: var(--modal-padding);
 }
 
 /* ==========================================
-   BACKDROP
+   MODAL BACKDROP
 ========================================== */
 
 .modal-backdrop {
   position: absolute;
   inset: 0;
 
-  background: rgba(15, 23, 42, 0.55);
-
+  background: var(--modal-backdrop);
   backdrop-filter: blur(6px);
 }
 
 /* ==========================================
-   MODAL
+   MODAL CONTAINER
 ========================================== */
 
 .modal-container {
@@ -36,23 +46,20 @@
   z-index: 1;
 
   width: 100%;
+  overflow: hidden;
 
   background: var(--color-card);
 
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
 
-  border-radius: 20px;
+  box-shadow: var(--modal-shadow);
 
-  overflow: hidden;
-
-  box-shadow:
-    0 25px 50px rgba(0,0,0,.20);
-
-  animation: modalEnter .25s ease;
+  animation: modalEnter 0.25s ease;
 }
 
 /* ==========================================
-   SIZES
+   MODAL SIZES
 ========================================== */
 
 .modal-sm {
@@ -72,13 +79,14 @@
 }
 
 /* ==========================================
-   HEADER
+   MODAL HEADER
 ========================================== */
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 
   padding: 20px 24px;
 
@@ -86,7 +94,7 @@
 }
 
 .modal-title {
-  font-size: 18px;
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 700;
 
   color: var(--color-text-primary);
@@ -104,13 +112,26 @@
   align-items: center;
   justify-content: center;
 
+  flex-shrink: 0;
+
+  border: none;
   border-radius: 10px;
 
-  transition: all .2s ease;
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .modal-close-btn:hover {
-  background: rgba(99,102,241,.08);
+  background: var(--modal-hover-bg);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.96);
 }
 
 .modal-close-icon {
@@ -121,15 +142,14 @@
 }
 
 /* ==========================================
-   BODY
+   MODAL BODY
 ========================================== */
 
 .modal-content {
-  padding: 24px;
-
   max-height: calc(90vh - 90px);
-
   overflow-y: auto;
+
+  padding: var(--modal-padding);
 }
 
 /* ==========================================
@@ -140,13 +160,17 @@
   width: 8px;
 }
 
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .modal-content::-webkit-scrollbar-thumb {
-  background: rgba(100,116,139,.4);
+  background: rgba(100, 116, 139, 0.4);
   border-radius: 999px;
 }
 
 .modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(100,116,139,.7);
+  background: rgba(100, 116, 139, 0.7);
 }
 
 /* ==========================================
@@ -154,11 +178,11 @@
 ========================================== */
 
 .dark .modal-container {
-  border-color: rgba(255,255,255,.06);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .dark .modal-close-btn:hover {
-  background: rgba(255,255,255,.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ==========================================
@@ -178,28 +202,53 @@
 }
 
 /* ==========================================
-   MOBILE
+   TABLET
 ========================================== */
 
 @media (max-width: 768px) {
+  .modal-overlay-wrapper {
+    padding: 16px;
+  }
 
+  .modal-header {
+    padding: 18px;
+  }
+
+  .modal-content {
+    padding: 18px;
+  }
+
+  .modal-lg,
+  .modal-xl {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
   .modal-overlay-wrapper {
     padding: 12px;
   }
 
-  .modal-container {
-    border-radius: 16px;
-  }
-
   .modal-header {
     padding: 16px;
+    gap: 12px;
   }
 
   .modal-content {
     padding: 16px;
   }
 
-  .modal-title {
-    font-size: 16px;
+  .modal-close-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .modal-close-icon {
+    width: 18px;
+    height: 18px;
   }
 }

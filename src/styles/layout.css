@@ -1,29 +1,29 @@
-/* ==========================
+/* ==========================================
    DASHBOARD LAYOUT
-========================== */
+========================================== */
 
 .dashboard-layout {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   background: var(--color-main-bg);
+  position: relative;
 }
 
-/* ==========================
+/* ==========================================
    OVERLAY
-========================== */
+========================================== */
 
 .dashboard-overlay {
   position: fixed;
   inset: 0;
   z-index: 30;
+
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(3px);
 }
 
-/* ==========================
-   MAIN CONTENT
-========================== */
-
+/* ==========================================
+   MAIN CONTENT AREA
+========================================== */
 .dashboard-main {
   position: fixed;
   top: 72px;
@@ -31,31 +31,30 @@
   bottom: 0;
 
   overflow-y: auto;
-
   background: var(--color-main-bg);
 
   transition:
-    left 0.3s ease,
-    width 0.3s ease;
+    left var(--transition-normal),
+    width var(--transition-normal);
 
   scrollbar-width: thin;
 }
 
-/* Sidebar Expanded */
+/* ==========================================
+   SIDEBAR STATES
+========================================== */
 
 .dashboard-main-expanded {
   left: 260px;
 }
 
-/* Sidebar Collapsed */
-
 .dashboard-main-collapsed {
   left: 72px;
 }
 
-/* ==========================
+/* ==========================================
    SCROLLBAR
-========================== */
+========================================== */
 
 .dashboard-main::-webkit-scrollbar {
   width: 8px;
@@ -74,13 +73,24 @@
   background: rgba(100, 116, 139, 0.7);
 }
 
-/* ==========================
-   MOBILE
-========================== */
+/* ==========================================
+   TABLET & MOBILE
+========================================== */
 
 @media (max-width: 1024px) {
-  .dashboard-main-expanded,
-  .dashboard-main-collapsed {
+  .dashboard-main {
     left: 0;
+    width: 100%;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 640px) {
+  .dashboard-main {
+    top: 72px;
+    padding-bottom: 24px;
   }
 }

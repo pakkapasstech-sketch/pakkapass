@@ -1,84 +1,316 @@
+/* ==========================================
+   FORM VARIABLES
+========================================== */
+
+:root {
+  --input-height: 44px;
+  --input-padding-x: 16px;
+
+  --focus-ring: 0 0 0 4px rgba(79, 70, 229, 0.12);
+  --focus-border: var(--color-primary);
+
+  --button-height: 44px;
+}
+
+/* ==========================================
+   SEARCH WRAPPER
+========================================== */
+
 .search-wrapper {
   position: relative;
+  width: 100%;
 }
+
+/* ==========================================
+   SEARCH ICON
+========================================== */
 
 .search-icon {
   position: absolute;
   top: 50%;
   left: 12px;
+
   width: 16px;
   height: 16px;
-  transform: translateY(-50%);
+
   color: var(--color-text-muted);
+
+  transform: translateY(-50%);
 }
+
+/* ==========================================
+   SEARCH INPUT
+========================================== */
 
 .search-input {
   width: 100%;
-  padding: 8px 16px 8px 36px;
-  border-radius: 8px;
+  height: var(--input-height);
+
+  padding: 0 var(--input-padding-x) 0 40px;
+
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+
   background: var(--color-card);
   color: var(--color-text-primary);
+
   font-size: 14px;
   outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .search-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px #6366f1;
+  border-color: var(--focus-border);
+  box-shadow: var(--focus-ring);
 }
+
+/* ==========================================
+   TEXT INPUT
+========================================== */
 
 .form-input {
   width: 100%;
-  padding: 10px 16px;
-  border-radius: 8px;
+  height: var(--input-height);
+
+  padding: 0 var(--input-padding-x);
+
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+
   background: var(--color-card);
   color: var(--color-text-primary);
+
   font-size: 14px;
   outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .form-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px #6366f1;
+  border-color: var(--focus-border);
+  box-shadow: var(--focus-ring);
 }
 
-.form-select {
-  padding: 8px 12px;
-  border-radius: 8px;
+/* ==========================================
+   TEXTAREA
+========================================== */
+
+.form-textarea {
+  width: 100%;
+  min-height: 120px;
+
+  padding: 12px var(--input-padding-x);
+
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+
   background: var(--color-card);
   color: var(--color-text-primary);
+
   font-size: 14px;
+  outline: none;
+
+  resize: vertical;
+
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
+
+.form-textarea:focus {
+  border-color: var(--focus-border);
+  box-shadow: var(--focus-ring);
+}
+
+/* ==========================================
+   SELECT
+========================================== */
+
+.form-select {
+  width: 100%;
+  height: var(--input-height);
+
+  padding: 0 12px;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+
+  background: var(--color-card);
+  color: var(--color-text-primary);
+
+  font-size: 14px;
+  outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.form-select:focus {
+  border-color: var(--focus-border);
+  box-shadow: var(--focus-ring);
+}
+
+/* ==========================================
+   FORM LABEL
+========================================== */
+
+.form-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: var(--color-text-primary);
+}
+
+/* ==========================================
+   FORM GROUP
+========================================== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ==========================================
+   BUTTON BASE
+========================================== */
 
 .form-button {
-  padding: 8px 16px;
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: var(--button-height);
+  padding: 0 18px;
+
+  border: none;
+  border-radius: var(--radius-sm);
+
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
+
+.form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   PRIMARY BUTTON
+========================================== */
 
 .primary-button {
-  background: #4f46e5;
-  color: white;
+  background: var(--color-primary);
+  color: #ffffff;
 }
 
-.primary-button:hover {
-  background: #4338ca;
+.primary-button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
 }
+
+/* ==========================================
+   SECONDARY BUTTON
+========================================== */
 
 .secondary-button {
   border: 1px solid var(--color-border);
   background: transparent;
+
+  color: var(--color-text-primary);
 }
 
-.secondary-button:hover {
-  background: #f9fafb;
+.secondary-button:hover:not(:disabled) {
+  background: var(--color-surface);
 }
+
+/* ==========================================
+   SUCCESS BUTTON
+========================================== */
+
+.success-button {
+  background: var(--color-success);
+  color: #ffffff;
+}
+
+.success-button:hover:not(:disabled) {
+  background: var(--color-success-dark);
+  transform: translateY(-1px);
+}
+
+/* ==========================================
+   ICON BUTTON
+========================================== */
+
+.icon-button {
+  width: var(--button-height);
+  height: var(--button-height);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================
+   DARK MODE
+========================================== */
 
 .dark .secondary-button:hover {
-  background: #1f2937;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 768px) {
+  .form-button {
+    width: 100%;
+  }
+
+  .form-group {
+    gap: 6px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .search-input,
+  .form-input,
+  .form-select,
+  .form-button {
+    font-size: 13px;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
 }
