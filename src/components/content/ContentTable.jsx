@@ -1,143 +1,277 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   HiOutlineEye,
   HiOutlinePencil,
   HiOutlineTrash,
 } from 'react-icons/hi';
 
-import { mockContent } from '../../data/mockContent';
+import './contentTable.css';
+
+const PAGE_SIZE = 5;
 
 const ContentTable = ({
   activeTab,
+  filters,
+  content,
 }) => {
   const [search, setSearch] =
     useState('');
 
-  const filtered =
-    mockContent.filter((item) => {
-      const matchSearch =
-        item.title
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
+  const [page, setPage] =
+    useState(1);
+
+  const filteredContent =
+    useMemo(() => {
+      return content.filter(
+        (item) => {
+          const matchSearch =
+            item.title
+              .toLowerCase()
+              .includes(
+                search.toLowerCase()
+              );
+
+          const matchTab =
+            activeTab === 'all'
+              ? true
+              : item.type ===
+                activeTab;
+
+          const matchTopic =
+            !filters.topic
+              ? true
+              : item.topic ===
+                filters.topic;
+
+          return (
+            matchSearch &&
+            matchTab &&
+            matchTopic
           );
-
-      const matchTab =
-        activeTab === 'all'
-          ? true
-          : item.type === activeTab;
-
-      return (
-        matchSearch &&
-        matchTab
+        }
       );
-    });
+    }, [
+      content,
+      search,
+      activeTab,
+      filters,
+    ]);
+
+  const totalPages =
+    Math.ceil(
+      filteredContent.length /
+        PAGE_SIZE
+    ) || 1;
+
+  const paginatedContent =
+    filteredContent.slice(
+      (page - 1) *
+        PAGE_SIZE,
+      page * PAGE_SIZE
+    );
+
+  const handleDelete = (
+    id
+  ) => {
+    console.log(
+      'Delete:',
+      id
+    );
+  };
+
+  const handleEdit = (
+    item
+  ) => {
+    console.log(
+      'Edit:',
+      item
+    );
+  };
+
+  const handleView = (
+    item
+  ) => {
+    if (
+      item.fileUrl
+    ) {
+      window.open(
+        item.fileUrl,
+        '_blank'
+      );
+    }
+  };
 
   return (
     <div className="data-table-container">
+      {/* Search */}
+
       <div className="content-table-toolbar">
         <input
-          className="vontent-search-input"
+          type="text"
           placeholder="Search content..."
+          className="content-search-input"
           value={search}
-          onChange={(e) =>
+          onChange={(e) => {
             setSearch(
               e.target.value
-            )
-          }
+            );
+            setPage(1);
+          }}
         />
       </div>
+
+      {/* Table */}
 
       <div className="data-table-wrapper">
         <table className="data-table">
           <thead>
-            <tr className="data-table-head-row">
-              <th className="data-table-th">
-                Title
-              </th>
-
-              <th className="data-table-th">
-                Type
-              </th>
-
-              <th className="data-table-th">
-                Uploaded On
-              </th>
-
-              <th className="data-table-th">
-                File Size
-              </th>
-
-              <th className="data-table-th">
-                Actions
-              </th>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>File</th>
+              <th>Uploaded On</th>
+              <th>Size</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {filtered.length === 0 ? (
-    <tr>
-      <td
-        colSpan="5"
-        className="data-table-td"
-        style={{
-          textAlign: 'center',
-          padding: '60px',
-        }}
-      >
-        No content found
-      </td>
-    </tr>
-  ) : (filtered.map(
-              (item) => (
-                <tr
-                  key={item.id}
-                  className="data-table-row"
+            {paginatedContent.length ===
+            0 ? (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="table-empty"
                 >
-                  <td className="data-table-td">
-                    {item.title}
-                  </td>
-
-                  <td className="data-table-td">
-                    <span
-                      className={`content-type-badge ${item.type}`}
-                    >
-                      {item.type}
-                    </span>
-                  </td>
-
-                  <td className="data-table-td">
-                    {
-                      item.uploadedOn
+                  No Content Found
+                </td>
+              </tr>
+            ) : (
+              paginatedContent.map(
+                (item) => (
+                  <tr
+                    key={
+                      item.id
                     }
-                  </td>
+                  >
+                    <td>
+                      {
+                        item.title
+                      }
+                    </td>
 
-                  <td className="data-table-td">
-                    {
-                      item.fileSize
-                    }
-                  </td>
+                    <td>
+                      <span
+                        className={`content-type-badge ${item.type}`}
+                      >
+                        {
+                          item.type
+                        }
+                      </span>
+                    </td>
 
-                  <td className="data-table-td">
-                    <div className="data-table-action-group">
-                      <button className="data-table-view-btn">
-                        <HiOutlineEye />
-                      </button>
+                    <td>
+                      {item.fileUrl ? (
+                        <a
+                          href={
+                            item.fileUrl
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {item.fileName ||
+                            'View File'}
+                        </a>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
 
-                      <button className="data-table-edit-btn">
-                        <HiOutlinePencil />
-                      </button>
+                    <td>
+                      {
+                        item.uploadedOn
+                      }
+                    </td>
 
-                      <button className="data-table-delete-btn">
-                        <HiOutlineTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    <td>
+                      {
+                        item.fileSize
+                      }
+                    </td>
+
+                    <td>
+                      <div className="table-actions">
+                        <button
+                          onClick={() =>
+                            handleView(
+                              item
+                            )
+                          }
+                        >
+                          <HiOutlineEye />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleEdit(
+                              item
+                            )
+                          }
+                        >
+                          <HiOutlinePencil />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleDelete(
+                              item.id
+                            )
+                          }
+                        >
+                          <HiOutlineTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              )
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+
+      <div className="table-pagination">
+        <button
+          disabled={page === 1}
+          onClick={() =>
+            setPage(
+              page - 1
+            )
+          }
+        >
+          Previous
+        </button>
+
+        <span>
+          Page {page} of{' '}
+          {totalPages}
+        </span>
+
+        <button
+          disabled={
+            page ===
+            totalPages
+          }
+          onClick={() =>
+            setPage(
+              page + 1
+            )
+          }
+        >
+          Next
+        </button>
       </div>
     </div>
   );

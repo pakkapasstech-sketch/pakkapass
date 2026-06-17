@@ -83,7 +83,7 @@ const StudentDetailsPage = () => {
         {/* Profile Sidebar */}
         <aside className="student-sidebar">
 
-          <div className="student-avatar">
+          <div className="student-profile-avatar">
             {student.initials}
           </div>
 
@@ -169,255 +169,287 @@ const StudentDetailsPage = () => {
         </aside>
 
         {/* Student Info */}
-        <section className="student-section">
+        <div className="student-content">
 
-          <h3>
-            Student Information
-          </h3>
+  {activeTab === 'Overview' && (
+    <>
+      <section className="student-section">
+        <h3>Student Information</h3>
 
-          <div className="info-list">
-
-            <div className="info-item">
-              <span>
-                Full Name
-              </span>
-
-              <strong>
-                {student.name}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>
-                Date of Birth
-              </span>
-
-              <strong>
-                {student.dob ||
-                  'Not Available'}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>Gender</span>
-
-              <strong>
-                {student.gender ||
-                  'Not Available'}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>Class</span>
-
-              <strong>
-                {student.class}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>Board</span>
-
-              <strong>
-                {student.board}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>
-                Institution
-              </span>
-
-              <strong>
-                {student.institution}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>State</span>
-
-              <strong>
-                {student.state}
-              </strong>
-            </div>
-
-            <div className="info-item">
-              <span>
-                Subscription
-              </span>
-
-              <strong>
-                {student.plan}
-              </strong>
-            </div>
-
+        <div className="info-list">
+          <div className="info-item">
+            <span>Full Name</span>
+            <strong>{student.name}</strong>
           </div>
 
-          <div className="last-login">
-            Last Login :
-            {' '}
-            {student.lastLogin ||
-              'May 26, 2025 09:15 AM'}
+          <div className="info-item">
+            <span>Date of Birth</span>
+            <strong>
+              {student.dob || 'Not Available'}
+            </strong>
           </div>
 
-        </section>
-
-        {/* Analytics */}
-        <section className="student-section">
-
-          <h3>
-            Activity Summary
-          </h3>
-
-          <div className="activity-list">
-
-            <div className="activity-item">
-              <span>
-                Reading Hours
-              </span>
-
-              <strong>
-                24h 30m
-              </strong>
-            </div>
-
-            <div className="activity-item">
-              <span>
-                Video Watch Hours
-              </span>
-
-              <strong>
-                18h 20m
-              </strong>
-            </div>
-
-            <div className="activity-item">
-              <span>
-                PDFs Read
-              </span>
-
-              <strong>45</strong>
-            </div>
-
-            <div className="activity-item">
-              <span>
-                Videos Watched
-              </span>
-
-              <strong>32</strong>
-            </div>
-
-            <div className="activity-item">
-              <span>
-                Tests Taken
-              </span>
-
-              <strong>
-                {student.testsTaken ||
-                  28}
-              </strong>
-            </div>
-
+          <div className="info-item">
+            <span>Gender</span>
+            <strong>
+              {student.gender || 'Not Available'}
+            </strong>
           </div>
 
-          <h3 className="usage-title">
-            Subject Wise Usage
-          </h3>
-
-          <div className="usage-item">
-
-            <div className="usage-header">
-              <span>Physics</span>
-              <span>80%</span>
-            </div>
-
-            <div className="bar">
-              <span
-                style={{
-                  width: '80%',
-                }}
-              />
-            </div>
-
+          <div className="info-item">
+            <span>Class</span>
+            <strong>{student.class}</strong>
           </div>
 
-          <div className="usage-item">
-
-            <div className="usage-header">
-              <span>
-                Chemistry
-              </span>
-              <span>55%</span>
-            </div>
-
-            <div className="bar">
-              <span
-                style={{
-                  width: '55%',
-                }}
-              />
-            </div>
-
+          <div className="info-item">
+            <span>Board</span>
+            <strong>{student.board}</strong>
           </div>
 
-          <div className="usage-item">
-
-            <div className="usage-header">
-              <span>
-                Mathematics
-              </span>
-              <span>78%</span>
-            </div>
-
-            <div className="bar">
-              <span
-                style={{
-                  width: '78%',
-                }}
-              />
-            </div>
-
+          <div className="info-item">
+            <span>Institution</span>
+            <strong>{student.institution}</strong>
           </div>
 
-          <div className="usage-item">
-
-            <div className="usage-header">
-              <span>
-                Biology
-              </span>
-              <span>42%</span>
-            </div>
-
-            <div className="bar">
-              <span
-                style={{
-                  width: '42%',
-                }}
-              />
-            </div>
-
+          <div className="info-item">
+            <span>State</span>
+            <strong>{student.state}</strong>
           </div>
 
-          <div className="usage-item">
+          <div className="info-item">
+            <span>Subscription</span>
+            <strong>{student.plan}</strong>
+          </div>
+        </div>
 
-            <div className="usage-header">
-              <span>
-                English
-              </span>
-              <span>35%</span>
-            </div>
+        <div className="last-login">
+          Last Login:{' '}
+          {student.lastLogin ||
+            'May 26, 2025 09:15 AM'}
+        </div>
+      </section>
 
-            <div className="bar">
-              <span
-                style={{
-                  width: '35%',
-                }}
-              />
-            </div>
+      <section className="student-section">
+        <h3>Activity Summary</h3>
 
+        <div className="activity-list">
+          <div className="activity-item">
+            <span>Reading Hours</span>
+            <strong>24h 30m</strong>
           </div>
 
-        </section>
+          <div className="activity-item">
+            <span>Video Watch Hours</span>
+            <strong>18h 20m</strong>
+          </div>
+
+          <div className="activity-item">
+            <span>PDFs Read</span>
+            <strong>45</strong>
+          </div>
+
+          <div className="activity-item">
+            <span>Videos Watched</span>
+            <strong>32</strong>
+          </div>
+
+          <div className="activity-item">
+            <span>Tests Taken</span>
+            <strong>
+              {student.testsTaken || 28}
+            </strong>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
+
+  {activeTab === 'Parent Details' && (
+    <section className="student-section">
+      <h3>Parent Details</h3>
+
+      <div className="info-list">
+        <div className="info-item">
+          <span>Father Name</span>
+          <strong>
+            {student.fatherName ||
+              'Not Available'}
+          </strong>
+        </div>
+
+        <div className="info-item">
+          <span>Mother Name</span>
+          <strong>
+            {student.motherName ||
+              'Not Available'}
+          </strong>
+        </div>
+
+        <div className="info-item">
+          <span>Parent Mobile</span>
+          <strong>
+            {student.parentMobile ||
+              'Not Available'}
+          </strong>
+        </div>
+
+        <div className="info-item">
+          <span>Parent Email</span>
+          <strong>
+            {student.parentEmail ||
+              'Not Available'}
+          </strong>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {activeTab === 'Academic Goal' && (
+    <section className="student-section">
+      <h3>Academic Goal</h3>
+
+      <div className="info-list">
+        <div className="info-item">
+          <span>Target Exam</span>
+          <strong>
+            {student.targetExam ||
+              'Not Available'}
+          </strong>
+        </div>
+
+        <div className="info-item">
+          <span>Target Year</span>
+          <strong>
+            {student.targetYear ||
+              'Not Available'}
+          </strong>
+        </div>
+
+        <div className="info-item">
+          <span>Career Goal</span>
+          <strong>
+            {student.careerGoal ||
+              'Not Available'}
+          </strong>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {activeTab === 'Activity Analytics' && (
+    <section className="student-section">
+      <h3>Activity Analytics</h3>
+
+      <div className="activity-list">
+        <div className="activity-item">
+          <span>Reading Hours</span>
+          <strong>24h 30m</strong>
+        </div>
+
+        <div className="activity-item">
+          <span>Video Watch Hours</span>
+          <strong>18h 20m</strong>
+        </div>
+
+        <div className="activity-item">
+          <span>PDFs Read</span>
+          <strong>45</strong>
+        </div>
+
+        <div className="activity-item">
+          <span>Videos Watched</span>
+          <strong>32</strong>
+        </div>
+
+        <div className="activity-item">
+          <span>Tests Taken</span>
+          <strong>
+            {student.testsTaken || 28}
+          </strong>
+        </div>
+      </div>
+
+      <h3 className="usage-title">
+        Subject Wise Usage
+      </h3>
+
+      {[
+        { name: 'Physics', value: 80 },
+        { name: 'Chemistry', value: 55 },
+        { name: 'Mathematics', value: 78 },
+        { name: 'Biology', value: 42 },
+        { name: 'English', value: 35 },
+      ].map((subject) => (
+        <div
+          className="usage-item"
+          key={subject.name}
+        >
+          <div className="usage-header">
+            <span>{subject.name}</span>
+            <span>{subject.value}%</span>
+          </div>
+
+          <div className="bar">
+            <span
+              style={{
+                width: `${subject.value}%`,
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </section>
+  )}
+
+  {activeTab === 'Subscription History' && (
+    <section className="student-section">
+      <h3>Subscription History</h3>
+
+      <div className="info-list">
+        <div className="info-item">
+          <span>Current Plan</span>
+          <strong>{student.plan}</strong>
+        </div>
+
+        <div className="info-item">
+          <span>Status</span>
+          <strong>{student.status}</strong>
+        </div>
+
+        <div className="info-item">
+          <span>Registered On</span>
+          <strong>
+            {student.registeredOn}
+          </strong>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {activeTab === 'Payment History' && (
+    <section className="student-section">
+      <h3>Payment History</h3>
+
+      <div className="info-list">
+        <div className="info-item">
+          <span>Last Payment</span>
+          <strong>₹4,999</strong>
+        </div>
+
+        <div className="info-item">
+          <span>Payment Mode</span>
+          <strong>UPI</strong>
+        </div>
+
+        <div className="info-item">
+          <span>Payment Status</span>
+          <strong>Success</strong>
+        </div>
+      </div>
+    </section>
+  )}
+
+</div>
 
       </div>
     </div>

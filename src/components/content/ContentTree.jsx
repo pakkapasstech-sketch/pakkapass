@@ -14,11 +14,11 @@ const TreeNode = ({
   onSelect,
   selectedNode,
 }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] =
+    useState(false);
 
   const hasChildren =
-    node.children &&
-    node.children.length > 0;
+    node.children?.length > 0;
 
   const isSelected =
     selectedNode === node.id;
@@ -58,8 +58,8 @@ const TreeNode = ({
         </span>
       </div>
 
-      {hasChildren &&
-        open &&
+      {open &&
+        hasChildren &&
         node.children.map(
           (child) => (
             <TreeNode
@@ -89,37 +89,41 @@ const ContentTree = ({
   ) => {
     setSelectedNode(node.id);
 
-   setFilters((prev) => ({
-  ...prev,
+    setFilters((prev) => ({
+      ...prev,
 
-  class:
-    node.className ||
-    prev.class,
+      class:
+        node.className ||
+        prev.class,
 
-  board:
-    node.boardName ||
-    prev.board,
+      board:
+        node.boardName ||
+        prev.board,
 
-  course:
-    node.courseName ||
-    prev.course,
+      course:
+        node.courseName ||
+        prev.course,
 
-  subject:
-    node.subjectName ||
-    prev.subject,
+      subject:
+        node.subjectName ||
+        prev.subject,
 
-  chapter:
-    node.chapterName ||
-    prev.chapter,
+      chapter:
+        node.chapterName ||
+        prev.chapter,
 
-  section:
-    node.sectionName ||
-    prev.section,
+      section:
+        node.sectionName ||
+        prev.section,
 
-  topic:
-    node.topicName ||
-    prev.topic,
-}));
+      topic:
+        node.topicName ||
+        prev.topic,
+
+      contentType:
+        node.contentType ||
+        prev.contentType,
+    }));
   };
 
   const treeData = useMemo(() => {
@@ -153,130 +157,228 @@ const ContentTree = ({
     }
 
     return selectedBoard.courses.map(
-  (course) => ({
-    id: `course-${course.id}`,
-    label: course.name,
+      (course) => ({
+        id: `course-${course.id}`,
+        label: course.name,
 
-    className:
-      filters.class,
+        className:
+          filters.class,
 
-    boardName:
-      filters.board,
+        boardName:
+          filters.board,
 
-    courseName:
-      course.name,
+        courseName:
+          course.name,
 
-    children:
-      course.subjects.map(
-        (subject) => ({
-          id: `subject-${subject.id}`,
-          label:
-            subject.name,
+        children:
+          course.subjects.map(
+            (subject) => ({
+              id: `subject-${subject.id}`,
+              label:
+                subject.name,
 
-          className:
-            filters.class,
+              className:
+                filters.class,
 
-          boardName:
-            filters.board,
+              boardName:
+                filters.board,
 
-          courseName:
-            course.name,
+              courseName:
+                course.name,
 
-          subjectName:
-            subject.name,
+              subjectName:
+                subject.name,
 
-          children:
-            subject.chapters.map(
-              (chapter) => ({
-                id: `chapter-${chapter.id}`,
-                label:
-                  chapter.name,
+              children:
+                subject.chapters.map(
+                  (chapter) => ({
+                    id: `chapter-${chapter.id}`,
+                    label:
+                      chapter.name,
 
-                className:
-                  filters.class,
+                    className:
+                      filters.class,
 
-                boardName:
-                  filters.board,
+                    boardName:
+                      filters.board,
 
-                courseName:
-                  course.name,
+                    courseName:
+                      course.name,
 
-                subjectName:
-                  subject.name,
+                    subjectName:
+                      subject.name,
 
-                chapterName:
-                  chapter.name,
+                    chapterName:
+                      chapter.name,
 
-                children:
-                  chapter.sections.map(
-                    (
-                      section
-                    ) => ({
-                      id: `section-${section.id}`,
-                      label:
-                        section.name,
+                    children:
+                      chapter.sections.map(
+                        (
+                          section
+                        ) => ({
+                          id: `section-${section.id}`,
+                          label:
+                            section.name,
 
-                      className:
-                        filters.class,
+                          className:
+                            filters.class,
 
-                      boardName:
-                        filters.board,
+                          boardName:
+                            filters.board,
 
-                      courseName:
-                        course.name,
+                          courseName:
+                            course.name,
 
-                      subjectName:
-                        subject.name,
+                          subjectName:
+                            subject.name,
 
-                      chapterName:
-                        chapter.name,
+                          chapterName:
+                            chapter.name,
 
-                      sectionName:
-                        section.name,
+                          sectionName:
+                            section.name,
 
-                      children:
-                        section.topics.map(
-                          (
-                            topic
-                          ) => ({
-                            id: `topic-${topic.id}`,
-                            label:
-                              topic.name,
+                          children:
+                            section.topics.map(
+                              (
+                                topic
+                              ) => ({
+                                id: `topic-${topic.id}`,
+                                label:
+                                  topic.name,
 
-                            className:
-                              filters.class,
+                                className:
+                                  filters.class,
 
-                            boardName:
-                              filters.board,
+                                boardName:
+                                  filters.board,
 
-                            courseName:
-                              course.name,
+                                courseName:
+                                  course.name,
 
-                            subjectName:
-                              subject.name,
+                                subjectName:
+                                  subject.name,
 
-                            chapterName:
-                              chapter.name,
+                                chapterName:
+                                  chapter.name,
 
-                            sectionName:
-                              section.name,
+                                sectionName:
+                                  section.name,
 
-                            topicName:
-                              topic.name,
+                                topicName:
+                                  topic.name,
 
-                            children:
-                              [],
-                          })
-                        ),
-                    })
-                  ),
-              })
-            ),
-        })
-      ),
-  })
-);
+                                children:
+                                  [
+                                    {
+                                      id: `video-${topic.id}`,
+                                      label:
+                                        'Videos',
 
+                                      className:
+                                        filters.class,
+
+                                      boardName:
+                                        filters.board,
+
+                                      courseName:
+                                        course.name,
+
+                                      subjectName:
+                                        subject.name,
+
+                                      chapterName:
+                                        chapter.name,
+
+                                      sectionName:
+                                        section.name,
+
+                                      topicName:
+                                        topic.name,
+
+                                      contentType:
+                                        'video',
+
+                                      children:
+                                        [],
+                                    },
+
+                                    {
+                                      id: `notes-${topic.id}`,
+                                      label:
+                                        'Notes',
+
+                                      className:
+                                        filters.class,
+
+                                      boardName:
+                                        filters.board,
+
+                                      courseName:
+                                        course.name,
+
+                                      subjectName:
+                                        subject.name,
+
+                                      chapterName:
+                                        chapter.name,
+
+                                      sectionName:
+                                        section.name,
+
+                                      topicName:
+                                        topic.name,
+
+                                      contentType:
+                                        'notes',
+
+                                      children:
+                                        [],
+                                    },
+
+                                    {
+                                      id: `paper-${topic.id}`,
+                                      label:
+                                        'Question Papers',
+
+                                      className:
+                                        filters.class,
+
+                                      boardName:
+                                        filters.board,
+
+                                      courseName:
+                                        course.name,
+
+                                      subjectName:
+                                        subject.name,
+
+                                      chapterName:
+                                        chapter.name,
+
+                                      sectionName:
+                                        section.name,
+
+                                      topicName:
+                                        topic.name,
+
+                                      contentType:
+                                        'paper',
+
+                                      children:
+                                        [],
+                                    },
+                                  ],
+                              })
+                            ),
+                        })
+                      ),
+                  })
+                ),
+            })
+          ),
+      })
+    );
   }, [filters]);
 
   return (

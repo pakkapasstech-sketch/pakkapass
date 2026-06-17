@@ -1,9 +1,77 @@
 import { useState } from 'react';
 import './uploadContentModal.css';
 
-const UploadContentModal = ({ onClose }) => {
-  const [contentType, setContentType] =
-    useState('video');
+const UploadContentModal = ({
+  topic,
+  contentType,
+  setContent,
+  onClose,
+}) => {
+  const [title, setTitle] =
+    useState('');
+
+  const [description, setDescription] =
+    useState('');
+
+  const [file, setFile] =
+    useState(null);
+
+  const handleFileChange = (e) => {
+    const selected =
+      e.target.files[0];
+
+    if (!selected) return;
+
+    setFile(selected);
+
+    if (!title) {
+      setTitle(selected.name);
+    }
+  };
+
+  const handleUpload = () => {
+    if (!file) {
+      alert('Please select a file');
+      return;
+    }
+
+    const newContent = {
+      id: Date.now(),
+
+      title,
+      description,
+
+      topic,
+
+      type:
+        contentType === 'all'
+          ? 'video'
+          : contentType,
+
+      uploadedOn:
+        new Date().toLocaleDateString(),
+
+      fileSize: `${(
+        file.size /
+        1024 /
+        1024
+      ).toFixed(2)} MB`,
+
+      fileName: file.name,
+
+      file,
+
+      fileUrl:
+        URL.createObjectURL(file),
+    };
+
+    setContent((prev) => [
+      ...prev,
+      newContent,
+    ]);
+
+    onClose();
+  };
 
   return (
     <div className="modal-overlay">
@@ -21,60 +89,31 @@ const UploadContentModal = ({ onClose }) => {
 
         <div className="modal-body">
           <div className="form-group">
-            <label>
-              Content Type
-            </label>
-
-            <select
-              value={contentType}
-              onChange={(e) =>
-                setContentType(
-                  e.target.value
-                )
-              }
-            >
-              <option value="video">
-                Video
-              </option>
-
-              <option value="notes">
-                Notes
-              </option>
-
-              <option value="pdf">
-                PDF
-              </option>
-
-              <option value="paper">
-                Question Paper
-              </option>
-            </select>
-          </div>
-
-          <div className="form-group">
             <label>Title</label>
 
             <input
+              value={title}
+              onChange={(e) =>
+                setTitle(
+                  e.target.value
+                )
+              }
               placeholder="Enter title"
             />
           </div>
 
           <div className="form-group">
-            <label>
-              Description
-            </label>
+            <label>Description</label>
 
             <textarea
               rows="4"
+              value={description}
+              onChange={(e) =>
+                setDescription(
+                  e.target.value
+                )
+              }
               placeholder="Enter description"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Tags</label>
-
-            <input
-              placeholder="real numbers, algebra..."
             />
           </div>
 
@@ -85,74 +124,23 @@ const UploadContentModal = ({ onClose }) => {
 
             <input
               type="file"
+              onChange={
+                handleFileChange
+              }
             />
+
+            {file && (
+              <p
+                style={{
+                  marginTop: 10,
+                }}
+              >
+                Selected:
+                {' '}
+                {file.name}
+              </p>
+            )}
           </div>
-
-          {contentType ===
-            'video' && (
-            <>
-              <div className="form-group">
-                <label>
-                  Video Duration
-                </label>
-
-                <input placeholder="20 mins" />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Video URL
-                </label>
-
-                <input placeholder="https://" />
-              </div>
-            </>
-          )}
-
-          {contentType ===
-            'pdf' && (
-            <div className="form-group">
-              <label>
-                Number Of Pages
-              </label>
-
-              <input
-                type="number"
-              />
-            </div>
-          )}
-
-          {contentType ===
-            'paper' && (
-            <>
-              <div className="form-group">
-                <label>
-                  Academic Year
-                </label>
-
-                <input placeholder="2024-2025" />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Exam Type
-                </label>
-
-                <input placeholder="Mid Term" />
-              </div>
-            </>
-          )}
-
-          {contentType ===
-            'notes' && (
-            <div className="form-group">
-              <label>
-                Author Name
-              </label>
-
-              <input />
-            </div>
-          )}
         </div>
 
         <div className="modal-footer">
@@ -163,7 +151,12 @@ const UploadContentModal = ({ onClose }) => {
             Cancel
           </button>
 
-          <button className="save-btn">
+          <button
+            className="save-btn"
+            onClick={
+              handleUpload
+            }
+          >
             Upload
           </button>
         </div>

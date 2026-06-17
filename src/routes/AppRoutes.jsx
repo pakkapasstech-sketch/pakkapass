@@ -10,6 +10,10 @@ import StudentDetailsPage from '../pages/students/StudentDetailsPage';
 import ReferralManagementPage from '../pages/referral/referralManagementPage';
 import SubscriptionManagementPage from '../pages/subscription/SubscriptionMangementPage';
 import ContentManagement from '../pages/ContentManagement/ContentMangement';
+import ParentsManagement from '../pages/parents/ParentsManagement';
+import SupportCentrePage from '../pages/SupportCentrePage/SupportCentrePage';
+import NotificationsPage from '../pages/Notifications/NotificationsPage';
+
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
@@ -18,17 +22,15 @@ const AppRoutes = () => (
         <Route index element={<DashboardPage />} />
         <Route path="students" element={<StudentManagementPage />} />
         <Route path="students/:id" element={<StudentDetailsPage />} />
-        <Route path="parents" element={<PlaceholderPage title="Parent Management" />} />
+        <Route path="parents" element={<ParentsManagement/>} />
         <Route path="content" element={<ContentManagement/>} />
     
-        <Route path="analytics" element={<PlaceholderPage title="Analytics Center" />} />
         <Route path="subscriptions" element={<SubscriptionManagementPage/>} />
         <Route path="payments" element={<PlaceholderPage title="Payments & Revenue" />} />
         <Route path="referrals" element={<ReferralManagementPage/>} />
         <Route path="partners" element={<PlaceholderPage title="Partner Management" />} />
-        <Route path="downloads" element={<PlaceholderPage title="App Downloads" />} />
-        <Route path="notifications" element={<PlaceholderPage title="Notifications" />} />
-        <Route path="support" element={<PlaceholderPage title="Support Center" />} />
+        <Route path="notifications" element={<NotificationsPage/>} />
+        <Route path="support" element={<SupportCentrePage/>} />
         <Route path="settings" element={<PlaceholderPage title="Settings" />} />
       </Route>
     </Route>

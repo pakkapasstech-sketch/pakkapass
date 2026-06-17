@@ -1,37 +1,13 @@
 /* ==========================================
-   TABLE VARIABLES
-========================================== */
-
-:root {
-  --table-card-shadow:
-    0 8px 30px rgba(15, 23, 42, 0.06);
-
-  --table-row-hover:
-    rgba(99, 102, 241, 0.04);
-
-  --table-header-bg:
-    #f8fafc;
-
-  --pagination-active:
-    var(--color-primary);
-
-  --pagination-hover:
-    rgba(99, 102, 241, 0.08);
-}
-
-/* ==========================================
    TABLE CARD
 ========================================== */
 
 .student-table-card {
   overflow: hidden;
-
   background: var(--color-card);
-
   border: 1px solid var(--color-border);
-  border-radius: 24px;
-
-  box-shadow: var(--table-card-shadow);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
 }
 
 /* ==========================================
@@ -39,17 +15,19 @@
 ========================================== */
 
 .student-table-wrapper {
-  overflow-x: auto;
   width: 100%;
+  max-height: 500px;
+  overflow: auto;
 }
 
 .student-table-wrapper::-webkit-scrollbar {
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .student-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
   border-radius: 999px;
-  background: rgba(100, 116, 139, 0.3);
 }
 
 /* ==========================================
@@ -58,8 +36,7 @@
 
 .student-table {
   width: 100%;
-  min-width: 1300px;
-
+  min-width: 1200px;
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -71,53 +48,50 @@
 .student-table thead th {
   position: sticky;
   top: 0;
+  z-index: 2;
 
-  padding: 18px 20px;
+  padding: 12px 16px;
 
-  background: var(--table-header-bg);
-
+  background: #f8fafc;
   border-bottom: 1px solid var(--color-border);
 
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
 
   text-align: left;
   white-space: nowrap;
-
-  z-index: 1;
 }
 
 /* ==========================================
    BODY
 ========================================== */
 
-.student-table tbody td {
-  padding: 18px 20px;
-
-  border-bottom:
-    1px solid
-    var(--color-border-light);
-
-  color:
-    var(--color-text-primary);
-
-  font-size: 14px;
-
-  white-space: nowrap;
-}
-
 .student-table tbody tr {
-  transition:
-    background var(--transition-fast);
+  height: 52px;
+  transition: background 0.2s ease;
 }
 
 .student-table tbody tr:hover {
-  background:
-    var(--table-row-hover);
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.student-table tbody td {
+  padding: 10px 16px;
+
+  border-bottom: 1px solid
+    var(--color-border-light);
+
+  color: var(--color-text-primary);
+
+  font-size: 13px;
+  font-weight: 500;
+
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .student-table tbody tr:last-child td {
@@ -131,32 +105,30 @@
 .student-user {
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  min-width: 220px;
+  gap: 10px;
+  min-width: 200px;
 }
 
 .student-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 
   flex-shrink: 0;
 
   border-radius: 50%;
   object-fit: cover;
 
-  border: 2px solid #ffffff;
+  border: 2px solid #fff;
 
   box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.08);
+    0 2px 8px
+    rgba(15, 23, 42, 0.08);
 }
 
 .student-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-
-  color:
-    var(--color-text-primary);
+  color: var(--color-text-primary);
 }
 
 /* ==========================================
@@ -166,18 +138,16 @@
 .plan-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 
-  padding: 6px 12px;
+  padding: 5px 10px;
 
   border-radius: 999px;
 
-  background:
-    rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--color-primary);
 
-  color:
-    var(--color-primary);
-
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -190,13 +160,13 @@
   align-items: center;
   justify-content: center;
 
-  min-width: 84px;
+  min-width: 70px;
 
-  padding: 6px 12px;
+  padding: 5px 10px;
 
   border-radius: 999px;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -222,30 +192,29 @@
 .table-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .view-btn,
 .edit-btn,
 .delete-btn {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
 
-  background:
-    var(--color-main-bg);
+  background: var(--color-main-bg);
 
   cursor: pointer;
 
   transition:
-    background var(--transition-fast),
-    transform var(--transition-fast);
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .view-btn {
@@ -260,10 +229,17 @@
   color: #dc2626;
 }
 
+.view-btn svg,
+.edit-btn svg,
+.delete-btn svg {
+  font-size: 14px;
+}
+
 .view-btn:hover,
 .edit-btn:hover,
 .delete-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  background: #f8fafc;
 }
 
 /* ==========================================
@@ -271,14 +247,12 @@
 ========================================== */
 
 .empty-table {
-  padding: 80px 20px !important;
+  padding: 60px 20px !important;
 
   text-align: center;
 
-  color:
-    var(--color-text-muted);
-
-  font-size: 15px;
+  color: var(--color-text-muted);
+  font-size: 14px;
 }
 
 /* ==========================================
@@ -289,83 +263,69 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
 
-  padding: 20px 24px;
+  gap: 16px;
 
-  border-top:
-    1px solid
+  padding: 16px 20px;
+
+  border-top: 1px solid
     var(--color-border);
 
-  background:
-    var(--color-card);
+  background: var(--color-card);
 }
 
 .pagination p {
-  color:
-    var(--color-text-secondary);
-
+  color: var(--color-text-secondary);
   font-size: 13px;
 }
 
 .pagination-buttons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .pagination-buttons button {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border:
-    1px solid
+  border: 1px solid
     var(--color-border);
 
-  border-radius: 12px;
+  border-radius: 10px;
 
-  background:
-    var(--color-card);
+  background: var(--color-card);
 
   color:
     var(--color-text-secondary);
 
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 
   cursor: pointer;
-
-  transition:
-    all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .pagination-buttons button:hover:not(:disabled) {
   background:
-    var(--pagination-hover);
+    rgba(99, 102, 241, 0.08);
 
   color:
     var(--color-primary);
-
-  border-color:
-    rgba(99, 102, 241, 0.15);
 }
 
 .pagination-buttons button.active-page {
   background:
-    var(--pagination-active);
+    var(--color-primary);
 
   border-color:
-    var(--pagination-active);
+    var(--color-primary);
 
-  color: #ffffff;
-
-  box-shadow:
-    0 8px 20px
-    rgba(99, 102, 241, 0.25);
+  color: #fff;
 }
 
 .pagination-buttons button:disabled {
@@ -374,12 +334,26 @@
 }
 
 /* ==========================================
-   TABLET
+   MOBILE
 ========================================== */
 
 @media (max-width: 768px) {
-  .student-table-card {
-    border-radius: 20px;
+  .student-table-wrapper {
+    max-height: 420px;
+  }
+
+  .student-table thead th,
+  .student-table tbody td {
+    padding: 10px 12px;
+  }
+
+  .student-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .student-name {
+    font-size: 12px;
   }
 
   .pagination {
@@ -391,31 +365,5 @@
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;
-  }
-}
-
-/* ==========================================
-   SMALL MOBILE
-========================================== */
-
-@media (max-width: 480px) {
-  .student-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .student-name {
-    font-size: 13px;
-  }
-
-  .pagination {
-    padding: 16px;
-  }
-
-  .pagination-buttons button {
-    width: 34px;
-    height: 34px;
-
-    border-radius: 10px;
   }
 }

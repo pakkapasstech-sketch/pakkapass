@@ -1,11 +1,38 @@
 /* ==========================================
-   CONTENT TABS
+   CONTENT TABS CONTAINER
 ========================================== */
 
 .content-tabs {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 12px;
+
+  width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding-bottom: 4px;
+
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(100, 116, 139, 0.4)
+    transparent;
+}
+
+.content-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.content-tabs::-webkit-scrollbar-thumb {
+  background:
+    rgba(100, 116, 139, 0.4);
+
+  border-radius: 999px;
+}
+
+.content-tabs::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* ==========================================
@@ -13,7 +40,9 @@
 ========================================== */
 
 .tab-btn {
-  height: 40px;
+  flex-shrink: 0;
+
+  height: 42px;
 
   display: inline-flex;
   align-items: center;
@@ -25,8 +54,7 @@
     1px solid
     var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: 12px;
 
   background:
     var(--color-card);
@@ -37,13 +65,16 @@
   font-size: 14px;
   font-weight: 600;
 
+  white-space: nowrap;
+
   cursor: pointer;
 
   transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast);
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .tab-btn:hover {
@@ -51,17 +82,55 @@
     var(--color-surface);
 
   transform:
-    translateY(-1px);
+    translateY(-2px);
+
+  box-shadow:
+    0 4px 12px
+    rgba(15, 23, 42, 0.08);
 }
 
 .tab-btn.active {
   background:
-    var(--color-primary);
+    linear-gradient(
+      135deg,
+      var(--color-primary),
+      #6366f1
+    );
 
   border-color:
     var(--color-primary);
 
   color: #ffffff;
+
+  box-shadow:
+    0 8px 20px
+    rgba(79, 70, 229, 0.25);
+}
+
+.tab-btn:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px
+      rgba(79, 70, 229, 0.2),
+    0 8px 20px
+      rgba(79, 70, 229, 0.2);
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 768px) {
+  .content-tabs {
+    gap: 10px;
+  }
+
+  .tab-btn {
+    height: 40px;
+    padding: 0 18px;
+    font-size: 13px;
+  }
 }
 
 /* ==========================================
@@ -74,12 +143,8 @@
   }
 
   .tab-btn {
-    flex: 1;
-
-    min-width: 120px;
-
+    height: 38px;
     padding: 0 16px;
-
     font-size: 13px;
   }
 }

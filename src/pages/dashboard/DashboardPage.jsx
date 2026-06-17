@@ -17,7 +17,7 @@ import Modal from '../../components/modals/Modal';
 import {
   useDashboardStats,
   useSubscriptionGrowth,
-  useRevenueTrend,
+  //useRevenueTrend,
   useStudentsByState,
   useRecentRegistrations,
   useRecentPayments,
@@ -30,7 +30,18 @@ import { formatDate } from '../../utils/formatters';
 const DashboardPage = () => {
   const stats = useDashboardStats();
   const growth = useSubscriptionGrowth();
-  const revenue = useRevenueTrend();
+  const revenue = {
+  data: [
+    { date: '2026-06-11', revenue: 125000 },
+    { date: '2026-06-12', revenue: 148000 },
+    { date: '2026-06-13', revenue: 162000 },
+    { date: '2026-06-14', revenue: 185000 },
+    { date: '2026-06-15', revenue: 210000 },
+    { date: '2026-06-16', revenue: 195000 },
+    { date: '2026-06-17', revenue: 245000 },
+  ],
+  isLoading: false,
+};
   const states = useStudentsByState();
   const registrations = useRecentRegistrations();
   const payments = useRecentPayments();

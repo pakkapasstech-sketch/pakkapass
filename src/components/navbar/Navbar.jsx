@@ -6,7 +6,6 @@ import {
   HiOutlineMenu,
   HiOutlineCalendar,
   HiOutlineBell,
-  HiOutlineDownload,
   HiOutlineChevronDown,
   HiOutlineMoon,
   HiOutlineSun,
@@ -140,11 +139,11 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
           </AnimatePresence>
         </div>
 
-        <button className="navbar-download-btn">
+        {/*<button className="navbar-download-btn">
           <HiOutlineDownload className="navbar-small-icon" />
 
           <span className="navbar-download-text">Download Report</span>
-        </button>
+        </button>*/}
       </div>
     </header>
   );

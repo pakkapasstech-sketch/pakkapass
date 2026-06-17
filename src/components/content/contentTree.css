@@ -4,16 +4,16 @@
 
 :root {
   --tree-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.06);
+    0 8px 24px rgba(15, 23, 42, 0.06);
 
   --tree-hover-bg:
-    rgba(187, 219, 255, 0.08);
+    rgba(79, 70, 229, 0.06);
 
   --tree-active-bg:
-    #f0eeff;
+    rgba(79, 70, 229, 0.12);
 
   --tree-scrollbar:
-    rgba(100, 116, 139, 0.4);
+    rgba(100, 116, 139, 0.45);
 
   --tree-icon-color:
     #f59e0b;
@@ -24,19 +24,23 @@
 ========================================== */
 
 .content-tree {
-  min-height: 500px;
-  max-height: calc(100vh - 260px);
+  min-height: 820px;
+  max-height: calc(100vh - 240px);
 
   overflow-y: auto;
+  overflow-x: auto;
 
   padding: 20px;
 
   background: var(--color-card);
 
-  border: 1px solid var(--color-border);
+  border: 1px solid
+    var(--color-border);
+
   border-radius: 18px;
 
-  box-shadow: var(--tree-shadow);
+  box-shadow:
+    var(--tree-shadow);
 }
 
 /* ==========================================
@@ -44,7 +48,14 @@
 ========================================== */
 
 .tree-title {
-  margin-bottom: 24px;
+  position: sticky;
+  top: -20px;
+  z-index: 5;
+
+  padding-bottom: 20px;
+
+  background:
+    var(--color-card);
 
   font-size:
     clamp(16px, 2vw, 18px);
@@ -56,7 +67,7 @@
 }
 
 /* ==========================================
-   TREE WRAPPER
+   TREE STRUCTURE
 ========================================== */
 
 .tree-wrapper,
@@ -75,27 +86,33 @@
 ========================================== */
 
 .tree-row {
-  min-height: 40px;
+  min-height: 42px;
+  min-width: max-content;
 
   display: flex;
   align-items: center;
   gap: 10px;
 
-  padding: 0 12px;
+  padding: 0 14px;
 
-  border-radius:
-    var(--radius-md);
+  border-radius: 12px;
+
+  white-space: nowrap;
 
   cursor: pointer;
 
   transition:
-    background var(--transition-fast),
-    color var(--transition-fast);
+    background 0.2s ease,
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .tree-row:hover {
   background:
     var(--tree-hover-bg);
+
+  transform:
+    translateX(3px);
 }
 
 .tree-row.active {
@@ -134,12 +151,14 @@
 
 .tree-arrow {
   width: 18px;
-  color: var(--color-text-muted);
+  color:
+    var(--color-text-muted);
 }
 
 .tree-icon {
   font-size: 18px;
-  color: var(--tree-icon-color);
+  color:
+    var(--tree-icon-color);
 }
 
 /* ==========================================
@@ -147,8 +166,6 @@
 ========================================== */
 
 .tree-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 
   font-size: 14px;
@@ -158,13 +175,12 @@
 }
 
 /* ==========================================
-   ANIMATION
+   CHILDREN
 ========================================== */
 
 .tree-children {
   animation:
-    treeOpen
-    0.2s ease;
+    treeOpen 0.2s ease;
 }
 
 @keyframes treeOpen {
@@ -187,6 +203,7 @@
 
 .content-tree::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 .content-tree::-webkit-scrollbar-thumb {
@@ -194,6 +211,20 @@
     var(--tree-scrollbar);
 
   border-radius: 999px;
+}
+
+.content-tree::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+/* Firefox */
+
+.content-tree {
+  scrollbar-width: thin;
+  scrollbar-color:
+    var(--tree-scrollbar)
+    transparent;
 }
 
 /* ==========================================
@@ -209,7 +240,12 @@
   }
 
   .tree-title {
-    margin-bottom: 20px;
+    top: -16px;
+    padding-bottom: 16px;
+  }
+
+  .tree-row {
+    min-height: 40px;
   }
 }
 
@@ -223,6 +259,8 @@
   }
 
   .tree-row {
+    min-height: 38px;
+
     padding: 0 10px;
     gap: 8px;
   }

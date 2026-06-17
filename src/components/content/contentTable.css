@@ -1,0 +1,407 @@
+/* ==========================================
+   TABLE SECTION
+========================================== */
+
+.content-table-section {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ==========================================
+   TABLE CONTAINER
+========================================== */
+
+.data-table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  width: 100%;
+  min-width: 0;
+
+  background: var(--color-card, #ffffff);
+
+  border: 1px solid
+    var(--color-border, #e2e8f0);
+
+  border-radius: 20px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 8px 24px
+    rgba(15, 23, 42, 0.06);
+
+  overflow: hidden;
+}
+
+/* ==========================================
+   TOOLBAR
+========================================== */
+
+.content-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  width: 100%;
+}
+
+.content-search-input {
+  width: 320px;
+  max-width: 100%;
+
+  height: 44px;
+
+  padding: 0 16px;
+
+  border: 1px solid
+    var(--color-border, #e2e8f0);
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition: all 0.2s ease;
+}
+
+.content-search-input:focus {
+  border-color:
+    var(--color-primary, #6366f1);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(99, 102, 241, 0.15);
+}
+
+/* ==========================================
+   TABLE WRAPPER
+========================================== */
+
+.data-table-wrapper {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.data-table {
+  width: 800px;
+  min-width: 800px;
+
+  border-collapse: collapse;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.data-table thead {
+  background: #f8fafc;
+}
+
+.data-table th {
+  padding: 16px;
+
+  text-align: left;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #64748b;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  white-space: nowrap;
+}
+
+/* ==========================================
+   BODY
+========================================== */
+
+.data-table td {
+  padding: 18px 16px;
+
+  font-size: 14px;
+
+  color: #0f172a;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* ==========================================
+   FILE LINK
+========================================== */
+
+.data-table td a {
+  color:
+    var(--color-primary, #6366f1);
+
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.data-table td a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   TYPE BADGES
+========================================== */
+
+.content-type-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.content-type-badge.notes {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.content-type-badge.paper {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-actions button {
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.table-actions button svg {
+  font-size: 18px;
+}
+
+.table-actions button:hover {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.table-empty {
+  padding: 80px 20px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 15px;
+}
+
+/* ==========================================
+   PAGINATION
+========================================== */
+
+.table-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.table-pagination button {
+  height: 40px;
+
+  padding: 0 18px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.table-pagination button:hover:not(:disabled) {
+  background: #6366f1;
+  color: #ffffff;
+  border-color: #6366f1;
+}
+
+.table-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-pagination span {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #64748b;
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+.data-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-thumb {
+  background:
+    rgba(100, 116, 139, 0.4);
+
+  border-radius: 999px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .data-table-container {
+  background: #111827;
+  border-color: #374151;
+}
+
+.dark .content-search-input {
+  background: #1f2937;
+  border-color: #374151;
+  color: #ffffff;
+}
+
+.dark .data-table thead {
+  background: #1f2937;
+}
+
+.dark .data-table th,
+.dark .data-table td {
+  border-color: #374151;
+  color: #f8fafc;
+}
+
+.dark .data-table tbody tr:hover {
+  background: #1f2937;
+}
+
+.dark .table-actions button {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.dark .table-pagination button {
+  background: #1f2937;
+  border-color: #374151;
+  color: #ffffff;
+}
+
+/* ==========================================
+   TABLE BREAKPOINT
+========================================== */
+
+@media (max-width: 850px) {
+  .data-table-container {
+    padding: 20px;
+  }
+
+  .content-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .content-search-input {
+    width: 100%;
+  }
+
+  .table-pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  .data-table-container {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .table-pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .table-pagination button {
+    width: 100%;
+  }
+
+  .table-pagination span {
+    order: -1;
+  }
+}

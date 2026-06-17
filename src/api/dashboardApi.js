@@ -13,12 +13,9 @@ export const getSubscriptionGrowth = async () => {
 
 
 export const getRevenueTrend = async () => {
-  const { data } = await axiosInstance.get('/admin/charts/revenue');
+  const { data } = await axiosInstance.get('/dashboard/revenue-trend');
+  return data.data;
 
-  return data.revenue.map((item) => ({
-    date: `2025-${String(item._id.month).padStart(2, '0')}-01`,
-    revenue: item.revenue,
-  }));
 };
 
 export const getStudentsByState = async () => {
