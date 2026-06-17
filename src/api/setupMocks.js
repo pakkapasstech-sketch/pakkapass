@@ -4,6 +4,7 @@ import {
   mockDashboardStats,
   mockSubscriptionGrowth,
   mockRevenueTrend,
+  mockRevenueTrend,
   mockStudentsByState,
   mockRecentRegistrations,
   mockRecentPayments,
@@ -12,21 +13,50 @@ import {
   mockUser,
 } from '../mocks/mockData';
 
+const otpStore = new Map();
+
 export const setupMocks = () => {
   const mock = new MockAdapter(axiosInstance, {
     delayResponse: 400,
-    onNoMatch: 'passthrough', // let unmocked requests hit the real backend
+    onNoMatch: 'passthrough',
   });
+
   mock.onPost('/auth/login').reply(async (config) => {
-    const { email, password } = JSON.parse(config.data);
-    if (email === 'superadmin@pakkapass.com' && password === 'admin123') {
+    const body = JSON.parse(config.data);
+    const { email, password, isGetOTP, isOTP, otp } = body;
+
+    // Admin login
+    if (!isGetOTP && !isOTP) {
+      if (email === 'superadmin@pakkapass.com' && password === 'admin123') {
+        return [200, {
+          user: mockUser,
+          accessToken: 'mock-access-token',
+          refreshToken: 'mock-refresh-token',
+        }];
+      }
+      return [401, { message: 'Invalid credentials' }];
+    }
+
+    // OTP flow for partner/parent
+    if (isGetOTP) {
+      otpStore.set(email, '123456');
+      return [200, { message: 'OTP sent successfully' }];
+    }
+
+    if (isOTP && otp === otpStore.get(email)) {
+      const role = body.role === 'partner' ? 'partner' : 'parent';
       return [200, {
-        user: mockUser,
+        user: { ...mockUser, role },
         accessToken: 'mock-access-token',
         refreshToken: 'mock-refresh-token',
       }];
     }
-    return [401, { message: 'Invalid credentials' }];
+
+    if (isOTP) {
+      return [400, { message: 'Invalid OTP' }];
+    }
+
+    return [200, { message: 'OTP resent successfully' }];
   });
 
   mock.onPost('/auth/refresh').reply(200, { accessToken: 'mock-refreshed-token' });
@@ -36,6 +66,7 @@ export const setupMocks = () => {
   mock.onGet('/dashboard/stats').reply(200, { data: mockDashboardStats });
   mock.onGet('/dashboard/subscription-growth').reply(200, { data: mockSubscriptionGrowth });
   mock.onGet('/dashboard/revenue-trend').reply(200, { data: mockRevenueTrend });
+  mock.onGet('/admin/charts/revenue').reply(200, { revenue: mockRevenueTrend });
   mock.onGet('/dashboard/students-by-state').reply(200, { data: mockStudentsByState });
   mock.onGet('/dashboard/registrations').reply(200, { data: mockRecentRegistrations });
   mock.onGet('/dashboard/payments').reply(200, { data: mockRecentPayments });

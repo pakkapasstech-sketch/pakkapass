@@ -4,6 +4,7 @@ import ProtectedRoute from '../auth/ProtectedRoute';
 import { PERMISSIONS } from '../auth/permissions';
 import { ROLES } from '../auth/roles';
 import LoginPage from '../pages/auth/LoginPage';
+import ContactAdminPage from '../pages/auth/ContactAdminPage';
 import DashboardPage from '../pages/Dashboard/DashboardPage';
 import UnauthorizedPage from '../pages/shared/UnauthorizedPage';
 import StudentManagementPage from '../pages/students/StudentManagementPage';
@@ -26,6 +27,7 @@ const AppRoutes = () => (
     <Route path="/login" element={<LoginPage />} />
     <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
+    <Route path="/contact-admin" element={<ContactAdminPage />} />
     <Route element={<ProtectedRoute />}>
       <Route element={<DashboardLayout />}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

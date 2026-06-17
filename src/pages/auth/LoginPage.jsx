@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useEffect, useRef } from 'react';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -24,10 +24,11 @@ const OTP_COOLDOWN = 60;
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loginAdmin, sendOtp, verifyOtp, isAuthenticated, user, loading: authLoading } = useAuth();
+  const { loginAdmin, sendOtp, verifyOtp, isAuthenticated, user, loading: authLoading: authLogin } = useAuth();
 
   const [role, setRole] = useState('admin');
   const [step, setStep] = useState('credentials');
+  const [otpSent, setOtpSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mobile, setMobile] = useState('');
@@ -35,9 +36,16 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [cooldown, setCooldown] = useState(0);
 
+  const isAdmin = role === 'admin';
+  const isOTPUser = role === 'partner' || role === 'parent';
+
+  const previousRole = useRef(role);
+
   const {
     register,
     handleSubmit,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm({ defaultValues: { email: '', password: '' } });
 
@@ -118,6 +126,12 @@ const LoginPage = () => {
   };
 
   const isOtpRole = role === 'partner' || role === 'parent';
+
+  const getButtonText = () => {
+    if (isAdmin) return loading ? 'Logging In...' : 'Login';
+    if (isOTPUser && !otpSent) return loading ? 'Sending OTP...' : 'Get OTP';
+    return loading ? 'Verifying...' : 'Login';
+  };
 
   return (
     <div className="login-page">
@@ -334,8 +348,13 @@ const LoginPage = () => {
 
           <p className="footer-text">
             By continuing, you agree to our
-            <span> Terms of Service</span>
-            <span> & Privacy Policy</span>
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="footer-link">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="footer-link">
+              Privacy Policy
+            </a>
           </p>
         </div>
       </div>

@@ -568,7 +568,8 @@ body,
   color: var(--login-text-secondary);
 }
 
-.contact-admin span {
+.contact-admin-link {
+  margin-left: 4px;
   font-weight: 600;
   color: var(--login-primary);
 }
@@ -619,6 +620,24 @@ body,
 
 .footer-text span {
   font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.contact-admin-link:hover {
+  text-decoration: underline;
+}
+
+.footer-link {
+  color: #5b21b6;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  margin: 0 2px;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
   color: var(--login-primary);
   cursor: pointer;
   transition: color 0.2s ease;

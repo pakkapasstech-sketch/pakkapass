@@ -5,6 +5,16 @@ export const login = async (credentials) => {
   return data;
 };
 
+export const requestOTP = async (email) => {
+  const { data } = await axiosInstance.post('/auth/request-otp', { email });
+  return data;
+};
+
+export const verifyOTP = async (email, otp) => {
+  const { data } = await axiosInstance.post('/auth/verify-otp', { email, otp });
+  return data;
+};
+
 export const logout = async () => {
   const { data } = await axiosInstance.post('/auth/logout');
   return data;

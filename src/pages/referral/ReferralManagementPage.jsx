@@ -2,7 +2,7 @@ import { HiOutlinePlus } from 'react-icons/hi';
 import DataTable from '../../components/tables/DataTable';
 import StatusBadge from '../../components/tables/StatusBadge';
 import { useReferralConversions } from '../../hooks/useDashboard';
-import '../../styles/referralMangement.css';
+import '../../styles/referralManagement.css';
 
 const ReferralManagementPage = () => {
   // Loads real referral data from GET /admin/referrals
