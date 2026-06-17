@@ -3,8 +3,9 @@ import './uploadContentModal.css';
 
 const UploadContentModal = ({
   topic,
+  filters,
   contentType,
-  setContent,
+  onUpload,
   onClose,
 }) => {
   const [title, setTitle] =
@@ -15,6 +16,8 @@ const UploadContentModal = ({
 
   const [file, setFile] =
     useState(null);
+
+  const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e) => {
     const selected =
@@ -29,48 +32,26 @@ const UploadContentModal = ({
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       alert('Please select a file');
       return;
     }
 
-    const newContent = {
-      id: Date.now(),
-
-      title,
-      description,
-
-      topic,
-
-      type:
-        contentType === 'all'
-          ? 'video'
-          : contentType,
-
-      uploadedOn:
-        new Date().toLocaleDateString(),
-
-      fileSize: `${(
-        file.size /
-        1024 /
-        1024
-      ).toFixed(2)} MB`,
-
-      fileName: file.name,
-
-      file,
-
-      fileUrl:
-        URL.createObjectURL(file),
-    };
-
-    setContent((prev) => [
-      ...prev,
-      newContent,
-    ]);
-
-    onClose();
+    setUploading(true);
+    try {
+      // POST /admin/content via parent handler
+      await onUpload({
+        filters,
+        topicName: topic,
+        file,
+        contentType: contentType === 'all' ? 'video' : contentType,
+        title,
+        description,
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -147,6 +128,7 @@ const UploadContentModal = ({
           <button
             className="cancel-btn"
             onClick={onClose}
+            disabled={uploading}
           >
             Cancel
           </button>
@@ -156,8 +138,9 @@ const UploadContentModal = ({
             onClick={
               handleUpload
             }
+            disabled={uploading}
           >
-            Upload
+            {uploading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
       </div>

@@ -1,57 +1,107 @@
 .subscription-management-page {
   padding: 24px;
-  margin-top: 20px;
-
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.subscription-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .subscription-header h1 {
-  font-size: 24px;
+  margin-top: 8px;
+  font-size: 2rem;
   font-weight: 700;
   color: #111827;
 }
 
-.subscription-header p {
-  margin-top: 6px;
-
-  font-size: 14px;
-  color: #6b7280;
+.subscription-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.create-subscription-btn {
+.subscription-description {
+  margin-top: 10px;
+  max-width: 650px;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+.subscription-table-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+
+.subscription-toolbar {
+  padding: 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.subscription-search {
+  width: 340px;
+  height: 46px;
+  padding: 0 16px;
+
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 
-  height: 44px;
-  padding: 0 20px;
-
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-
-  background: #4f46e5;
-  color: white;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  transition: all 0.2s ease;
+  background: #ffffff;
 }
 
-.create-subscription-btn:hover {
-  background: #4338ca;
+.subscription-search svg {
+  color: #64748b;
+  font-size: 20px;
+}
 
-  transform: translateY(-1px);
+.subscription-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
 
-  box-shadow:
-    0 8px 20px rgba(79,70,229,.25);
+.subscription-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.subscription-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.subscription-table th {
+  padding: 18px 24px;
+  text-align: left;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.subscription-table td {
+  padding: 18px 24px;
+  border-top: 1px solid #f1f5f9;
+  color: #111827;
+}
+
+.subscription-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.empty-table {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
 }
 
 @media (max-width: 768px) {
@@ -59,9 +109,12 @@
     padding: 16px;
   }
 
-  .subscription-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+  .subscription-search {
+    width: 100%;
+  }
+
+  .subscription-table th,
+  .subscription-table td {
+    padding: 14px 16px;
   }
 }

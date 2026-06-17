@@ -5,6 +5,7 @@ import { useReferralConversions } from '../../hooks/useDashboard';
 import '../../styles/referralMangement.css';
 
 const ReferralManagementPage = () => {
+  // Loads real referral data from GET /admin/referrals
   const referrals = useReferralConversions();
 
   const referralColumns = [

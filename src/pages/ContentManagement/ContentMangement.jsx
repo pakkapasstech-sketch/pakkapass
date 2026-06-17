@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import ContentFilters from '../../components/content/ContentFilters';
 import ContentTree from '../../components/content/ContentTree';
 import ContentTabs from '../../components/content/ContentTabs';
 import ContentTable from '../../components/content/ContentTable';
 import UploadContentModal from '../../components/content/UploadContentModal';
+import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+import ErrorState from '../../components/loaders/ErrorState';
+import { useContent } from '../../hooks/useContent';
+import { contentService } from '../../services/content.service';
 
 import './contentManagement.css';
 
@@ -26,157 +31,10 @@ const ContentManagement = () => {
 
   const [showUploadModal, setShowUploadModal] =
     useState(false);
-const [content, setContent] =
-  useState([
-    {
-      id: 1,
-      title:
-        'Introduction to Euclid Division Lemma',
-      description:
-        'Basic explanation of Euclid Division Lemma',
 
-      topic:
-        'Euclid Division Lemma',
+  // Fetch content from GET /admin/content instead of hardcoded mock data
+  const { data: content = [], isLoading, isError, refetch } = useContent();
 
-      type: 'video',
-
-      uploadedOn:
-        '15 Jul 2025',
-
-      fileSize: '45 MB',
-
-      fileName:
-        'euclid-introduction.mp4',
-
-      fileUrl:
-        'https://www.w3schools.com/html/mov_bbb.mp4',
-    },
-
-    {
-      id: 2,
-      title:
-        'Euclid Lemma Examples',
-
-      description:
-        'Solved examples',
-
-      topic:
-        'Euclid Division Lemma',
-
-      type: 'video',
-
-      uploadedOn:
-        '16 Jul 2025',
-
-      fileSize: '60 MB',
-
-      fileName:
-        'euclid-examples.mp4',
-
-      fileUrl:
-        'https://www.w3schools.com/html/movie.mp4',
-    },
-
-    {
-      id: 3,
-      title:
-        'Euclid Division Notes',
-
-      description:
-        'Complete notes',
-
-      topic:
-        'Euclid Division Lemma',
-
-      type: 'notes',
-
-      uploadedOn:
-        '18 Jul 2025',
-
-      fileSize: '2 MB',
-
-      fileName:
-        'euclid-notes.pdf',
-
-      fileUrl:
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    },
-
-    {
-      id: 4,
-      title:
-        'Euclid Division Practice Paper',
-
-      description:
-        'Practice Questions',
-
-      topic:
-        'Euclid Division Lemma',
-
-      type: 'paper',
-
-      uploadedOn:
-        '20 Jul 2025',
-
-      fileSize: '1 MB',
-
-      fileName:
-        'euclid-paper.pdf',
-
-      fileUrl:
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    },
-
-    {
-      id: 5,
-      title:
-        'Irrational Numbers Introduction',
-
-      description:
-        'Introduction video',
-
-      topic:
-        'Irrational Numbers',
-
-      type: 'video',
-
-      uploadedOn:
-        '22 Jul 2025',
-
-      fileSize: '50 MB',
-
-      fileName:
-        'irrational-numbers.mp4',
-
-      fileUrl:
-        'https://www.w3schools.com/html/mov_bbb.mp4',
-    },
-
-    {
-      id: 6,
-      title:
-        'Zeros of Polynomial Basics',
-
-      description:
-        'Polynomial introduction',
-
-      topic:
-        'Zeros of Polynomial',
-
-      type: 'video',
-
-      uploadedOn:
-        '25 Jul 2025',
-
-      fileSize: '38 MB',
-
-      fileName:
-        'polynomial-basics.mp4',
-
-      fileUrl:
-        'https://www.w3schools.com/html/movie.mp4',
-    },
-  ]);
   useEffect(() => {
     if (
       selectedFilters.contentType
@@ -188,6 +46,27 @@ const [content, setContent] =
   }, [
     selectedFilters.contentType,
   ]);
+
+  const handleUpload = async (uploadData) => {
+    try {
+      await contentService.upload(uploadData);
+      toast.success('Content uploaded successfully');
+      refetch();
+      setShowUploadModal(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to upload content');
+    }
+  };
+
+  if (isLoading) return <LoadingSkeleton rows={8} />;
+  if (isError) {
+    return (
+      <ErrorState
+        message="Failed to load content"
+        onRetry={refetch}
+      />
+    );
+  }
 
   return (
     <>
@@ -254,12 +133,11 @@ const [content, setContent] =
           topic={
             selectedFilters.topic
           }
+          filters={selectedFilters}
           contentType={
             activeTab
           }
-          setContent={
-            setContent
-          }
+          onUpload={handleUpload}
           onClose={() =>
             setShowUploadModal(
               false

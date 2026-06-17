@@ -1,225 +1,56 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  HiOutlineAcademicCap,
-  HiOutlineChevronDown,
-  HiOutlineLogout,
-} from 'react-icons/hi';
-
-import { NAV_ITEMS } from '../../constants/navigation';
+import { HiOutlineAcademicCap, HiOutlineChevronDown, HiOutlineLogout } from 'react-icons/hi';
+import { getMenuForUser } from '../../config/menu.config';
 import { getIcon } from '../../utils/iconMap';
 import { useSidebar } from '../../contexts/SidebarContext';
-import { useAuth } from '../../contexts/AuthContext';
-
+import { useAuth } from '../../auth/AuthProvider';
+import { usePermissions } from '../../auth/usePermissions';
+import { ROLES } from '../../auth/roles';
 import Avatar from '../common/Avatar';
+import LogoutConfirmModal, { useLogoutConfirm } from '../modals/LogoutConfirmModal';
 import '../../styles/sidebar.css';
 
-const Tooltip = ({ label, show }) =>
-  show ? (
-    <span className="sidebar-tooltip">
-      {label}
-    </span>
-  ) : null;
+const ROLE_LABELS = { [ROLES.ADMIN]: 'Admin Panel', [ROLES.PARTNER]: 'Partner Portal', [ROLES.PARENT]: 'Parent Portal' };
+
+const Tooltip = ({ label, show }) => (show ? <span className="sidebar-tooltip">{label}</span> : null);
 
 const Sidebar = () => {
   const location = useLocation();
-
-  const {
-    isCollapsed,
-    isMobileOpen,
-    expandedMenus,
-    closeMobileSidebar,
-    toggleMenu,
-  } = useSidebar();
-
+  const navigate = useNavigate();
+  const { isCollapsed, isMobileOpen, expandedMenus, closeMobileSidebar, toggleMenu } = useSidebar();
   const { user, logout } = useAuth();
+  const { hasPermission, role } = usePermissions();
+  const { open, loading, showLogoutConfirm, hideLogoutConfirm, confirmLogout } = useLogoutConfirm();
 
-  const isMobile = window.matchMedia(
-    '(max-width: 1024px)'
-  ).matches;
+  const menuItems = getMenuForUser(role, hasPermission);
+  const isMobile = window.matchMedia('(max-width: 1024px)').matches;
+  const shouldCollapse = !isMobile && isCollapsed;
 
-  /*
-   * Allow collapse only on desktop
-   */
-  const shouldCollapse =
-    !isMobile && isCollapsed;
-
-  const asideClass = `
-    sidebar
-    ${
-      shouldCollapse
-        ? 'sidebar-collapsed'
-        : 'sidebar-expanded'
-    }
-    ${
-      isMobile
-        ? isMobileOpen
-          ? 'sidebar-mobile-open'
-          : 'sidebar-mobile-closed'
-        : ''
-    }
-  `;
+  const asideClass = `sidebar ${shouldCollapse ? 'sidebar-collapsed' : 'sidebar-expanded'} ${
+    isMobile ? (isMobileOpen ? 'sidebar-mobile-open' : 'sidebar-mobile-closed') : ''
+  }`;
 
   const isActive = (path) =>
-    path === '/'
-      ? location.pathname === '/'
-      : location.pathname.startsWith(path);
+    path === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(path);
+
+  const handleLogout = () => confirmLogout(logout, navigate);
 
   const renderItem = (item) => {
     const Icon = getIcon(item.icon);
-
     const active = isActive(item.path);
-    const hasChildren =
-      item.children?.length > 0;
-
-    if (hasChildren) {
-      return (
-        <li key={item.id}>
-          <button
-            type="button"
-            onClick={() =>
-              !shouldCollapse &&
-              toggleMenu(item.id)
-            }
-            title={
-              shouldCollapse
-                ? item.label
-                : undefined
-            }
-            className={`
-              sidebar-nav-item
-              ${
-                expandedMenus[item.id]
-                  ? 'sidebar-nav-item-active'
-                  : ''
-              }
-              ${
-                shouldCollapse
-                  ? 'sidebar-nav-item-collapsed'
-                  : ''
-              }
-            `}
-          >
-            <Icon className="sidebar-icon" />
-
-            {!shouldCollapse && (
-              <>
-                <span className="sidebar-item-label">
-                  {item.label}
-                </span>
-
-                <HiOutlineChevronDown
-                  className={`sidebar-chevron ${
-                    expandedMenus[item.id]
-                      ? 'sidebar-chevron-open'
-                      : ''
-                  }`}
-                />
-              </>
-            )}
-
-            <Tooltip
-              label={item.label}
-              show={shouldCollapse}
-            />
-          </button>
-
-          <AnimatePresence>
-            {!shouldCollapse &&
-              expandedMenus[item.id] && (
-                <motion.ul
-                  initial={{
-                    height: 0,
-                    opacity: 0,
-                  }}
-                  animate={{
-                    height: 'auto',
-                    opacity: 1,
-                  }}
-                  exit={{
-                    height: 0,
-                    opacity: 0,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                  }}
-                  className="sidebar-submenu"
-                >
-                  {item.children.map(
-                    (child) => (
-                      <li key={child.id}>
-                        <NavLink
-                          to={child.path}
-                          onClick={
-                            isMobile
-                              ? closeMobileSidebar
-                              : undefined
-                          }
-                          className={({
-                            isActive,
-                          }) =>
-                            `
-                              sidebar-submenu-link
-                              ${
-                                isActive
-                                  ? 'sidebar-submenu-link-active'
-                                  : ''
-                              }
-                            `
-                          }
-                        >
-                          {child.label}
-                        </NavLink>
-                      </li>
-                    )
-                  )}
-                </motion.ul>
-              )}
-          </AnimatePresence>
-        </li>
-      );
-    }
 
     return (
-      <li key={item.id}>
+      <li key={item.path}>
         <NavLink
           to={item.path}
-          onClick={
-            isMobile
-              ? closeMobileSidebar
-              : undefined
-          }
-          title={
-            shouldCollapse
-              ? item.label
-              : undefined
-          }
-          className={`
-            sidebar-nav-item
-            ${
-              active
-                ? 'sidebar-nav-item-active'
-                : ''
-            }
-            ${
-              shouldCollapse
-                ? 'sidebar-nav-item-collapsed'
-                : ''
-            }
-          `}
+          onClick={isMobile ? closeMobileSidebar : undefined}
+          title={shouldCollapse ? item.title : undefined}
+          className={`sidebar-nav-item ${active ? 'sidebar-nav-item-active' : ''} ${shouldCollapse ? 'sidebar-nav-item-collapsed' : ''}`}
         >
           <Icon className="sidebar-icon" />
-
-          {!shouldCollapse && (
-            <span className="sidebar-item-label">
-              {item.label}
-            </span>
-          )}
-
-          <Tooltip
-            label={item.label}
-            show={shouldCollapse}
-          />
+          {!shouldCollapse && <span className="sidebar-item-label">{item.title}</span>}
+          <Tooltip label={item.title} show={shouldCollapse} />
         </NavLink>
       </li>
     );
@@ -227,92 +58,50 @@ const Sidebar = () => {
 
   return (
     <>
-      {isMobile &&
-        isMobileOpen && (
-          <div
-            className="sidebar-overlay"
-            onClick={
-              closeMobileSidebar
-            }
-          />
-        )}
+      {isMobile && isMobileOpen && <div className="sidebar-overlay" onClick={closeMobileSidebar} />}
 
       <aside className={asideClass}>
-        {/* Header */}
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <div className="sidebar-logo">
               <HiOutlineAcademicCap className="sidebar-logo-icon" />
             </div>
-
             {!shouldCollapse && (
               <div className="sidebar-brand-text">
-                <p className="sidebar-brand-title">
-                  PakkaPass
-                </p>
-
-                <p className="sidebar-brand-subtitle">
-                  Admin Panel
-                </p>
+                <p className="sidebar-brand-title">PakkaPass</p>
+                <p className="sidebar-brand-subtitle">{ROLE_LABELS[role] || 'Dashboard'}</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="sidebar-nav">
-          <ul className="sidebar-nav-list">
-            {NAV_ITEMS.map(renderItem)}
-          </ul>
+          <ul className="sidebar-nav-list">{menuItems.map(renderItem)}</ul>
         </nav>
 
-        {/* Footer */}
         <div className="sidebar-footer">
           <div className="sidebar-user-card">
-            <Avatar
-              initials={
-                user?.initials || 'SA'
-              }
-              size="md"
-            />
-
-            {!shouldCollapse &&
-              user && (
-                <div className="sidebar-user-info">
-                  <p className="sidebar-user-name">
-                    {user.name}
-                  </p>
-
-                  <p className="sidebar-user-email">
-                    {user.email}
-                  </p>
-
-                  <button
-                    type="button"
-                    className="sidebar-status-btn"
-                  >
-                    <span className="sidebar-status-dot" />
-                    {user.status}
-
-                    <HiOutlineChevronDown className="sidebar-status-icon" />
-                  </button>
-                </div>
-              )}
+            <Avatar initials={user?.initials || 'U'} size="md" />
+            {!shouldCollapse && user && (
+              <div className="sidebar-user-info">
+                <p className="sidebar-user-name">{user.name}</p>
+                <p className="sidebar-user-email">{user.email || user.mobile}</p>
+                <button type="button" className="sidebar-status-btn">
+                  <span className="sidebar-status-dot" />
+                  {user.status || role}
+                </button>
+              </div>
+            )}
           </div>
 
-          <button
-            type="button"
-            onClick={logout}
-            className="sidebar-logout-btn"
-          >
+          <button type="button" onClick={showLogoutConfirm} className="sidebar-logout-btn">
             <HiOutlineLogout className="sidebar-icon" />
-
-            {!shouldCollapse && (
-              <span>Logout</span>
-            )}
+            {!shouldCollapse && <span>Logout</span>}
           </button>
         </div>
       </aside>
+
+      <LogoutConfirmModal isOpen={open} onClose={hideLogoutConfirm} onConfirm={handleLogout} loading={loading} />
     </>
   );
 };

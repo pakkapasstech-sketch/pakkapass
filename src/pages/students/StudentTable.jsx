@@ -31,7 +31,7 @@ const PlanBadge = ({ plan }) => {
   );
 };
 
-const StudentTable = ({ students = [] }) => {
+const StudentTable = ({ students = [], canCreate = false, canEdit = false, canDelete = false }) => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,24 +132,19 @@ const StudentTable = ({ students = [] }) => {
                     </span>
                   </td>
 
-                  <td>{student.registeredOn}</td>
+                  <td>{student.createdAt ? new Date(student.createdAt).toLocaleDateString() : student.registeredOn || '—'}</td>
 
                   <td>
                     <div className="table-actions">
-                      <button
-                        className="view-btn"
-                        onClick={() => navigate(`/students/${student.id}`)}
-                      >
+                      <button className="view-btn" onClick={() => navigate(`/students/${student.id}`)}>
                         <HiOutlineEye />
                       </button>
-
-                      <button className="edit-btn">
-                        <HiOutlinePencil />
-                      </button>
-
-                      <button className="delete-btn">
-                        <HiOutlineTrash />
-                      </button>
+                      {canEdit && (
+                        <button className="edit-btn"><HiOutlinePencil /></button>
+                      )}
+                      {canDelete && (
+                        <button className="delete-btn"><HiOutlineTrash /></button>
+                      )}
                     </div>
                   </td>
                 </tr>

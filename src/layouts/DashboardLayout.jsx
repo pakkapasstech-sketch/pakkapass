@@ -2,75 +2,36 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/sidebar/Sidebar';
 import Navbar from '../components/navbar/Navbar';
 import { useSidebar } from '../contexts/SidebarContext';
-import { NAV_ITEMS } from '../constants/navigation';
-
+import { MENU_ITEMS } from '../config/menu.config';
 import '../styles/layout.css';
 
 const getPageMeta = (pathname) => {
-  for (const item of NAV_ITEMS) {
-    if (item.path === pathname) {
-      if (item.path === '/') {
-        return {
-          title: item.label,
-          breadcrumbs: [
-            { label: item.label, path: '/' }
-          ]
-        };
-      }
-
-      return {
-        title: item.label,
-        breadcrumbs: [
-          { label: 'Home', path: '/' },
-          { label: item.label, path: item.path }
-        ]
-      };
-    }
+  const item = MENU_ITEMS.find((m) => m.path === pathname || (m.path !== '/dashboard' && pathname.startsWith(m.path)));
+  if (item) {
+    return {
+      title: item.title,
+      breadcrumbs: pathname === '/dashboard'
+        ? [{ label: item.title, path: '/dashboard' }]
+        : [{ label: 'Home', path: '/dashboard' }, { label: item.title, path: item.path }],
+    };
   }
-
-  return {
-    title: 'Dashboard Overview',
-    breadcrumbs: [{ label: 'Home', path: '/' }]
-  };
+  if (pathname.startsWith('/students/')) {
+    return { title: 'Student Details', breadcrumbs: [{ label: 'Home', path: '/dashboard' }, { label: 'Students', path: '/students' }, { label: 'Details' }] };
+  }
+  return { title: 'Dashboard', breadcrumbs: [{ label: 'Home', path: '/dashboard' }] };
 };
 
 const DashboardLayout = () => {
-  const {
-    isCollapsed,
-    isMobileOpen,
-    closeMobileSidebar
-  } = useSidebar();
-
+  const { isCollapsed, isMobileOpen, closeMobileSidebar } = useSidebar();
   const { pathname } = useLocation();
-
-  const {
-    title,
-    breadcrumbs
-  } = getPageMeta(pathname);
+  const { title, breadcrumbs } = getPageMeta(pathname);
 
   return (
     <div className="dashboard-layout">
-      {isMobileOpen && (
-        <div
-          className="dashboard-overlay"
-          onClick={closeMobileSidebar}
-        />
-      )}
-
+      {isMobileOpen && <div className="dashboard-overlay" onClick={closeMobileSidebar} />}
       <Sidebar />
-
-      <Navbar
-        title={title}
-        breadcrumbs={breadcrumbs}
-      />
-
-      <main
-        className={`dashboard-main ${
-          isCollapsed
-            ? 'dashboard-main-collapsed'
-            : 'dashboard-main-expanded'
-        }`}
-      >
+      <Navbar title={title} breadcrumbs={breadcrumbs} />
+      <main className={`dashboard-main ${isCollapsed ? 'dashboard-main-collapsed' : 'dashboard-main-expanded'}`}>
         <Outlet />
       </main>
     </div>

@@ -25,6 +25,17 @@ import {
 } from 'react-icons/hi';
 
 const iconMap = {
+  dashboard: HiOutlineViewGrid,
+  students: HiOutlineAcademicCap,
+  parents: HiOutlineUserGroup,
+  partners: HiOutlineBriefcase,
+  content: HiOutlineDocumentText,
+  subscriptions: HiOutlineCreditCard,
+  commissions: HiOutlineCurrencyRupee,
+  coupons: HiOutlineTag,
+  notifications: HiOutlineBell,
+  support: HiOutlineSupport,
+  settings: HiOutlineCog,
   HiOutlineViewGrid,
   HiOutlineAcademicCap,
   HiOutlineUserGroup,

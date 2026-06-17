@@ -1,0 +1,49 @@
+.parent-details-page {
+  padding: 24px;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+}
+
+.profile-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 28px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  );
+  gap: 24px;
+}
+
+.details-grid label {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.details-grid p {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}

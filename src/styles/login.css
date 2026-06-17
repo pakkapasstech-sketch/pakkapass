@@ -290,7 +290,7 @@ body,
 .login-card {
   width: 100%;
   max-width: 600px;
-
+  height: 500px;
   padding: 36px;
 
   background: var(--login-card-bg);
@@ -573,6 +573,73 @@ body,
   color: var(--login-primary);
 }
 
+/* ==========================================
+   LOGIN FOOTER
+========================================== */
+
+.login-footer-bar {
+  margin-top: 28px;
+  padding-top: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+
+  border-top: 1px solid rgba(107, 114, 128, 0.15);
+}
+
+.secure-login {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--login-primary);
+
+  white-space: nowrap;
+}
+
+.secure-login svg {
+  font-size: 17px;
+}
+
+.footer-dot {
+  color: var(--login-text-muted);
+  font-size: 14px;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: var(--login-text-secondary);
+  white-space: nowrap;
+}
+
+.footer-text span {
+  font-weight: 600;
+  color: var(--login-primary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-text span:hover {
+  color: var(--login-primary-dark);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .login-footer-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-text {
+    text-align: center;
+    white-space: normal;
+  }
+}
 /* ==========================================
    TABLET
 ========================================== */

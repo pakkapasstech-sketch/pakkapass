@@ -1,105 +1,125 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineSearch,
   HiOutlineDownload,
-} from "react-icons/hi";
-import "../../styles/ParentsManagement.css"
-const parents = [
-  {
-    id: "P001",
-    name: "Ramesh Kumar",
-    email: "ramesh@gmail.com",
-    phone: "+91 9876543210",
-    students: 2,
-    status: "Active",
-  },
-  {
-    id: "P002",
-    name: "Priya Sharma",
-    email: "priya@gmail.com",
-    phone: "+91 9123456780",
-    students: 1,
-    status: "Active",
-  },
-  {
-    id: "P003",
-    name: "Sunil Verma",
-    email: "sunil@gmail.com",
-    phone: "+91 9988776655",
-    students: 3,
-    status: "Inactive",
-  },
-];
+  HiOutlineEye,
+} from 'react-icons/hi';
+
+import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+import ErrorState from '../../components/loaders/ErrorState';
+import { useParents } from '../../hooks/useParents';
+
+import '../../styles/ParentsManagement.css';
 
 const ParentsManagement = () => {
+  const navigate = useNavigate();
+
+  const { data: parents = [], isLoading, isError, refetch } = useParents();
+
+  const [search, setSearch] = useState('');
+
+  const filteredParents = parents.filter(
+    (p) =>
+      p.name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.phone?.includes(search)
+  );
+
+  if (isLoading) return <LoadingSkeleton rows={6} />;
+
+  if (isError) {
+    return (
+      <ErrorState
+        message="Failed to load parents"
+        onRetry={refetch}
+      />
+    );
+  }
+
+  const totalParents = parents.length;
+  const activeParents = parents.filter(
+    (p) => p.status === 'Active'
+  ).length;
+
+  const inactiveParents = totalParents - activeParents;
+
+  const linkedStudents = parents.reduce(
+    (total, parent) => total + parent.students,
+    0
+  );
+
   return (
     <div className="parents-page">
-      {/* Header */}
-      <div className="parents-header">
-        {/*<div>
-          <h1>Parents Management</h1>
-          <p>Manage parent accounts and student associations.</p>
-        </div>
-
-        <button className="primary-btn">
-          <HiOutlinePlus />
-          Add Parent
-        </button>*/}
-      </div>
-
       {/* Stats */}
       <div className="stats-grid">
         <div className="stat-card">
-          <h2>1,248</h2>
-          <p>Total Parents</p>
+          <p className="stat-title">
+            Total Parents
+          </p>
+          <h3 className="stat-value">
+            {totalParents}
+          </h3>
         </div>
 
         <div className="stat-card">
-          <h2>1,090</h2>
-          <p>Active Parents</p>
+          <p className="stat-title">
+            Active Parents
+          </p>
+          <h3 className="stat-value">
+            {activeParents}
+          </h3>
         </div>
 
         <div className="stat-card">
-          <h2>158</h2>
-          <p>Inactive Parents</p>
+          <p className="stat-title">
+            Inactive Parents
+          </p>
+          <h3 className="stat-value">
+            {inactiveParents}
+          </h3>
         </div>
 
         <div className="stat-card">
-          <h2>1.8</h2>
-          <p>Avg Students / Parent</p>
+          <p className="stat-title">
+            Students Linked
+          </p>
+          <h3 className="stat-value">
+            {linkedStudents}
+          </h3>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="table-toolbar">
+      {/* Toolbar */}
+      <div className="parents-toolbar">
         <div className="search-box">
           <HiOutlineSearch />
+
           <input
             type="text"
-            placeholder="Search parents..."
+            placeholder="Search by name or phone..."
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
           />
         </div>
 
-        <div className="toolbar-actions">
-          <select>
-            <option>All Status</option>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-
-          <button className="secondary-btn">
-            <HiOutlineDownload />
-            Export
-          </button>
-        </div>
+        {/* <button
+          type="button"
+          className="export-btn"
+        >
+          <HiOutlineDownload />
+          Export
+        </button> */}
       </div>
 
       {/* Table */}
-      <div className="table-card">
+      <div className="parents-table-wrapper">
         <table className="parents-table">
           <thead>
             <tr>
-              <th>Parent ID</th>
-              <th>Name</th>
+              <th>ID</th>
+              <th>Parent Name</th>
               <th>Email</th>
               <th>Phone</th>
               <th>Students</th>
@@ -109,37 +129,74 @@ const ParentsManagement = () => {
           </thead>
 
           <tbody>
-            {parents.map((parent) => (
-              <tr key={parent.id}>
-                <td>{parent.id}</td>
-                <td>{parent.name}</td>
-                <td>{parent.email}</td>
-                <td>{parent.phone}</td>
-                <td>{parent.students}</td>
+            {filteredParents.length > 0 ? (
+              filteredParents.map((p) => (
+                <tr
+                  key={p.id}
+                  className="parent-row"
+                  onClick={() =>
+                    navigate(`/parents/${p.id}`)
+                  }
+                >
+                  <td>{p.id}</td>
 
-                <td>
-                  <span
-                    className={`status-badge ${
-                      parent.status === "Active"
-                        ? "active"
-                        : "inactive"
-                    }`}
-                  >
-                    {parent.status}
-                  </span>
-                </td>
+                  <td>
+                    <div className="parent-user">
+                      <div className="parent-avatar">
+                        {p.name
+                          ?.split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .slice(0, 2)}
+                      </div>
 
-                <td>
-                  <button className="action-btn">
-                    View
-                  </button>
+                      <span>{p.name}</span>
+                    </div>
+                  </td>
 
-                  <button className="action-btn">
-                    Edit
-                  </button>
+                  <td>{p.email}</td>
+
+                  <td>{p.phone}</td>
+
+                  <td>{p.students}</td>
+
+                  <td>
+                    <span
+                      className={`status-badge ${
+                        p.status === 'Active'
+                          ? 'active'
+                          : 'inactive'
+                      }`}
+                    >
+                      {p.status}
+                    </span>
+                  </td>
+
+                  <td>
+                    <button
+                      className="view-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(
+                          `/parents/${p.id}`
+                        );
+                      }}
+                    >
+                      <HiOutlineEye />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="empty-table"
+                >
+                  No parents found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

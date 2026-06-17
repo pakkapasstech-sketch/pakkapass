@@ -1,13 +1,34 @@
 import axios from 'axios';
 
+const getToken = () =>
+  localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
+const getRefreshToken = () =>
+  localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+
+const setTokens = (accessToken, refreshToken) => {
+  const storage =
+    localStorage.getItem('rememberMe') === 'true' ? localStorage : sessionStorage;
+  storage.setItem('accessToken', accessToken);
+  if (refreshToken) storage.setItem('refreshToken', refreshToken);
+};
+
+const clearTokens = () => {
+  [localStorage, sessionStorage].forEach((s) => {
+    s.removeItem('accessToken');
+    s.removeItem('refreshToken');
+    s.removeItem('authUser');
+  });
+};
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  timeout: 15000,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  timeout: 20000,
   headers: { 'Content-Type': 'application/json' },
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
+  const token = getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -18,25 +39,30 @@ axiosInstance.interceptors.response.use(
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = getRefreshToken();
       if (refreshToken) {
         try {
           const { data } = await axios.post(
-            `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/auth/refresh`,
             { refreshToken }
           );
-          localStorage.setItem('accessToken', data.accessToken);
+          setTokens(data.accessToken, data.refreshToken);
           original.headers.Authorization = `Bearer ${data.accessToken}`;
           return axiosInstance(original);
         } catch {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/login';
+          clearTokens();
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
         }
+      } else if (!window.location.pathname.includes('/login')) {
+        clearTokens();
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);
   }
 );
 
+export { getToken, getRefreshToken, setTokens, clearTokens };
 export default axiosInstance;

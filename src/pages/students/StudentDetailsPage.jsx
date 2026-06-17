@@ -9,7 +9,9 @@ import {
 } from 'react-icons/hi';
 
 import '../../styles/student-details.css';
-import { students } from '../../data/students';
+import { useStudent } from '../../hooks/useStudents';
+import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+import ErrorState from '../../components/loaders/ErrorState';
 
 const tabs = [
   'Overview',
@@ -23,13 +25,21 @@ const tabs = [
 const StudentDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { data: student, isLoading, isError, refetch } = useStudent(id);
 
   const [activeTab, setActiveTab] =
     useState('Overview');
 
-  const student = students.find(
-    (s) => s.id === Number(id)
-  );
+  if (isLoading) return <LoadingSkeleton rows={6} />;
+
+  if (isError) {
+    return (
+      <ErrorState
+        message="Failed to load student details"
+        onRetry={refetch}
+      />
+    );
+  }
 
   if (!student) {
     return (
@@ -80,7 +90,7 @@ const StudentDetailsPage = () => {
       {/* Layout */}
       <div className="student-layout">
 
-        {/* Profile Sidebar */}
+        {/* Profile Sidebar — populated from GET /admin/student/:id */}
         <aside className="student-sidebar">
 
           <div className="student-profile-avatar">
@@ -223,9 +233,8 @@ const StudentDetailsPage = () => {
         </div>
 
         <div className="last-login">
-          Last Login:{' '}
-          {student.lastLogin ||
-            'May 26, 2025 09:15 AM'}
+          Total Study Hours:{' '}
+          {student.totalHours}h
         </div>
       </section>
 
@@ -234,30 +243,13 @@ const StudentDetailsPage = () => {
 
         <div className="activity-list">
           <div className="activity-item">
-            <span>Reading Hours</span>
-            <strong>24h 30m</strong>
+            <span>Total Study Hours</span>
+            <strong>{student.totalHours}h</strong>
           </div>
 
           <div className="activity-item">
-            <span>Video Watch Hours</span>
-            <strong>18h 20m</strong>
-          </div>
-
-          <div className="activity-item">
-            <span>PDFs Read</span>
-            <strong>45</strong>
-          </div>
-
-          <div className="activity-item">
-            <span>Videos Watched</span>
-            <strong>32</strong>
-          </div>
-
-          <div className="activity-item">
-            <span>Tests Taken</span>
-            <strong>
-              {student.testsTaken || 28}
-            </strong>
+            <span>Subjects Studied</span>
+            <strong>{student.subjectWiseUsage?.length || 0}</strong>
           </div>
         </div>
       </section>
@@ -270,17 +262,9 @@ const StudentDetailsPage = () => {
 
       <div className="info-list">
         <div className="info-item">
-          <span>Father Name</span>
+          <span>Parent Name</span>
           <strong>
             {student.fatherName ||
-              'Not Available'}
-          </strong>
-        </div>
-
-        <div className="info-item">
-          <span>Mother Name</span>
-          <strong>
-            {student.motherName ||
               'Not Available'}
           </strong>
         </div>
@@ -342,30 +326,8 @@ const StudentDetailsPage = () => {
 
       <div className="activity-list">
         <div className="activity-item">
-          <span>Reading Hours</span>
-          <strong>24h 30m</strong>
-        </div>
-
-        <div className="activity-item">
-          <span>Video Watch Hours</span>
-          <strong>18h 20m</strong>
-        </div>
-
-        <div className="activity-item">
-          <span>PDFs Read</span>
-          <strong>45</strong>
-        </div>
-
-        <div className="activity-item">
-          <span>Videos Watched</span>
-          <strong>32</strong>
-        </div>
-
-        <div className="activity-item">
-          <span>Tests Taken</span>
-          <strong>
-            {student.testsTaken || 28}
-          </strong>
+          <span>Total Study Hours</span>
+          <strong>{student.totalHours}h</strong>
         </div>
       </div>
 
@@ -373,31 +335,29 @@ const StudentDetailsPage = () => {
         Subject Wise Usage
       </h3>
 
-      {[
-        { name: 'Physics', value: 80 },
-        { name: 'Chemistry', value: 55 },
-        { name: 'Mathematics', value: 78 },
-        { name: 'Biology', value: 42 },
-        { name: 'English', value: 35 },
-      ].map((subject) => (
-        <div
-          className="usage-item"
-          key={subject.name}
-        >
-          <div className="usage-header">
-            <span>{subject.name}</span>
-            <span>{subject.value}%</span>
-          </div>
+      {student.subjectWiseUsage?.length > 0 ? (
+        student.subjectWiseUsage.map((subject) => (
+          <div
+            className="usage-item"
+            key={subject.subject}
+          >
+            <div className="usage-header">
+              <span>{subject.subject}</span>
+              <span>{subject.percentage || subject.hours}%</span>
+            </div>
 
-          <div className="bar">
-            <span
-              style={{
-                width: `${subject.value}%`,
-              }}
-            />
+            <div className="bar">
+              <span
+                style={{
+                  width: `${subject.percentage || 50}%`,
+                }}
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p>No study activity recorded yet.</p>
+      )}
     </section>
   )}
 
@@ -405,24 +365,30 @@ const StudentDetailsPage = () => {
     <section className="student-section">
       <h3>Subscription History</h3>
 
-      <div className="info-list">
-        <div className="info-item">
-          <span>Current Plan</span>
-          <strong>{student.plan}</strong>
+      {student.subscriptionHistory?.length > 0 ? (
+        <div className="info-list">
+          {student.subscriptionHistory.map((sub, index) => (
+            <div className="info-item" key={index}>
+              <span>{sub.plan}</span>
+              <strong>
+                ₹{sub.amount} — {sub.status} — {new Date(sub.date).toLocaleDateString('en-IN')}
+              </strong>
+            </div>
+          ))}
         </div>
+      ) : (
+        <div className="info-list">
+          <div className="info-item">
+            <span>Current Plan</span>
+            <strong>{student.plan}</strong>
+          </div>
 
-        <div className="info-item">
-          <span>Status</span>
-          <strong>{student.status}</strong>
+          <div className="info-item">
+            <span>Status</span>
+            <strong>{student.status}</strong>
+          </div>
         </div>
-
-        <div className="info-item">
-          <span>Registered On</span>
-          <strong>
-            {student.registeredOn}
-          </strong>
-        </div>
-      </div>
+      )}
     </section>
   )}
 
@@ -430,22 +396,20 @@ const StudentDetailsPage = () => {
     <section className="student-section">
       <h3>Payment History</h3>
 
-      <div className="info-list">
-        <div className="info-item">
-          <span>Last Payment</span>
-          <strong>₹4,999</strong>
+      {student.payments?.length > 0 ? (
+        <div className="info-list">
+          {student.payments.map((payment) => (
+            <div className="info-item" key={payment.id}>
+              <span>{payment.plan?.name || 'Plan'}</span>
+              <strong>
+                ₹{payment.amount} — {payment.paymentMode || 'UPI'} — {payment.status} — {new Date(payment.createdAt).toLocaleDateString('en-IN')}
+              </strong>
+            </div>
+          ))}
         </div>
-
-        <div className="info-item">
-          <span>Payment Mode</span>
-          <strong>UPI</strong>
-        </div>
-
-        <div className="info-item">
-          <span>Payment Status</span>
-          <strong>Success</strong>
-        </div>
-      </div>
+      ) : (
+        <p>No payment records found.</p>
+      )}
     </section>
   )}
 

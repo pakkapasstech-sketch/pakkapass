@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState,useEffect } from 'react';
 import {
   HiOutlineEye,
   HiOutlinePencil,
@@ -20,43 +20,61 @@ const ContentTable = ({
   const [page, setPage] =
     useState(1);
 
-  const filteredContent =
-    useMemo(() => {
-      return content.filter(
-        (item) => {
-          const matchSearch =
-            item.title
-              .toLowerCase()
-              .includes(
-                search.toLowerCase()
-              );
+  const filteredContent = useMemo(() => {
+  return content.filter((item) => {
+    const matchSearch =
+      item.title
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
 
-          const matchTab =
-            activeTab === 'all'
-              ? true
-              : item.type ===
-                activeTab;
+    const matchTab =
+      activeTab === 'all'
+        ? true
+        : item.type === activeTab;
 
-          const matchTopic =
-            !filters.topic
-              ? true
-              : item.topic ===
-                filters.topic;
+    const matchTopic =
+      !filters.topic ||
+      item.topic === filters.topic;
 
-          return (
-            matchSearch &&
-            matchTab &&
-            matchTopic
-          );
-        }
-      );
-    }, [
-      content,
-      search,
-      activeTab,
-      filters,
-    ]);
+    const matchClass =
+      !filters.class ||
+      item.grade === filters.class;
 
+    const matchBoard =
+      !filters.board ||
+      item.board === filters.board;
+
+    const matchSubject =
+      !filters.subject ||
+      item.subject === filters.subject;
+
+    const matchChapter =
+      !filters.chapter ||
+      item.chapter === filters.chapter;
+
+    return (
+      matchSearch &&
+      matchTab &&
+      matchTopic &&
+      matchClass &&
+      matchBoard &&
+      matchSubject &&
+      matchChapter
+    );
+  });
+}, [
+  content,
+  search,
+  activeTab,
+  filters,
+]);
+useEffect(() => {
+  setPage(1);
+}, [
+  search,
+  activeTab,
+  filters,
+]);
   const totalPages =
     Math.ceil(
       filteredContent.length /
