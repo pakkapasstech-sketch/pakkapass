@@ -80,7 +80,7 @@ const Sidebar = () => {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user-card">
+          {/* <div className="sidebar-user-card">
             <Avatar initials={user?.initials || 'U'} size="md" />
             {!shouldCollapse && user && (
               <div className="sidebar-user-info">
@@ -92,7 +92,7 @@ const Sidebar = () => {
                 </button>
               </div>
             )}
-          </div>
+          </div> */}
 
           <button type="button" onClick={showLogoutConfirm} className="sidebar-logout-btn">
             <HiOutlineLogout className="sidebar-icon" />

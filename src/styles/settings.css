@@ -1,0 +1,198 @@
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+
+  --settings-bg: #ffffff;
+  --settings-border: #e2e8f0;
+  --settings-shadow: rgba(15, 23, 42, 0.05);
+
+  --settings-title: #111827;
+  --settings-text: #64748b;
+
+  --settings-input-bg: #ffffff;
+  --settings-input-border: #dbe2ea;
+  --settings-input-text: #111827;
+}
+
+/* ================= DARK MODE ================= */
+
+.dark .settings-page {
+  --settings-bg: #111827;
+  --settings-border: #1f2937;
+  --settings-shadow: rgba(0, 0, 0, 0.3);
+
+  --settings-title: #f8fafc;
+  --settings-text: #94a3b8;
+
+  --settings-input-bg: #1e293b;
+  --settings-input-border: #334155;
+  --settings-input-text: #f8fafc;
+}
+
+/* ================= SECTION CARD ================= */
+
+.settings-section {
+  background: var(--settings-bg);
+  border: 1px solid var(--settings-border);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px var(--settings-shadow);
+}
+
+.settings-section h3 {
+  margin: 0 0 24px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--settings-title);
+}
+
+.settings-section p {
+  margin: 0;
+  color: var(--settings-text);
+  line-height: 1.6;
+}
+
+/* ================= FORM ================= */
+
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(260px, 1fr)
+  );
+  gap: 18px;
+}
+
+.settings-form input {
+  height: 52px;
+  width: 100%;
+
+  padding: 0 16px;
+
+  border: 1px solid
+    var(--settings-input-border);
+  border-radius: 12px;
+
+  background: var(
+    --settings-input-bg
+  );
+  color: var(
+    --settings-input-text
+  );
+
+  font-size: 14px;
+
+  transition: all 0.2s ease;
+}
+
+.settings-form input::placeholder {
+  color: #94a3b8;
+}
+
+.settings-form input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow:
+    0 0 0 3px
+    rgba(99, 102, 241, 0.15);
+}
+
+.settings-form input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ================= BUTTON ================= */
+
+.settings-form .btn-primary {
+  height: 50px;
+
+  padding: 0 22px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #4f46e5;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.settings-form .btn-primary:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.settings-form .btn-primary:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ================= TOGGLES ================= */
+
+.settings-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 0;
+
+  border-bottom: 1px solid
+    var(--settings-border);
+}
+
+.settings-toggle:last-child {
+  border-bottom: none;
+}
+
+.settings-toggle span {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--settings-title);
+}
+
+.settings-toggle input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #4f46e5;
+}
+
+/* ================= SECURITY TEXT ================= */
+
+.settings-section p {
+  color: var(--settings-text);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .settings-section {
+    padding: 20px;
+  }
+
+  .settings-form {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-form .btn-primary {
+    width: 100%;
+  }
+
+  .settings-toggle {
+    padding: 16px 0;
+  }
+}

@@ -1,0 +1,130 @@
+.logout-modal-content {
+  text-align: center;
+  padding: 8px 8px 4px;
+}
+
+.logout-icon {
+  width: 80px;
+  height: 80px;
+
+  margin: 0 auto 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 22px;
+
+  background: linear-gradient(
+    135deg,
+    #fee2e2,
+    #fecaca
+  );
+
+  color: #dc2626;
+  font-size: 42px;
+}
+
+.logout-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.logout-modal-text {
+  margin-top: 14px;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.logout-cancel-btn,
+.logout-confirm-btn {
+  flex: 1;
+
+  height: 50px;
+
+  border: none;
+  border-radius: 14px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Cancel */
+
+.logout-cancel-btn {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.logout-cancel-btn:hover {
+  background: #f1f5f9;
+}
+
+/* Logout */
+
+.logout-confirm-btn {
+  background: linear-gradient(
+    135deg,
+    #ef4444,
+    #dc2626
+  );
+
+  color: white;
+
+  box-shadow:
+    0 10px 24px
+    rgba(239, 68, 68, 0.25);
+}
+
+.logout-confirm-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 16px 32px
+    rgba(239, 68, 68, 0.35);
+}
+
+.logout-confirm-btn:disabled,
+.logout-cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Dark mode */
+
+.dark .logout-title {
+  color: #f8fafc;
+}
+
+.dark .logout-modal-text {
+  color: #94a3b8;
+}
+
+.dark .logout-cancel-btn {
+  background: #1f2937;
+  color: #e2e8f0;
+  border-color: #374151;
+}
+
+.dark .logout-cancel-btn:hover {
+  background: #374151;
+}
+
+@media (max-width: 500px) {
+  .logout-modal-actions {
+    flex-direction: column;
+  }
+}

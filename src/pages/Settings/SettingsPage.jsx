@@ -5,7 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { authService } from '../../services/auth.service';
 import { usePermissions } from '../../auth/usePermissions';
 import { ROLES } from '../../auth/roles';
-import '../../styles/partners.css';
+import '../../styles/settings.css';
 
 const SettingsPage = () => {
   const { user, updateUser } = useAuth();
@@ -96,10 +96,10 @@ const SettingsPage = () => {
         </div>
       </section>
 
-      <section className="settings-section">
+      {/* <section className="settings-section">
         <h3>Security</h3>
         <p>Session management and logout from all devices will be available in a future update.</p>
-      </section>
+      </section> */}
     </div>
   );
 };

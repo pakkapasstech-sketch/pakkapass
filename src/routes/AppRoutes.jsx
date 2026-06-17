@@ -17,6 +17,10 @@ import NotificationsPage from '../pages/Notifications/NotificationsPage';
 import PartnersPage from '../pages/Partners/PartnersPage';
 import SettingsPage from '../pages/Settings/SettingsPage';
 import ParentDetailsPage from '../pages/parents/ParentDetailsPage';
+import AddPartnerPage from '../pages/Partners/AddPartnerPage';
+import PartnerDetailsPage from '../pages/Partners/PartnerDetailsPage';
+import EditPartnerPage from '../pages/Partners/EditPartnerPage';
+
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
@@ -32,20 +36,50 @@ const AppRoutes = () => (
           <Route path="students/:id" element={<StudentDetailsPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute permission={PERMISSIONS.STUDENT_VIEW} roles={[ROLES.ADMIN]} />}>
+        <Route
+          element={<ProtectedRoute permission={PERMISSIONS.STUDENT_VIEW} roles={[ROLES.ADMIN]} />}
+        >
           <Route path="parents" element={<ParentsManagement />} />
-          <Route path="parents/:id" element={<ParentDetailsPage/>}/>
+          <Route path="parents/:id" element={<ParentDetailsPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute permission={PERMISSIONS.INSTITUTION_VIEW} roles={[ROLES.ADMIN]} />}>
-          <Route path="partners" element={<PartnersPage />} />
+        <Route
+          element={
+            <ProtectedRoute permission={PERMISSIONS.INSTITUTION_VIEW} roles={[ROLES.ADMIN]} />
+          }
+        >
+          <Route
+  path="partners"
+  element={<PartnersPage />}
+/>
+
+<Route
+  path="partners/add"
+  element={<AddPartnerPage />}
+/>
+
+<Route
+  path="partners/:id"
+  element={
+    <PartnerDetailsPage />
+  }
+/>
+
+<Route
+  path="partners/:id/edit"
+  element={
+    <EditPartnerPage />
+  }
+/>
         </Route>
 
         <Route element={<ProtectedRoute permission={PERMISSIONS.RESOURCE_VIEW} />}>
           <Route path="content" element={<ContentManagement />} />
         </Route>
 
-        <Route element={<ProtectedRoute permission={PERMISSIONS.COUPON_VIEW} roles={[ROLES.ADMIN]} />}>
+        <Route
+          element={<ProtectedRoute permission={PERMISSIONS.COUPON_VIEW} roles={[ROLES.ADMIN]} />}
+        >
           <Route path="subscriptions" element={<SubscriptionManagementPage />} />
           <Route path="coupons" element={<ReferralManagementPage />} />
         </Route>

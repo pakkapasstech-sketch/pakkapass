@@ -1,0 +1,235 @@
+.add-partner-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-badge {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f46e5;
+  margin-bottom: 8px;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.page-header p {
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.partner-form-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 32px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.form-actions button {
+  min-width: 150px;
+}
+
+.partner-stepper {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: fit-content;
+}
+
+.step-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.step-item p {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.step-item.active .step-circle {
+  background: #4f46e5;
+  color: white;
+}
+
+.step-item.active p {
+  color: #111827;
+}
+
+.partner-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  font-size: 15px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #4f46e5;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-card {
+  padding: 24px;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.info-card span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.info-card h3 {
+  margin-top: 10px;
+  font-size: 22px;
+  color: #111827;
+}
+
+.status-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-chip {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.status-chip.active {
+  background: #4f46e5;
+  color: white;
+}
+
+.referral-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.referral-card,
+.message-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 30px;
+}
+
+.referral-card {
+  text-align: center;
+}
+
+.referral-card p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.referral-card h1 {
+  margin: 20px 0;
+  font-size: 42px;
+  font-weight: 700;
+  color: #4f46e5;
+  letter-spacing: 2px;
+}
+
+.message-card h3 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.message-card textarea {
+  width: 100%;
+  resize: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  font-size: 15px;
+  background: white;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .partner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .partner-form-card {
+    padding: 24px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
