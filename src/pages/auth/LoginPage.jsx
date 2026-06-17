@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,11 +24,10 @@ const OTP_COOLDOWN = 60;
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loginAdmin, sendOtp, verifyOtp, isAuthenticated, user, loading: authLoading: authLogin } = useAuth();
+  const { loginAdmin, sendOtp, verifyOtp, isAuthenticated, user, loading: authLoading } = useAuth();
 
   const [role, setRole] = useState('admin');
   const [step, setStep] = useState('credentials');
-  const [otpSent, setOtpSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mobile, setMobile] = useState('');
@@ -38,8 +37,6 @@ const LoginPage = () => {
 
   const isAdmin = role === 'admin';
   const isOTPUser = role === 'partner' || role === 'parent';
-
-  const previousRole = useRef(role);
 
   const {
     register,
@@ -129,8 +126,8 @@ const LoginPage = () => {
 
   const getButtonText = () => {
     if (isAdmin) return loading ? 'Logging In...' : 'Login';
-    if (isOTPUser && !otpSent) return loading ? 'Sending OTP...' : 'Get OTP';
-    return loading ? 'Verifying...' : 'Login';
+    if (isOTPUser && step === 'credentials') return loading ? 'Sending OTP...' : 'Send OTP';
+    return loading ? 'Verifying...' : 'Verify & Sign In';
   };
 
   return (
@@ -332,10 +329,12 @@ const LoginPage = () => {
             )}
           </AnimatePresence>
 
-          <p className="contact-admin">
-            Don&apos;t have an account?
-            <span> Contact your administrator</span>
-          </p>
+<p className="contact-admin">
+             Don&apos;t have an account?{' '}
+             <Link to="/contact-admin" className="contact-admin-link">
+               Contact your administrator
+             </Link>
+           </p>
         </motion.div>
 
         <div className="login-footer-bar">

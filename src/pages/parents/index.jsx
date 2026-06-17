@@ -1,1 +1,1 @@
-export { default } from '../../pages/shared/PlaceholderPage';
+export { default } from './ParentsManagement';
