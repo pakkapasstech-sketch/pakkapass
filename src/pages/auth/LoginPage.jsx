@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +11,6 @@ import {
   HiOutlineChartBar,
   HiOutlineShieldCheck,
   HiOutlineUserGroup,
-  HiOutlineDeviceMobile,
   HiOutlineKey,
 } from 'react-icons/hi';
 
@@ -30,18 +29,18 @@ const LoginPage = () => {
   const [step, setStep] = useState('credentials');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [mobile, setMobile] = useState('');
+  const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [cooldown, setCooldown] = useState(0);
+  const prevRole = useRef(role);
 
   const isAdmin = role === 'admin';
-  const isOTPUser = role === 'partner' || role === 'parent';
+  const isParent = role === 'parent';
 
   const {
     register,
     handleSubmit,
-    reset,
     getValues,
     formState: { errors },
   } = useForm({ defaultValues: { email: '', password: '' } });
@@ -56,12 +55,15 @@ const LoginPage = () => {
     setStep('credentials');
     setOtp('');
     setCooldown(0);
+    setEmail('');
   }, []);
 
-  const handleRoleChange = (newRole) => {
-    setRole(newRole);
-    resetOtpFlow();
-  };
+  useEffect(() => {
+    if (prevRole.current !== role) {
+      resetOtpFlow();
+      prevRole.current = role;
+    }
+  }, [role, resetOtpFlow]);
 
   if (!authLoading && isAuthenticated && user) {
     return <Navigate to={getDefaultRoute(user.role)} replace />;
@@ -80,18 +82,19 @@ const LoginPage = () => {
     }
   };
 
-  const onSendOtp = async (e) => {
+  const handleGetOTP = async (e) => {
     e?.preventDefault();
-    if (!mobile || mobile.length < 10) {
-      toast.error('Enter a valid 10-digit mobile number');
+    const emailVal = email || getValues('email');
+    if (!emailVal || !emailVal.includes('@')) {
+      toast.error('Enter a valid email address');
       return;
     }
     try {
       setLoading(true);
-      await sendOtp({ mobile, role });
+      await sendOtp({ email: emailVal, role });
       setStep('otp');
       setCooldown(OTP_COOLDOWN);
-      toast.success('OTP sent to your mobile');
+      toast.success('OTP sent to your email');
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to send OTP');
     } finally {
@@ -99,20 +102,20 @@ const LoginPage = () => {
     }
   };
 
-  const onResendOtp = async () => {
+  const handleResendOTP = async () => {
     if (cooldown > 0) return;
-    await onSendOtp();
+    await handleGetOTP();
   };
 
-  const onVerifyOtp = async (e) => {
-    e.preventDefault();
+  const handleOTPLogin = async (e) => {
+    e?.preventDefault();
     if (!otp || otp.length < 4) {
-      toast.error('Enter the 4-digit OTP');
+      toast.error('OTP is required');
       return;
     }
     try {
       setLoading(true);
-      const result = await verifyOtp({ mobile, otp, role, rememberMe });
+      const result = await verifyOtp({ email, otp, role, rememberMe });
       toast.success(`Welcome back, ${result.user.name || 'User'}!`);
       navigate(getDefaultRoute(result.user.role));
     } catch (error) {
@@ -122,12 +125,10 @@ const LoginPage = () => {
     }
   };
 
-  const isOtpRole = role === 'partner' || role === 'parent';
-
   const getButtonText = () => {
     if (isAdmin) return loading ? 'Logging In...' : 'Login';
-    if (isOTPUser && step === 'credentials') return loading ? 'Sending OTP...' : 'Send OTP';
-    return loading ? 'Verifying...' : 'Verify & Sign In';
+    if (isParent && step === 'credentials') return loading ? 'Sending OTP...' : 'Get OTP';
+    return loading ? 'Verifying...' : 'Login';
   };
 
   return (
@@ -183,22 +184,38 @@ const LoginPage = () => {
           <p className="subtitle">Sign in to continue to your PakkaPass dashboard</p>
 
           <div className="role-tabs" role="tablist">
-            {['admin', 'partner', 'parent'].map((r) => (
-              <button
-                key={r}
-                type="button"
-                role="tab"
-                aria-selected={role === r}
-                onClick={() => handleRoleChange(r)}
-                className={role === r ? 'active-role' : ''}
-              >
-                {r.charAt(0).toUpperCase() + r.slice(1)}
-              </button>
-            ))}
+            <button
+              type="button"
+              role="tab"
+              aria-selected={role === 'admin'}
+              onClick={() => setRole('admin')}
+              className={role === 'admin' ? 'active-role' : ''}
+            >
+              Admin
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={role === 'parent'}
+              onClick={() => setRole('parent')}
+              className={role === 'parent' ? 'active-role' : ''}
+            >
+              Parent
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={role === 'partner'}
+              onClick={() => setRole('partner')}
+              className={role === 'partner' ? 'active-role' : ''}
+              disabled
+            >
+              Partner
+            </button>
           </div>
 
           <AnimatePresence mode="wait">
-            {role === 'admin' ? (
+            {isAdmin ? (
               <motion.form
                 key="admin-form"
                 onSubmit={handleSubmit(onAdminSubmit)}
@@ -248,10 +265,10 @@ const LoginPage = () => {
                 </div>
 
                 <button type="submit" disabled={loading} className="signin-btn">
-                  {loading ? 'Signing In...' : 'Sign In'}
+                  {getButtonText()}
                 </button>
               </motion.form>
-            ) : (
+            ) : isParent ? (
               <motion.div
                 key="otp-form"
                 initial={{ opacity: 0, x: 10 }}
@@ -259,16 +276,15 @@ const LoginPage = () => {
                 exit={{ opacity: 0, x: -10 }}
               >
                 {step === 'credentials' ? (
-                  <form onSubmit={onSendOtp}>
+                  <form onSubmit={handleGetOTP}>
                     <div className="input-group">
-                      <HiOutlineDeviceMobile className="input-icon" />
+                      <HiOutlineMail className="input-icon" />
                       <input
-                        type="tel"
-                        placeholder="Mobile Number"
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                        aria-label="Mobile number"
-                        maxLength={10}
+                        type="email"
+                        placeholder="Email Address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        aria-label="Email"
                       />
                     </div>
 
@@ -284,13 +300,13 @@ const LoginPage = () => {
                     </div>
 
                     <button type="submit" disabled={loading} className="signin-btn">
-                      {loading ? 'Sending OTP...' : 'Send OTP'}
+                      {loading ? 'Sending OTP...' : 'Get OTP'}
                     </button>
                   </form>
                 ) : (
-                  <form onSubmit={onVerifyOtp}>
+                  <form onSubmit={handleOTPLogin}>
                     <p className="otp-sent-msg">
-                      OTP sent to <strong>+91 {mobile}</strong>
+                      OTP sent to <strong>{email}</strong>
                       <button type="button" className="change-mobile-btn" onClick={resetOtpFlow}>
                         Change
                       </button>
@@ -301,7 +317,7 @@ const LoginPage = () => {
                       <input
                         type="text"
                         inputMode="numeric"
-                        placeholder="Enter 4-digit OTP"
+                        placeholder="Enter OTP"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         aria-label="OTP"
@@ -314,27 +330,36 @@ const LoginPage = () => {
                       {cooldown > 0 ? (
                         <span>Resend OTP in {cooldown}s</span>
                       ) : (
-                        <button type="button" onClick={onResendOtp} disabled={loading}>
+                        <button type="button" onClick={handleResendOTP} disabled={loading}>
                           Resend OTP
                         </button>
                       )}
                     </div>
 
                     <button type="submit" disabled={loading} className="signin-btn">
-                      {loading ? 'Verifying...' : 'Verify & Sign In'}
+                      {loading ? 'Verifying...' : 'Login'}
                     </button>
                   </form>
                 )}
               </motion.div>
+            ) : (
+              <motion.div
+                key="partner-coming-soon"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <p style={{ textAlign: 'center', color: '#6b7280' }}>Partner login coming soon</p>
+              </motion.div>
             )}
           </AnimatePresence>
 
-<p className="contact-admin">
-             Don&apos;t have an account?{' '}
-             <Link to="/contact-admin" className="contact-admin-link">
-               Contact your administrator
-             </Link>
-           </p>
+          <p className="contact-admin">
+            Don&apos;t have an account?{' '}
+            <Link to="/contact-admin" className="contact-admin-link">
+              Contact your administrator
+            </Link>
+          </p>
         </motion.div>
 
         <div className="login-footer-bar">
@@ -346,7 +371,7 @@ const LoginPage = () => {
           <span className="footer-dot">•</span>
 
           <p className="footer-text">
-            By continuing, you agree to our
+            By continuing, you agree to our{' '}
             <a href="/terms" target="_blank" rel="noopener noreferrer" className="footer-link">
               Terms of Service
             </a>{' '}

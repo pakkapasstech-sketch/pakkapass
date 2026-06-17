@@ -4,37 +4,23 @@ export const authService = {
   loginAdmin: async ({ email, password }) => {
     const { data } = await axiosInstance.post('/admin/login', { email, password });
     return {
-      accessToken: data.accessToken,
+      accessToken: data.token || data.accessToken,
       refreshToken: data.refreshToken,
       user: data.user || data.admin,
     };
   },
 
-  sendPartnerOtp: async ({ mobile }) => {
-    const { data } = await axiosInstance.post('/partner/login', { mobile });
+  sendParentOtp: async ({ email }) => {
+    const { data } = await axiosInstance.post('/admin/parent/login', { email });
     return data;
   },
 
-  verifyPartnerOtp: async ({ mobile, otp }) => {
-    const { data } = await axiosInstance.post('/partner/verify-otp', { mobile, otp });
+  verifyParentOtp: async ({ email, otp }) => {
+    const { data } = await axiosInstance.post('/admin/parent/verify-otp', { email, otp });
     return {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
+      accessToken: data.token,
+      refreshToken: null,
       user: data.user,
-    };
-  },
-
-  sendParentOtp: async ({ mobile }) => {
-    const { data } = await axiosInstance.post('/parent/login', { mobile });
-    return data;
-  },
-
-  verifyParentOtp: async ({ mobile, otp }) => {
-    const { data } = await axiosInstance.post('/parent/verify-otp', { mobile, otp });
-    return {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      user: data.user || data.parent,
     };
   },
 

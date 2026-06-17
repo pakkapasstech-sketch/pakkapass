@@ -63,8 +63,6 @@ const SettingsPage = () => {
         <div className="settings-form">
           <input placeholder="Name" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} />
           <input placeholder="Email" value={profile.email} disabled />
-          <input placeholder="Phone" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} />
-          <button type="button" className="btn-primary" onClick={handleProfileSave} disabled={saving}>Save Profile</button>
         </div>
       </section>
 

@@ -85,21 +85,19 @@ export const AuthProvider = ({ children }) => {
     return { ...data, user: userData };
   };
 
-  const sendOtp = async ({ mobile, role }) => {
-    if (role === 'partner') return authService.sendPartnerOtp({ mobile });
-    if (role === 'parent') return authService.sendParentOtp({ mobile });
+  const sendOtp = async ({ email, role }) => {
+    if (role === 'parent') return authService.sendParentOtp({ email });
     throw new Error('Invalid role for OTP');
   };
 
-  const verifyOtp = async ({ mobile, otp, role, rememberMe = true }) => {
-    let data;
-    if (role === 'partner') data = await authService.verifyPartnerOtp({ mobile, otp });
-    else if (role === 'parent') data = await authService.verifyParentOtp({ mobile, otp });
-    else throw new Error('Invalid role for OTP');
-
-    const userData = { ...data.user, role: normalizeRole(data.user.role) };
-    persistSession({ ...data, user: userData }, rememberMe);
-    return { ...data, user: userData };
+  const verifyOtp = async ({ email, otp, role, rememberMe = true }) => {
+    if (role === 'parent') {
+      const data = await authService.verifyParentOtp({ email, otp });
+      const userData = { ...data.user, role: normalizeRole(data.user.role) };
+      persistSession({ ...data, user: userData }, rememberMe);
+      return { ...data, user: userData };
+    }
+    throw new Error('Invalid role for OTP');
   };
 
   const logout = async () => {

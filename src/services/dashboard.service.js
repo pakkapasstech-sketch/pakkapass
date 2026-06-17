@@ -10,7 +10,7 @@ const mapAdminStatsToCards = (stats = {}) => [
 
 export const dashboardService = {
   getStats: async () => {
-    const { data } = await axiosInstance.get('/admin/dashboard');
+    const { data } = await axiosInstance.get('/admin/stats');
     return {
       ...data,
       cards: mapAdminStatsToCards(data.stats),
@@ -18,25 +18,23 @@ export const dashboardService = {
   },
 
   getPartnerDashboard: async () => {
-    const { data } = await axiosInstance.get('/partner/dashboard');
+    const { data } = await axiosInstance.get('/institute/analytics');
     return data;
   },
 
   getParentDashboard: async () => {
-    const { data } = await axiosInstance.get('/parent/dashboard');
+    const { data } = await axiosInstance.get('/parent/my-analytics');
     return data;
   },
 
-  // Fetches recent payments from backend for dashboard and subscription pages
   getRecentPayments: async () => {
     const { data } = await axiosInstance.get('/admin/payments');
     return data.payments || [];
   },
 
-  // Fetches referral conversion stats from partner profiles
   getReferralConversions: async () => {
-    const { data } = await axiosInstance.get('/admin/referrals');
-    return data.referrals || [];
+    const { data } = await axiosInstance.get('/admin/partners');
+    return data.partners || [];
   },
 };
 
