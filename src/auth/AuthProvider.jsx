@@ -64,7 +64,15 @@ export const AuthProvider = ({ children }) => {
     }
     try {
       const { user: userData } = await authService.getMe();
-      const normalized = { ...userData, role: normalizeRole(userData.role) };
+
+console.log('Backend user:', userData);
+
+const normalized = {
+  ...userData,
+  role: normalizeRole(userData.role),
+};
+
+console.log('Normalized user:', normalized);
       setUser(normalized);
       setIsAuthenticated(true);
     } catch {

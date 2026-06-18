@@ -1,9 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { dashboardService } from '../services/dashboard.service';
+import { dashboardService } from '../services/dashboardService';
 import { mockDashboardCharts } from '../mock/dashboard';
 import { QUERY_KEYS } from '../constants/queryKeys';
 import paymentService from '../services/payment.service';
 import { mockPayments } from '../mock/payments'
+import {
+  mockPerformanceMetrics,
+} from '../mocks/mockData';
+import {
+  mockSubscriptionGrowth,
+} from '../mocks/mockData';
+
 
 export const useAdminDashboard = () =>
   useQuery({
@@ -27,8 +34,11 @@ export const useDashboardStats = () => useAdminDashboard();
 
 export const useSubscriptionGrowth = () =>
   useQuery({
-    queryKey: QUERY_KEYS.dashboard.subscriptionGrowth,
-    queryFn: async () => mockDashboardCharts.subscriptionGrowth,
+    queryKey:
+      QUERY_KEYS.dashboard
+        .subscriptionGrowth,
+    queryFn: async () =>
+      mockSubscriptionGrowth,
   });
 
 export const useRevenueTrend = () =>
@@ -108,10 +118,6 @@ export const useReferralConversions = () =>
 export const usePerformanceMetrics = () =>
   useQuery({
     queryKey: QUERY_KEYS.dashboard.performance,
-    queryFn: async () => [
-      { label: 'Avg. Study Hours', value: '2.4h', change: '+12%', trend: 'up' },
-      { label: 'Completion Rate', value: '78%', change: '+5%', trend: 'up' },
-      { label: 'Active Users', value: '1,240', change: '+8%', trend: 'up' },
-      { label: 'Churn Rate', value: '3.2%', change: '-1%', trend: 'down' },
-    ],
+    queryFn: async () =>
+      mockPerformanceMetrics,
   });

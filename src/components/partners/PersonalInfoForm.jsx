@@ -6,16 +6,13 @@ const PersonalInfoForm = ({
     <div className="partner-form-section">
       <h2>Personal Information</h2>
 
-      <div className="partner-form-grid">
-        <div className="form-group">
-          <label>
-            First Name *
-          </label>
+      <div className="partner-grid">
+        <div className="partner-form-group">
+          <label>First Name *</label>
 
           <input
-            value={
-              formData.firstName
-            }
+            type="text"
+            value={formData.firstName}
             onChange={(e) =>
               updateField(
                 'firstName',
@@ -26,15 +23,12 @@ const PersonalInfoForm = ({
           />
         </div>
 
-        <div className="form-group">
-          <label>
-            Last Name *
-          </label>
+        <div className="partner-form-group">
+          <label>Last Name *</label>
 
           <input
-            value={
-              formData.lastName
-            }
+            type="text"
+            value={formData.lastName}
             onChange={(e) =>
               updateField(
                 'lastName',
@@ -45,10 +39,8 @@ const PersonalInfoForm = ({
           />
         </div>
 
-        <div className="form-group">
-          <label>
-            Date of Birth
-          </label>
+        <div className="partner-form-group">
+          <label>Date of Birth</label>
 
           <input
             type="date"
@@ -62,13 +54,11 @@ const PersonalInfoForm = ({
           />
         </div>
 
-        <div className="form-group">
+        <div className="partner-form-group">
           <label>Gender</label>
 
           <select
-            value={
-              formData.gender
-            }
+            value={formData.gender}
             onChange={(e) =>
               updateField(
                 'gender',
@@ -80,15 +70,15 @@ const PersonalInfoForm = ({
               Select Gender
             </option>
 
-            <option>
+            <option value="Male">
               Male
             </option>
 
-            <option>
+            <option value="Female">
               Female
             </option>
 
-            <option>
+            <option value="Other">
               Other
             </option>
           </select>
@@ -97,9 +87,7 @@ const PersonalInfoForm = ({
 
       <div className="upload-grid">
         <div className="upload-card">
-          <label>
-            Profile Photo
-          </label>
+          <label>Profile Photo</label>
 
           <input
             type="file"

@@ -105,5 +105,7 @@ const Sidebar = () => {
     </>
   );
 };
+// console.log('Sidebar role:', role);
+// console.log('Sidebar user:', user);
 
 export default Sidebar;

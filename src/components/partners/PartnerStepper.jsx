@@ -3,26 +3,22 @@ const PartnerStepper = ({
   activeStep,
 }) => {
   return (
-    <div className="partner-stepper">
-      {steps.map(
-        (step, index) => (
-          <div
-            key={step}
-            className={`step-item ${
-              activeStep >=
-              index
-                ? 'active'
-                : ''
-            }`}
-          >
-            <div className="step-circle">
-              {index + 1}
-            </div>
-
-            <p>{step}</p>
-          </div>
-        )
-      )}
+    <div className="partner-tabs">
+      {steps.map((step, index) => (
+        <button
+          key={step}
+          type="button"
+          className={`partner-tab ${
+            activeStep === index
+              ? 'active'
+              : activeStep > index
+              ? 'completed'
+              : ''
+          }`}
+        >
+          {step}
+        </button>
+      ))}
     </div>
   );
 };

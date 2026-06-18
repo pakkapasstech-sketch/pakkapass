@@ -6,14 +6,15 @@
   --input-height: 44px;
   --input-padding-x: 16px;
 
-  --focus-ring: 0 0 0 4px rgba(79, 70, 229, 0.12);
+  --focus-ring: 0 0 0 4px
+    rgba(79, 70, 229, 0.12);
   --focus-border: var(--color-primary);
 
   --button-height: 44px;
 }
 
 /* ==========================================
-   SEARCH WRAPPER
+   SEARCH
 ========================================== */
 
 .search-wrapper {
@@ -21,34 +22,24 @@
   width: 100%;
 }
 
-/* ==========================================
-   SEARCH ICON
-========================================== */
-
 .search-icon {
   position: absolute;
   top: 50%;
   left: 12px;
-
   width: 16px;
   height: 16px;
-
   color: var(--color-text-muted);
-
   transform: translateY(-50%);
 }
-
-/* ==========================================
-   SEARCH INPUT
-========================================== */
 
 .search-input {
   width: 100%;
   height: var(--input-height);
+  padding: 0 var(--input-padding-x)
+    0 40px;
 
-  padding: 0 var(--input-padding-x) 0 40px;
-
-  border: 1px solid var(--color-border);
+  border: 1px solid
+    var(--color-border);
   border-radius: var(--radius-sm);
 
   background: var(--color-card);
@@ -58,111 +49,32 @@
   outline: none;
 
   transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    border-color
+      var(--transition-fast),
+    box-shadow
+      var(--transition-fast);
 }
 
 .search-input:focus {
-  border-color: var(--focus-border);
-  box-shadow: var(--focus-ring);
+  border-color: var(
+    --focus-border
+  );
+  box-shadow: var(
+    --focus-ring
+  );
 }
 
 /* ==========================================
-   TEXT INPUT
+   APP FORM COMPONENTS
 ========================================== */
 
-.form-input {
-  width: 100%;
-  height: var(--input-height);
-
-  padding: 0 var(--input-padding-x);
-
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-
-  background: var(--color-card);
-  color: var(--color-text-primary);
-
-  font-size: 14px;
-  outline: none;
-
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+.app-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.form-input:focus {
-  border-color: var(--focus-border);
-  box-shadow: var(--focus-ring);
-}
-
-/* ==========================================
-   TEXTAREA
-========================================== */
-
-.form-textarea {
-  width: 100%;
-  min-height: 120px;
-
-  padding: 12px var(--input-padding-x);
-
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-
-  background: var(--color-card);
-  color: var(--color-text-primary);
-
-  font-size: 14px;
-  outline: none;
-
-  resize: vertical;
-
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.form-textarea:focus {
-  border-color: var(--focus-border);
-  box-shadow: var(--focus-ring);
-}
-
-/* ==========================================
-   SELECT
-========================================== */
-
-.form-select {
-  width: 100%;
-  height: var(--input-height);
-
-  padding: 0 12px;
-
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-
-  background: var(--color-card);
-  color: var(--color-text-primary);
-
-  font-size: 14px;
-  outline: none;
-
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.form-select:focus {
-  border-color: var(--focus-border);
-  box-shadow: var(--focus-ring);
-}
-
-/* ==========================================
-   FORM LABEL
-========================================== */
-
-.form-label {
+.app-form-label {
   display: block;
 
   margin-bottom: 8px;
@@ -170,34 +82,151 @@
   font-size: 14px;
   font-weight: 600;
 
-  color: var(--color-text-primary);
+  color: var(
+    --color-text-primary
+  );
+}
+
+.app-form-input {
+  width: 100%;
+  height: var(
+    --input-height
+  );
+
+  padding: 0
+    var(--input-padding-x);
+
+  border: 1px solid
+    var(--color-border);
+  border-radius: var(
+    --radius-sm
+  );
+
+  background: var(
+    --color-card
+  );
+  color: var(
+    --color-text-primary
+  );
+
+  font-size: 14px;
+  outline: none;
+
+  transition:
+    border-color
+      var(--transition-fast),
+    box-shadow
+      var(--transition-fast);
+}
+
+.app-form-input:focus {
+  border-color: var(
+    --focus-border
+  );
+  box-shadow: var(
+    --focus-ring
+  );
+}
+
+.app-form-textarea {
+  width: 100%;
+  min-height: 120px;
+
+  padding: 12px
+    var(--input-padding-x);
+
+  border: 1px solid
+    var(--color-border);
+  border-radius: var(
+    --radius-sm
+  );
+
+  background: var(
+    --color-card
+  );
+  color: var(
+    --color-text-primary
+  );
+
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+
+  transition:
+    border-color
+      var(--transition-fast),
+    box-shadow
+      var(--transition-fast);
+}
+
+.app-form-textarea:focus {
+  border-color: var(
+    --focus-border
+  );
+  box-shadow: var(
+    --focus-ring
+  );
+}
+
+.app-form-select {
+  width: 100%;
+  height: var(
+    --input-height
+  );
+
+  padding: 0 12px;
+
+  border: 1px solid
+    var(--color-border);
+  border-radius: var(
+    --radius-sm
+  );
+
+  background: var(
+    --color-card
+  );
+  color: var(
+    --color-text-primary
+  );
+
+  font-size: 14px;
+  outline: none;
+
+  transition:
+    border-color
+      var(--transition-fast),
+    box-shadow
+      var(--transition-fast);
+}
+
+.app-form-select:focus {
+  border-color: var(
+    --focus-border
+  );
+  box-shadow: var(
+    --focus-ring
+  );
 }
 
 /* ==========================================
-   FORM GROUP
+   BUTTONS
 ========================================== */
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* ==========================================
-   BUTTON BASE
-========================================== */
-
-.form-button {
+.app-form-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 
-  min-height: var(--button-height);
+  min-height: var(
+    --button-height
+  );
   padding: 0 18px;
 
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(
+    --radius-sm
+  );
 
   font-size: 14px;
   font-weight: 600;
@@ -205,112 +234,74 @@
   cursor: pointer;
 
   transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+    background
+      var(--transition-fast),
+    transform
+      var(--transition-fast);
 }
 
-.form-button:disabled {
+.app-form-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* ==========================================
-   PRIMARY BUTTON
-========================================== */
-
 .primary-button {
-  background: var(--color-primary);
-  color: #ffffff;
+  background: var(
+    --color-primary
+  );
+  color: white;
 }
 
-.primary-button:hover:not(:disabled) {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
+.primary-button:hover:not(
+    :disabled
+  ) {
+  background: var(
+    --color-primary-dark
+  );
+  transform: translateY(
+    -1px
+  );
 }
-
-/* ==========================================
-   SECONDARY BUTTON
-========================================== */
 
 .secondary-button {
-  border: 1px solid var(--color-border);
+  border: 1px solid
+    var(--color-border);
   background: transparent;
-
-  color: var(--color-text-primary);
+  color: var(
+    --color-text-primary
+  );
 }
 
-.secondary-button:hover:not(:disabled) {
-  background: var(--color-surface);
-}
-
-/* ==========================================
-   SUCCESS BUTTON
-========================================== */
-
-.success-button {
-  background: var(--color-success);
-  color: #ffffff;
-}
-
-.success-button:hover:not(:disabled) {
-  background: var(--color-success-dark);
-  transform: translateY(-1px);
+.secondary-button:hover:not(
+    :disabled
+  ) {
+  background: var(
+    --color-surface
+  );
 }
 
 /* ==========================================
-   ICON BUTTON
-========================================== */
-
-.icon-button {
-  width: var(--button-height);
-  height: var(--button-height);
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border-radius: var(--radius-sm);
-}
-
-/* ==========================================
-   DARK MODE
-========================================== */
-
-.dark .secondary-button:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* ==========================================
-   TABLET
+   RESPONSIVE
 ========================================== */
 
 @media (max-width: 768px) {
-  .form-button {
+  .app-form-button {
     width: 100%;
   }
 
-  .form-group {
+  .app-form-group {
     gap: 6px;
   }
 }
 
-/* ==========================================
-   MOBILE
-========================================== */
-
 @media (max-width: 480px) {
-  .search-input,
-  .form-input,
-  .form-select,
-  .form-button {
+  .app-form-input,
+  .app-form-select,
+  .app-form-button {
     font-size: 13px;
   }
 
-  .form-label {
+  .app-form-label {
     font-size: 13px;
   }
 }

@@ -158,11 +158,11 @@ export const mockPerformanceMetrics = [
   { id: 'papers', title: 'Prev. Papers', value: 745, subtitle: 'Previous Papers', trend: 6.8, color: '#1e3a8a', icon: 'HiOutlineClipboardList', sparkline: [10, 14, 12, 18, 16, 22, 20, 25, 23, 28] },
 ];
 
-export const mockUser = {
-  id: '1',
-  name: 'Super Admin',
-  email: 'superadmin@pakkapass.com',
-  initials: 'SA',
-  role: 'super_admin',
-  status: 'Online',
-};
+// export const mockUser = {
+//   id: '1',
+//   name: 'Super Admin',
+//   email: 'superadmin@pakkapass.com',
+//   initials: 'SA',
+//   role: 'super_admin',
+//   status: 'Online',
+// };

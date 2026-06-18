@@ -111,24 +111,20 @@ const PartnersPage = () => {
         </div>
 
         <div className="header-actions">
-          <button
-            className="btn-secondary"
-          >
-            <HiOutlineDownload />
-            Export
-          </button>
+          <button className="partners-btn-secondary">
+  <HiOutlineDownload />
+  Export
+</button>
 
-          <button
-            className="btn-primary"
-            onClick={() =>
-              navigate(
-                '/partners/add'
-              )
-            }
-          >
-            <HiOutlinePlus />
-            Add Partner
-          </button>
+<button
+  className="partners-btn-primary"
+  onClick={() =>
+    navigate('/partners/add')
+  }
+>
+  <HiOutlinePlus />
+  Add Partner
+</button>
         </div>
       </div>
 

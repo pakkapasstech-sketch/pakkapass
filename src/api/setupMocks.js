@@ -4,16 +4,15 @@ import {
   mockDashboardStats,
   mockSubscriptionGrowth,
   mockRevenueTrend,
-  mockRevenueTrend,
   mockStudentsByState,
   mockRecentRegistrations,
   mockRecentPayments,
   mockReferralConversions,
   mockPerformanceMetrics,
-  mockUser,
+  // mockUser,
 } from '../mocks/mockData';
 
-const otpStore = new Map();
+// const otpStore = new Map();
 
 export const setupMocks = () => {
   const mock = new MockAdapter(axiosInstance, {
@@ -21,47 +20,47 @@ export const setupMocks = () => {
     onNoMatch: 'passthrough',
   });
 
-  mock.onPost('/auth/login').reply(async (config) => {
-    const body = JSON.parse(config.data);
-    const { email, password, isGetOTP, isOTP, otp } = body;
+  // mock.onPost('/auth/login').reply(async (config) => {
+  //   const body = JSON.parse(config.data);
+  //   const { email, password, isGetOTP, isOTP, otp } = body;
 
-    // Admin login
-    if (!isGetOTP && !isOTP) {
-      if (email === 'superadmin@pakkapass.com' && password === 'admin123') {
-        return [200, {
-          user: mockUser,
-          accessToken: 'mock-access-token',
-          refreshToken: 'mock-refresh-token',
-        }];
-      }
-      return [401, { message: 'Invalid credentials' }];
-    }
+  //   // Admin login
+  //   if (!isGetOTP && !isOTP) {
+  //     if (email === 'superadmin@pakkapass.com' && password === 'admin123') {
+  //       return [200, {
+  //         user: mockUser,
+  //         accessToken: 'mock-access-token',
+  //         refreshToken: 'mock-refresh-token',
+  //       }];
+  //     }
+  //     return [401, { message: 'Invalid credentials' }];
+  //   }
 
-    // OTP flow for partner/parent
-    if (isGetOTP) {
-      otpStore.set(email, '123456');
-      return [200, { message: 'OTP sent successfully' }];
-    }
+  //   // OTP flow for partner/parent
+  //   if (isGetOTP) {
+  //     otpStore.set(email, '123456');
+  //     return [200, { message: 'OTP sent successfully' }];
+  //   }
 
-    if (isOTP && otp === otpStore.get(email)) {
-      const role = body.role === 'partner' ? 'partner' : 'parent';
-      return [200, {
-        user: { ...mockUser, role },
-        accessToken: 'mock-access-token',
-        refreshToken: 'mock-refresh-token',
-      }];
-    }
+  //   if (isOTP && otp === otpStore.get(email)) {
+  //     const role = body.role === 'partner' ? 'partner' : 'parent';
+  //     return [200, {
+  //       user: { ...mockUser, role },
+  //       accessToken: 'mock-access-token',
+  //       refreshToken: 'mock-refresh-token',
+  //     }];
+  //   }
 
-    if (isOTP) {
-      return [400, { message: 'Invalid OTP' }];
-    }
+  //   if (isOTP) {
+  //     return [400, { message: 'Invalid OTP' }];
+  //   }
 
-    return [200, { message: 'OTP resent successfully' }];
-  });
+  //   return [200, { message: 'OTP resent successfully' }];
+  // });
 
-  mock.onPost('/auth/refresh').reply(200, { accessToken: 'mock-refreshed-token' });
-  mock.onGet('/auth/me').reply(200, { user: mockUser });
-  mock.onPost('/auth/logout').reply(200, { success: true });
+  // mock.onPost('/auth/refresh').reply(200, { accessToken: 'mock-refreshed-token' });
+  // mock.onGet('/auth/me').reply(200, { user: mockUser });
+  // mock.onPost('/auth/logout').reply(200, { success: true });
 
   mock.onGet('/dashboard/stats').reply(200, { data: mockDashboardStats });
   mock.onGet('/dashboard/subscription-growth').reply(200, { data: mockSubscriptionGrowth });

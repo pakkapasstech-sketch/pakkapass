@@ -85,10 +85,18 @@ const AdminDashboard = () => {
       </div>
 
       <div className="dashboard-performance-grid">
-        {(performance.data || []).map((m, i) => (
-          <AnalyticsCard key={m.label || i} {...m} isLoading={performance.isLoading} />
-        ))}
-      </div>
+  {(performance.data || []).map(
+    (m, i) => (
+      <AnalyticsCard
+        key={m.id || i}
+        {...m}
+        isLoading={
+          performance.isLoading
+        }
+      />
+    )
+  )}
+</div>
 
       <Modal isOpen={modal.open} onClose={() => setModal({ open: false })} title={`${modal.type} Details`}>
         <pre className="dashboard-modal-content">{JSON.stringify(modal.row, null, 2)}</pre>
