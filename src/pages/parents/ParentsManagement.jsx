@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineSearch,
-  HiOutlineDownload,
+  // HiOutlineDownload,
   HiOutlineEye,
 } from 'react-icons/hi';
 
@@ -124,7 +124,7 @@ const ParentsManagement = () => {
               <th>Phone</th>
               <th>Students</th>
               <th>Status</th>
-              <th>Actions</th>
+              {/* <th>Actions</th> */}
             </tr>
           </thead>
 
@@ -172,8 +172,7 @@ const ParentsManagement = () => {
                     </span>
                   </td>
 
-                  <td>
-                    <button
+                    {/* <button
                       className="view-btn"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -183,8 +182,7 @@ const ParentsManagement = () => {
                       }}
                     >
                       <HiOutlineEye />
-                    </button>
-                  </td>
+                    </button> */}
                 </tr>
               ))
             ) : (

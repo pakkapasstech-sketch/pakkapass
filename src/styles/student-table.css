@@ -332,7 +332,30 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.clickable-row {
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
 
+.clickable-row:hover {
+  background: #faf5ff;
+}
+
+.clickable-row:hover td {
+  background: #faf5ff;
+}
+
+.clickable-row:active {
+  background: #f3e8ff;
+}
+
+.clickable-row td {
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
 /* ==========================================
    MOBILE
 ========================================== */

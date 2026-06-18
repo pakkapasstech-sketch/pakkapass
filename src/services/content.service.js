@@ -7,23 +7,28 @@ const mapContentFromApi = (chapters = []) => {
   chapters.forEach((chapter) => {
     (chapter.topics || []).forEach((topic) => {
       const base = {
-        id: topic.id,
-        topic: topic.name,
-        chapter: chapter.name,
-        subject: chapter.subject?.name,
-        grade: chapter.grade?.name,
-        board: chapter.board?.name,
-        uploadedOn: topic.createdAt
-          ? new Date(topic.createdAt).toLocaleDateString('en-IN')
-          : '-',
-      };
-
+  id: topic.id,
+  title: topic.name,
+  chapter: chapter.name,
+  section: topic.section?.name || '',
+  subject: chapter.subject?.name,
+  grade: chapter.grade?.name,
+  board: chapter.board?.name,
+  uploadedOn: topic.createdAt
+    ? new Date(
+        topic.createdAt
+      ).toLocaleDateString(
+        'en-IN'
+      )
+    : '-',
+};
       if (topic.videoUrl) {
         items.push({
           ...base,
           id: `${topic.id}-video`,
-          title: `${topic.name} (Video)`,
-          description: `Video for ${topic.name}`,
+title:
+  topic.name ||
+  'Video',          description: `Video for ${topic.name}`,
           type: 'video',
           fileName: topic.videoUrl.split('/').pop(),
           fileUrl: topic.videoUrl,
@@ -34,8 +39,9 @@ const mapContentFromApi = (chapters = []) => {
         items.push({
           ...base,
           id: `${topic.id}-notes`,
-          title: `${topic.name} (Notes)`,
-          description: `Notes for ${topic.name}`,
+title:
+  topic.name ||
+  'Notes',          description: `Notes for ${topic.name}`,
           type: 'notes',
           fileName: topic.notesUrl.split('/').pop(),
           fileUrl: topic.notesUrl,
@@ -46,8 +52,9 @@ const mapContentFromApi = (chapters = []) => {
         items.push({
           ...base,
           id: `${topic.id}-paper`,
-          title: `${topic.name} (Practice Paper)`,
-          description: `Practice paper for ${topic.name}`,
+title:
+  topic.name ||
+  'Question Paper',          description: `Practice paper for ${topic.name}`,
           type: 'paper',
           fileName: topic.questionsUrl.split('/').pop(),
           fileUrl: topic.questionsUrl,
@@ -72,6 +79,10 @@ export const contentService = {
     formData.append('boardName', filters.board || '');
     formData.append('subjectName', filters.subject || '');
     formData.append('chapterName', filters.chapter || '');
+    formData.append(
+  'sectionName',
+  filters.section || ''
+);
     // formData.append('topicName', topicName || filters.topic || '');
 
     const fieldMap = { video: 'videoUrl', notes: 'notesUrl', paper: 'questionsUrl' };

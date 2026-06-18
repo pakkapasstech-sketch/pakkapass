@@ -1,15 +1,19 @@
-import { useNavigate } from 'react-router-dom';
 import {
   HiOutlinePencil,
+  HiOutlineTrash,
   HiOutlineArrowLeft,
 } from 'react-icons/hi';
+
+import { useNavigate } from 'react-router-dom';
 
 import '../../styles/partnerDetails.css';
 
 const mockPartner = {
   partnerId: 'PP1001',
+
   organizationName:
     'Narayana Junior College',
+
   institutionType:
     'Junior College',
 
@@ -47,7 +51,7 @@ const PartnerDetailsPage = () => {
     <div className="partner-details-page">
       <div className="details-header">
         <button
-          className="back-btn"
+          className="partner-back-btn"
           onClick={() =>
             navigate(
               '/partners'
@@ -57,10 +61,10 @@ const PartnerDetailsPage = () => {
           <HiOutlineArrowLeft />
         </button>
 
-        <div>
+        <div className="header-content">
           <h1>
             {
-              mockPartner.organizationName
+              mockPartner.contactPerson
             }
           </h1>
 
@@ -71,102 +75,157 @@ const PartnerDetailsPage = () => {
           </p>
         </div>
 
-        <button
-          className="btn-primary"
-          onClick={() =>
-            navigate(
-              `/partners/1/edit`
-            )
-          }
-        >
-          <HiOutlinePencil />
-          Edit
-        </button>
+        <div className="details-actions">
+          <button
+            className="btn-primary"
+            onClick={() =>
+              navigate(
+                '/partners/1/edit'
+              )
+            }
+          >
+            <HiOutlinePencil />
+            Edit
+          </button>
+
+          <button className="btn-danger">
+            <HiOutlineTrash />
+            Delete
+          </button>
+        </div>
       </div>
 
       <div className="details-grid">
         <div className="detail-card">
           <h3>
-            Organization
+            Partner
+            Information
           </h3>
 
           <p>
-            Institution:
-            {
-              mockPartner.institutionType
-            }
+            <span>
+              Institution
+            </span>
+
+            <strong>
+              {
+                mockPartner.institutionType
+              }
+            </strong>
           </p>
 
           <p>
-            Status:
-            {
-              mockPartner.status
-            }
+            <span>
+              Status
+            </span>
+
+            <strong>
+              {
+                mockPartner.status
+              }
+            </strong>
           </p>
 
           <p>
-            Joined:
-            {
-              mockPartner.joiningDate
-            }
+            <span>
+              Joined
+            </span>
+
+            <strong>
+              {
+                mockPartner.joiningDate
+              }
+            </strong>
           </p>
         </div>
 
         <div className="detail-card">
           <h3>
             Contact
+            Information
           </h3>
 
           <p>
-            Person:
-            {
-              mockPartner.contactPerson
-            }
+            <span>
+              Name
+            </span>
+
+            <strong>
+              {
+                mockPartner.contactPerson
+              }
+            </strong>
           </p>
 
           <p>
-            Mobile:
-            {
-              mockPartner.mobile
-            }
+            <span>
+              Mobile
+            </span>
+
+            <strong>
+              {
+                mockPartner.mobile
+              }
+            </strong>
           </p>
 
           <p>
-            Email:
-            {
-              mockPartner.email
-            }
+            <span>
+              Email
+            </span>
+
+            <strong>
+              {
+                mockPartner.email
+              }
+            </strong>
           </p>
         </div>
 
         <div className="detail-card">
           <h3>
             Referral
+            Details
           </h3>
 
           <p>
-            Code:
-            {
-              mockPartner.referralCode
-            }
+            <span>
+              Code
+            </span>
+
+            <strong>
+              {
+                mockPartner.referralCode
+              }
+            </strong>
           </p>
 
           <p>
-            Students:
-            {
-              mockPartner.students
-            }
+            <span>
+              Students
+            </span>
+
+            <strong>
+              {
+                mockPartner.students
+              }
+            </strong>
           </p>
 
           <p>
-            Commission:
-            {
-              mockPartner.commission
-            }
+            <span>
+              Commission
+            </span>
+
+            <strong>
+              {
+                mockPartner.commission
+              }
+            </strong>
           </p>
         </div>
 
-        <div className="detail-card">
+        <div className="detail-card revenue-card">
           <h3>
             Revenue
           </h3>

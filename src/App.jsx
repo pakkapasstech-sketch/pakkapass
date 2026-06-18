@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom';
+// import { BrowserRouter } from 'react-router-dom';
 import {
   QueryClient,
   QueryClientProvider,
@@ -32,30 +32,23 @@ const queryClient =
 
 const App = () => (
   <ErrorBoundary>
-    <QueryClientProvider
-      client={
-        queryClient
-      }
-    >
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <SidebarProvider>
-              <NotificationProvider>
-                <AppRoutes />
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <SidebarProvider>
+            <NotificationProvider>
+              <AppRoutes />
 
-                <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    duration:
-                      3000,
-                  }}
-                />
-              </NotificationProvider>
-            </SidebarProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                }}
+              />
+            </NotificationProvider>
+          </SidebarProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   </ErrorBoundary>
 );

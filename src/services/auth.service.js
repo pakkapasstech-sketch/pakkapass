@@ -2,13 +2,19 @@ import axiosInstance from '../api/axiosInstance';
 
 export const authService = {
   loginAdmin: async ({ email, password }) => {
-    const { data } = await axiosInstance.post('/admin/login', { email, password });
-    return {
-      accessToken: data.token || data.accessToken,
-      refreshToken: data.refreshToken,
-      user: data.user || data.admin,
-    };
-  },
+  console.log('Sending:', { email, password });
+
+  const { data } = await axiosInstance.post(
+    '/admin/login',
+    { email, password }
+  );
+
+  return {
+    accessToken: data.token || data.accessToken,
+    refreshToken: data.refreshToken,
+    user: data.user || data.admin,
+  };
+},
 
   sendParentOtp: async ({ email }) => {
     const { data } = await axiosInstance.post('/admin/parent/login', { email });

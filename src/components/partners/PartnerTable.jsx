@@ -1,21 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  HiOutlineEye,
-  HiOutlinePencil,
-  HiOutlinePause,
-  HiOutlineTrash,
-} from 'react-icons/hi';
 
 const PartnerTable = ({
-  partners,
+  partners = [],
 }) => {
   const navigate =
     useNavigate();
 
-  if (
-    !partners ||
-    partners.length === 0
-  ) {
+  if (!partners.length) {
     return (
       <div className="empty-partners">
         <h3>
@@ -23,9 +14,9 @@ const PartnerTable = ({
         </h3>
 
         <p>
-          Create your first
-          channel partner to
-          get started.
+          Try changing the
+          filters or add a
+          new partner.
         </p>
       </div>
     );
@@ -43,36 +34,15 @@ const PartnerTable = ({
         <table className="partners-table">
           <thead>
             <tr>
-              <th>
-                Partner ID
-              </th>
-              <th>
-                Organization
-              </th>
-              <th>
-                Institution
-              </th>
-              <th>
-                Contact
-              </th>
-              <th>
-                Mobile
-              </th>
-              <th>
-                Referral
-              </th>
-              <th>
-                Students
-              </th>
-              <th>
-                Revenue
-              </th>
-              <th>
-                Status
-              </th>
-              <th>
-                Actions
-              </th>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Partner ID</th>
+              <th>Institution</th>
+              <th>Mobile</th>
+              <th>REFCODE</th>
+              <th>Students</th>
+              <th>Revenue</th>
+              <th>Status</th>
             </tr>
           </thead>
 
@@ -83,7 +53,25 @@ const PartnerTable = ({
                   key={
                     partner.id
                   }
+                  className="partner-row"
+                  onClick={() =>
+                    navigate(
+                      `/partners/${partner.id}`
+                    )
+                  }
                 >
+                  <td>
+                    {
+                      partner.id
+                    }
+                  </td>
+
+                  <td>
+                    {
+                      partner.contactPerson
+                    }
+                  </td>
+
                   <td>
                     {
                       partner.partnerId
@@ -92,19 +80,7 @@ const PartnerTable = ({
 
                   <td>
                     {
-                      partner.organizationName
-                    }
-                  </td>
-
-                  <td>
-                    {
                       partner.institutionType
-                    }
-                  </td>
-
-                  <td>
-                    {
-                      partner.contactPerson
                     }
                   </td>
 
@@ -133,44 +109,17 @@ const PartnerTable = ({
 
                   <td>
                     <span
-                      className={`status-badge ${partner.status.toLowerCase()}`}
+                      className={`status-badge ${
+                        partner.status ===
+                        'Active'
+                          ? 'active'
+                          : 'inactive'
+                      }`}
                     >
                       {
                         partner.status
                       }
                     </span>
-                  </td>
-
-                  <td>
-                    <div className="table-actions">
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/partners/${partner.id}`
-                          )
-                        }
-                      >
-                        <HiOutlineEye />
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/partners/${partner.id}/edit`
-                          )
-                        }
-                      >
-                        <HiOutlinePencil />
-                      </button>
-
-                      <button>
-                        <HiOutlinePause />
-                      </button>
-
-                      <button className="delete-btn">
-                        <HiOutlineTrash />
-                      </button>
-                    </div>
                   </td>
                 </tr>
               )

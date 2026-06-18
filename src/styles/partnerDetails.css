@@ -3,10 +3,14 @@
 .partner-details-page {
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  padding: 28px;
-  background: #f8fafc;
+  gap: 28px;
+
+  width: 100%;
   min-height: 100%;
+
+  padding: 28px;
+
+  background: #f8fafc;
 }
 
 /* ================= HEADER ================= */
@@ -14,92 +18,232 @@
 .details-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
+  gap: 20px;
 
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
   padding: 28px 32px;
 
-  box-shadow: 0 8px 30px
-    rgba(15, 23, 42, 0.05);
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+
+  box-shadow:
+    0 8px 30px
+      rgba(
+        15,
+        23,
+        42,
+        0.05
+      );
 }
 
-.back-btn {
+.partner-back-btn {
   width: 48px;
   height: 48px;
 
-  border: none;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
 
-  background: #f8fafc;
-  color: #475569;
+  background: #ffffff;
+  color: #111827;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  box-shadow:
+    0 2px 10px
+    rgba(15, 23, 42, 0.06);
 
   cursor: pointer;
-  transition: all 0.25s ease;
+
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.2s;
 }
 
-.back-btn svg {
-  font-size: 20px;
+.partner-back-btn svg {
+  width: 22px;
+  height: 22px;
+  color: #111827;
 }
 
-.back-btn:hover {
+.partner-back-btn:hover {
   background: #eef2ff;
   color: #4f46e5;
   transform: translateY(-2px);
 }
 
-.details-header h1 {
+.partner-back-btn:hover svg {
+  color: #4f46e5;
+}
+.header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-content h1 {
   margin: 0;
-  font-size: 30px;
+
+  font-size: 32px;
   font-weight: 700;
+
   color: #111827;
 }
 
-.details-header p {
+.header-content p {
   margin-top: 8px;
-  color: #64748b;
+
   font-size: 15px;
+  color: #64748b;
+}
+
+/* ================= ACTIONS ================= */
+
+.details-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-danger {
+  height: 48px;
+  padding: 0 22px;
+
+  border: none;
+  border-radius: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: white;
+
+  box-shadow:
+    0 8px 20px
+      rgba(
+        79,
+        70,
+        229,
+        0.2
+      );
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 24px
+      rgba(
+        79,
+        70,
+        229,
+        0.25
+      );
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+
+  box-shadow:
+    0 8px 20px
+      rgba(
+        239,
+        68,
+        68,
+        0.2
+      );
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 24px
+      rgba(
+        239,
+        68,
+        68,
+        0.25
+      );
 }
 
 /* ================= DETAILS GRID ================= */
 
 .details-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(280px, 1fr)
-  );
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        320px,
+        1fr
+      )
+    );
+
   gap: 24px;
 }
 
 /* ================= CARDS ================= */
 
 .detail-card {
-  background: white;
+  background: #ffffff;
+
   border: 1px solid #e2e8f0;
   border-radius: 24px;
-  padding: 30px;
 
-  box-shadow: 0 6px 24px
-    rgba(15, 23, 42, 0.04);
+  padding: 28px;
 
-  transition: all 0.25s ease;
+  min-height: 240px;
 
   display: flex;
   flex-direction: column;
-  min-height: 230px;
+
+  box-shadow:
+    0 6px 24px
+      rgba(
+        15,
+        23,
+        42,
+        0.04
+      );
+
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
 }
 
 .detail-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 32px
-    rgba(15, 23, 42, 0.08);
+
+  box-shadow:
+    0 16px 32px
+      rgba(
+        15,
+        23,
+        42,
+        0.08
+      );
 }
 
 /* ================= CARD TITLES ================= */
@@ -108,64 +252,137 @@
   margin: 0 0 24px;
   padding-bottom: 16px;
 
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom:
+    1px solid #f1f5f9;
 
   font-size: 18px;
   font-weight: 700;
+
   color: #111827;
 }
 
 /* ================= CARD CONTENT ================= */
 
 .detail-card p {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 
   display: flex;
-  justify-content: space-between;
+  justify-content:
+    space-between;
   align-items: center;
 
-  color: #64748b;
+  gap: 16px;
+
   font-size: 14px;
-  line-height: 1.6;
+  color: #64748b;
+}
+
+.detail-card p span {
+  color: #64748b;
 }
 
 .detail-card p strong {
   color: #111827;
+  font-weight: 600;
+  text-align: right;
 }
 
 /* ================= REVENUE CARD ================= */
 
-.detail-card h1 {
+.revenue-card {
+  justify-content: center;
+}
+
+.revenue-card h1 {
   margin: auto 0 0;
 
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 700;
+
   color: #4f46e5;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= TABLET ================= */
+
+@media (max-width: 992px) {
+  .details-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+  }
+}
+
+/* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
   .partner-details-page {
     padding: 18px;
+    gap: 20px;
   }
 
   .details-header {
-    padding: 24px;
     flex-direction: column;
     align-items: flex-start;
+
+    padding: 24px;
   }
 
-  .details-header h1 {
-    font-size: 26px;
+  .header-content h1 {
+    font-size: 28px;
+  }
+
+  .details-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-danger {
+    width: 100%;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
   }
 
   .detail-card {
     min-height: auto;
-    padding: 24px;
+  }
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px) {
+  .partner-details-page {
+    padding: 14px;
   }
 
-  .detail-card h1 {
+  .details-header,
+  .detail-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .header-content h1 {
+    font-size: 24px;
+  }
+
+  .revenue-card h1 {
     font-size: 34px;
+  }
+
+  .detail-card p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-card p strong {
+    text-align: left;
   }
 }

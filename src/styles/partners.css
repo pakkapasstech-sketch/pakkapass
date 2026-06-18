@@ -352,6 +352,20 @@
   color: #64748b;
   line-height: 1.6;
 }
+.partner-row {
+  cursor: pointer;
+}
+
+.partner-row:hover {
+  background: #fafbff;
+  transform: scale(1.005);
+}
+
+.partners-table tbody tr {
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
 
 /* ================= RESPONSIVE ================= */
 
