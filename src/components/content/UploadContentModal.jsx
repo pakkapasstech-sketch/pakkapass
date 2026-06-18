@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './uploadContentModal.css';
 
 const UploadContentModal = ({
-  topic,
+  isQuestionPaperLevel,
   filters,
   contentType,
   onUpload,
@@ -17,9 +17,47 @@ const UploadContentModal = ({
   const [file, setFile] =
     useState(null);
 
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] =
+    useState(false);
 
-  const handleFileChange = (e) => {
+  const uploadedOn =
+    new Date().toLocaleDateString(
+      'en-GB',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }
+    );
+
+  const formatFileSize = (
+    bytes
+  ) => {
+    if (!bytes) return '';
+
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+
+    if (
+      bytes <
+      1024 * 1024
+    ) {
+      return `${(
+        bytes / 1024
+      ).toFixed(2)} KB`;
+    }
+
+    return `${(
+      bytes /
+      1024 /
+      1024
+    ).toFixed(2)} MB`;
+  };
+
+  const handleFileChange = (
+    e
+  ) => {
     const selected =
       e.target.files[0];
 
@@ -28,70 +66,110 @@ const UploadContentModal = ({
     setFile(selected);
 
     if (!title) {
-      setTitle(selected.name);
+      const name =
+        selected.name.replace(
+          /\.[^/.]+$/,
+          ''
+        );
+
+      setTitle(name);
     }
   };
 
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Please select a file');
-      return;
-    }
+  const handleUpload =
+    async () => {
+      if (!file) {
+        alert(
+          'Please select a file'
+        );
+        return;
+      }
 
-    setUploading(true);
-    try {
-      // POST /admin/content via parent handler
-      await onUpload({
-        filters,
-        topicName: topic,
-        file,
-        contentType: contentType === 'all' ? 'video' : contentType,
-        title,
-        description,
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
+      setUploading(true);
+
+      try {
+        await onUpload({
+          filters,
+          file,
+          title,
+          description,
+          uploadedOn,
+          fileName:
+            file.name,
+          fileSize:
+            formatFileSize(
+              file.size
+            ),
+          contentType:
+            isQuestionPaperLevel
+              ? 'paper'
+              : contentType,
+        });
+      } finally {
+        setUploading(false);
+      }
+    };
+
+  const heading =
+    isQuestionPaperLevel
+      ? 'Upload Question Paper'
+      : contentType ===
+        'video'
+      ? 'Upload Video'
+      : 'Upload Notes';
 
   return (
     <div className="modal-overlay">
       <div className="upload-modal">
         <div className="modal-header">
-          <h2>Upload Content</h2>
+          <h2>{heading}</h2>
 
           <button
-            onClick={onClose}
             className="modal-close-btn"
+            onClick={onClose}
           >
             ✕
           </button>
         </div>
 
         <div className="modal-body">
-          <div className="form-group">
-            <label>Title</label>
+          <div className="form-group full-width">
+            <label>
+              Title
+            </label>
 
             <input
-              value={title}
-              onChange={(e) =>
+              value={
+                title
+              }
+              onChange={(
+                e
+              ) =>
                 setTitle(
-                  e.target.value
+                  e.target
+                    .value
                 )
               }
               placeholder="Enter title"
             />
           </div>
 
-          <div className="form-group">
-            <label>Description</label>
+          <div className="form-group full-width">
+            <label>
+              Description
+            </label>
 
             <textarea
               rows="4"
-              value={description}
-              onChange={(e) =>
+              value={
+                description
+              }
+              onChange={(
+                e
+              ) =>
                 setDescription(
-                  e.target.value
+                  e.target
+                    .value
                 )
               }
               placeholder="Enter description"
@@ -100,26 +178,121 @@ const UploadContentModal = ({
 
           <div className="form-group">
             <label>
-              Upload File
+              Uploaded On
             </label>
 
             <input
-              type="file"
-              onChange={
-                handleFileChange
+              value={
+                uploadedOn
               }
+              readOnly
             />
+          </div>
+
+          <div className="form-group">
+            <label>
+              File Name
+            </label>
+
+            <input
+              value={
+                file?.name ||
+                ''
+              }
+              readOnly
+              placeholder="No file selected"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>
+              File Size
+            </label>
+
+            <input
+              value={
+                file
+                  ? formatFileSize(
+                      file.size
+                    )
+                  : ''
+              }
+              readOnly
+              placeholder="Auto generated"
+            />
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              Upload File
+            </label>
+
+            <label className="upload-dropzone">
+              <input
+                className="hidden-file-input"
+                type="file"
+                accept={
+                  isQuestionPaperLevel
+                    ? '.pdf'
+                    : contentType ===
+                      'video'
+                    ? 'video/*'
+                    : '.pdf'
+                }
+                onChange={
+                  handleFileChange
+                }
+              />
+
+              <div className="upload-placeholder">
+                <span className="upload-icon">
+                  📁
+                </span>
+
+                <h4>
+                  Click to
+                  Upload
+                </h4>
+
+                <p>
+                  {isQuestionPaperLevel
+                    ? 'PDF files only'
+                    : contentType ===
+                      'video'
+                    ? 'MP4, AVI, MOV'
+                    : 'PDF files only'}
+                </p>
+              </div>
+            </label>
 
             {file && (
-              <p
-                style={{
-                  marginTop: 10,
-                }}
-              >
-                Selected:
-                {' '}
-                {file.name}
-              </p>
+              <div className="selected-file">
+                <div>
+                  <strong>
+                    {
+                      file.name
+                    }
+                  </strong>
+
+                  <p>
+                    {formatFileSize(
+                      file.size
+                    )}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="remove-file-btn"
+                  onClick={() =>
+                    setFile(
+                      null
+                    )
+                  }
+                >
+                  ✕
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -127,8 +300,12 @@ const UploadContentModal = ({
         <div className="modal-footer">
           <button
             className="cancel-btn"
-            onClick={onClose}
-            disabled={uploading}
+            onClick={
+              onClose
+            }
+            disabled={
+              uploading
+            }
           >
             Cancel
           </button>
@@ -138,9 +315,13 @@ const UploadContentModal = ({
             onClick={
               handleUpload
             }
-            disabled={uploading}
+            disabled={
+              uploading
+            }
           >
-            {uploading ? 'Uploading...' : 'Upload'}
+            {uploading
+              ? 'Uploading...'
+              : 'Upload'}
           </button>
         </div>
       </div>

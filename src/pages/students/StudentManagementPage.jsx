@@ -22,8 +22,16 @@ const StudentManagementPage = () => {
     const classMatch = !filters.class || filters.class === 'All Classes' || student.class === filters.class;
     const boardMatch = !filters.board || filters.board === 'All Boards' || student.board === filters.board;
     const stateMatch = !filters.state || filters.state === 'All States' || student.state === filters.state;
+    const matchCollege =
+  !filters.college ||
+  student.institution
+    ?.trim()
+    .toLowerCase() ===
+    filters.college
+      .trim()
+      .toLowerCase();
     const statusMatch = !filters.status || filters.status === 'All' || student.status === filters.status;
-    return searchMatch && classMatch && boardMatch && stateMatch && statusMatch;
+    return searchMatch && classMatch && boardMatch && stateMatch && statusMatch && matchCollege;
   });
 
   if (isLoading) return <LoadingSkeleton rows={8} />;

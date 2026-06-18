@@ -14,38 +14,45 @@ import { contentService } from '../../services/content.service';
 import './contentManagement.css';
 
 const ContentManagement = () => {
-  const [activeTab, setActiveTab] =
-    useState('all');
+  const [activeTab, setActiveTab] = useState('all');
 
-  const [selectedFilters, setSelectedFilters] =
-    useState({
-      class: '',
-      board: '',
-      course: '',
-      subject: '',
-      chapter: '',
-      section: '',
-      topic: '',
-      contentType: '',
-    });
+  const [selectedFilters, setSelectedFilters] = useState({
+    class: '',
+    board: '',
+    course: '',
+    subject: '',
+    chapter: '',
+    section: '',
+    // topic: '',
+    contentType: '',
+  });
 
-  const [showUploadModal, setShowUploadModal] =
-    useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [viewMode, setViewMode] = useState('content');
+  const isQuestionPaperLevel = viewMode === 'paper';
 
+  const isVideoNotesLevel = selectedFilters.section && selectedFilters.contentType;
   // Fetch content from GET /admin/content instead of hardcoded mock data
   const { data: content = [], isLoading, isError, refetch } = useContent();
 
+  // useEffect(() => {
+  //   if (selectedFilters.contentType) {
+  //     setActiveTab(selectedFilters.contentType);
+  //   }
+  // }, [selectedFilters.contentType]);
   useEffect(() => {
-    if (
+  if (
+    selectedFilters.contentType &&
+    selectedFilters.contentType !==
+      'paper'
+  ) {
+    setActiveTab(
       selectedFilters.contentType
-    ) {
-      setActiveTab(
-        selectedFilters.contentType
-      );
-    }
-  }, [
-    selectedFilters.contentType,
-  ]);
+    );
+  }
+}, [
+  selectedFilters.contentType,
+]);
 
   const handleUpload = async (uploadData) => {
     try {
@@ -60,12 +67,7 @@ const ContentManagement = () => {
 
   if (isLoading) return <LoadingSkeleton rows={8} />;
   if (isError) {
-    return (
-      <ErrorState
-        message="Failed to load content"
-        onRetry={refetch}
-      />
-    );
+    return <ErrorState message="Failed to load content" onRetry={refetch} />;
   }
 
   return (
@@ -74,76 +76,63 @@ const ContentManagement = () => {
         <ContentFilters
           filters={selectedFilters}
           setFilters={setSelectedFilters}
+          disableContentFilter={isQuestionPaperLevel}
         />
-
         <div className="content-management-body">
           <ContentTree
             filters={selectedFilters}
-            setFilters={
-              setSelectedFilters
-            }
+            setFilters={setSelectedFilters}
+            setViewMode={setViewMode}
+            setActiveTab={setActiveTab}
           />
-
           <div className="content-panel">
             <div className="content-header">
               <div>
                 <h2>Content</h2>
 
-                <p>
-                  Manage educational
-                  content
-                </p>
+                <p>Manage educational content</p>
               </div>
 
               <button
                 className="upload-content-btn"
-                disabled={
-                  !selectedFilters.topic
-                }
-                onClick={() =>
-                  setShowUploadModal(
-                    true
-                  )
-                }
+                disabled={!isQuestionPaperLevel && !isVideoNotesLevel}
+                onClick={() => setShowUploadModal(true)}
               >
-                + Upload Content
+                {isQuestionPaperLevel
+  ? '+ Add Question Paper'
+  : activeTab === 'video'
+    ? '+ Upload Video'
+    : '+ Upload Notes'}
               </button>
             </div>
 
-            <ContentTabs
-              activeTab={activeTab}
-              setActiveTab={
-                setActiveTab
-              }
-            />
+            {!isQuestionPaperLevel && (
+              <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            )}
 
-            <ContentTable
-              activeTab={activeTab}
-              filters={
-                selectedFilters
-              }
-              content={content}
-            />
+            <ContentTable activeTab={activeTab} filters={selectedFilters} content={content} isQuestionPaperLevel={
+    isQuestionPaperLevel
+  } />
           </div>
         </div>
       </div>
 
       {showUploadModal && (
         <UploadContentModal
-          topic={
-            selectedFilters.topic
-          }
-          filters={selectedFilters}
-          contentType={
-            activeTab
-          }
-          onUpload={handleUpload}
-          onClose={() =>
-            setShowUploadModal(
-              false
-            )
-          }
-        />
+  filters={selectedFilters}
+  contentType={
+    isQuestionPaperLevel
+      ? 'paper'
+      : activeTab
+  }
+  isQuestionPaperLevel={
+    isQuestionPaperLevel
+  }
+  onUpload={handleUpload}
+  onClose={() =>
+    setShowUploadModal(false)
+  }
+/>
       )}
     </>
   );

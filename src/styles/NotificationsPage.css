@@ -435,9 +435,9 @@
   margin-bottom: 22px;
 }
 
-.form-group:first-of-type {
+/* .form-group:first-of-type {
   margin-top: 28px;
-}
+} */
 
 .form-group label {
   display: block;

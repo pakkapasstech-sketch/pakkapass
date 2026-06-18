@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect} from 'react';
 import {
   HiChevronRight,
   HiChevronDown,
@@ -13,9 +13,11 @@ const TreeNode = ({
   level = 0,
   onSelect,
   selectedNode,
+  expandedNodes,
+  setExpandedNodes,
 }) => {
-  const [open, setOpen] =
-    useState(false);
+ const open =
+  expandedNodes[node.id];
 
   const hasChildren =
     node.children?.length > 0;
@@ -27,7 +29,13 @@ const TreeNode = ({
     onSelect(node);
 
     if (hasChildren) {
-      setOpen((prev) => !prev);
+      setExpandedNodes(
+  (prev) => ({
+    ...prev,
+    [node.id]:
+      !prev[node.id],
+  })
+);
     }
   };
 
@@ -63,14 +71,20 @@ const TreeNode = ({
         node.children.map(
           (child) => (
             <TreeNode
-              key={child.id}
-              node={child}
-              level={level + 1}
-              onSelect={onSelect}
-              selectedNode={
-                selectedNode
-              }
-            />
+  key={child.id}
+  node={child}
+  level={level + 1}
+  onSelect={onSelect}
+  selectedNode={
+    selectedNode
+  }
+  expandedNodes={
+    expandedNodes
+  }
+  setExpandedNodes={
+    setExpandedNodes
+  }
+/>
           )
         )}
     </div>
@@ -80,50 +94,68 @@ const TreeNode = ({
 const ContentTree = ({
   filters,
   setFilters,
+  setViewMode,
+  setActiveTab,
 }) => {
   const [selectedNode, setSelectedNode] =
     useState(null);
-
+const [expandedNodes, setExpandedNodes] =
+  useState({});
+  
   const handleNodeSelect = (
     node
   ) => {
     setSelectedNode(node.id);
 
-    setFilters((prev) => ({
-      ...prev,
+    if (
+  node.contentType === 'paper'
+) {
+  setViewMode('paper');
+} else {
+  setViewMode('content');
+}
 
-      class:
-        node.className ||
-        prev.class,
+if (
+  node.contentType === 'video' ||
+  node.contentType === 'notes'
+) {
+  setActiveTab(
+    node.contentType
+  );
+}
 
-      board:
-        node.boardName ||
-        prev.board,
 
-      course:
-        node.courseName ||
-        prev.course,
+setFilters((prev) => ({
+  ...prev,
 
-      subject:
-        node.subjectName ||
-        prev.subject,
+  class:
+    node.className ||
+    prev.class,
 
-      chapter:
-        node.chapterName ||
-        prev.chapter,
+  board:
+    node.boardName ||
+    prev.board,
 
-      section:
-        node.sectionName ||
-        prev.section,
+  course:
+    node.courseName ||
+    prev.course,
 
-      topic:
-        node.topicName ||
-        prev.topic,
+  subject:
+    node.subjectName ||
+    prev.subject,
 
-      contentType:
-        node.contentType ||
-        prev.contentType,
-    }));
+  chapter:
+    node.chapterName ||
+    prev.chapter,
+
+  section:
+    node.sectionName ||
+    prev.section,
+
+  contentType:
+    node.contentType ||
+    prev.contentType,
+}));
   };
 
   const treeData = useMemo(() => {
@@ -190,196 +222,165 @@ const ContentTree = ({
                 subject.name,
 
               children:
-                subject.chapters.map(
-                  (chapter) => ({
-                    id: `chapter-${chapter.id}`,
-                    label:
-                      chapter.name,
+              [
+  ...subject.chapters.map((chapter) => ({
+    id: `chapter-${chapter.id}`,
+    label: chapter.name,
 
-                    className:
-                      filters.class,
+    className: filters.class,
+    boardName: filters.board,
+    courseName: course.name,
+    subjectName: subject.name,
+    chapterName: chapter.name,
 
-                    boardName:
-                      filters.board,
+    children: chapter.sections.map(
+  (section) => ({
+    id: `section-${section.id}`,
+    label: section.name,
 
-                    courseName:
-                      course.name,
+    className: filters.class,
+    boardName: filters.board,
+    courseName: course.name,
+    subjectName: subject.name,
+    chapterName: chapter.name,
+    sectionName: section.name,
 
-                    subjectName:
-                      subject.name,
+    children: [
+      {
+        id: `video-${section.id}`,
+        label: 'Videos',
 
-                    chapterName:
-                      chapter.name,
+        contentType: 'video',
 
-                    children:
-                      chapter.sections.map(
-                        (
-                          section
-                        ) => ({
-                          id: `section-${section.id}`,
-                          label:
-                            section.name,
+        className:
+          filters.class,
+        boardName:
+          filters.board,
+        courseName:
+          course.name,
+        subjectName:
+          subject.name,
+        chapterName:
+          chapter.name,
+        sectionName:
+          section.name,
+      },
 
-                          className:
-                            filters.class,
+      {
+        id: `notes-${section.id}`,
+        label: 'Notes',
 
-                          boardName:
-                            filters.board,
+        contentType: 'notes',
 
-                          courseName:
-                            course.name,
+        className:
+          filters.class,
+        boardName:
+          filters.board,
+        courseName:
+          course.name,
+        subjectName:
+          subject.name,
+        chapterName:
+          chapter.name,
+        sectionName:
+          section.name,
+      },
+    ],
+  })
+),
+  })),
 
-                          subjectName:
-                            subject.name,
+  {
+  id: `paper-${subject.id}`,
+  label: 'Question Papers',
 
-                          chapterName:
-                            chapter.name,
+  className: filters.class,
+  boardName: filters.board,
+  courseName: course.name,
+  subjectName: subject.name,
 
-                          sectionName:
-                            section.name,
+  contentType: 'paper',
 
-                          children:
-                            section.topics.map(
-                              (
-                                topic
-                              ) => ({
-                                id: `topic-${topic.id}`,
-                                label:
-                                  topic.name,
-
-                                className:
-                                  filters.class,
-
-                                boardName:
-                                  filters.board,
-
-                                courseName:
-                                  course.name,
-
-                                subjectName:
-                                  subject.name,
-
-                                chapterName:
-                                  chapter.name,
-
-                                sectionName:
-                                  section.name,
-
-                                topicName:
-                                  topic.name,
-
-                                children:
-                                  [
-                                    {
-                                      id: `video-${topic.id}`,
-                                      label:
-                                        'Videos',
-
-                                      className:
-                                        filters.class,
-
-                                      boardName:
-                                        filters.board,
-
-                                      courseName:
-                                        course.name,
-
-                                      subjectName:
-                                        subject.name,
-
-                                      chapterName:
-                                        chapter.name,
-
-                                      sectionName:
-                                        section.name,
-
-                                      topicName:
-                                        topic.name,
-
-                                      contentType:
-                                        'video',
-
-                                      children:
-                                        [],
-                                    },
-
-                                    {
-                                      id: `notes-${topic.id}`,
-                                      label:
-                                        'Notes',
-
-                                      className:
-                                        filters.class,
-
-                                      boardName:
-                                        filters.board,
-
-                                      courseName:
-                                        course.name,
-
-                                      subjectName:
-                                        subject.name,
-
-                                      chapterName:
-                                        chapter.name,
-
-                                      sectionName:
-                                        section.name,
-
-                                      topicName:
-                                        topic.name,
-
-                                      contentType:
-                                        'notes',
-
-                                      children:
-                                        [],
-                                    },
-
-                                    {
-                                      id: `paper-${topic.id}`,
-                                      label:
-                                        'Question Papers',
-
-                                      className:
-                                        filters.class,
-
-                                      boardName:
-                                        filters.board,
-
-                                      courseName:
-                                        course.name,
-
-                                      subjectName:
-                                        subject.name,
-
-                                      chapterName:
-                                        chapter.name,
-
-                                      sectionName:
-                                        section.name,
-
-                                      topicName:
-                                        topic.name,
-
-                                      contentType:
-                                        'paper',
-
-                                      children:
-                                        [],
-                                    },
-                                  ],
-                              })
-                            ),
-                        })
-                      ),
-                  })
-                ),
+  children: [],
+}
+],
             })
           ),
       })
     );
   }, [filters]);
+  useEffect(() => {
+  const expanded = {};
+
+  treeData.forEach((course) => {
+    if (
+      filters.course ===
+      course.courseName
+    ) {
+      expanded[course.id] = true;
+    }
+
+    course.children?.forEach(
+      (subject) => {
+        if (
+          filters.subject ===
+          subject.subjectName
+        ) {
+          expanded[course.id] =
+            true;
+          expanded[subject.id] =
+            true;
+        }
+
+        subject.children?.forEach(
+          (chapter) => {
+            if (
+              filters.chapter ===
+              chapter.chapterName
+            ) {
+              expanded[
+                course.id
+              ] = true;
+              expanded[
+                subject.id
+              ] = true;
+              expanded[
+                chapter.id
+              ] = true;
+            }
+
+            chapter.children?.forEach(
+              (section) => {
+                if (
+                  filters.section ===
+                  section.sectionName
+                ) {
+                  expanded[
+                    course.id
+                  ] = true;
+
+                  expanded[
+                    subject.id
+                  ] = true;
+
+                  expanded[
+                    chapter.id
+                  ] = true;
+
+                  expanded[
+                    section.id
+                  ] = true;
+                }
+              }
+            );
+          }
+        );
+      }
+    );
+  });
+
+  setExpandedNodes(expanded);
+}, [filters, treeData]);
 
   return (
     <div className="content-tree">
@@ -412,15 +413,21 @@ const ContentTree = ({
       {treeData.map(
         (node) => (
           <TreeNode
-            key={node.id}
-            node={node}
-            onSelect={
-              handleNodeSelect
-            }
-            selectedNode={
-              selectedNode
-            }
-          />
+  key={node.id}
+  node={node}
+  onSelect={
+    handleNodeSelect
+  }
+  selectedNode={
+    selectedNode
+  }
+  expandedNodes={
+    expandedNodes
+  }
+  setExpandedNodes={
+    setExpandedNodes
+  }
+/>
         )
       )}
     </div>

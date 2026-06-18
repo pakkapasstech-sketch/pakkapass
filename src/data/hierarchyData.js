@@ -22,18 +22,18 @@ export const hierarchyData = [
                       {
                         id: 1,
                         name: 'Introduction',
-                        topics: [
-                          {
-                            id: 1,
-                            name:
-                              'Euclid Division Lemma',
-                          },
-                          {
-                            id: 2,
-                            name:
-                              'Irrational Numbers',
-                          },
-                        ],
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                      {
+                        id: 2,
+                        name: 'Euclid Division Lemma',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
                       },
                     ],
                   },
@@ -42,24 +42,26 @@ export const hierarchyData = [
                     name: 'Polynomials',
                     sections: [
                       {
-                        id: 2,
-                        name: 'Introduction',
-                        topics: [
-                          {
-                            id: 3,
-                            name:
-                              'Zeros of Polynomial',
-                          },
-                          {
-                            id: 4,
-                            name:
-                              'Relationship of Zeros',
-                          },
-                        ],
+                        id: 3,
+                        name: 'Zeros of Polynomial',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
                       },
                     ],
                   },
                 ],
+                questionPapers: [
+  {
+    id: 1,
+    name: 'Mathematics Question Paper 1',
+  },
+  {
+    id: 2,
+    name: 'Mathematics Question Paper 2',
+  },
+]
               },
 
               {
@@ -68,44 +70,78 @@ export const hierarchyData = [
                 chapters: [
                   {
                     id: 3,
-                    name:
-                      'Chemical Reactions',
-
+                    name: 'Chemical Reactions',
                     sections: [
                       {
-                        id: 3,
-                        name:
-                          'Types of Reactions',
-
-                        topics: [
-                          {
-                            id: 5,
-                            name:
-                              'Combination Reaction',
-                          },
-                          {
-                            id: 6,
-                            name:
-                              'Displacement Reaction',
-                          },
-                        ],
+                        id: 4,
+                        name: 'Types of Reactions',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
                       },
                     ],
+                  },
+                  {
+                    id: 4,
+                    name: 'Life Processes',
+                    sections: [
+                      {
+                        id: 5,
+                        name: 'Nutrition',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                      {
+                        id: 6,
+                        name: 'Respiration',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                    ],
+                  },
+                ],
+                questionPapers: [
+                  {
+                    id: 4,
+                    name: 'Science Mid Exam',
+                  },
+                  {
+                    id: 5,
+                    name: 'Science Final Exam',
                   },
                 ],
               },
 
               {
                 id: 3,
-                name:
-                  'Social Studies',
-                chapters: [],
-              },
-
-              {
-                id: 4,
                 name: 'English',
-                chapters: [],
+                chapters: [
+                  {
+                    id: 5,
+                    name: 'A Letter to God',
+                    sections: [
+                      {
+                        id: 7,
+                        name: 'Summary',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                    ],
+                  },
+                ],
+                questionPapers: [
+                  {
+                    id: 6,
+                    name: 'English Unit Test',
+                  },
+                ],
               },
             ],
           },
@@ -119,7 +155,29 @@ export const hierarchyData = [
           {
             id: 2,
             name: 'General',
-            subjects: [],
+            subjects: [
+              {
+                id: 4,
+                name: 'Mathematics',
+                chapters: [
+                  {
+                    id: 6,
+                    name: 'Trigonometry',
+                    sections: [
+                      {
+                        id: 8,
+                        name: 'Introduction',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                    ],
+                  },
+                ],
+                questionPapers: [],
+              },
+            ],
           },
         ],
       },
@@ -132,50 +190,49 @@ export const hierarchyData = [
     boards: [
       {
         id: 3,
-        name: 'State Board',
+        name: 'CBSE',
         courses: [
           {
             id: 3,
             name: 'MPC',
-
             subjects: [
               {
                 id: 5,
-                name:
-                  'Mathematics',
-
+                name: 'Mathematics',
                 chapters: [
                   {
-                    id: 4,
+                    id: 7,
                     name: 'Sets',
-
                     sections: [
                       {
-                        id: 4,
-                        name:
-                          'Introduction',
-
-                        topics: [
-                          {
-                            id: 7,
-                            name:
-                              'Introduction to Sets',
-                          },
-                          {
-                            id: 8,
-                            name:
-                              'Operations on Sets',
-                          },
-                        ],
+                        id: 9,
+                        name: 'Introduction',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
                       },
                     ],
                   },
-
                   {
-                    id: 5,
-                    name:
-                      'Relations and Functions',
-                    sections: [],
+                    id: 8,
+                    name: 'Relations and Functions',
+                    sections: [
+                      {
+                        id: 10,
+                        name: 'Functions',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                    ],
+                  },
+                ],
+                questionPapers: [
+                  {
+                    id: 7,
+                    name: 'Quarterly Exam',
                   },
                 ],
               },
@@ -183,103 +240,52 @@ export const hierarchyData = [
               {
                 id: 6,
                 name: 'Physics',
-
                 chapters: [
                   {
-                    id: 6,
-                    name:
-                      'Physical World',
-
+                    id: 9,
+                    name: 'Units and Measurements',
                     sections: [
                       {
-                        id: 5,
-                        name:
-                          'Nature of Physics',
-
-                        topics: [
-                          {
-                            id: 9,
-                            name:
-                              'Introduction',
-                          },
-                        ],
+                        id: 11,
+                        name: 'Physical Quantities',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
                       },
                     ],
+                  },
+                ],
+                questionPapers: [
+                  {
+                    id: 8,
+                    name: 'Physics Unit Test',
                   },
                 ],
               },
 
               {
                 id: 7,
-                name:
-                  'Chemistry',
-
+                name: 'Chemistry',
                 chapters: [
                   {
-                    id: 7,
-                    name:
-                      'Some Basic Concepts',
-
+                    id: 10,
+                    name: 'Structure of Atom',
                     sections: [
                       {
-                        id: 6,
-                        name:
-                          'Mole Concept',
-
-                        topics: [
-                          {
-                            id: 10,
-                            name:
-                              'Introduction',
-                          },
-                        ],
+                        id: 12,
+                        name: 'Atomic Models',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
                       },
                     ],
                   },
                 ],
+                questionPapers: [],
               },
             ],
-          },
-
-          {
-            id: 4,
-            name: 'BiPC',
-
-            subjects: [
-              {
-                id: 8,
-                name: 'Botany',
-                chapters: [],
-              },
-              {
-                id: 9,
-                name: 'Zoology',
-                chapters: [],
-              },
-              {
-                id: 10,
-                name: 'Physics',
-                chapters: [],
-              },
-              {
-                id: 11,
-                name:
-                  'Chemistry',
-                chapters: [],
-              },
-            ],
-          },
-
-          {
-            id: 5,
-            name: 'MEC',
-            subjects: [],
-          },
-
-          {
-            id: 6,
-            name: 'CEC',
-            subjects: [],
           },
         ],
       },
@@ -292,17 +298,65 @@ export const hierarchyData = [
     boards: [
       {
         id: 4,
-        name: 'State Board',
+        name: 'CBSE',
         courses: [
           {
-            id: 7,
+            id: 4,
             name: 'MPC',
-            subjects: [],
-          },
-          {
-            id: 8,
-            name: 'BiPC',
-            subjects: [],
+            subjects: [
+              {
+                id: 8,
+                name: 'Mathematics',
+                chapters: [
+                  {
+                    id: 11,
+                    name: 'Matrices',
+                    sections: [
+                      {
+                        id: 13,
+                        name: 'Types of Matrices',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                    ],
+                  },
+                ],
+                questionPapers: [
+                  {
+                    id: 9,
+                    name: 'Model Paper 1',
+                  },
+                  {
+                    id: 10,
+                    name: 'Model Paper 2',
+                  },
+                ],
+              },
+
+              {
+                id: 9,
+                name: 'Physics',
+                chapters: [
+                  {
+                    id: 12,
+                    name: 'Electric Charges and Fields',
+                    sections: [
+                      {
+                        id: 14,
+                        name: 'Coulomb Law',
+                        content: {
+                          videos: [],
+                          notes: [],
+                        },
+                      },
+                    ],
+                  },
+                ],
+                questionPapers: [],
+              },
+            ],
           },
         ],
       },

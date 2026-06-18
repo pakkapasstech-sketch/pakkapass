@@ -14,10 +14,10 @@ const tabs = [
     value: 'notes',
   },
 
-  {
-    label: 'Question Papers',
-    value: 'paper',
-  },
+  // {
+  //   label: 'Question Papers',
+  //   value: 'paper',
+  // },
 ];
 
 const ContentTabs = ({

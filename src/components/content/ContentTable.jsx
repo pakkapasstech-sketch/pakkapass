@@ -13,6 +13,7 @@ const ContentTable = ({
   activeTab,
   filters,
   content,
+  isQuestionPaperLevel,
 }) => {
   const [search, setSearch] =
     useState('');
@@ -20,46 +21,75 @@ const ContentTable = ({
   const [page, setPage] =
     useState(1);
 
-  const filteredContent = useMemo(() => {
+ const filteredContent = useMemo(() => {
+  const showQuestionPapers =
+  isQuestionPaperLevel;
+  
+
   return content.filter((item) => {
     const matchSearch =
       item.title
         ?.toLowerCase()
-        .includes(search.toLowerCase());
-
-    const matchTab =
-      activeTab === 'all'
-        ? true
-        : item.type === activeTab;
-
-    const matchTopic =
-      !filters.topic ||
-      item.topic === filters.topic;
+        .includes(
+          search.toLowerCase()
+        );
 
     const matchClass =
       !filters.class ||
-      item.grade === filters.class;
+      item.grade ===
+        filters.class;
 
     const matchBoard =
       !filters.board ||
-      item.board === filters.board;
+      item.board ===
+        filters.board;
 
     const matchSubject =
       !filters.subject ||
-      item.subject === filters.subject;
+      item.subject ===
+        filters.subject;
 
     const matchChapter =
       !filters.chapter ||
-      item.chapter === filters.chapter;
+      item.chapter ===
+        filters.chapter;
+
+    const matchSection =
+      !filters.section ||
+      item.section ===
+        filters.section;
+
+    let matchType;
+
+    // Subject level → Question Papers only
+    if (showQuestionPapers) {
+      matchType =
+        item.type ===
+        'paper';
+    }
+    // Section level → Videos/Notes
+    else {
+      matchType =
+        activeTab ===
+        'all'
+          ? [
+              'video',
+              'notes',
+            ].includes(
+              item.type
+            )
+          : item.type ===
+            activeTab;
+    }
 
     return (
       matchSearch &&
-      matchTab &&
-      matchTopic &&
       matchClass &&
       matchBoard &&
       matchSubject &&
-      matchChapter
+      matchChapter &&
+      matchSection &&
+      matchType
     );
   });
 }, [

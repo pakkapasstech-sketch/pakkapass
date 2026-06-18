@@ -18,12 +18,19 @@ import { useTheme } from '../../contexts/ThemeContext';
 import Avatar from '../common/Avatar';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-
+import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '../../contexts/NotificationContext';
 import '../../styles/navbar.css';
 
 const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) => {
   const { toggleMobileSidebar, toggleSidebar, isCollapsed } = useSidebar();
+  const navigate =
+  useNavigate();
 
+const {
+  unreadCount,
+} =
+  useNotifications();
   const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
@@ -37,6 +44,7 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
       key: 'selection',
     },
   ]);
+  
   return (
     <header className={`navbar ${isCollapsed ? 'navbar-collapsed' : 'navbar-expanded'}`}>
       <div className="navbar-left">
@@ -104,11 +112,20 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
           )}
         </div>
 
-        <button className="navbar-icon-btn navbar-bell-btn">
-          <HiOutlineBell className="navbar-icon" />
+<button
+  className="navbar-icon-btn navbar-bell-btn"
+  onClick={() =>
+    navigate(
+      '/notifications'
+    )
+  }
+>          <HiOutlineBell className="navbar-icon" />
 
-          <span className="navbar-notification-count">12</span>
-        </button>
+{unreadCount > 0 && (
+  <span className="navbar-notification-count">
+    {unreadCount}
+  </span>
+)}        </button>
 
         <div className="navbar-profile">
           <button onClick={() => setProfileOpen((prev) => !prev)} className="navbar-profile-btn">

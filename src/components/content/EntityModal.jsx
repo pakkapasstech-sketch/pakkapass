@@ -1,15 +1,36 @@
+import { useState } from 'react';
 import './uploadContentModal.css';
 
 const EntityModal = ({
   title,
   onClose,
 }) => {
+  const [name, setName] =
+    useState('');
+
+  const handleSave = () => {
+    if (!name.trim()) {
+      alert(
+        'Please enter a name'
+      );
+      return;
+    }
+
+    console.log({
+      type: title,
+      name,
+    });
+
+    onClose();
+  };
+
   return (
     <div className="modal-overlay">
       <div
         className="upload-modal"
         style={{
-          width: '500px',
+          width: '450px',
+          maxHeight: 'auto',
         }}
       >
         <div className="modal-header">
@@ -24,42 +45,24 @@ const EntityModal = ({
         </div>
 
         <div className="modal-body">
-          <div className="form-group">
+          <div className="form-group full-width">
             <label>Name</label>
 
-            <input />
-          </div>
-
-          <div className="form-group">
-            <label>Code</label>
-
-            <input />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Description
-            </label>
-
-            <textarea
-              rows="3"
+            <input
+              type="text"
+              value={name}
+              onChange={(e) =>
+                setName(
+                  e.target.value
+                )
+              }
+              placeholder={`Enter ${title
+                .replace(
+                  'Add ',
+                  ''
+                )
+                .toLowerCase()} name`}
             />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Status
-            </label>
-
-            <select>
-              <option>
-                Active
-              </option>
-
-              <option>
-                Inactive
-              </option>
-            </select>
           </div>
         </div>
 
@@ -71,7 +74,10 @@ const EntityModal = ({
             Cancel
           </button>
 
-          <button className="save-btn">
+          <button
+            className="save-btn"
+            onClick={handleSave}
+          >
             Save
           </button>
         </div>

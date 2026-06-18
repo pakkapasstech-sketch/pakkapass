@@ -8,6 +8,7 @@ import './contentFilters.css';
 const ContentFilters = ({
   filters,
   setFilters,
+  disableContentFilter,
 }) => {
   const [modal, setModal] =
     useState(null);
@@ -23,7 +24,7 @@ const ContentFilters = ({
         'subject',
         'chapter',
         'section',
-        'topic',
+        // 'topic',
         'contentType',
       ],
 
@@ -32,7 +33,7 @@ const ContentFilters = ({
         'subject',
         'chapter',
         'section',
-        'topic',
+        // 'topic',
         'contentType',
       ],
 
@@ -40,31 +41,26 @@ const ContentFilters = ({
         'subject',
         'chapter',
         'section',
-        'topic',
+        // 'topic',
         'contentType',
       ],
 
       subject: [
         'chapter',
         'section',
-        'topic',
+        // 'topic',
         'contentType',
       ],
 
       chapter: [
         'section',
-        'topic',
+        // 'topic',
         'contentType',
       ],
 
       section: [
-        'topic',
-        'contentType',
-      ],
-
-      topic: [
-        'contentType',
-      ],
+  'contentType',
+],
     };
 
     setFilters((prev) => {
@@ -83,9 +79,9 @@ const ContentFilters = ({
     });
   };
   const contentOptions = [
-  'Video',
-  'Notes',
-  'Question Paper',
+  'video',
+  'notes',
+  // 'Question Paper',
 ];
 
   /*
@@ -162,18 +158,18 @@ const sectionOptions =
       section.name
   ) || [];
 
-const selectedSection =
-  selectedChapter?.sections.find(
-    (section) =>
-      section.name ===
-      filters.section
-  );
+// const selectedSection =
+//   selectedChapter?.sections.find(
+//     (section) =>
+//       section.name ===
+//       filters.section
+//   );
 
-const topicOptions =
-  selectedSection?.topics.map(
-    (topic) =>
-      topic.name
-  ) || [];
+// const topicOptions =
+//   selectedSection?.topics.map(
+//     (topic) =>
+//       topic.name
+//   ) || [];
 
   return (
     <>
@@ -327,30 +323,33 @@ const topicOptions =
 
         {/* Topic */}
 
-        <FilterDropdown
-  label="Topic"
-  value={filters.topic}
-  disabled={!filters.section}
-  options={topicOptions}
-  onSelect={(v) =>
-    update(
-      'topic',
-      v
-    )
-  }
-  onAdd={() =>
-    setModal(
-      'Add Topic'
-    )
-  }
-/>
+        {/* <FilterDropdown 
+//   label="Topic"
+//   value={filters.topic}
+//   disabled={!filters.section}
+//   options={topicOptions}
+//   onSelect={(v) =>
+//     update(
+//       'topic',
+//       v
+//     )
+//   }
+//   onAdd={() =>
+//     setModal(
+//       'Add Topic'
+//     )
+//   }
+// />*/}
 
         {/* Content */}
 
         <FilterDropdown
   label="Content"
   value={filters.contentType}
-  disabled={!filters.topic}
+  disabled={
+    !filters.section ||
+    disableContentFilter
+  }
   options={contentOptions}
   onSelect={(v) =>
     update(

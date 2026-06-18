@@ -66,13 +66,13 @@ export const contentService = {
     return mapContentFromApi(data.content || []);
   },
 
-  upload: async ({ filters, topicName, file, contentType }) => {
+  upload: async ({ filters, file, contentType }) => {
     const formData = new FormData();
     formData.append('gradeName', filters.class || '');
     formData.append('boardName', filters.board || '');
     formData.append('subjectName', filters.subject || '');
     formData.append('chapterName', filters.chapter || '');
-    formData.append('topicName', topicName || filters.topic || '');
+    // formData.append('topicName', topicName || filters.topic || '');
 
     const fieldMap = { video: 'videoUrl', notes: 'notesUrl', paper: 'questionsUrl' };
     const fieldName = fieldMap[contentType] || 'videoUrl';
