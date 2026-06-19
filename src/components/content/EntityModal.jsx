@@ -1,27 +1,93 @@
 import { useState } from 'react';
 import './uploadContentModal.css';
+import toast from 'react-hot-toast';
+import entityService from '../../services/entity.service';
 
 const EntityModal = ({
   title,
+  filters,
   onClose,
+  onEntityAdded,
 }) => {
-  const [name, setName] =
-    useState('');
+  const [name, setName] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim()) {
-      alert(
-        'Please enter a name'
-      );
+      toast.error('Please enter a name');
       return;
     }
 
-    console.log({
-      type: title,
-      name,
-    });
+    try {
+      switch (title) {
+        case 'Add Class':
+          await entityService.addGrade(name);
+          break;
 
-    onClose();
+        case 'Add Board':
+          await entityService.addBoard(name);
+          break;
+
+        case 'Add Course':
+          await entityService.addBranch(name);
+          break;
+
+        case 'Add Subject':
+          await entityService.addSubject(name);
+          break;
+
+        case 'Add Chapter':
+          if (
+            !filters?.class ||
+            !filters?.board ||
+            !filters?.subject
+          ) {
+            toast.error(
+              'Please select Class, Board and Subject first'
+            );
+            return;
+          }
+
+          await entityService.addChapter({
+            name,
+            gradeName: filters.class,
+            boardName: filters.board,
+            branchName: filters.course,
+            subjectName: filters.subject,
+          });
+          break;
+
+        case 'Add Section':
+          if (!filters?.chapter) {
+            toast.error(
+              'Please select a Chapter first'
+            );
+            return;
+          }
+
+          await entityService.addTopic({
+            name,
+            chapterName: filters.chapter,
+          });
+          break;
+
+        default:
+          return;
+      }
+
+      toast.success(
+  `${title.replace('Add ', '')} added successfully`
+);
+
+await onEntityAdded?.();
+onClose();
+
+      
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          'Failed to save'
+      );
+    }
   };
 
   return (
@@ -52,15 +118,10 @@ const EntityModal = ({
               type="text"
               value={name}
               onChange={(e) =>
-                setName(
-                  e.target.value
-                )
+                setName(e.target.value)
               }
               placeholder={`Enter ${title
-                .replace(
-                  'Add ',
-                  ''
-                )
+                .replace('Add ', '')
                 .toLowerCase()} name`}
             />
           </div>

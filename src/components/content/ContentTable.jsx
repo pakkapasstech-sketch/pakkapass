@@ -20,77 +20,107 @@ const ContentTable = ({
 
   const [page, setPage] =
     useState(1);
-
+// console.log(content);
+// console.log('CONTENT', content);
+// console.log('FILTERS', filters);
+// console.log('ACTIVE TAB', activeTab);
+// console.log(content[0].grade);
+// console.log(filters.class);
+console.log('CONTENT', content);
+console.log('FILTERS', filters);
  const filteredContent = useMemo(() => {
+  
   const showQuestionPapers =
   isQuestionPaperLevel;
   
 
   return content.filter((item) => {
+    console.log('ITEM', item);
+
+console.log({
+  grade: item.grade,
+  filterGrade: filters.class,
+
+  board: item.board,
+  filterBoard: filters.board,
+
+  course: item.course,
+  filterCourse: filters.course,
+
+  subject: item.subject,
+  filterSubject: filters.subject,
+
+  chapter: item.chapter,
+  filterChapter: filters.chapter,
+
+  section: item.section,
+  filterSection: filters.section,
+
+  type: item.type,
+  activeTab,
+});
+    
     const matchSearch =
-      item.title
-        ?.toLowerCase()
-        .includes(
-          search.toLowerCase()
-        );
+  item.title
+    ?.toLowerCase()
+    .includes(search.toLowerCase());
+console.log('ITEM', item);
+const matchClass =
+  !filters.class ||
+  item.grade ===
+    filters.class;
 
-    const matchClass =
-      !filters.class ||
-      item.grade ===
-        filters.class;
+const matchBoard =
+  !filters.board ||
+  item.board === filters.board;
+const matchCourse =
+      !filters.course ||
+      item.course ===
+        filters.course;
 
-    const matchBoard =
-      !filters.board ||
-      item.board ===
-        filters.board;
+const matchSubject =
+  !filters.subject ||
+  item.subject === filters.subject;
 
-    const matchSubject =
-      !filters.subject ||
-      item.subject ===
-        filters.subject;
+const matchChapter =
+  !filters.chapter ||
+  item.chapter === filters.chapter;
 
-    const matchChapter =
-      !filters.chapter ||
-      item.chapter ===
-        filters.chapter;
+const matchSection =
+  !filters.section ||
+  item.section === filters.section;
 
-    const matchSection =
-      !filters.section ||
-      item.section ===
-        filters.section;
+let matchType = true;
 
-    let matchType;
+if (showQuestionPapers) {
+  matchType = item.type === 'paper';
+} else {
+  matchType =
+    activeTab === 'all'
+      ? ['video', 'notes'].includes(item.type)
+      : item.type === activeTab;
+}
+// console.log({
+//   matchClass,
+//   matchBoard,
+//   matchCourse,
+//   matchSubject,
+//   matchChapter,
+//   matchSection,
+//   matchType,
+// });
 
-    // Subject level → Question Papers only
-    if (showQuestionPapers) {
-      matchType =
-        item.type ===
-        'paper';
-    }
-    // Section level → Videos/Notes
-    else {
-      matchType =
-        activeTab ===
-        'all'
-          ? [
-              'video',
-              'notes',
-            ].includes(
-              item.type
-            )
-          : item.type ===
-            activeTab;
-    }
 
-    return (
-      matchSearch &&
-      matchClass &&
-      matchBoard &&
-      matchSubject &&
-      matchChapter &&
-      matchSection &&
-      matchType
-    );
+return (
+  matchSearch &&
+  matchClass &&
+  matchBoard &&
+  matchCourse &&
+  matchSubject &&
+  matchChapter &&
+  matchSection &&
+  matchType
+);
   });
 }, [
   content,

@@ -18,13 +18,12 @@
   gap: 20px;
 
   width: 100%;
+  max-width: 100%;
   min-width: 0;
 
   background: var(--color-card, #ffffff);
-
   border: 1px solid
     var(--color-border, #e2e8f0);
-
   border-radius: 20px;
 
   padding: 24px;
@@ -52,14 +51,12 @@
 .content-search-input {
   width: 320px;
   max-width: 100%;
-
   height: 44px;
 
   padding: 0 16px;
 
   border: 1px solid
     var(--color-border, #e2e8f0);
-
   border-radius: 12px;
 
   background: #ffffff;
@@ -86,8 +83,6 @@
 
 .data-table-wrapper {
   width: 100%;
-  min-width: 0;
-
   overflow-x: auto;
   overflow-y: hidden;
 
@@ -99,10 +94,11 @@
 ========================================== */
 
 .data-table {
-  width: 800px;
-  min-width: 800px;
+  width: 100%;
+  min-width: 900px;
 
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 /* ==========================================
@@ -129,6 +125,8 @@
   border-bottom: 1px solid #e2e8f0;
 
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==========================================
@@ -139,12 +137,13 @@
   padding: 18px 16px;
 
   font-size: 14px;
-
   color: #0f172a;
 
   border-bottom: 1px solid #f1f5f9;
 
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .data-table tbody tr {
@@ -156,15 +155,56 @@
 }
 
 /* ==========================================
+   COLUMN WIDTHS
+========================================== */
+
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+  width: 220px;
+}
+
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
+  width: 110px;
+}
+
+.data-table th:nth-child(3),
+.data-table td:nth-child(3) {
+  width: 260px;
+}
+
+.data-table th:nth-child(4),
+.data-table td:nth-child(4) {
+  width: 140px;
+}
+
+.data-table th:nth-child(5),
+.data-table td:nth-child(5) {
+  width: 120px;
+}
+
+.data-table th:nth-child(6),
+.data-table td:nth-child(6) {
+  width: 130px;
+}
+
+/* ==========================================
    FILE LINK
 ========================================== */
 
 .data-table td a {
+  display: inline-block;
+  max-width: 100%;
+
   color:
     var(--color-primary, #6366f1);
 
   text-decoration: none;
   font-weight: 500;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .data-table td a:hover {
@@ -178,6 +218,9 @@
 .content-type-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+
+  min-width: 70px;
 
   padding: 6px 12px;
 
@@ -185,6 +228,8 @@
 
   font-size: 12px;
   font-weight: 600;
+
+  white-space: nowrap;
 
   background: #eef2ff;
   color: #6366f1;
@@ -207,6 +252,7 @@
 .table-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -247,7 +293,6 @@
   text-align: center;
 
   color: #94a3b8;
-
   font-size: 15px;
 }
 
@@ -260,6 +305,8 @@
   justify-content: flex-end;
   align-items: center;
   gap: 16px;
+
+  flex-wrap: wrap;
 }
 
 .table-pagination button {
@@ -268,7 +315,6 @@
   padding: 0 18px;
 
   border: 1px solid #e2e8f0;
-
   border-radius: 10px;
 
   background: #ffffff;
@@ -310,7 +356,6 @@
 .data-table-wrapper::-webkit-scrollbar-thumb {
   background:
     rgba(100, 116, 139, 0.4);
-
   border-radius: 999px;
 }
 
@@ -359,12 +404,13 @@
 }
 
 /* ==========================================
-   TABLE BREAKPOINT
+   TABLET
 ========================================== */
 
-@media (max-width: 850px) {
+@media (max-width: 768px) {
   .data-table-container {
-    padding: 20px;
+    padding: 18px;
+    border-radius: 18px;
   }
 
   .content-table-toolbar {
@@ -378,7 +424,6 @@
 
   .table-pagination {
     justify-content: center;
-    flex-wrap: wrap;
   }
 }
 
@@ -386,7 +431,7 @@
    MOBILE
 ========================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .data-table-container {
     padding: 16px;
     border-radius: 16px;
