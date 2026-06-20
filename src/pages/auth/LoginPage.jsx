@@ -37,6 +37,8 @@ const LoginPage = () => {
 
   const isAdmin = role === 'admin';
   const isParent = role === 'parent';
+  const isPartner =
+  role === 'partner';
 
   const {
     register,
@@ -208,7 +210,6 @@ const LoginPage = () => {
               aria-selected={role === 'partner'}
               onClick={() => setRole('partner')}
               className={role === 'partner' ? 'active-role' : ''}
-              disabled
             >
               Partner
             </button>
@@ -268,7 +269,7 @@ const LoginPage = () => {
                   {getButtonText()}
                 </button>
               </motion.form>
-            ) : isParent ? (
+            ) : isParent || isPartner ? (
               <motion.div
                 key="otp-form"
                 initial={{ opacity: 0, x: 10 }}

@@ -1,89 +1,75 @@
-import {
-  HiOutlinePencil,
-  HiOutlineTrash,
-  HiOutlineArrowLeft,
-} from 'react-icons/hi';
+import { HiOutlinePencil, HiOutlineTrash, HiArrowLeft } from 'react-icons/hi';
 
-import { useNavigate } from 'react-router-dom';
 
 import '../../styles/partnerDetails.css';
 
-const mockPartner = {
-  partnerId: 'PP1001',
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-  organizationName:
-    'Narayana Junior College',
+import {
+  useParams,
+  useNavigate,
+} from
+'react-router-dom';
 
-  institutionType:
-    'Junior College',
-
-  contactPerson:
-    'Ramesh Kumar',
-
-  mobile:
-    '9876543210',
-
-  email:
-    'ramesh@gmail.com',
-
-  status:
-    'Active',
-
-  referralCode:
-    'PPRA1001',
-
-  students: 245,
-
-  revenue: 125000,
-
-  commission:
-    '15%',
-
-  joiningDate:
-    '2026-06-17',
-};
+import partnerService
+from '../../services/partner.service';
 
 const PartnerDetailsPage = () => {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
+const { id } =
+  useParams();
 
+const [partner,
+  setPartner] =
+  useState(null);
+
+const [analytics,
+  setAnalytics] =
+  useState(null);useEffect(() => {
+  fetchPartner();
+}, [id]);
+
+const fetchPartner =
+  async () => {
+    try {
+      const res =
+        await partnerService.getById(
+          id
+        );
+
+      setPartner(
+        res.partner
+      );
+
+      setAnalytics(
+        res.analytics
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };if (!partner)
+  return null;
   return (
     <div className="partner-details-page">
       <div className="details-header">
-        <button
-          className="partner-back-btn"
-          onClick={() =>
-            navigate(
-              '/partners'
-            )
-          }
-        >
-          <HiOutlineArrowLeft />
+        <button className="back-link" onClick={() => navigate(-1)}>
+          <HiArrowLeft />
+          <span>Back</span>
         </button>
 
         <div className="header-content">
-          <h1>
-            {
-              mockPartner.contactPerson
-            }
-          </h1>
+          <h1>{partner.contactPerson}</h1>
 
-          <p>
-            {
-              mockPartner.partnerId
-            }
-          </p>
+          <p>{partner.partnerId}</p>
         </div>
 
         <div className="details-actions">
-          <button
-            className="btn-primary"
-            onClick={() =>
-              navigate(
-                '/partners/1/edit'
-              )
-            }
-          >
+          <button className="btn-primary" onClick={() => navigate(
+  `/partners/${partner.id}/edit`
+)}>
             <HiOutlinePencil />
             Edit
           </button>
@@ -97,143 +83,81 @@ const PartnerDetailsPage = () => {
 
       <div className="details-grid">
         <div className="detail-card">
-          <h3>
-            Partner
-            Information
-          </h3>
+          <h3>Partner Information</h3>
 
           <p>
-            <span>
-              Institution
-            </span>
+            <span>Institution</span>
 
-            <strong>
-              {
-                mockPartner.institutionType
-              }
-            </strong>
+            <strong>{partner.institutionType}</strong>
           </p>
 
           <p>
-            <span>
-              Status
-            </span>
+            <span>Status</span>
 
-            <strong>
-              {
-                mockPartner.status
-              }
-            </strong>
+            <strong>{partner.status}</strong>
           </p>
 
           <p>
-            <span>
-              Joined
-            </span>
+            <span>Joined</span>
 
-            <strong>
-              {
-                mockPartner.joiningDate
-              }
-            </strong>
+            <strong>{partner.joiningDate}</strong>
           </p>
         </div>
 
         <div className="detail-card">
-          <h3>
-            Contact
-            Information
-          </h3>
+          <h3>Contact Information</h3>
 
           <p>
-            <span>
-              Name
-            </span>
+            <span>Name</span>
 
-            <strong>
-              {
-                mockPartner.contactPerson
-              }
-            </strong>
+            <strong>{partner.contactPerson}</strong>
           </p>
 
           <p>
-            <span>
-              Mobile
-            </span>
+            <span>Mobile</span>
 
-            <strong>
-              {
-                mockPartner.mobile
-              }
-            </strong>
+            <strong>{partner.mobile}</strong>
           </p>
 
           <p>
-            <span>
-              Email
-            </span>
+            <span>Email</span>
 
-            <strong>
-              {
-                mockPartner.email
-              }
-            </strong>
+            <strong>{partner.email}</strong>
           </p>
         </div>
 
         <div className="detail-card">
-          <h3>
-            Referral
-            Details
-          </h3>
+          <h3>Referral Details</h3>
 
           <p>
-            <span>
-              Code
-            </span>
+            <span>Code</span>
 
-            <strong>
-              {
-                mockPartner.referralCode
-              }
-            </strong>
+            <strong>{partner.referralCode}</strong>
           </p>
 
           <p>
-            <span>
-              Students
-            </span>
+            <span>Students</span>
 
-            <strong>
-              {
-                mockPartner.students
-              }
-            </strong>
+            <strong>{
+  analytics?.students
+    ?.totalStudents
+}</strong>
           </p>
 
           <p>
-            <span>
-              Commission
-            </span>
+            <span>Commission</span>
 
-            <strong>
-              {
-                mockPartner.commission
-              }
-            </strong>
+            <strong>{partner.commission}</strong>
           </p>
         </div>
 
         <div className="detail-card revenue-card">
-          <h3>
-            Revenue
-          </h3>
+          <h3>Revenue</h3>
 
-          <h1>
-            ₹
-            {mockPartner.revenue.toLocaleString()}
-          </h1>
+          <h1>₹
+{analytics?.revenue
+  ?.totalRevenue
+  ?.toLocaleString()}</h1>
         </div>
       </div>
     </div>

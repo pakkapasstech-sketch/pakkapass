@@ -46,85 +46,64 @@ const PartnerTable = ({
             </tr>
           </thead>
 
-          <tbody>
-            {partners.map(
-              (partner) => (
-                <tr
-                  key={
-                    partner.id
-                  }
-                  className="partner-row"
-                  onClick={() =>
-                    navigate(
-                      `/partners/${partner.id}`
-                    )
-                  }
-                >
-                  <td>
-                    {
-                      partner.id
-                    }
-                  </td>
+         <tbody>
+  {partners.map((partner) => (
+    <tr
+      key={partner.id}
+      className="partner-row"
+      onClick={() =>
+        navigate(`/partners/${partner.id}`)
+      }
+    >
+      <td>{partner.id}</td>
 
-                  <td>
-                    {
-                      partner.contactPerson
-                    }
-                  </td>
+      <td>
+        {partner.contactPerson}
+      </td>
 
-                  <td>
-                    {
-                      partner.partnerId
-                    }
-                  </td>
+      <td>
+        {partner.partnerId}
+      </td>
 
-                  <td>
-                    {
-                      partner.institutionType
-                    }
-                  </td>
+      <td>
+        {partner.institutionType}
+      </td>
 
-                  <td>
-                    {
-                      partner.mobile
-                    }
-                  </td>
+      <td>
+        {partner.mobile}
+      </td>
 
-                  <td>
-                    {
-                      partner.referralCode
-                    }
-                  </td>
+      <td>
+        {partner.referralCode}
+      </td>
 
-                  <td>
-                    {
-                      partner.students
-                    }
-                  </td>
+      <td>
+        {partner.analytics
+          ?.students
+          ?.totalStudents ?? 0}
+      </td>
 
-                  <td>
-                    ₹
-                    {partner.revenue.toLocaleString()}
-                  </td>
+      <td>
+        ₹
+        {(
+          partner.analytics
+            ?.revenue
+            ?.totalRevenue ?? 0
+        ).toLocaleString()}
+      </td>
 
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        partner.status ===
-                        'Active'
-                          ? 'active'
-                          : 'inactive'
-                      }`}
-                    >
-                      {
-                        partner.status
-                      }
-                    </span>
-                  </td>
-                </tr>
-              )
-            )}
-          </tbody>
+      <td>
+        <span
+          className={`status-badge ${
+            partner.status?.toLowerCase()
+          }`}
+        >
+          {partner.status}
+        </span>
+      </td>
+    </tr>
+  ))}
+</tbody>
         </table>
       </div>
     </div>

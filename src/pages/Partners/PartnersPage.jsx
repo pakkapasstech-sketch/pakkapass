@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlinePlus,
@@ -8,47 +11,12 @@ import {
 import PartnerStats from '../../components/partners/PartnerStats';
 import PartnerFilters from '../../components/partners/PartnerFilters';
 import PartnerTable from '../../components/partners/PartnerTable';
+import partnerService from '../../services/partner.service';
 
 import '../../styles/partners.css';
 
-const mockPartners = [
-  {
-    id: 1,
-    partnerId: 'PP1001',
-    organizationName:
-      'Narayana Junior College',
-    institutionType:
-      'Junior College',
-    contactPerson:
-      'Ramesh Kumar',
-    mobile: '9876543210',
-    referralCode:
-      'PPRA1001',
-    students: 245,
-    revenue: 125000,
-    status: 'Active',
-  },
-  {
-    id: 2,
-    partnerId: 'PP1002',
-    organizationName:
-      'Sri Chaitanya',
-    institutionType:
-      'Coaching Center',
-    contactPerson:
-      'Anil Sharma',
-    mobile: '9876541234',
-    referralCode:
-      'PPSC1002',
-    students: 180,
-    revenue: 95000,
-    status: 'Inactive',
-  },
-];
-
 const PartnersPage = () => {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
   const [search, setSearch] =
     useState('');
@@ -58,42 +26,61 @@ const PartnersPage = () => {
     setStatusFilter,
   ] = useState('');
 
-  const filteredPartners =
-    mockPartners.filter(
-      (partner) => {
-        const matchesSearch =
-          partner.organizationName
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            ) ||
-          partner.partnerId
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            );
+  const [partners, setPartners] =
+    useState([]);
 
-        const matchesStatus =
-          !statusFilter ||
-          partner.status ===
-            statusFilter;
+  const [loading, setLoading] =
+    useState(true);
 
-        return (
-          matchesSearch &&
-          matchesStatus
+  const fetchPartners =
+    async () => {
+      try {
+        setLoading(true);
+
+        const res =
+          await partnerService.getAll({
+            search,
+            status:
+              statusFilter,
+          });
+
+        console.log(
+          'PARTNERS',
+          res
         );
+
+        setPartners(
+          res.partners || []
+        );
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
       }
+    };
+
+  useEffect(() => {
+    fetchPartners();
+  }, [
+    search,
+    statusFilter,
+  ]);
+
+  if (loading) {
+    return (
+      <div className="partners-page">
+        Loading partners...
+      </div>
     );
+  }console.log(
+  'PARTNERS',
+  partners
+);
 
   return (
     <div className="partners-page">
       <div className="partners-header">
         <div>
-          {/* <p className="partners-badge">
-            Channel Partner
-            Management
-          </p> */}
-
           <h1>
             Manage Channel
             Partners
@@ -101,44 +88,39 @@ const PartnersPage = () => {
 
           <p className="partners-description">
             Create partners,
-            configure
-            commissions,
-            generate
-            referral codes and
-            monitor
-            performance.
+            generate referral
+            codes and monitor
+            partner performance.
           </p>
         </div>
 
         <div className="header-actions">
           <button className="partners-btn-secondary">
-  <HiOutlineDownload />
-  Export
-</button>
+            <HiOutlineDownload />
+            Export
+          </button>
 
-<button
-  className="partners-btn-primary"
-  onClick={() =>
-    navigate('/partners/add')
-  }
->
-  <HiOutlinePlus />
-  Add Partner
-</button>
+          <button
+            className="partners-btn-primary"
+            onClick={() =>
+              navigate(
+                '/partners/add'
+              )
+            }
+          >
+            <HiOutlinePlus />
+            Add Partner
+          </button>
         </div>
       </div>
 
       <PartnerStats
-        partners={
-          filteredPartners
-        }
+        partners={partners}
       />
 
       <PartnerFilters
         search={search}
-        setSearch={
-          setSearch
-        }
+        setSearch={setSearch}
         statusFilter={
           statusFilter
         }
@@ -148,9 +130,7 @@ const PartnersPage = () => {
       />
 
       <PartnerTable
-        partners={
-          filteredPartners
-        }
+        partners={partners}
       />
     </div>
   );

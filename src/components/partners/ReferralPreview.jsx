@@ -1,12 +1,25 @@
+import toast from 'react-hot-toast';
 const ReferralPreview = ({
   formData,
 }) => {
-  const referralCode = `PP${(
-    formData.firstName
-      ?.slice(0, 2) || 'PA'
-  ).toUpperCase()}${
-    formData.partnerId
-  }`;
+  const first =
+  formData.firstName?.[0]?.toUpperCase() ||
+  'X';
+
+const last =
+  formData.lastName?.[0]?.toUpperCase() ||
+  'X';
+
+const partner =
+  String(formData.partnerId || '')
+    .slice(-4);
+
+const discount =
+  String(formData.discountValue || '')
+    .replace(/\D/g, '');
+
+const referralCode =
+  `${first}${last}${partner}${discount}`;
 
   const referralMessage = `Hi,
 
@@ -16,17 +29,35 @@ Download PakkaPass and use my code while purchasing your subscription.
 
 Thank you!`;
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(
+  const copyCode = async () => {
+  try {
+    await navigator.clipboard.writeText(
       referralCode
     );
-  };
+    toast.success(
+      'Referral code copied!'
+    );
+  } catch {
+    toast.error(
+      'Failed to copy referral code'
+    );
+  }
+};
 
-  const copyMessage = () => {
-    navigator.clipboard.writeText(
+  const copyMessage = async () => {
+  try {
+    await navigator.clipboard.writeText(
       referralMessage
     );
-  };
+    toast.success(
+      'Referral message copied!'
+    );
+  } catch {
+    toast.error(
+      'Failed to copy referral message'
+    );
+  }
+};
 
   return (
     <div className="referral-container">

@@ -231,6 +231,8 @@
 
 .table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
 }
 
 .partners-table {

@@ -9,12 +9,12 @@ const PartnerStepper = ({
           key={step}
           type="button"
           className={`partner-tab ${
-            activeStep === index
-              ? 'active'
-              : activeStep > index
-              ? 'completed'
-              : ''
-          }`}
+  activeStep === index
+    ? 'active'
+    : activeStep > index
+    ? 'completed'
+    : 'disabled'
+}`}
         >
           {step}
         </button>
