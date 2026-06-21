@@ -24,7 +24,7 @@ const OTP_COOLDOWN = 60;
 const LoginPage = () => {
   const navigate = useNavigate();
   const { loginAdmin, sendOtp, verifyOtp, isAuthenticated, user, loading: authLoading } = useAuth();
-
+  const [mobile, setMobile] = useState('');
   const [role, setRole] = useState('admin');
   const [step, setStep] = useState('credentials');
   const [showPassword, setShowPassword] = useState(false);
@@ -37,8 +37,7 @@ const LoginPage = () => {
 
   const isAdmin = role === 'admin';
   const isParent = role === 'parent';
-  const isPartner =
-  role === 'partner';
+  const isPartner = role === 'partner';
 
   const {
     register,
@@ -58,6 +57,7 @@ const LoginPage = () => {
     setOtp('');
     setCooldown(0);
     setEmail('');
+    setMobile('');
   }, []);
 
   useEffect(() => {
@@ -86,17 +86,40 @@ const LoginPage = () => {
 
   const handleGetOTP = async (e) => {
     e?.preventDefault();
-    const emailVal = email || getValues('email');
-    if (!emailVal || !emailVal.includes('@')) {
-      toast.error('Enter a valid email address');
-      return;
-    }
+
     try {
       setLoading(true);
-      await sendOtp({ email: emailVal, role });
+
+      if (isPartner) {
+        if (!/^\d{10}$/.test(mobile)) {
+          toast.error('Enter a valid mobile number');
+          return;
+        }
+
+        await sendOtp({
+          role,
+          mobile,
+        });
+
+        toast.success('OTP sent to your mobile');
+      } else {
+        const emailVal = email || getValues('email');
+
+        if (!emailVal || !emailVal.includes('@')) {
+          toast.error('Enter a valid email address');
+          return;
+        }
+
+        await sendOtp({
+          role,
+          email: emailVal,
+        });
+
+        toast.success('OTP sent to your email');
+      }
+
       setStep('otp');
       setCooldown(OTP_COOLDOWN);
-      toast.success('OTP sent to your email');
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to send OTP');
     } finally {
@@ -111,14 +134,25 @@ const LoginPage = () => {
 
   const handleOTPLogin = async (e) => {
     e?.preventDefault();
+
     if (!otp || otp.length < 4) {
       toast.error('OTP is required');
       return;
     }
+
     try {
       setLoading(true);
-      const result = await verifyOtp({ email, otp, role, rememberMe });
+
+      const result = await verifyOtp({
+        role,
+        email,
+        mobile,
+        otp,
+        rememberMe,
+      });
+
       toast.success(`Welcome back, ${result.user.name || 'User'}!`);
+
       navigate(getDefaultRoute(result.user.role));
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Invalid OTP');
@@ -280,13 +314,25 @@ const LoginPage = () => {
                   <form onSubmit={handleGetOTP}>
                     <div className="input-group">
                       <HiOutlineMail className="input-icon" />
-                      <input
-                        type="email"
-                        placeholder="Email Address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        aria-label="Email"
-                      />
+
+                      {isPartner ? (
+                        <input
+                          type="tel"
+                          placeholder="Mobile Number"
+                          value={mobile}
+                          maxLength={10}
+                          onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
+                          aria-label="Mobile Number"
+                        />
+                      ) : (
+                        <input
+                          type="email"
+                          placeholder="Email Address"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          aria-label="Email"
+                        />
+                      )}
                     </div>
 
                     <div className="login-options">
@@ -307,7 +353,7 @@ const LoginPage = () => {
                 ) : (
                   <form onSubmit={handleOTPLogin}>
                     <p className="otp-sent-msg">
-                      OTP sent to <strong>{email}</strong>
+                      OTP sent to <strong>{isPartner ? mobile : email}</strong>
                       <button type="button" className="change-mobile-btn" onClick={resetOtpFlow}>
                         Change
                       </button>

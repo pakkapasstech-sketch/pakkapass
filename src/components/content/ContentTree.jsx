@@ -70,33 +70,23 @@ const ContentTree = ({ filters, hierarchy, setFilters, setViewMode, setActiveTab
       setViewMode('content');
     }
 
-    if (
-  node.contentType === 'video' ||
-  node.contentType === 'notes'
-) {
-  setActiveTab(node.contentType);
-}
+    if (node.contentType === 'video' || node.contentType === 'notes') {
+      setActiveTab(node.contentType);
+    }
 
     setFilters((prev) => ({
-  ...prev,
-  class: node.className || prev.class,
-  board: node.boardName || prev.board,
-  course: node.courseName || prev.course,
-  subject: node.subjectName || prev.subject,
+      ...prev,
+      class: node.className || prev.class,
+      board: node.boardName || prev.board,
+      course: node.courseName || prev.course,
+      subject: node.subjectName || prev.subject,
 
-  chapter:
-    node.contentType === 'paper'
-      ? ''
-      : node.chapterName || prev.chapter,
+      chapter: node.contentType === 'paper' ? '' : node.chapterName || prev.chapter,
 
-  section:
-    node.contentType === 'paper'
-      ? ''
-      : node.sectionName || prev.section,
+      section: node.contentType === 'paper' ? '' : node.sectionName || prev.section,
 
-  contentType:
-    node.contentType || prev.contentType,
-}));
+      contentType: node.contentType || prev.contentType,
+    }));
   };
 
   const treeData = useMemo(() => {
@@ -127,7 +117,11 @@ const ContentTree = ({ filters, hierarchy, setFilters, setViewMode, setActiveTab
       ];
     }
 
-    return selectedBoard.courses.map((course) => ({
+    const courses = filters.course
+      ? selectedBoard.courses.filter((course) => course.name === filters.course)
+      : selectedBoard.courses;
+
+    return courses.map((course) => ({
       id: `course-${course.id}`,
       label: course.name,
 
@@ -204,34 +198,26 @@ const ContentTree = ({ filters, hierarchy, setFilters, setViewMode, setActiveTab
           })),
 
           {
-            
-  id: `paper-${subject.id}`,
+            id: `paper-${subject.id}`,
 
-  label:
-    'Question Papers',
+            label: 'Question Papers',
 
-  contentType:
-    'paper',
+            contentType: 'paper',
 
-  className:
-    filters.class,
+            className: filters.class,
 
-  boardName:
-    filters.board,
+            boardName: filters.board,
 
-  courseName:
-    course.name,
+            courseName: course.name,
 
-  subjectName:
-    subject.name,
+            subjectName: subject.name,
 
-  children: [],
-
+            children: [],
           },
         ],
       })),
     }));
-  }, [filters]);
+  }, [filters, hierarchy]);
   useEffect(() => {
     const expanded = {};
 

@@ -16,10 +16,11 @@ const entityService = {
       name,
     }),
 
-  addSubject: (name) =>
-    axiosInstance.post('/admin/subject', {
-      name,
-    }),
+  addSubject: (data) =>
+  axiosInstance.post(
+    '/admin/subject',
+    data
+  ),
   addChapter: (data) => axiosInstance.post('/admin/chapter', data),
 
   addTopic: (data) => axiosInstance.post('/admin/topic', data),

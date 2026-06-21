@@ -10,7 +10,6 @@ const ContentFilters = ({
   filters,
   setFilters,
   disableContentFilter,
-  hierarchy,
   options,
   onEntityAdded,
 }) => {
@@ -93,96 +92,103 @@ const ContentFilters = ({
   ];
 
   /*
-  =====================
-  Dynamic Options
-  =====================
-  */
+/*
+=====================
+Dynamic Options
+=====================
+*/
 
-  const classOptions = options?.grades?.map((grade) => grade.name) || [];
+const classOptions =
+  options?.grades?.map(
+    (grade) => grade.name
+  ) || [];
 
-  const selectedClass = hierarchy.find((item) => item.name === filters.class) || {
-    boards: [],
-  };
-
-  const boardOptions = filters.class ? options?.boards?.map((board) => board.name) || [] : [];
-  const selectedBoard = selectedClass?.boards?.find((board) => board.name === filters.board);
-
-  const courseOptions = filters.board ? options?.branches?.map((branch) => branch.name) || [] : [];
-  const selectedCourse = selectedBoard?.courses?.find((course) => course.name === filters.course);
-
-  const subjectOptions = filters.course
-    ? options?.subjects?.map((subject) => subject.name) || []
+const boardOptions =
+  filters.class
+    ? options?.boards?.map(
+        (board) => board.name
+      ) || []
     : [];
-  const selectedSubject = selectedCourse?.subjects?.find(
-    (subject) => subject.name === filters.subject
-  );
 
-  const chapterOptions =
-  options?.chapters
-    ?.filter((chapter) => {
-      const subjectMatch =
-        chapter.subject?.name ===
-        filters.subject;
+const courseOptions =
+  filters.board
+    ? options?.branches?.map(
+        (branch) => branch.name
+      ) || []
+    : [];
 
-      const gradeMatch =
-        chapter.grade?.name ===
-        filters.class;
+const subjectOptions =
+  filters.course
+    ? options?.subjects
+        ?.filter(
+          (subject) =>
+            subject.grade
+              ?.name ===
+              filters.class &&
+            subject.board
+              ?.name ===
+              filters.board &&
+            subject.branch
+              ?.name ===
+              filters.course
+        )
+        .map(
+          (subject) =>
+            subject.name
+        ) || []
+    : [];
 
-      const boardMatch =
-        chapter.board?.name ===
-        filters.board;
+const chapterOptions =
+  filters.subject
+    ? options?.chapters
+        ?.filter((chapter) => {
+          return (
+            chapter.grade?.name ===
+              filters.class &&
+            chapter.board?.name ===
+              filters.board &&
+            chapter.subject?.name ===
+              filters.subject &&
+            (
+              !filters.course ||
+              chapter.branch?.name ===
+                filters.course
+            )
+          );
+        })
+        .map(
+          (chapter) => chapter.name
+        ) || []
+    : [];
 
-      const branchMatch =
-        filters.course
-          ? chapter.branch?.name ===
-            filters.course
-          : !chapter.branch;
-
-      return (
-        subjectMatch &&
-        gradeMatch &&
-        boardMatch &&
-        branchMatch
-      );
-    })
-    .map((chapter) => chapter.name) || [];
-  const selectedChapterObj =
+const selectedChapterObj =
   options?.chapters?.find(
     (chapter) =>
       chapter.name ===
         filters.chapter &&
-      chapter.subject?.name ===
-        filters.subject &&
       chapter.grade?.name ===
         filters.class &&
       chapter.board?.name ===
         filters.board &&
-      (filters.course
-        ? chapter.branch?.name ===
+      chapter.subject?.name ===
+        filters.subject &&
+      (
+        !filters.course ||
+        chapter.branch?.name ===
           filters.course
-        : !chapter.branch)
+      )
   );
 
 const sectionOptions =
-  options?.topics
-    ?.filter(
-      (topic) =>
-        topic.chapterId ===
-        selectedChapterObj?.id
-    )
-    .map((topic) => topic.name) || [];
-  // const selectedSection =
-  //   selectedChapter?.sections.find(
-  //     (section) =>
-  //       section.name ===
-  //       filters.section
-  //   );
-
-  // const topicOptions =
-  //   selectedSection?.topics.map(
-  //     (topic) =>
-  //       topic.name
-  //   ) || [];
+  filters.chapter
+    ? options?.topics
+        ?.filter(
+          (topic) =>
+            Number(topic.chapterId) ===
+            Number(selectedChapterObj?.id)
+        )
+        .map((topic) => topic.name) || []
+    : [];
 
   return (
     <>
@@ -233,13 +239,30 @@ const sectionOptions =
         {/* Chapter */}
 
         <FilterDropdown
-          label="Chapter"
-          value={filters.chapter}
-          disabled={!filters.subject}
-          options={chapterOptions}
-          onSelect={(v) => update('chapter', v)}
-          onAdd={() => setModal('Add Chapter')}
-        />
+  label="Chapter"
+  value={filters.chapter}
+  disabled={!filters.subject}
+  options={chapterOptions}
+  onSelect={(v) => {
+    const chapter = options?.chapters?.find(
+      (c) =>
+        c.name === v &&
+        c.grade?.name === filters.class &&
+        c.board?.name === filters.board &&
+        c.subject?.name === filters.subject &&
+        (!filters.course || c.branch?.name === filters.course)
+    );
+
+    setFilters((prev) => ({
+      ...prev,
+      chapter: v,
+      chapterId: chapter?.id || '',
+      section: '',
+      contentType: '',
+    }));
+  }}
+  onAdd={() => setModal('Add Chapter')}
+/>
 
         {/* Section */}
 
@@ -283,15 +306,15 @@ const sectionOptions =
           onAdd={() => {}}
         />
       </div>
-{modal && (
-  <EntityModal
-    title={modal}
-    filters={filters}
-    onClose={() => setModal(null)}
-    onEntityAdded={onEntityAdded}
-  />
-)}
-   </>
+      {modal && (
+        <EntityModal
+          title={modal}
+          filters={filters}
+          onClose={() => setModal(null)}
+          onEntityAdded={onEntityAdded}
+        />
+      )}
+    </>
   );
 };
 

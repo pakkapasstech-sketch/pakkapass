@@ -24,6 +24,7 @@ const ContentManagement = () => {
     course: '',
     subject: '',
     chapter: '',
+    chapterId: '',
     section: '',
     // topic: '',
     contentType: '',
@@ -52,8 +53,10 @@ const ContentManagement = () => {
       return data;
     },
   });
-  const hierarchy = useMemo(() => buildHierarchy(content, options), [content, options]);
-  // useEffect(() => {
+const hierarchy = useMemo(
+  () => buildHierarchy(content),
+  [content]
+);  // useEffect(() => {
   //   if (selectedFilters.contentType) {
   //     setActiveTab(selectedFilters.contentType);
   //   }
@@ -95,10 +98,14 @@ const ContentManagement = () => {
   options={options}
   disableContentFilter={isQuestionPaperLevel}
   onEntityAdded={async () => {
-    await queryClient.invalidateQueries({
-      queryKey: ['content-options'],
-    });
-  }}
+  await queryClient.invalidateQueries({
+    queryKey: ['content'],
+  });
+
+  await queryClient.invalidateQueries({
+    queryKey: ['content-options'],
+  });
+}}
 />
         <div className="content-management-body">
           <ContentTree

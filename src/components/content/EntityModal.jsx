@@ -3,12 +3,7 @@ import './uploadContentModal.css';
 import toast from 'react-hot-toast';
 import entityService from '../../services/entity.service';
 
-const EntityModal = ({
-  title,
-  filters,
-  onClose,
-  onEntityAdded,
-}) => {
+const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
   const [name, setName] = useState('');
 
   const handleSave = async () => {
@@ -32,18 +27,17 @@ const EntityModal = ({
           break;
 
         case 'Add Subject':
-          await entityService.addSubject(name);
+          await entityService.addSubject({
+            name,
+            gradeName: filters.class,
+            boardName: filters.board,
+            branchName: filters.course,
+          });
           break;
 
         case 'Add Chapter':
-          if (
-            !filters?.class ||
-            !filters?.board ||
-            !filters?.subject
-          ) {
-            toast.error(
-              'Please select Class, Board and Subject first'
-            );
+          if (!filters?.class || !filters?.board || !filters?.subject) {
+            toast.error('Please select Class, Board and Subject first');
             return;
           }
 
@@ -56,37 +50,28 @@ const EntityModal = ({
           });
           break;
 
-        case 'Add Section':
-          if (!filters?.chapter) {
-            toast.error(
-              'Please select a Chapter first'
-            );
-            return;
-          }
+       case 'Add Section':
+  if (!filters?.chapterId) {
+    toast.error('Please select a Chapter first');
+    return;
+  }
 
-          await entityService.addTopic({
-            name,
-            chapterName: filters.chapter,
-          });
-          break;
+  await entityService.addTopic({
+  name,
+  chapterId: filters.chapterId,
+});
+  break;
 
         default:
           return;
       }
 
-      toast.success(
-  `${title.replace('Add ', '')} added successfully`
-);
+      toast.success(`${title.replace('Add ', '')} added successfully`);
 
-await onEntityAdded?.();
-onClose();
-
-      
+      await onEntityAdded?.();
+      onClose();
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          'Failed to save'
-      );
+      toast.error(error.response?.data?.message || 'Failed to save');
     }
   };
 
@@ -102,10 +87,7 @@ onClose();
         <div className="modal-header">
           <h2>{title}</h2>
 
-          <button
-            onClick={onClose}
-            className="modal-close-btn"
-          >
+          <button onClick={onClose} className="modal-close-btn">
             ✕
           </button>
         </div>
@@ -117,28 +99,18 @@ onClose();
             <input
               type="text"
               value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
-              placeholder={`Enter ${title
-                .replace('Add ', '')
-                .toLowerCase()} name`}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={`Enter ${title.replace('Add ', '').toLowerCase()} name`}
             />
           </div>
         </div>
 
         <div className="modal-footer">
-          <button
-            className="cancel-btn"
-            onClick={onClose}
-          >
+          <button className="cancel-btn" onClick={onClose}>
             Cancel
           </button>
 
-          <button
-            className="save-btn"
-            onClick={handleSave}
-          >
+          <button className="save-btn" onClick={handleSave}>
             Save
           </button>
         </div>
