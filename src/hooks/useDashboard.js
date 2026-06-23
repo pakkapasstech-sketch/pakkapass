@@ -10,7 +10,7 @@ import {
 import {
   mockSubscriptionGrowth,
 } from '../mocks/mockData';
-
+import { studentService } from '../services/student.service';
 
 export const useAdminDashboard = () =>
   useQuery({
@@ -60,36 +60,81 @@ export const useStudentsByState = () =>
     queryKey: QUERY_KEYS.dashboard.studentsByState,
     queryFn: async () => mockDashboardCharts.studentsByState,
   });
+const mapDashboardStudent = (s) => ({
+  id: s.id,
+  name: s.name || 'Unknown',
+  email: s.email || '',
+  mobile: s.mobile || '',
 
+  class:
+    s.profile?.grade?.name ||
+    'N/A',
+
+  board:
+    s.profile?.board?.name ||
+    'N/A',
+
+  institution:
+    'Not Available',
+
+  state:
+    'Not Available',
+
+  status:
+    s.profile?.plan
+      ? 'Active'
+      : 'Trial',
+
+  plan:
+    s.profile?.plan?.name ||
+    'Free Trial',
+
+  createdAt:
+    s.createdAt,
+
+  avatar:
+    s.name
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase(),
+});
 export const useRecentRegistrations = () =>
   useQuery({
-    queryKey: QUERY_KEYS.dashboard.registrations,
-    queryFn: async () => [
-      {
-        id: 1,
-        name: 'Rahul Sharma',
-        email: 'rahul@example.com',
-        date: '2026-06-15',
-        avatar: 'RS',
-        status: 'Active',
-      },
-      {
-        id: 2,
-        name: 'Priya Reddy',
-        email: 'priya@example.com',
-        date: '2026-06-16',
-        avatar: 'PR',
-        status: 'Active',
-      },
-      {
-        id: 3,
-        name: 'Arjun Kumar',
-        email: 'arjun@example.com',
-        date: '2026-06-17',
-        avatar: 'AK',
-        status: 'Active',
-      },
-    ],
+    queryKey:
+      QUERY_KEYS.dashboard
+        .registrations,
+
+    queryFn: async () => {
+      try {
+        const students =
+          await studentService.getAll();
+
+        if (
+          !students?.length
+        ) {
+          return [];
+        }
+
+        return students
+  .sort(
+    (a, b) =>
+      new Date(
+        b.createdAt
+      ) -
+      new Date(
+        a.createdAt
+      )
+  )
+  .slice(0, 5)
+  .map(
+    mapDashboardStudent
+  );
+      } catch {
+        return [];
+      }
+    },
   });
 export const useRecentPayments = () =>
   useQuery({

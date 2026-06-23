@@ -15,6 +15,13 @@ export const studentService = {
     const { data } = await axiosInstance.get('/parent/students');
     return data.students || [];
   },
+  getFilterOptions: async () => {
+  const { data } = await axiosInstance.get(
+    '/admin/content/options'
+  );
+
+  return data;
+},
 };
 
 export default studentService;

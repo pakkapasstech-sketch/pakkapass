@@ -1,5 +1,7 @@
 import { PERMISSIONS } from '../auth/permissions';
-
+import {
+  HiOutlineCreditCard,
+} from 'react-icons/hi';
 export const MENU_ITEMS = [
   { title: 'Dashboard', path: '/dashboard', icon: 'dashboard', permission: null },
   { title: 'Students', path: '/students', icon: 'students', permission: PERMISSIONS.STUDENT_VIEW },
@@ -7,6 +9,11 @@ export const MENU_ITEMS = [
   { title: 'Partners', path: '/partners', icon: 'partners', permission: PERMISSIONS.INSTITUTION_VIEW },
   { title: 'Content', path: '/content', icon: 'content', permission: PERMISSIONS.RESOURCE_VIEW },
   { title: 'Subscriptions', path: '/subscriptions', icon: 'subscriptions', permission: PERMISSIONS.COUPON_VIEW, roles: ['ADMIN'] },
+  {
+  title: 'Recent Payments',
+  path: '/payments',
+  icon: HiOutlineCreditCard,
+},
   //{ title: 'Commissions', path: '/commissions', icon: 'commissions', permission: PERMISSIONS.COMMISSION_VIEW },
   //{ title: 'Coupons', path: '/coupons', icon: 'coupons', permission: PERMISSIONS.COUPON_VIEW, roles: ['ADMIN'] },
   { title: 'Notifications', path: '/notifications', icon: 'notifications', permission: null },

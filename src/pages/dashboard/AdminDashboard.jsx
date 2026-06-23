@@ -2,9 +2,10 @@ import '../../styles/DashboardPage.css';
 import { useState } from 'react';
 import StatisticCard from '../../components/cards/StatisticCard';
 import AnalyticsCard from '../../components/cards/AnalyticsCard';
-import SubscriptionGrowthChart from '../../components/charts/SubscriptionGrowthChart';
-import RevenueTrendChart from '../../components/charts/RevenueTrendChart';
-import StudentsByStateCard from '../../components/charts/StudentsByStateCard';
+import { useNavigate } from 'react-router-dom';
+//import SubscriptionGrowthChart from '../../components/charts/SubscriptionGrowthChart';
+//import RevenueTrendChart from '../../components/charts/RevenueTrendChart';
+//import StudentsByStateCard from '../../components/charts/StudentsByStateCard';
 import DataTable from '../../components/tables/DataTable';
 import StatusBadge from '../../components/tables/StatusBadge';
 import Avatar from '../../components/common/Avatar';
@@ -12,24 +13,25 @@ import ErrorState from '../../components/loaders/ErrorState';
 import Modal from '../../components/modals/Modal';
 import {
   useAdminDashboard,
-  useSubscriptionGrowth,
-  useRevenueTrend,
-  useStudentsByState,
+  //useSubscriptionGrowth,
+  //useRevenueTrend,
+  //useStudentsByState,
   useRecentRegistrations,
   useRecentPayments,
-  useReferralConversions,
+  //useReferralConversions,
   usePerformanceMetrics,
 } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const stats = useAdminDashboard();
-  const growth = useSubscriptionGrowth();
-  const revenue = useRevenueTrend();
-  const states = useStudentsByState();
+  //const growth = useSubscriptionGrowth();
+  //const revenue = useRevenueTrend();
+  //const states = useStudentsByState();
   const registrations = useRecentRegistrations();
   const payments = useRecentPayments();
-  const referrals = useReferralConversions();
+  //const referrals = useReferralConversions();
   const performance = usePerformanceMetrics();
   const [modal, setModal] = useState({ open: false, row: null, type: '' });
 
@@ -42,27 +44,126 @@ const AdminDashboard = () => {
   }
 
   const registrationColumns = [
-    { key: 'name', header: 'Student Name', sortable: true, accessor: (r) => r.name, render: (r) => (
-      <div className="dashboard-student-cell"><Avatar initials={r.avatar} size="sm" /><span>{r.name}</span></div>
-    )},
-    { key: 'email', header: 'Email', accessor: (r) => r.email },
-    { key: 'date', header: 'Date', accessor: (r) => formatDate(r.date) },
-  ];
+  {
+    key: 'name',
+    header: 'Student Name',
+    sortable: true,
+    accessor: (r) => r.name,
+    render: (r) => (
+      <div className="dashboard-student-cell">
+        <Avatar
+          initials={r.avatar}
+          size="sm"
+        />
+        <span>{r.name}</span>
+      </div>
+    ),
+  },
+  {
+  key: 'class',
+  header: 'Class',
+  accessor: (r) =>
+    r.class || '—',
+},
+{
+  key: 'board',
+  header: 'Board',
+  accessor: (r) =>
+    r.board || '—',
+},
+  {
+    key: 'institution',
+    header: 'Institution',
+    accessor: (r) =>
+      r.institution?.name ||
+      r.institution ||
+      '—',
+  },
+  {
+    key: 'state',
+    header: 'State',
+    accessor: (r) =>
+      r.state?.name ||
+      r.state ||
+      '—',
+  },
+  {
+    key: 'plan',
+    header:
+      'Subscription Plan',
+    accessor: (r) =>
+      r.plan?.name ||
+      r.plan ||
+      '—',
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (r) => (
+      <StatusBadge
+        status={
+          r.status ||
+          'Active'
+        }
+      />
+    ),
+  },
+  {
+    key: 'date',
+    header:
+      'Registered On',
+    accessor: (r) =>
+      formatDate(
+        r.createdAt
+      ),
+  },
+];
 
   const paymentColumns = [
-    { key: 'student', header: 'Student', accessor: (r) => r.student },
-    { key: 'plan', header: 'Plan', accessor: (r) => r.plan },
-    { key: 'amount', header: 'Amount', accessor: (r) => `₹${r.amount}` },
-    { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
-    { key: 'date', header: 'Date', accessor: (r) => formatDate(r.date) },
-  ];
+  {
+    key: 'student',
+    header: 'Student',
+    accessor: (r) => r.student,
+  },
+  {
+    key: 'plan',
+    header: 'Plan',
+    accessor: (r) => r.plan,
+  },
+  {
+    key: 'amount',
+    header: 'Amount',
+    accessor: (r) => `₹${r.amount}`,
+  },
+  {
+    key: 'referralCode',
+    header: 'Referral Code',
+    accessor: (r) =>
+      r.referralCode || 'Null',
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (r) => (
+      <StatusBadge
+        status={r.status}
+      />
+    ),
+  },
+  {
+    key: 'date',
+    header: 'Date',
+    accessor: (r) =>
+      formatDate(r.date),
+  },
+];
 
-  const referralColumns = [
-    { key: 'code', header: 'Referral Code', accessor: (r) => r.code },
-    { key: 'partner', header: 'Partner', accessor: (r) => r.partner },
-    { key: 'conversions', header: 'Conversions', accessor: (r) => r.conversions },
-    { key: 'revenue', header: 'Revenue', accessor: (r) => `₹${r.revenue?.toLocaleString()}` },
-  ];
+  // const referralColumns = [
+  //   { key: 'code', header: 'Referral Code', accessor: (r) => r.code },
+  //   { key: 'partner', header: 'Partner', accessor: (r) => r.partner },
+  //   { key: 'conversions', header: 'Conversions', accessor: (r) => r.conversions },
+  //   { key: 'revenue', header: 'Revenue', accessor: (r) => `₹${r.revenue?.toLocaleString()}` },
+  // ];
 
   return (
     <div className="dashboard-page">
@@ -72,16 +173,25 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      <div className="dashboard-chart-grid">
+      {/* <div className="dashboard-chart-grid">
         <SubscriptionGrowthChart data={growth.data} isLoading={growth.isLoading} />
         <RevenueTrendChart data={revenue.data} isLoading={revenue.isLoading} />
         <StudentsByStateCard data={states.data} isLoading={states.isLoading} />
-      </div>
+      </div> */}
 
       <div className="dashboard-table-grid">
-        <DataTable title="Recent Registrations" columns={registrationColumns} data={registrations.data || []} isLoading={registrations.isLoading} viewAllLink />
-        <DataTable title="Recent Payments" columns={paymentColumns} data={payments.data || []} isLoading={payments.isLoading} viewAllLink />
-        <DataTable title="Referral Conversions" columns={referralColumns} data={referrals.data || []} isLoading={referrals.isLoading} viewAllLink />
+        <DataTable title="Recent Registrations" columns={registrationColumns} data={registrations.data || []} isLoading={registrations.isLoading} viewAllLink={() =>
+  navigate('/students', {
+    state: {
+      sortRecent: true,
+    },
+  })
+}
+  />
+        <DataTable title="Recent Payments" columns={paymentColumns} data={payments.data || []} isLoading={payments.isLoading} viewAllLink={() =>
+    navigate('/payments')
+  } />
+        {/* <DataTable title="Referral Conversions" columns={referralColumns} data={referrals.data || []} isLoading={referrals.isLoading} viewAllLink /> */}
       </div>
 
       <div className="dashboard-performance-grid">

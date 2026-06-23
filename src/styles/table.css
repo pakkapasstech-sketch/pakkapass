@@ -120,8 +120,9 @@
 
 .data-table {
   width: 100%;
-  min-width: 700px; /* Enables horizontal scroll */
+  min-width: 700px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .data-table-head-row {
@@ -174,15 +175,28 @@
 }
 
 .data-table-td {
-  padding: 12px 14px;
-
+  padding: 12px 16px;
   font-size: 13px;
-
   color: var(--color-text-secondary);
 
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
+.data-table-th,
+.data-table-td {
+  padding: 12px 16px;
+  width: 1%;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
+.data-table-th,
+.data-table-td {
+  padding: 12px 18px;
+}
 /* ==========================================
    ACTIONS
 ========================================== */

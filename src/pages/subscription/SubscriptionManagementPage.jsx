@@ -1,51 +1,20 @@
-import { useMemo, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlinePlus,
   HiOutlineSearch,
-  
 } from 'react-icons/hi';
 import '../../styles/subscriptionManagement.css';
-
-const mockPlans = [
-  {
-    id: '1',
-    name: 'Class 10 Annual Plan',
-    price: '₹4,999',
-    duration: '365 Days',
-    status: 'Active',
-    createdAt: '18 Jun 2026',
-    classes: ['10th'],
-    boards: ['State'],
-    branches: ['All'],
-  },
-  {
-    id: '2',
-    name: 'Class 11 MPC Premium Plan',
-    price: '₹2,999',
-    duration: '180 Days',
-    status: 'Active',
-    createdAt: '15 Jun 2026',
-    classes: ['11th', '12th'],
-    boards: ['State'],
-    branches: ['MPC'],
-  },
-  {
-    id: '3',
-    name: 'Class 12 CBSE Complete Access',
-    price: '₹3,999',
-    duration: '365 Days',
-    status: 'Inactive',
-    createdAt: '10 Jun 2026',
-    classes: ['12th'],
-    boards: ['CBSE'],
-    branches: ['MPC', 'BiPC'],
-  },
-];
+import { getPlans } from '../../services/SubscriptionServices';
 
 const SubscriptionManagementPage = () => {
   const navigate = useNavigate();
 
+  const [plans, setPlans] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedClass, setSelectedClass] =
     useState('');
@@ -53,24 +22,60 @@ const SubscriptionManagementPage = () => {
     useState('');
   const [selectedBranch, setSelectedBranch] =
     useState('');
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    loadPlans();
+  }, []);
+
+  const loadPlans = async () => {
+    try {
+      setLoading(true);
+
+      const data =
+        await getPlans();
+
+      console.log(
+        'Plans API Response:',
+        data
+      );
+
+      setPlans(data || []);
+    } catch (err) {
+      console.error(
+        'Failed to load plans:',
+        err
+      );
+      setPlans([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPlans = useMemo(() => {
-    return mockPlans.filter((plan) => {
-      const searchMatch = plan.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+    return plans.filter((plan) => {
+      const searchMatch =
+        plan.name
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          );
 
       const classMatch =
         !selectedClass ||
-        plan.classes.includes(selectedClass);
+        plan.grade?.name?.toLowerCase() ===
+          selectedClass.toLowerCase();
 
       const boardMatch =
         !selectedBoard ||
-        plan.boards.includes(selectedBoard);
+        plan.board?.name?.toLowerCase() ===
+          selectedBoard.toLowerCase();
 
       const branchMatch =
         !selectedBranch ||
-        plan.branches.includes(selectedBranch);
+        plan.branch?.name?.toLowerCase() ===
+          selectedBranch.toLowerCase();
 
       return (
         searchMatch &&
@@ -80,15 +85,12 @@ const SubscriptionManagementPage = () => {
       );
     });
   }, [
+    plans,
     search,
     selectedClass,
     selectedBoard,
     selectedBranch,
   ]);
-
-  // const handleDelete = (id) => {
-  //   console.log('Delete', id);
-  // };
 
   return (
     <div className="subscription-management-page">
@@ -97,8 +99,8 @@ const SubscriptionManagementPage = () => {
           <h1>Subscription Plans</h1>
 
           <p className="subscription-description">
-            Manage pricing plans and academic
-            mappings.
+            Manage pricing plans and
+            academic mappings.
           </p>
         </div>
       </div>
@@ -113,7 +115,9 @@ const SubscriptionManagementPage = () => {
               placeholder="Search plans..."
               value={search}
               onChange={(e) =>
-                setSearch(e.target.value)
+                setSearch(
+                  e.target.value
+                )
               }
             />
           </div>
@@ -121,7 +125,9 @@ const SubscriptionManagementPage = () => {
           <select
             value={selectedClass}
             onChange={(e) =>
-              setSelectedClass(e.target.value)
+              setSelectedClass(
+                e.target.value
+              )
             }
           >
             <option value="">
@@ -141,7 +147,9 @@ const SubscriptionManagementPage = () => {
           <select
             value={selectedBoard}
             onChange={(e) =>
-              setSelectedBoard(e.target.value)
+              setSelectedBoard(
+                e.target.value
+              )
             }
           >
             <option value="">
@@ -161,14 +169,16 @@ const SubscriptionManagementPage = () => {
           <select
             value={selectedBranch}
             onChange={(e) =>
-              setSelectedBranch(e.target.value)
+              setSelectedBranch(
+                e.target.value
+              )
             }
           >
             <option value="">
               All Branches
             </option>
-            <option value="MPC">
-              MPC
+            <option value="PCM">
+              PCM
             </option>
             <option value="BiPC">
               BiPC
@@ -203,48 +213,81 @@ const SubscriptionManagementPage = () => {
                 <th>Duration</th>
                 <th>Status</th>
                 <th>Created Date</th>
-                {/* <th>Actions</th> */}
               </tr>
             </thead>
 
             <tbody>
-  {filteredPlans.length ? (
-    filteredPlans.map((plan) => (
-      <tr
-        key={plan.id}
-        className="clickable-row"
-        onClick={() =>
-          navigate(
-            `/admin/subscriptions/plans/${plan.id}`
-          )
-        }
-      >
-        <td>{plan.name}</td>
-        <td>{plan.price}</td>
-        <td>{plan.duration}</td>
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="empty-table"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              ) : filteredPlans.length >
+                0 ? (
+                filteredPlans.map(
+                  (plan) => (
+                    <tr
+                      key={plan.id}
+                      className="clickable-row"
+                      onClick={() =>
+                        navigate(
+                          `/admin/subscriptions/plans/${plan.id}`
+                        )
+                      }
+                    >
+                      <td>
+                        {plan.name}
+                      </td>
 
-        <td>
-          <span
-            className={`status-pill ${plan.status.toLowerCase()}`}
-          >
-            {plan.status}
-          </span>
-        </td>
+                      <td>
+                        ₹
+                        {Number(
+                          plan.price || 0
+                        ).toLocaleString(
+                          'en-IN'
+                        )}
+                      </td>
 
-        <td>{plan.createdAt}</td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td
-        colSpan="5"
-        className="empty-table"
-      >
-        No plans found
-      </td>
-    </tr>
-  )}
-</tbody>
+                      <td>
+                        {
+                          plan.durationDays
+                        }{' '}
+                        Days
+                      </td>
+
+                      <td>
+                        <span className="status-pill active">
+                          Active
+                        </span>
+                      </td>
+
+                      <td>
+                        {plan.createdAt
+                          ? new Date(
+                              plan.createdAt
+                            ).toLocaleDateString(
+                              'en-IN'
+                            )
+                          : '-'}
+                      </td>
+                    </tr>
+                  )
+                )
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="empty-table"
+                  >
+                    No plans found
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
       </div>

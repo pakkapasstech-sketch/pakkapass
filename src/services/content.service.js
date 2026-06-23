@@ -17,6 +17,11 @@ const mapContentFromApi = (
             topic.assets || []
           ).forEach(
             (asset) => {
+              console.log(
+  'CHAPTER',
+  chapter.name,
+  chapter.contentType
+);
               items.push({
                 id:
                   asset.id,
@@ -80,6 +85,8 @@ const mapContentFromApi = (
                   chapter
                     .contentType
                     ?.name,
+                hierarchyTypeId:
+    chapter.contentType?.id,
               });
             }
           );
@@ -103,7 +110,15 @@ export const contentService = {
   );
 },
 
-  upload: async ({ filters, file, title, description, fileSize, contentType }) => {
+  upload: async ({
+  filters,
+  file,
+  title,
+  description,
+  topicName,
+  fileSize,
+  contentType,
+}) => {
     const formData = new FormData();
 
     formData.append('gradeName', filters.class || '');
@@ -113,13 +128,20 @@ export const contentService = {
     formData.append('branchName', filters.course || '');
 
     formData.append('subjectName', filters.subject || '');
-formData.append(
-  'contentTypeId',
-  filters.selectedContentTypeId || ''
-);
+if (filters.selectedContentTypeId) {
+  formData.append(
+    'contentTypeId',
+    filters.selectedContentTypeId
+  );
+}
     formData.append('chapterName', filters.chapter || '');
 
-    formData.append('topicName', filters.section || '');
+    formData.append(
+  'topicName',
+  topicName ||
+    filters.section ||
+    title
+);
 
     formData.append('title', title || '');
 

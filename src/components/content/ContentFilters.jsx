@@ -181,18 +181,15 @@ const chapterOptions =
 const selectedChapterObj =
   options?.chapters?.find(
     (chapter) =>
-      chapter.name ===
-        filters.chapter &&
-      chapter.grade?.name ===
-        filters.class &&
-      chapter.board?.name ===
-        filters.board &&
-      chapter.subject?.name ===
-        filters.subject &&
+      chapter.name === filters.chapter &&
+      chapter.grade?.name === filters.class &&
+      chapter.board?.name === filters.board &&
+      chapter.subject?.name === filters.subject &&
+      chapter.contentType?.name ===
+        filters.selectedContentType &&
       (
         !filters.course ||
-        chapter.branch?.name ===
-          filters.course
+        chapter.branch?.name === filters.course
       )
   );
 

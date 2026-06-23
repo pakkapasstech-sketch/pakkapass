@@ -47,3 +47,33 @@
   font-size: 16px;
   font-weight: 600;
 }
+.parent-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 20px;
+
+  cursor: pointer;
+
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.parent-back-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.parent-back-btn:hover {
+  color: #4f46e5;
+  transform: translateX(-4px);
+}

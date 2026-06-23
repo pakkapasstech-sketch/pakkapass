@@ -20,6 +20,9 @@ export const buildHierarchy = (
       item.hierarchyType ||
       'Chapters';
 
+    const hierarchyTypeId =
+      item.hierarchyTypeId;
+
     const chapter =
       item.chapter || 'Unknown';
 
@@ -93,7 +96,7 @@ export const buildHierarchy = (
           hierarchyType
         ] = {
         id:
-          hierarchyType,
+          hierarchyTypeId,
         name:
           hierarchyType,
         chapters: {},

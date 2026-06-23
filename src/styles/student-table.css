@@ -3,11 +3,14 @@
 ========================================== */
 
 .student-table-card {
+  background: #fff;
+  border-radius: 16px;
   overflow: hidden;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.student-table-wrapper {
+  overflow-x: auto;
 }
 
 /* ==========================================
@@ -36,33 +39,23 @@
 
 .student-table {
   width: 100%;
-  min-width: 1200px;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
 }
 
 /* ==========================================
    HEADER
 ========================================== */
 
-.student-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-
-  padding: 12px 16px;
-
+.student-table thead {
   background: #f8fafc;
-  border-bottom: 1px solid var(--color-border);
+}
 
-  color: var(--color-text-muted);
-
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-
+.student-table th {
+  padding: 16px 20px;
   text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
   white-space: nowrap;
 }
 
@@ -70,34 +63,21 @@
    BODY
 ========================================== */
 
+.student-table td {
+  padding: 18px 20px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+}
+
 .student-table tbody tr {
-  height: 52px;
   transition: background 0.2s ease;
 }
 
 .student-table tbody tr:hover {
-  background: rgba(99, 102, 241, 0.04);
+  background: #f8fafc;
+  cursor: pointer;
 }
-
-.student-table tbody td {
-  padding: 10px 16px;
-
-  border-bottom: 1px solid
-    var(--color-border-light);
-
-  color: var(--color-text-primary);
-
-  font-size: 13px;
-  font-weight: 500;
-
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.student-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
 /* ==========================================
    STUDENT CELL
 ========================================== */
@@ -105,24 +85,14 @@
 .student-user {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 200px;
+  gap: 12px;
 }
 
 .student-avatar {
-  width: 32px;
-  height: 32px;
-
-  flex-shrink: 0;
-
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-
-  border: 2px solid #fff;
-
-  box-shadow:
-    0 2px 8px
-    rgba(15, 23, 42, 0.08);
 }
 
 .student-name {
@@ -136,53 +106,37 @@
 ========================================== */
 
 .plan-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 5px 10px;
-
-  border-radius: 999px;
-
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--color-primary);
-
-  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 12px;
   font-weight: 600;
 }
-
 /* ==========================================
    STATUS BADGE
 ========================================== */
 
 .status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 70px;
-
-  padding: 5px 10px;
-
-  border-radius: 999px;
-
-  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .status-active {
   background: #dcfce7;
-  color: #15803d;
+  color: #166534;
 }
 
 .status-inactive {
   background: #fee2e2;
-  color: #dc2626;
+  color: #991b1b;
 }
 
 .status-pending {
   background: #fef3c7;
-  color: #d97706;
+  color: #92400e;
 }
 
 /* ==========================================

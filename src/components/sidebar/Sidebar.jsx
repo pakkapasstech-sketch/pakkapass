@@ -64,8 +64,12 @@ const Sidebar = () => {
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <div className="sidebar-logo">
-              <HiOutlineAcademicCap className="sidebar-logo-icon" />
-            </div>
+  <img
+    src="/PP_FavIcon.svg"
+    alt="PakkaPass Logo"
+    className="sidebar-logo-image"
+  />
+</div>
             {!shouldCollapse && (
               <div className="sidebar-brand-text">
                 <p className="sidebar-brand-title">PakkaPass</p>

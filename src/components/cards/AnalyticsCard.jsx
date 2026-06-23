@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
-import { HiOutlineTrendingUp, HiOutlineTrendingDown } from 'react-icons/hi';
+//import { HiOutlineTrendingUp, HiOutlineTrendingDown } from 'react-icons/hi';
 import { getIcon } from '../../utils/iconMap';
-import SparklineChart from '../charts/SparklineChart';
+//import SparklineChart from '../charts/SparklineChart';
 
-const AnalyticsCard = ({ title, value, subtitle, trend, color, icon, sparkline, isLoading }) => {
+const AnalyticsCard = ({ title, value, subtitle,  color, icon,  isLoading }) => {
   if (isLoading) {
     return (
 <div className="analytics-card analytics-card-loading">
@@ -13,77 +13,45 @@ const AnalyticsCard = ({ title, value, subtitle, trend, color, icon, sparkline, 
   }
 
   const Icon = getIcon(icon);
-  const trendUp = trend >= 0;
+  //const trendUp = trend >= 0;
 
   return (
     <motion.div
   whileHover={{ y: -2 }}
   className="analytics-card"
 >
-      <div className="analytics-header">
+  <div className="analytics-header">
+    <div
+      className="icon-box icon-box-sm"
+      style={{
+        backgroundColor: `${color}15`,
+      }}
+    >
+      <Icon
+        className="icon"
+        style={{ color }}
+      />
+    </div>
 
-  <div
-    className="icon-box icon-box-sm"
-    style={{
-      backgroundColor: `${color}15`
-    }}
-  >
-    <Icon
-      className="icon"
-      style={{ color }}
-    />
+    <div className="analytics-content">
+      <p className="analytics-title">
+        {title}
+      </p>
+
+      <p className="analytics-value">
+        {typeof value === 'number'
+          ? value.toLocaleString(
+              'en-IN'
+            )
+          : value}
+      </p>
+    </div>
   </div>
 
-  <div className="analytics-content">
-    <p className="analytics-title">
-      {title}
-    </p>
-
-    <p className="analytics-value">
-      {typeof value === 'number'
-        ? value.toLocaleString('en-IN')
-        : value}
-    </p>
-  </div>
-
-</div>
-
-<p className="analytics-subtitle">
-  {subtitle}
-</p>
-
-<div className="analytics-trend">
-
-  {trendUp ? (
-    <HiOutlineTrendingUp
-      className="icon-trend stat-trend-positive"
-    />
-  ) : (
-    <HiOutlineTrendingDown
-      className="icon-trend stat-trend-negative"
-    />
-  )}
-
-  <span
-    className={
-      trendUp
-        ? 'stat-trend-positive'
-        : 'stat-trend-negative'
-    }
-  >
-    {trendUp ? '+' : ''}
-    {trend}%
-  </span>
-
-</div>
-
-<div className="analytics-sparkline">
-  <SparklineChart
-    data={sparkline}
-    color={color}
-  />
-</div>
-    </motion.div>
+  <p className="analytics-subtitle">
+    {/* {subtitle} */}
+  </p>
+</motion.div>
   );
 };
 

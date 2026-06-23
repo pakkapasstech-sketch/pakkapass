@@ -162,7 +162,10 @@ const ContentTree = ({
         selectedContentType:
           node.selectedContentType ||
           prev.selectedContentType,
-
+        selectedContentTypeId:
+  node.selectedContentTypeId ??
+  prev.selectedContentTypeId,
+  
         chapter:
           node.chapterName ||
           prev.chapter,
@@ -301,6 +304,7 @@ const ContentTree = ({
 
                       selectedContentType:
                         type.name,
+                      selectedContentTypeId: type.id,
 
                       children:
                         type.chapters.map(
@@ -326,6 +330,8 @@ const ContentTree = ({
 
                             selectedContentType:
                               type.name,
+                            selectedContentTypeId:
+  type.id,
 
                             chapterName:
                               chapter.name,
@@ -354,6 +360,9 @@ const ContentTree = ({
 
                                   selectedContentType:
                                     type.name,
+
+                                  selectedContentTypeId:
+                                    type.id,
 
                                   chapterName:
                                     chapter.name,
@@ -386,6 +395,8 @@ const ContentTree = ({
 
                                         selectedContentType:
                                           type.name,
+                                        selectedContentTypeId:
+  type.id,
 
                                         chapterName:
                                           chapter.name,
@@ -417,12 +428,16 @@ const ContentTree = ({
 
                                         selectedContentType:
                                           type.name,
+                                        selectedContentTypeId:
+  type.id,
 
                                         chapterName:
                                           chapter.name,
 
                                         sectionName:
                                           section.name,
+
+                                        
                                       },
                                     ],
                                 })

@@ -1,94 +1,89 @@
-import { useMemo } from 'react';
 import { HiArrowLeft } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
-
-import {
-  useContent,
-} from '../../hooks/useContent';
-import { buildHierarchy } from '../../utils/buildHierarchy';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '../../api/axiosInstance';
 import ManageHierarchyTree from '../../components/content/ManageHierarchyTree';
 
 import './contentHierarchyPage.css';
 
-const ContentHierarchyPage =
-  () => {
-    const navigate =
-      useNavigate();
+const ContentHierarchyPage = () => {
+  const navigate =
+    useNavigate();
 
-    const {
-      data: content = [],
-      isLoading,
-      isError,
-    } = useContent();
+  const {
+    data: options,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: [
+      'content-options',
+    ],
+    queryFn: async () => {
+      const { data } =
+        await axiosInstance.get(
+          '/admin/content/options'
+        );
 
-    const hierarchy =
-      useMemo(
-        () =>
-          buildHierarchy(
-            content
-          ),
-        [content]
-      );
+      return data;
+    },
+  });
 
-    if (isLoading) {
-      return (
-        <div className="content-hierarchy-page">
-          Loading...
-        </div>
-      );
-    }
+  console.log(
+    'OPTIONS',
+    options
+  );
 
-    if (isError) {
-      return (
-        <div className="content-hierarchy-page">
-          Failed to load
-          hierarchy
-        </div>
-      );
-    }
-
+  if (isLoading) {
     return (
       <div className="content-hierarchy-page">
-        <button
-          className="back-btn"
-          onClick={() =>
-            navigate(-1)
-          }
-        >
-          <HiArrowLeft />
-          Back to Content
-        </button>
-
-        <div className="hierarchy-header">
-          <div>
-            <h1>
-              Content
-              Hierarchy
-              Management
-            </h1>
-
-            <p>
-              Edit and
-              delete
-              classes,
-              boards,
-              courses,
-              subjects,
-              chapters and
-              topics.
-            </p>
-          </div>
-        </div>
-
-        <div className="hierarchy-card">
-          <ManageHierarchyTree
-            hierarchy={
-              hierarchy
-            }
-          />
-        </div>
+        Loading...
       </div>
     );
-  };
+  }
+
+  if (isError) {
+    return (
+      <div className="content-hierarchy-page">
+        Failed to load hierarchy
+      </div>
+    );
+  }
+
+  return (
+    <div className="content-hierarchy-page">
+      <button
+        className="back-btn"
+        onClick={() =>
+          navigate(-1)
+        }
+      >
+        <HiArrowLeft />
+        Back to Content
+      </button>
+
+      <div className="hierarchy-header">
+        <div>
+          <h1>
+            Content Hierarchy
+            Management
+          </h1>
+
+          <p>
+            Edit and delete
+            classes, boards,
+            courses, subjects,
+            chapters and topics.
+          </p>
+        </div>
+      </div>
+
+      <div className="hierarchy-card">
+        <ManageHierarchyTree
+          options={options}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default ContentHierarchyPage;

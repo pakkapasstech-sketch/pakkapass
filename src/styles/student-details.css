@@ -409,8 +409,9 @@ font-size: 13px;
 
 .info-item strong {
 color: #111827;
-
-font-size: 18px;
+word-break: break-word;
+overflow-wrap: break-word;
+font-size: 15px;
 font-weight: 700;
 }
 

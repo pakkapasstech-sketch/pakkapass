@@ -4,6 +4,7 @@ export const paymentService = {
   getAll: async () => {
     const { data } = await axiosInstance.get('/admin/payments');
     return data.payments || [];
+    
   },
 };
 

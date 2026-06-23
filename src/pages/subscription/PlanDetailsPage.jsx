@@ -1,4 +1,11 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  useEffect,
+  useState,
+} from 'react';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import {
   HiArrowLeft,
   HiOutlinePencil,
@@ -6,134 +13,215 @@ import {
 } from 'react-icons/hi';
 import '../../styles/planDetails.css';
 
-const mockPlan = {
-  id: '1',
-  name: 'Class 11 MPC Premium Plan',
-  description:
-    'Complete access for Class 11 and Class 12 MPC students including videos, PDFs and analytics.',
-  status: 'Active',
-  createdBy: 'Admin',
-  createdAt: '18 Jun 2026',
-  updatedAt: '18 Jun 2026',
-  classes: ['11th', '12th'],
-  boards: ['State'],
-  branches: ['MPC'],
-  price: '₹2,999',
-  duration: '180 Days',
-  features: [
-    'Full Video Access',
-    'PDF Notes Access',
-    'Question Papers Access',
-    'Learning Analytics',
-    'Parent Dashboard Access',
-  ],
-};
+import {
+  getPlanById,
+  deletePlan,
+} from '../../services/SubscriptionServices';
 
 const PlanDetailsPage = () => {
   const navigate = useNavigate();
   const { planId } = useParams();
 
-  const plan = mockPlan;
+  const [plan, setPlan] =
+    useState(null);
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    loadPlan();
+  }, [planId]);
+
+  const loadPlan = async () => {
+    try {
+      setLoading(true);
+
+      const data =
+        await getPlanById(planId);
+
+      console.log(
+        'Plan Details:',
+        data
+      );
+
+      setPlan(data);
+    } catch (err) {
+      console.error(
+        'Failed to load plan:',
+        err
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete =
+    async () => {
+      const confirmed =
+        window.confirm(
+          'Delete this plan?'
+        );
+
+      if (!confirmed) return;
+
+      try {
+        await deletePlan(planId);
+
+        navigate(
+          '/admin/subscriptions/plans'
+        );
+      } catch (err) {
+        console.error(
+          'Delete failed:',
+          err
+        );
+      }
+    };
+
+  if (loading) {
+    return (
+      <div className="plan-details-page">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!plan) {
+    return (
+      <div className="plan-details-page">
+        Plan not found
+      </div>
+    );
+  }
 
   return (
     <div className="plan-details-page">
       <div className="details-header">
-  <button
-    className="back-link"
-    onClick={() => navigate(-1)}
-  >
-    <HiArrowLeft />
-    <span>Back</span>
-  </button>
+        <button
+          className="back-link"
+          onClick={() =>
+            navigate(-1)
+          }
+        >
+          <HiArrowLeft />
+          <span>Back</span>
+        </button>
 
-  <div className="details-actions">
-    <button
-      className="primary-btn"
-      onClick={() =>
-        navigate(
-          `/admin/subscriptions/plans/${planId}/edit`
-        )
-      }
-    >
-      <HiOutlinePencil />
-      Edit
-    </button>
+        <div className="details-actions">
+          <button
+            className="primary-btn"
+            onClick={() =>
+              navigate(
+                `/admin/subscriptions/plans/${planId}/edit`
+              )
+            }
+          >
+            <HiOutlinePencil />
+            Edit
+          </button>
 
-    <button
-      className="danger-btn"
-      onClick={() =>
-        console.log('Delete')
-      }
-    >
-      <HiOutlineTrash />
-      Delete
-    </button>
-  </div>
-</div>
+          <button
+            className="danger-btn"
+            onClick={
+              handleDelete
+            }
+          >
+            <HiOutlineTrash />
+            Delete
+          </button>
+        </div>
+      </div>
 
       <div className="page-title-card">
         <h1>{plan.name}</h1>
-        <p>{plan.description}</p>
+
+        <p>
+          Subscription Plan
+        </p>
       </div>
 
       <div className="detail-card">
-        <h3>Basic Information</h3>
+        <h3>
+          Basic Information
+        </h3>
 
         <div className="detail-grid">
           <div>
             <label>Status</label>
-            <p>{plan.status}</p>
+
+            <p>Active</p>
           </div>
 
           <div>
-            <label>Created By</label>
-            <p>{plan.createdBy}</p>
+            <label>
+              Created At
+            </label>
+
+            <p>
+              {plan.createdAt
+                ? new Date(
+                    plan.createdAt
+                  ).toLocaleDateString(
+                    'en-IN'
+                  )
+                : '-'}
+            </p>
           </div>
 
           <div>
-            <label>Created At</label>
-            <p>{plan.createdAt}</p>
-          </div>
+            <label>
+              Updated At
+            </label>
 
-          <div>
-            <label>Updated At</label>
-            <p>{plan.updatedAt}</p>
+            <p>
+              {plan.updatedAt
+                ? new Date(
+                    plan.updatedAt
+                  ).toLocaleDateString(
+                    'en-IN'
+                  )
+                : '-'}
+            </p>
           </div>
         </div>
       </div>
 
       <div className="detail-card">
-        <h3>Academic Mapping</h3>
+        <h3>
+          Academic Mapping
+        </h3>
 
         <div className="mapping-section">
-          <label>Classes</label>
+          <label>
+            Class
+          </label>
 
           <div className="chips">
-            {plan.classes.map((item) => (
-              <span key={item} className="chip">
-                {item}
-              </span>
-            ))}
+            <span className="chip">
+              {plan.grade
+                ?.name || '-'}
+            </span>
           </div>
 
-          <label>Boards</label>
+          <label>
+            Board
+          </label>
 
           <div className="chips">
-            {plan.boards.map((item) => (
-              <span key={item} className="chip">
-                {item}
-              </span>
-            ))}
+            <span className="chip">
+              {plan.board
+                ?.name || '-'}
+            </span>
           </div>
 
-          <label>Branches</label>
+          <label>
+            Branch
+          </label>
 
           <div className="chips">
-            {plan.branches.map((item) => (
-              <span key={item} className="chip">
-                {item}
-              </span>
-            ))}
+            <span className="chip">
+              {plan.branch
+                ?.name || '-'}
+            </span>
           </div>
         </div>
       </div>
@@ -143,36 +231,34 @@ const PlanDetailsPage = () => {
 
         <div className="detail-grid">
           <div>
-            <label>Original Price</label>
-            <p>{plan.price}</p>
+            <label>
+              Original Price
+            </label>
+
+            <p>
+              ₹
+              {Number(
+                plan.price || 0
+              ).toLocaleString(
+                'en-IN'
+              )}
+            </p>
           </div>
 
           <div>
-            <label>Duration</label>
-            <p>{plan.duration}</p>
+            <label>
+              Duration
+            </label>
+
+            <p>
+              {
+                plan.durationDays
+              }{' '}
+              Days
+            </p>
           </div>
         </div>
       </div>
-
-      <div className="detail-card">
-        <h3>Features</h3>
-
-        <div className="chips">
-          {plan.features.map((feature) => (
-            <span
-              key={feature}
-              className="chip"
-            >
-              {feature}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* <div className="detail-card coming-soon">
-        <h3>Subscription Statistics</h3>
-        <p>Coming Soon</p>
-      </div> */}
     </div>
   );
 };

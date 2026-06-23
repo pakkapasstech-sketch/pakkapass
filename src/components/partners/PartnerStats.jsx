@@ -11,18 +11,24 @@ const PartnerStats = ({
     ).length;
 
   const students =
-    partners.reduce(
-      (sum, p) =>
-        sum + p.students,
-      0
-    );
+  partners.reduce(
+    (sum, p) =>
+      sum +
+      (Number(
+        p.students
+      ) || 0),
+    0
+  );
 
-  const revenue =
-    partners.reduce(
-      (sum, p) =>
-        sum + p.revenue,
-      0
-    );
+const revenue =
+  partners.reduce(
+    (sum, p) =>
+      sum +
+      (Number(
+        p.revenue
+      ) || 0),
+    0
+  );
 
   const cards = [
     {

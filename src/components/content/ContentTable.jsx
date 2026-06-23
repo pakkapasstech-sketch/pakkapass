@@ -13,7 +13,6 @@ const ContentTable = ({
   activeTab,
   filters,
   content,
-  isQuestionPaperLevel,
 }) => {
   const [search, setSearch] =
     useState('');
@@ -29,9 +28,7 @@ const ContentTable = ({
 console.log('CONTENT', content);
 console.log('FILTERS', filters);
  const filteredContent = useMemo(() => {
-  
-  const showQuestionPapers =
-  isQuestionPaperLevel;
+
   
 
   return content.filter((item) => {
@@ -82,6 +79,7 @@ const matchSubject =
   !filters.subject ||
   item.subject === filters.subject;
 
+
 const matchChapter =
   !filters.chapter ||
   item.chapter === filters.chapter;
@@ -89,17 +87,15 @@ const matchChapter =
 const matchSection =
   !filters.section ||
   item.section === filters.section;
+const matchHierarchyType =
+  !filters.selectedContentType ||
+  item.hierarchyType ===
+    filters.selectedContentType;
 
-let matchType = true;
-
-if (showQuestionPapers) {
-  matchType = item.type === 'paper';
-} else {
-  matchType =
-    activeTab === 'all'
-      ? ['video', 'notes'].includes(item.type)
-      : item.type === activeTab;
-}
+const matchType =
+  activeTab === 'all'
+    ? true
+    : item.type === activeTab;
 // console.log({
 //   matchClass,
 //   matchBoard,
@@ -117,6 +113,7 @@ return (
   matchBoard &&
   matchCourse &&
   matchSubject &&
+  matchHierarchyType &&
   matchChapter &&
   matchSection &&
   matchType

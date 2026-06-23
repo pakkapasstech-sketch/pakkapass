@@ -2,23 +2,23 @@ import { useQuery } from '@tanstack/react-query';
 import { studentService } from '../services/student.service';
 import { useAuth } from '../auth/AuthProvider';
 import { ROLES } from '../auth/roles';
-import { mockStudents } from '../mock/students';
-import { students } from '../data/students';
+//import { mockStudents } from '../mock/students';
+//import { students } from '../data/students';
 const mapStudent = (s) => ({
   id: s.id,
   name: s.name || 'Unknown',
   email: s.email || '',
   mobile: s.mobile || '',
-  class: s.profile?.grade?.name || s.profile?.gradeId || 'N/A',
+  class: s.profile?.grade?.name || 'N/A',
   board: s.profile?.board?.name || 'N/A',
-  state: 'Telangana',
+  institution: 'Not Available',
+  state: 'Not Available',
   status: s.profile?.plan ? 'Active' : 'Trial',
   plan: s.profile?.plan?.name || 'Free Trial',
-  avatar: (s.name || 'U').split(' ').map((n) => n[0]).join('').slice(0, 2),
+  photo: s.profilePic,
   createdAt: s.createdAt,
   profile: s.profile,
 });
-
 export const useStudents = () => {
   const { user } = useAuth();
   const isParent = user?.role === ROLES.PARENT;
@@ -26,19 +26,12 @@ export const useStudents = () => {
   return useQuery({
     queryKey: ['students', user?.role],
     queryFn: async () => {
-      try {
-        const data = isParent
-          ? await studentService.getParentStudents()
-          : await studentService.getAll();
-       if (!data || data.length === 0) {
-  return students;
-}
+  const data = isParent
+    ? await studentService.getParentStudents()
+    : await studentService.getAll();
 
-return data.map(mapStudent);
-      } catch {
-        return mockStudents;
-      }
-    },
+  return data.map(mapStudent);
+},
   });
 };
 
@@ -68,7 +61,12 @@ export const useStudent = (id) =>
     enabled: !!id,
     select: (data) => mapStudentDetail(data),
   });
-
+export const useStudentFilterOptions = () =>
+  useQuery({
+    queryKey: ['student-filter-options'],
+    queryFn: () =>
+      studentService.getFilterOptions(),
+  });
 // Maps GET /admin/student/:id response to the shape StudentDetailsPage expects
 const mapStudentDetail = (data) => {
   const { student, profile, analytics, payments = [], subscriptionHistory = [] } = data;

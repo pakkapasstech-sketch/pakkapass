@@ -13,13 +13,24 @@ export const useParents = () =>
         }
 
         return data.map((p) => ({
-          id: p.id,
-          name: p.name || 'Unknown',
-          email: p.email,
-          phone: p.mobile,
-          students: p.childrenProfiles?.length || 0,
-          status: 'Active',
-        }));
+  id: p.id,
+  name: p.name || 'Unknown',
+  email: p.email || '-',
+  phone: p.mobile || '-',
+
+  students:
+    p.childrenProfiles?.length || 0,
+
+  studentNames:
+    p.childrenProfiles
+      ?.map((cp) => cp.student?.name)
+      .filter(Boolean) || [],
+
+  status:
+    p.childrenProfiles?.length > 0
+      ? 'Active'
+      : 'Inactive',
+}));
       } catch {
         return mockParents;
       }

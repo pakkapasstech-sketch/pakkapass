@@ -1,32 +1,7 @@
 import { useState } from 'react';
 import { indianStates } from '../../data/states';
 import '../../styles/student-filters.css';
-import { students } from '../../data/students';
-
-const classes = [
-  'All Classes',
-  ...Array.from(
-    { length: 12 },
-    (_, i) => `${i + 1}th`
-  ),
-];
-
-const boards = [
-  'All Boards',
-  'CBSE',
-  'ICSE',
-  'State Board',
-];
-
-const colleges = [
-  'All Colleges',
-  ...new Set(
-    students.map(
-      (student) =>
-        student.institution
-    )
-  ),
-];
+import { useStudents, useStudentFilterOptions } from '../../hooks/useStudents';
 
 const statuses = [
   'All',
@@ -46,6 +21,40 @@ const StudentFilters = ({
       state: '',
       status: '',
     });
+
+  const {
+    data: options,
+  } = useStudentFilterOptions();
+
+  const {
+    data: students = [],
+  } = useStudents();
+
+  const classes = [
+    'All Classes',
+    ...(options?.grades?.map(
+      (g) => g.name
+    ) || []),
+  ];
+
+  const boards = [
+    'All Boards',
+    ...(options?.boards?.map(
+      (b) => b.name
+    ) || []),
+  ];
+
+  const colleges = [
+    'All Colleges',
+    ...new Set(
+      students
+        .map(
+          (student) =>
+            student.institution
+        )
+        .filter(Boolean)
+    ),
+  ];
 
   const handleChange = (
     field,
@@ -67,8 +76,6 @@ const StudentFilters = ({
 
   return (
     <div className="student-filters">
-      {/* Search */}
-
       <input
         type="text"
         placeholder="Search by Name..."
@@ -80,8 +87,6 @@ const StudentFilters = ({
           )
         }
       />
-
-      {/* Class */}
 
       <select
         value={
@@ -102,8 +107,6 @@ const StudentFilters = ({
         ))}
       </select>
 
-      {/* Board */}
-
       <select
         value={
           filters.board ||
@@ -122,8 +125,6 @@ const StudentFilters = ({
           </option>
         ))}
       </select>
-
-      {/* College */}
 
       <select
         value={
@@ -147,8 +148,6 @@ const StudentFilters = ({
           )
         )}
       </select>
-
-      {/* State */}
 
       <select
         value={
@@ -176,8 +175,6 @@ const StudentFilters = ({
           )
         )}
       </select>
-
-      {/* Status */}
 
       <select
         value={

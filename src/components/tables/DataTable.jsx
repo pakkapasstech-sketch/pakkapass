@@ -124,7 +124,11 @@ const DataTable = ({
             </>
           )}
 
-          {viewAllLink && <button className="data-table-view-all">View All</button>}
+          {viewAllLink && (
+            <button className="data-table-view-all" onClick={viewAllLink}>
+              View All
+            </button>
+          )}
         </div>
       </div>
 

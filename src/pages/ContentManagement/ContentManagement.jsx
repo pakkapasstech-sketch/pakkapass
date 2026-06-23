@@ -40,8 +40,8 @@ const ContentManagement = () => {
   const [viewMode, setViewMode] = useState('content');
   const isQuestionPaperLevel = viewMode === 'paper';
   const queryClient = useQueryClient();
-  const isVideoNotesLevel = selectedFilters.section && selectedFilters.contentType;
-  // Fetch content from GET /admin/content instead of hardcoded mock data
+const isVideoNotesLevel =
+  !!selectedFilters.section;  // Fetch content from GET /admin/content instead of hardcoded mock data
   const { data: content = [], isLoading, isError, refetch } = useContent();
 
   const {

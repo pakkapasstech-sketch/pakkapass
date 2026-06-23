@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineSearch,
   // HiOutlineDownload,
-  HiOutlineEye,
+  //HiOutlineEye,
 } from 'react-icons/hi';
 
 import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
@@ -20,10 +20,14 @@ const ParentsManagement = () => {
   const [search, setSearch] = useState('');
 
   const filteredParents = parents.filter(
-    (p) =>
-      p.name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.phone?.includes(search)
-  );
+  (p) =>
+    p.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase()) ||
+    p.phone
+      ?.toLowerCase()
+      .includes(search.toLowerCase())
+);
 
   if (isLoading) return <LoadingSkeleton rows={6} />;
 

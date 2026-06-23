@@ -24,6 +24,7 @@ import EditPartnerPage from '../pages/Partners/EditPartnerPage';
 import PlanDetailsPage from '../pages/subscription/PlanDetailsPage';
 import CreateEditPlanPage from '../pages/subscription/CreateEditPlanPage';
 import ContentHierarchyPage from '../pages/ContentManagement/ContentHierarchyPage';
+import RecentPaymentsPage from '../pages/payments/RecentPaymentsPage';
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
@@ -66,6 +67,10 @@ const AppRoutes = () => (
           <Route
   path="/admin/content-hierarchy"
   element={<ContentHierarchyPage />}
+  
+/><Route
+  path="/payments"
+  element={<RecentPaymentsPage />}
 />
         </Route>
 

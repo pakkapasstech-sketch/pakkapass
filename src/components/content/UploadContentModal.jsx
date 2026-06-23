@@ -13,7 +13,8 @@ const UploadContentModal = ({
 
   const [description, setDescription] =
     useState('');
-
+  const [topicName, setTopicName] =
+  useState(filters.section || '');
   const [file, setFile] =
     useState(null);
 
@@ -89,22 +90,20 @@ const UploadContentModal = ({
 
       try {
         await onUpload({
-          filters,
-          file,
-          title,
-          description,
-          uploadedOn,
-          fileName:
-            file.name,
-          fileSize:
-            formatFileSize(
-              file.size
-            ),
-          contentType:
-            isQuestionPaperLevel
-              ? 'paper'
-              : contentType,
-        });
+  filters,
+  file,
+  title,
+  description,
+  topicName,
+  uploadedOn,
+  fileName: file.name,
+  fileSize:
+    formatFileSize(file.size),
+  contentType:
+    isQuestionPaperLevel
+      ? 'paper'
+      : contentType,
+});
       } finally {
         setUploading(false);
       }
@@ -155,6 +154,20 @@ const UploadContentModal = ({
           </div>
 
           <div className="form-group full-width">
+            <div className="form-group full-width">
+  <label>Topic Name</label>
+
+  <input
+    value={topicName}
+    onChange={(e) =>
+      setTopicName(
+        e.target.value
+      )
+    }
+    placeholder="Enter topic name"
+  />
+</div>
+
             <label>
               Description
             </label>

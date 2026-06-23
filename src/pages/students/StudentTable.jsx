@@ -1,18 +1,12 @@
 import { useState, useEffect } from 'react';
-import {
-  HiOutlineChevronLeft,
-  HiOutlineChevronRight,
-} from 'react-icons/hi';
+import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/student-table.css';
 
-const StudentTable = ({
-  students = [],
-}) => {
+const StudentTable = ({ students = [] }) => {
   const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] =
-    useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const studentsPerPage = 5;
 
@@ -20,54 +14,28 @@ const StudentTable = ({
     setCurrentPage(1);
   }, [students]);
 
-  const totalStudents =
-    students.length;
+  const totalStudents = students.length;
 
-  const totalPages =
-    Math.ceil(
-      totalStudents /
-        studentsPerPage
-    ) || 1;
+  const totalPages = Math.ceil(totalStudents / studentsPerPage) || 1;
 
-  const startIndex =
-    (currentPage - 1) *
-    studentsPerPage;
+  const startIndex = (currentPage - 1) * studentsPerPage;
 
-  const endIndex =
-    startIndex +
-    studentsPerPage;
+  const endIndex = startIndex + studentsPerPage;
 
-  const currentStudents =
-    students.slice(
-      startIndex,
-      endIndex
+  const currentStudents = students.slice(startIndex, endIndex);
+
+  const getVisiblePages = () => {
+    const start = Math.max(currentPage - 2, 1);
+
+    const end = Math.min(currentPage + 2, totalPages);
+
+    return Array.from(
+      {
+        length: end - start + 1,
+      },
+      (_, i) => start + i
     );
-
-  const getVisiblePages =
-    () => {
-      const start =
-        Math.max(
-          currentPage - 2,
-          1
-        );
-
-      const end =
-        Math.min(
-          currentPage + 2,
-          totalPages
-        );
-
-      return Array.from(
-        {
-          length:
-            end -
-            start +
-            1,
-        },
-        (_, i) =>
-          start + i
-      );
-    };
+  };
 
   return (
     <div className="student-table-card">
@@ -75,153 +43,90 @@ const StudentTable = ({
         <table className="student-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>
-                Student Name
-              </th>
-              <th>
+              <th></th>
+              <th>Student Name</th>
+              {/* <th>
                 Mobile Number
-              </th>
+              </th> */}
               <th>Class</th>
               <th>Board</th>
-              <th>
-                Institution
-              </th>
+              <th>Institution</th>
               <th>State</th>
-              <th>
-                Subscription
-                Plan
-              </th>
+              <th>Subscription Plan</th>
               <th>Status</th>
-              <th>
-                Registered On
-              </th>
+              <th>Registered On</th>
             </tr>
           </thead>
 
           <tbody>
-            {currentStudents.length >
-            0 ? (
-              currentStudents.map(
-                (
-                  student,
-                  index
-                ) => (
-                  <tr
-                    key={
-                      student.id
-                    }
-                    className="clickable-row"
-                    onClick={() =>
-                      navigate(
-                        `/students/${student.id}`
-                      )
-                    }
-                  >
-                    <td>
-                      {startIndex +
-                        index +
-                        1}
-                    </td>
+            {currentStudents.length > 0 ? (
+              currentStudents.map((student, index) => (
+                <tr
+                  key={`${student.id}-${startIndex + index}`}
+                  className="clickable-row"
+                  onClick={() => navigate(`/students/${student.id}`)}
+                >
+                  <td>{startIndex + index + 1}</td>
 
-                    <td>
-                      <div className="student-user">
-                        <img
-                          src={
-                            student.photo ||
-                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                              student.name
-                            )}`
-                          }
-                          alt={
-                            student.name
-                          }
-                          className="student-avatar"
-                        />
+                  <td>
+                    <div className="student-user">
+                      <img
+                        src={
+                          student.photo ||
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`
+                        }
+                        alt={student.name}
+                        className="student-avatar"
+                      />
 
-                        <div>
-                          <div className="student-name">
-                            {
-                              student.name
-                            }
-                          </div>
-                        </div>
+                      <div>
+                        <div className="student-name">{student.name}</div>
                       </div>
-                    </td>
+                    </div>
+                  </td>
 
-                    <td>
+                  {/* <td>
                       {
                         student.mobile
                       }
-                    </td>
+                    </td> */}
 
-                    <td>
-                      {
-                        student.class
-                      }
-                    </td>
+                  <td>{student.class}</td>
 
-                    <td>
-                      {
-                        student.board
-                      }
-                    </td>
+                  <td>{student.board}</td>
 
-                    <td>
-                      {
-                        student.institution
-                      }
-                    </td>
+                  <td>{student.institution}</td>
 
-                    <td>
-                      {
-                        student.state
-                      }
-                    </td>
+                  <td>{student.state}</td>
 
-                    <td>
-                      <span className="plan-badge">
-                        {
-                          student.plan
-                        }
-                      </span>
-                    </td>
+                  <td>
+                    <span className="plan-badge">{student.plan}</span>
+                  </td>
 
-                    <td>
-                      <span
-                        className={`status-badge ${
-                          student.status ===
-                          'Active'
-                            ? 'status-active'
-                            : student.status ===
-                                'Inactive'
-                              ? 'status-inactive'
-                              : 'status-pending'
-                        }`}
-                      >
-                        {
-                          student.status
-                        }
-                      </span>
-                    </td>
+                  <td>
+                    <span
+                      className={`status-badge ${
+                        student.status === 'Active'
+                          ? 'status-active'
+                          : student.status === 'Inactive'
+                            ? 'status-inactive'
+                            : 'status-pending'
+                      }`}
+                    >
+                      {student.status}
+                    </span>
+                  </td>
 
-                    <td>
-                      {student.createdAt
-                        ? new Date(
-                            student.createdAt
-                          ).toLocaleDateString()
-                        : student.registeredOn ||
-                          '—'}
-                    </td>
-                  </tr>
-                )
-              )
+                  <td>
+                    {student.createdAt
+                      ? new Date(student.createdAt).toLocaleDateString()
+                      : student.registeredOn || '—'}
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
-                <td
-                  colSpan="10"
-                  className="empty-table"
-                >
+                <td colSpan="10" className="empty-table">
                   No students found
                 </td>
               </tr>
@@ -230,80 +135,31 @@ const StudentTable = ({
         </table>
       </div>
 
-      {totalStudents >
-        0 && (
+      {totalStudents > 0 && (
         <div className="pagination">
           <p>
-            Showing{' '}
-            {startIndex + 1}{' '}
-            to{' '}
-            {Math.min(
-              endIndex,
-              totalStudents
-            )}{' '}
-            of{' '}
-            {
-              totalStudents
-            }{' '}
+            Showing {startIndex + 1} to {Math.min(endIndex, totalStudents)} of {totalStudents}{' '}
             students
           </p>
 
           <div className="pagination-buttons">
-            <button
-              disabled={
-                currentPage ===
-                1
-              }
-              onClick={() =>
-                setCurrentPage(
-                  (
-                    prev
-                  ) =>
-                    prev -
-                    1
-                )
-              }
-            >
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => prev - 1)}>
               <HiOutlineChevronLeft />
             </button>
 
-            {getVisiblePages().map(
-              (page) => (
-                <button
-                  key={
-                    page
-                  }
-                  onClick={() =>
-                    setCurrentPage(
-                      page
-                    )
-                  }
-                  className={
-                    currentPage ===
-                    page
-                      ? 'active-page'
-                      : ''
-                  }
-                >
-                  {page}
-                </button>
-              )
-            )}
+            {getVisiblePages().map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={currentPage === page ? 'active-page' : ''}
+              >
+                {page}
+              </button>
+            ))}
 
             <button
-              disabled={
-                currentPage ===
-                totalPages
-              }
-              onClick={() =>
-                setCurrentPage(
-                  (
-                    prev
-                  ) =>
-                    prev +
-                    1
-                )
-              }
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
             >
               <HiOutlineChevronRight />
             </button>

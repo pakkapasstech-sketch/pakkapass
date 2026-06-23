@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   HiChevronRight,
   HiChevronDown,
@@ -97,35 +97,183 @@ const HierarchyItem = ({
 };
 
 const ManageHierarchyTree = ({
-  hierarchy = [],
+  options,
 }) => {
+  const hierarchy =
+    useMemo(() => {
+      if (!options) return [];
+
+      return (
+        options.grades || []
+      ).map((grade) => ({
+        id: grade.id,
+        name: grade.name,
+
+        boards:
+          (
+            options.boards ||
+            []
+          ).map((board) => ({
+            id: board.id,
+            name: board.name,
+
+            courses:
+              (
+                options.branches ||
+                []
+              ).map(
+                (
+                  branch
+                ) => ({
+                  id:
+                    branch.id,
+                  name:
+                    branch.name,
+
+                  subjects:
+                    (
+                      options.subjects ||
+                      []
+                    )
+                      .filter(
+                        (
+                          subject
+                        ) =>
+                          subject.gradeId ===
+                            grade.id &&
+                          subject.boardId ===
+                            board.id &&
+                          (subject.branchId ||
+                            null) ===
+                            (branch.id ||
+                              null)
+                      )
+                      .map(
+                        (
+                          subject
+                        ) => ({
+                          id:
+                            subject.id,
+
+                          name:
+                            subject.name,
+
+                          contentTypes:
+                            (
+                              options.contentTypes ||
+                              []
+                            )
+                              .map(
+                                (
+                                  type
+                                ) => ({
+                                  id:
+                                    type.id,
+
+                                  name:
+                                    type.name,
+
+                                  chapters:
+                                    (
+                                      options.chapters ||
+                                      []
+                                    )
+                                      .filter(
+                                        (
+                                          chapter
+                                        ) =>
+                                          chapter.subjectId ===
+                                            subject.id &&
+                                          chapter.contentTypeId ===
+                                            type.id
+                                      )
+                                      .map(
+                                        (
+                                          chapter
+                                        ) => ({
+                                          id:
+                                            chapter.id,
+
+                                          name:
+                                            chapter.name,
+
+                                          sections:
+                                            (
+                                              options.topics ||
+                                              []
+                                            )
+                                              .filter(
+                                                (
+                                                  topic
+                                                ) =>
+                                                  topic.chapterId ===
+                                                  chapter.id
+                                              )
+                                              .map(
+                                                (
+                                                  topic
+                                                ) => ({
+                                                  id:
+                                                    topic.id,
+
+                                                  name:
+                                                    topic.name,
+                                                })
+                                              ),
+                                        })
+                                      ),
+                                })
+                              )
+                              .filter(
+                                (
+                                  type
+                                ) =>
+                                  type
+                                    .chapters
+                                    .length >
+                                  0
+                              ),
+                        })
+                      ),
+                })
+              ).filter(
+                (
+                  course
+                ) =>
+                  course
+                    .subjects
+                    .length > 0
+              ),
+          })).filter(
+            (
+              board
+            ) =>
+              board
+                .courses
+                .length > 0
+          ),
+      }));
+    }, [options]);
+
   if (
-    !Array.isArray(
-      hierarchy
-    )
+    hierarchy.length ===
+    0
   ) {
     return (
-      <div>
-        No hierarchy found
+      <div className="tree-empty">
+        No content found
       </div>
     );
   }
 
   return (
     <div className="manage-tree">
-      {hierarchy.length ===
-      0 ? (
-        <div className="tree-empty">
-          No content found
-        </div>
-      ) : (
-        hierarchy.map(
-          (grade) => (
-            <HierarchyItem
-              key={`${grade.id}-${grade.name}`}
-              node={grade}
-            />
-          )
+      {hierarchy.map(
+        (grade) => (
+          <HierarchyItem
+            key={`${grade.id}-${grade.name}`}
+            node={grade}
+          />
         )
       )}
     </div>
