@@ -19,9 +19,10 @@ import {
   useRecentRegistrations,
   useRecentPayments,
   //useReferralConversions,
-  usePerformanceMetrics,
+  //usePerformanceMetrics,
 } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
+import { useContent } from '../../hooks/useContent';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,7 +33,11 @@ const AdminDashboard = () => {
   const registrations = useRecentRegistrations();
   const payments = useRecentPayments();
   //const referrals = useReferralConversions();
-  const performance = usePerformanceMetrics();
+  //const performance = usePerformanceMetrics();
+  const {
+  data: content = [],
+  isLoading: contentLoading,
+} = useContent();
   const [modal, setModal] = useState({ open: false, row: null, type: '' });
 
   if (stats.isError) {
@@ -157,6 +162,43 @@ const AdminDashboard = () => {
       formatDate(r.date),
   },
 ];
+const totalContent =
+  content.length;
+
+const totalVideos =
+  content.filter(
+    (item) =>
+      item.type ===
+      'video'
+  ).length;
+
+const totalPDFs =
+  content.filter(
+    (item) =>
+      item.type !==
+      'video'
+  ).length;
+
+const totalEbooks =
+  content.filter(
+    (item) =>
+      item.hierarchyType ===
+      'Ebooks'
+  ).length;
+
+const totalMindMaps =
+  content.filter(
+    (item) =>
+      item.hierarchyType ===
+      'Mind Maps'
+  ).length;
+
+const totalPYQ =
+  content.filter(
+    (item) =>
+      item.hierarchyType ===
+      'PYQ'
+  ).length;
 
   // const referralColumns = [
   //   { key: 'code', header: 'Referral Code', accessor: (r) => r.code },
@@ -195,17 +237,71 @@ const AdminDashboard = () => {
       </div>
 
       <div className="dashboard-performance-grid">
-  {(performance.data || []).map(
-    (m, i) => (
-      <AnalyticsCard
-        key={m.id || i}
-        {...m}
-        isLoading={
-          performance.isLoading
-        }
-      />
-    )
-  )}
+  <AnalyticsCard
+    title="Total Content"
+    value={totalContent}
+    subtitle="Uploaded files"
+    color="#6366f1"
+    icon="folder"
+    isLoading={
+      contentLoading
+    }
+  />
+
+  <AnalyticsCard
+    title="Total Videos"
+    value={totalVideos}
+    subtitle="Uploaded videos"
+    color="#ef4444"
+    icon="video"
+    isLoading={
+      contentLoading
+    }
+  />
+
+  <AnalyticsCard
+    title="Total PDFs"
+    value={totalPDFs}
+    subtitle="Uploaded PDFs"
+    color="#f59e0b"
+    icon="document"
+    isLoading={
+      contentLoading
+    }
+  />
+
+  <AnalyticsCard
+    title="E-books"
+    value={totalEbooks}
+    subtitle="E-book files"
+    color="#10b981"
+    icon="book"
+    isLoading={
+      contentLoading
+    }
+  />
+
+  <AnalyticsCard
+    title="Mind Maps"
+    value={totalMindMaps}
+    subtitle="Mind map files"
+    color="#8b5cf6"
+    icon="academic-cap"
+    isLoading={
+      contentLoading
+    }
+  />
+
+  <AnalyticsCard
+    title="Prev. Papers"
+    value={totalPYQ}
+    subtitle="Previous year papers"
+    color="#06b6d4"
+    icon="document-text"
+    isLoading={
+      contentLoading
+    }
+  />
 </div>
 
       <Modal isOpen={modal.open} onClose={() => setModal({ open: false })} title={`${modal.type} Details`}>

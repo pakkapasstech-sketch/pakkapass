@@ -18,8 +18,7 @@ import axiosInstance from '../../api/axiosInstance';
 const ContentManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
 
-  const [selectedFilters, setSelectedFilters] =
-  useState({
+  const [selectedFilters, setSelectedFilters] = useState({
     class: '',
     board: '',
     course: '',
@@ -38,10 +37,8 @@ const ContentManagement = () => {
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [viewMode, setViewMode] = useState('content');
-  const isQuestionPaperLevel = viewMode === 'paper';
   const queryClient = useQueryClient();
-const isVideoNotesLevel =
-  !!selectedFilters.section;  // Fetch content from GET /admin/content instead of hardcoded mock data
+  // Fetch content from GET /admin/content instead of hardcoded mock data
   const { data: content = [], isLoading, isError, refetch } = useContent();
 
   const {
@@ -59,10 +56,7 @@ const isVideoNotesLevel =
       return data;
     },
   });
-const hierarchy = useMemo(
-  () => buildHierarchy(content),
-  [content]
-);  // useEffect(() => {
+  const hierarchy = useMemo(() => buildHierarchy(content), [content]); // useEffect(() => {
   //   if (selectedFilters.contentType) {
   //     setActiveTab(selectedFilters.contentType);
   //   }
@@ -98,21 +92,21 @@ const hierarchy = useMemo(
     <>
       <div className="content-management-page">
         <ContentFilters
-  filters={selectedFilters}
-  setFilters={setSelectedFilters}
-  hierarchy={hierarchy}
-  options={options}
-  disableContentFilter={isQuestionPaperLevel}
-  onEntityAdded={async () => {
-  await queryClient.invalidateQueries({
-    queryKey: ['content'],
-  });
+          filters={selectedFilters}
+          setFilters={setSelectedFilters}
+          hierarchy={hierarchy}
+          options={options}
+          //disableContentFilter={isQuestionPaperLevel}
+          onEntityAdded={async () => {
+            await queryClient.invalidateQueries({
+              queryKey: ['content'],
+            });
 
-  await queryClient.invalidateQueries({
-    queryKey: ['content-options'],
-  });
-}}
-/>
+            await queryClient.invalidateQueries({
+              queryKey: ['content-options'],
+            });
+          }}
+        />
         <div className="content-management-body">
           <ContentTree
             filters={selectedFilters}
@@ -131,26 +125,20 @@ const hierarchy = useMemo(
 
               <button
                 className="upload-content-btn"
-                disabled={!isQuestionPaperLevel && !isVideoNotesLevel}
+                disabled={!selectedFilters.selectedContentType || !selectedFilters.chapter}
                 onClick={() => setShowUploadModal(true)}
               >
-                {isQuestionPaperLevel
-                  ? '+ Add Question Paper'
-                  : activeTab === 'video'
-                    ? '+ Upload Video'
-                    : '+ Upload Notes'}
+                {`+ Upload ${selectedFilters.selectedContentType || 'Content'}`}
               </button>
             </div>
 
-            {!isQuestionPaperLevel && (
-              <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-            )}
+            <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
             <ContentTable
               activeTab={activeTab}
               filters={selectedFilters}
               content={content}
-              isQuestionPaperLevel={isQuestionPaperLevel}
+              //isQuestionPaperLevel={isQuestionPaperLevel}
             />
           </div>
         </div>
@@ -159,8 +147,7 @@ const hierarchy = useMemo(
       {showUploadModal && (
         <UploadContentModal
           filters={selectedFilters}
-          contentType={isQuestionPaperLevel ? 'paper' : activeTab}
-          isQuestionPaperLevel={isQuestionPaperLevel}
+          contentType={activeTab}
           onUpload={handleUpload}
           onClose={() => setShowUploadModal(false)}
         />

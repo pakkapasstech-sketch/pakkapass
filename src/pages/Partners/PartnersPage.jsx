@@ -2,7 +2,9 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  useNavigate,
+} from 'react-router-dom';
 import {
   HiOutlinePlus,
   HiOutlineDownload,
@@ -16,10 +18,16 @@ import partnerService from '../../services/partner.service';
 import '../../styles/partners.css';
 
 const PartnersPage = () => {
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
   const [search, setSearch] =
     useState('');
+
+  const [
+    debouncedSearch,
+    setDebouncedSearch,
+  ] = useState('');
 
   const [
     statusFilter,
@@ -32,17 +40,41 @@ const PartnersPage = () => {
   const [loading, setLoading] =
     useState(true);
 
+  useEffect(() => {
+    const timer =
+      setTimeout(() => {
+        setDebouncedSearch(
+          search
+        );
+      }, 500);
+
+    return () =>
+      clearTimeout(
+        timer
+      );
+  }, [search]);
+
   const fetchPartners =
     async () => {
       try {
-        setLoading(true);
+        // show loading only on first load
+        if (
+          !partners.length
+        ) {
+          setLoading(
+            true
+          );
+        }
 
         const res =
-          await partnerService.getAll({
-            search,
-            status:
-              statusFilter,
-          });
+          await partnerService.getAll(
+            {
+              search:
+                debouncedSearch,
+              status:
+                statusFilter,
+            }
+          );
 
         console.log(
           'PARTNERS',
@@ -50,7 +82,8 @@ const PartnersPage = () => {
         );
 
         setPartners(
-          res.partners || []
+          res.partners ||
+            []
         );
       } catch (err) {
         console.log(err);
@@ -62,20 +95,22 @@ const PartnersPage = () => {
   useEffect(() => {
     fetchPartners();
   }, [
-    search,
+    debouncedSearch,
     statusFilter,
   ]);
 
-  if (loading) {
+  if (
+    loading &&
+    !partners.length
+  ) {
     return (
       <div className="partners-page">
-        Loading partners...
+        <div className="loading-skeleton">
+          Loading partners...
+        </div>
       </div>
     );
-  }console.log(
-  'PARTNERS',
-  partners
-);
+  }
 
   return (
     <div className="partners-page">
@@ -87,10 +122,14 @@ const PartnersPage = () => {
           </h1>
 
           <p className="partners-description">
-            Create partners,
-            generate referral
-            codes and monitor
-            partner performance.
+            Create
+            partners,
+            generate
+            referral
+            codes and
+            monitor
+            partner
+            performance.
           </p>
         </div>
 
@@ -115,12 +154,16 @@ const PartnersPage = () => {
       </div>
 
       <PartnerStats
-        partners={partners}
+        partners={
+          partners
+        }
       />
 
       <PartnerFilters
         search={search}
-        setSearch={setSearch}
+        setSearch={
+          setSearch
+        }
         statusFilter={
           statusFilter
         }
@@ -129,8 +172,16 @@ const PartnersPage = () => {
         }
       />
 
+      {loading && (
+        <div className="table-loading">
+          Updating...
+        </div>
+      )}
+
       <PartnerTable
-        partners={partners}
+        partners={
+          partners
+        }
       />
     </div>
   );

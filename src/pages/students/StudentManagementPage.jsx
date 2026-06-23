@@ -16,7 +16,14 @@ import '../../styles/student-management.css';
 
 const StudentManagementPage = () => {
   const [filters, setFilters] =
-    useState({});
+    useState({
+      search: '',
+      class: '',
+      board: '',
+      college: '',
+      state: '',
+      status: '',
+    });
 
   const location =
     useLocation();
@@ -28,8 +35,9 @@ const StudentManagementPage = () => {
     refetch,
   } = useStudents();
 
-  const { hasPermission } =
-    usePermissions();
+  const {
+    hasPermission,
+  } = usePermissions();
 
   const sortRecent =
     location.state?.sortRecent;
@@ -37,51 +45,63 @@ const StudentManagementPage = () => {
   const filteredStudents =
     students.filter(
       (student) => {
+        const q = (
+          filters.search ||
+          ''
+        )
+          .toLowerCase()
+          .trim();
+
         const searchMatch =
-          !filters.search ||
-          student.name
-            ?.toLowerCase()
-            .includes(
-              filters.search.toLowerCase()
-            ) ||
-          student.mobile?.includes(
-            filters.search
-          );
+  !q ||
+  [
+    student.name,
+    student.email,
+    student.mobile,
+    student.studentId,
+    student.referralCode,
+    student.partner?.referralCode,
+    student.profile?.partner?.referralCode,
+    student.institution,
+    student.grade,
+    student.board,
+    student.state,
+    student.status,
+    student.plan,
+    student.profile?.plan?.name,
+    student.parentName,
+    student.parentEmail,
+    student.parentMobile,
+  ]
+    .filter(Boolean)
+    .some((value) =>
+      String(value)
+        .toLowerCase()
+        .includes(q)
+    );
 
         const classMatch =
           !filters.class ||
-          filters.class ===
-            'All Classes' ||
-          student.class ===
+          student.grade ===
             filters.class;
 
         const boardMatch =
           !filters.board ||
-          filters.board ===
-            'All Boards' ||
           student.board ===
             filters.board;
 
+        const collegeMatch =
+          !filters.college ||
+          student.institution ===
+            filters.college;
+
         const stateMatch =
           !filters.state ||
-          filters.state ===
-            'All States' ||
           student.state ===
             filters.state;
 
-        const matchCollege =
-          !filters.college ||
-          student.institution
-            ?.trim()
-            .toLowerCase() ===
-            filters.college
-              .trim()
-              .toLowerCase();
-
         const statusMatch =
           !filters.status ||
-          filters.status ===
-            'All' ||
           student.status ===
             filters.status;
 
@@ -89,8 +109,8 @@ const StudentManagementPage = () => {
           searchMatch &&
           classMatch &&
           boardMatch &&
+          collegeMatch &&
           stateMatch &&
-          matchCollege &&
           statusMatch
         );
       }

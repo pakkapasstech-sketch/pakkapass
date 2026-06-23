@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './uploadContentModal.css';
 
 const UploadContentModal = ({
-  isQuestionPaperLevel,
+  //isQuestionPaperLevel,
   filters,
   contentType,
   onUpload,
@@ -99,23 +99,29 @@ const UploadContentModal = ({
   fileName: file.name,
   fileSize:
     formatFileSize(file.size),
-  contentType:
-    isQuestionPaperLevel
-      ? 'paper'
-      : contentType,
+  contentType,
 });
       } finally {
         setUploading(false);
       }
     };
 
-  const heading =
-    isQuestionPaperLevel
-      ? 'Upload Question Paper'
-      : contentType ===
-        'video'
-      ? 'Upload Video'
-      : 'Upload Notes';
+ const heading =
+  `Upload ${
+    filters.selectedContentType ||
+    'Content'
+  }`;
+  const topicLabelMap = {
+  Ebooks: 'Ebook Name',
+  PYQ: 'Question Paper Name',
+  'Mind Maps': 'Mind Map Name',
+  Chapter: 'Topic Name',
+};
+
+const topicLabel =
+  topicLabelMap[
+    filters.selectedContentType
+  ] || 'Topic Name';
 
   return (
     <div className="modal-overlay">
@@ -155,7 +161,7 @@ const UploadContentModal = ({
 
           <div className="form-group full-width">
             <div className="form-group full-width">
-  <label>Topic Name</label>
+  <label>{topicLabel}</label>
 
   <input
     value={topicName}
@@ -164,7 +170,7 @@ const UploadContentModal = ({
         e.target.value
       )
     }
-    placeholder="Enter topic name"
+    placeholder={`Enter ${topicLabel.toLowerCase()}`}
   />
 </div>
 
@@ -245,13 +251,10 @@ const UploadContentModal = ({
                 className="hidden-file-input"
                 type="file"
                 accept={
-                  isQuestionPaperLevel
-                    ? '.pdf'
-                    : contentType ===
-                      'video'
-                    ? 'video/*'
-                    : '.pdf'
-                }
+  contentType === 'video'
+    ? 'video/*'
+    : '.pdf'
+}
                 onChange={
                   handleFileChange
                 }
@@ -268,12 +271,9 @@ const UploadContentModal = ({
                 </h4>
 
                 <p>
-                  {isQuestionPaperLevel
-                    ? 'PDF files only'
-                    : contentType ===
-                      'video'
-                    ? 'MP4, AVI, MOV'
-                    : 'PDF files only'}
+                  {contentType === 'video'
+  ? 'MP4, AVI, MOV'
+  : 'PDF files only'}
                 </p>
               </div>
             </label>

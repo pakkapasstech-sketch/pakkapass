@@ -9,7 +9,19 @@ import './contentHierarchyPage.css';
 const ContentHierarchyPage = () => {
   const navigate =
     useNavigate();
+  const {
+  data: contentData,
+} = useQuery({
+  queryKey: ['content'],
+  queryFn: async () => {
+    const { data } =
+      await axiosInstance.get(
+        '/admin/content'
+      );
 
+    return data.content;
+  },
+});
   const {
     data: options,
     isLoading,
@@ -79,8 +91,9 @@ const ContentHierarchyPage = () => {
 
       <div className="hierarchy-card">
         <ManageHierarchyTree
-          options={options}
-        />
+  options={options}
+  content={contentData || []}
+/>
       </div>
     </div>
   );

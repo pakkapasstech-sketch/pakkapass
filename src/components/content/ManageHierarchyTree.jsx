@@ -98,7 +98,45 @@ const HierarchyItem = ({
 
 const ManageHierarchyTree = ({
   options,
+  content,
 }) => {
+  const gradeCounts =
+  useMemo(() => {
+    const counts = {};
+
+    (content || []).forEach(
+      (chapter) => {
+        const gradeName =
+          chapter.grade?.name;
+
+        if (!gradeName)
+          return;
+
+        let total = 0;
+
+        (
+          chapter.topics || []
+        ).forEach(
+          (topic) => {
+            total +=
+              (
+                topic.assets ||
+                []
+              ).length;
+          }
+        );
+
+        counts[
+          gradeName
+        ] =
+          (counts[
+            gradeName
+          ] || 0) + total;
+      }
+    );
+
+    return counts;
+  }, [content]);
   const hierarchy =
     useMemo(() => {
       if (!options) return [];
@@ -107,7 +145,11 @@ const ManageHierarchyTree = ({
         options.grades || []
       ).map((grade) => ({
         id: grade.id,
-        name: grade.name,
+        name: `${grade.name} (${
+  gradeCounts[
+    grade.name
+  ] || 0
+})`,
 
         boards:
           (

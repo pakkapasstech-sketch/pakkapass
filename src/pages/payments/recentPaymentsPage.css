@@ -1,0 +1,66 @@
+.payments-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.payments-filter-input,
+.payments-filter-select {
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid
+    var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  background: #fff;
+  color: var(
+    --text-primary,
+    #1e293b
+  );
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.payments-filter-input {
+  min-width: 280px;
+  flex: 1;
+}
+
+.payments-filter-select {
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.payments-filter-input:focus,
+.payments-filter-select:focus {
+  border-color: var(
+    --primary,
+    #6366f1
+  );
+  box-shadow:
+    0 0 0 3px
+    rgba(99, 102, 241, 0.12);
+}
+
+.payments-filter-input::placeholder {
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .payments-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .payments-filter-input,
+  .payments-filter-select {
+    width: 100%;
+    min-width: unset;
+  }
+}
