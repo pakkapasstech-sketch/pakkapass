@@ -2,120 +2,106 @@ import axiosInstance from '../api/axiosInstance';
 
 const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace('/api', '');
 
-const mapContentFromApi = (chapters = []) => {
+const mapContentFromApi = (
+  chapters = []
+) => {
   const items = [];
 
-  console.log('RAW CHAPTERS', chapters);
+  chapters.forEach(
+    (chapter) => {
+      (
+        chapter.topics || []
+      ).forEach(
+        (topic) => {
+          (
+            topic.assets || []
+          ).forEach(
+            (asset) => {
+              items.push({
+                id:
+                  asset.id,
 
-  chapters.forEach((chapter) => {
-    (chapter.topics || []).forEach((topic) => {
-      const base = {
-        id: topic.id,
+                title:
+                  asset.title,
 
-        title: topic.title || topic.name,
+                description:
+                  asset.description,
 
-        chapter: chapter.name,
+                type:
+                  asset.assetType,
 
-        section: topic.name,
+                fileUrl:
+                  asset.fileUrl,
 
-        subject: chapter.subject?.name || '',
+                fileName:
+                  asset.fileUrl
+                    ?.split(
+                      '/'
+                    )
+                    .pop(),
 
-        course: chapter.branch?.name || 'General',
+                uploadedOn:
+                  new Date(
+                    asset.createdAt
+                  ).toLocaleDateString(
+                    'en-IN'
+                  ),
 
-        grade: chapter.grade?.name || '',
+                fileSize:
+                  asset.fileSize,
 
-        board: chapter.board?.name || '',
+                grade:
+                  chapter.grade
+                    ?.name ||
+                  '',
 
-        uploadedOn: topic.createdAt ? new Date(topic.createdAt).toLocaleDateString('en-IN') : '-',
+                board:
+                  chapter.board
+                    ?.name ||
+                  '',
 
-        fileSize: topic.fileSize || '-',
-      };
-      if (!topic.videoUrl && !topic.notesUrl && !topic.questionsUrl) {
-        items.push({
-          ...base,
-          id: `${topic.id}-empty`,
-          type: 'empty',
-          description: '',
-          fileName: '',
-          fileUrl: '',
-        });
-      }
-      if (topic.videoUrl) {
-        items.push({
-          ...base,
-          id: `${topic.id}-video`,
-          type: 'video',
-          description: `Video for ${topic.name}`,
-          fileName: topic.videoUrl.split('/').pop(),
-          fileUrl: `${BASE_URL}${topic.videoUrl}`,
-        });
-      }
+                course:
+                  chapter.branch
+                    ?.name ||
+                  'General',
 
-      if (topic.notesUrl) {
-        items.push({
-          ...base,
-          id: `${topic.id}-notes`,
-          type: 'notes',
-          description: `Notes for ${topic.name}`,
-          fileName: topic.notesUrl.split('/').pop(),
-          fileUrl: `${BASE_URL}${topic.notesUrl}`,
-        });
-      }
+                subject:
+                  chapter.subject
+                    ?.name ||
+                  '',
 
-      if (topic.questionsUrl) {
-        items.push({
-          ...base,
-          id: `${topic.id}-paper`,
-          type: 'paper',
-          description: `Practice paper for ${topic.name}`,
-          fileName: topic.questionsUrl.split('/').pop(),
-          fileUrl: `${BASE_URL}${topic.questionsUrl}`,
-        });
-      }
-    });
-  });
+                chapter:
+                  chapter.name,
 
-  console.log('MAPPED CONTENT', items);
+                section:
+                  topic.name,
+
+                hierarchyType:
+                  chapter
+                    .contentType
+                    ?.name,
+              });
+            }
+          );
+        }
+      );
+    }
+  );
 
   return items;
 };
 
 export const contentService = {
   getAll: async () => {
-    const { data } = await axiosInstance.get('/admin/content');
+  const { data } =
+    await axiosInstance.get(
+      '/admin/content'
+    );
 
-    const content = mapContentFromApi(data.content || []);
-
-    const papers = (data.papers || []).map((paper) => ({
-      id: `paper-${paper.id}`,
-
-      title: paper.title,
-
-      type: 'paper',
-
-      chapter: '',
-
-      section: '',
-
-      subject: paper.subject?.name || '',
-
-      course: paper.branch?.name || 'General',
-
-      grade: paper.grade?.name || '',
-
-      board: paper.board?.name || '',
-
-      uploadedOn: new Date(paper.createdAt).toLocaleDateString('en-IN'),
-
-      fileSize: paper.fileSize,
-
-      fileName: paper.fileUrl.split('/').pop(),
-
-      fileUrl: `${BASE_URL}${paper.fileUrl}`,
-    }));
-
-    return [...content, ...papers];
-  },
+  return mapContentFromApi(
+    data.content || []
+  );
+},
 
   upload: async ({ filters, file, title, description, fileSize, contentType }) => {
     const formData = new FormData();
@@ -127,7 +113,10 @@ export const contentService = {
     formData.append('branchName', filters.course || '');
 
     formData.append('subjectName', filters.subject || '');
-
+formData.append(
+  'contentTypeId',
+  filters.selectedContentTypeId || ''
+);
     formData.append('chapterName', filters.chapter || '');
 
     formData.append('topicName', filters.section || '');
@@ -138,14 +127,10 @@ export const contentService = {
 
     formData.append('fileSize', fileSize || '');
 
-    const fieldMap = {
-      video: 'videoUrl',
-      notes: 'notesUrl',
-      paper: 'questionsUrl',
-    };
-
-    const fieldName = fieldMap[contentType] || 'videoUrl';
-
+    const fieldName =
+  contentType === 'video'
+    ? 'videoUrl'
+    : 'notesUrl';
     formData.append(fieldName, file);
 
     console.log('UPLOADING', {

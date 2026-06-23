@@ -65,7 +65,26 @@
   color:
     var(--color-text-primary);
 }
+.tree-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
 
+.manage-hierarchy-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.manage-hierarchy-btn:hover {
+  background: #f9fafb;
+}
 /* ==========================================
    TREE STRUCTURE
 ========================================== */

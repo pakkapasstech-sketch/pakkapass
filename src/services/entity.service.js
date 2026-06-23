@@ -21,6 +21,15 @@ const entityService = {
     '/admin/subject',
     data
   ),
+  addContentType: (
+  name
+) =>
+  axiosInstance.post(
+    '/admin/content-type',
+    {
+      name,
+    }
+  ),
   addChapter: (data) => axiosInstance.post('/admin/chapter', data),
 
   addTopic: (data) => axiosInstance.post('/admin/topic', data),

@@ -16,7 +16,16 @@ export const buildHierarchy = (
     const subject =
       item.subject || 'Unknown';
 
-    // Create grade
+    const hierarchyType =
+      item.hierarchyType ||
+      'Chapters';
+
+    const chapter =
+      item.chapter || 'Unknown';
+
+    const section =
+      item.section || 'Unknown';
+
     if (!classes[grade]) {
       classes[grade] = {
         id: grade,
@@ -25,7 +34,6 @@ export const buildHierarchy = (
       };
     }
 
-    // Create board
     if (
       !classes[grade].boards[board]
     ) {
@@ -38,7 +46,6 @@ export const buildHierarchy = (
       };
     }
 
-    // Create course
     if (
       !classes[grade]
         .boards[board]
@@ -53,7 +60,6 @@ export const buildHierarchy = (
       };
     }
 
-    // Create subject
     if (
       !classes[grade]
         .boards[board]
@@ -66,53 +72,60 @@ export const buildHierarchy = (
         .subjects[subject] = {
         id: subject,
         name: subject,
+        contentTypes: {},
+      };
+    }
+
+    const subjectNode =
+      classes[grade]
+        .boards[board]
+        .courses[course]
+        .subjects[subject];
+
+    if (
+      !subjectNode
+        .contentTypes[
+          hierarchyType
+        ]
+    ) {
+      subjectNode
+        .contentTypes[
+          hierarchyType
+        ] = {
+        id:
+          hierarchyType,
+        name:
+          hierarchyType,
         chapters: {},
       };
     }
 
-    // ❌ Do not create chapter/section for papers
-    if (item.type === 'paper') {
-      return;
-    }
+    const typeNode =
+      subjectNode
+        .contentTypes[
+          hierarchyType
+        ];
 
-    const chapter =
-      item.chapter || 'Unknown';
-
-    const section =
-      item.section || 'Unknown';
-
-    // Create chapter
     if (
-      !classes[grade]
-        .boards[board]
-        .courses[course]
-        .subjects[subject]
-        .chapters[chapter]
+      !typeNode.chapters[
+        chapter
+      ]
     ) {
-      classes[grade]
-        .boards[board]
-        .courses[course]
-        .subjects[subject]
-        .chapters[chapter] = {
+      typeNode.chapters[
+        chapter
+      ] = {
         id: chapter,
         name: chapter,
         sections: {},
       };
     }
 
-    // Create section
     if (
-      !classes[grade]
-        .boards[board]
-        .courses[course]
-        .subjects[subject]
+      !typeNode
         .chapters[chapter]
         .sections[section]
     ) {
-      classes[grade]
-        .boards[board]
-        .courses[course]
-        .subjects[subject]
+      typeNode
         .chapters[chapter]
         .sections[section] = {
         id: section,
@@ -136,21 +149,33 @@ export const buildHierarchy = (
         subjects:
           Object.values(
             course.subjects
-          ).map((subject) => ({
-            ...subject,
-            chapters:
-              Object.values(
-                subject.chapters
-              ).map(
-                (chapter) => ({
-                  ...chapter,
-                  sections:
-                    Object.values(
-                      chapter.sections
-                    ),
-                })
-              ),
-          })),
+          ).map(
+            (subject) => ({
+              ...subject,
+              contentTypes:
+                Object.values(
+                  subject.contentTypes
+                ).map(
+                  (type) => ({
+                    ...type,
+                    chapters:
+                      Object.values(
+                        type.chapters
+                      ).map(
+                        (
+                          chapter
+                        ) => ({
+                          ...chapter,
+                          sections:
+                            Object.values(
+                              chapter.sections
+                            ),
+                        })
+                      ),
+                  })
+                ),
+            })
+          ),
       })),
     })),
   }));

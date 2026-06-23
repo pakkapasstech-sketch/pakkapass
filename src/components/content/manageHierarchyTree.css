@@ -1,0 +1,54 @@
+.manage-tree-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.manage-tree-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.tree-arrow {
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tree-icon {
+  font-size: 18px;
+}
+
+.tree-label {
+  font-size: 14px;
+}
+
+.manage-tree-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.manage-tree-actions button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.manage-tree-actions button:hover {
+  background: #e5e7eb;
+}
+
+.tree-empty {
+  padding: 24px;
+  text-align: center;
+  color: #6b7280;
+}

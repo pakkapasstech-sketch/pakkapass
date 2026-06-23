@@ -57,11 +57,19 @@ const ContentFilters = ({
       ],
 
       subject: [
-        'chapter',
-        'section',
-        // 'topic',
-        'contentType',
-      ],
+  'selectedContentType',
+  'selectedContentTypeId',
+  'chapter',
+  'chapterId',
+  'section',
+  'contentType',
+],
+selectedContentType: [
+  'chapter',
+  'chapterId',
+  'section',
+  'contentType',
+],
 
       chapter: [
         'section',
@@ -137,27 +145,36 @@ const subjectOptions =
             subject.name
         ) || []
     : [];
-
-const chapterOptions =
+const contentTypeOptions =
   filters.subject
+    ? options?.contentTypes?.map(
+        (type) => type.name
+      ) || []
+    : [];
+const chapterOptions =
+  filters.subject &&
+  filters.selectedContentType
     ? options?.chapters
-        ?.filter((chapter) => {
-          return (
+        ?.filter(
+          (chapter) =>
             chapter.grade?.name ===
               filters.class &&
             chapter.board?.name ===
               filters.board &&
             chapter.subject?.name ===
               filters.subject &&
+            chapter.contentType
+              ?.name ===
+              filters.selectedContentType &&
             (
               !filters.course ||
               chapter.branch?.name ===
                 filters.course
             )
-          );
-        })
+        )
         .map(
-          (chapter) => chapter.name
+          (chapter) =>
+            chapter.name
         ) || []
     : [];
 
@@ -235,13 +252,46 @@ const sectionOptions =
           onSelect={(v) => update('subject', v)}
           onAdd={() => setModal('Add Subject')}
         />
+<FilterDropdown
+  label="Content Type"
+  value={
+    filters.selectedContentType
+  }
+  disabled={!filters.subject}
+  options={
+    contentTypeOptions
+  }
+  onSelect={(v) => {
+    const type =
+      options?.contentTypes?.find(
+        (t) => t.name === v
+      );
 
+    setFilters((prev) => ({
+      ...prev,
+      selectedContentType: v,
+      selectedContentTypeId:
+        type?.id || '',
+      chapter: '',
+      chapterId: '',
+      section: '',
+      contentType: '',
+    }));
+  }}
+  onAdd={() =>
+    setModal(
+      'Add Content Type'
+    )
+  }
+/>
         {/* Chapter */}
 
         <FilterDropdown
   label="Chapter"
   value={filters.chapter}
-  disabled={!filters.subject}
+disabled={
+  !filters.selectedContentType
+}
   options={chapterOptions}
   onSelect={(v) => {
     const chapter = options?.chapters?.find(

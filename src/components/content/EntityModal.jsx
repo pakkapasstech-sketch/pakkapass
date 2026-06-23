@@ -34,7 +34,9 @@ const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
             branchName: filters.course,
           });
           break;
-
+        case 'Add Content Type':
+          await entityService.addContentType(name);
+          break;
         case 'Add Chapter':
           if (!filters?.class || !filters?.board || !filters?.subject) {
             toast.error('Please select Class, Board and Subject first');
@@ -47,20 +49,21 @@ const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
             boardName: filters.board,
             branchName: filters.course,
             subjectName: filters.subject,
+            contentTypeName: filters.selectedContentType,
           });
           break;
 
-       case 'Add Section':
-  if (!filters?.chapterId) {
-    toast.error('Please select a Chapter first');
-    return;
-  }
+        case 'Add Section':
+          if (!filters?.chapterId) {
+            toast.error('Please select a Chapter first');
+            return;
+          }
 
-  await entityService.addTopic({
-  name,
-  chapterId: filters.chapterId,
-});
-  break;
+          await entityService.addTopic({
+            name,
+            chapterId: filters.chapterId,
+          });
+          break;
 
         default:
           return;
@@ -69,6 +72,7 @@ const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
       toast.success(`${title.replace('Add ', '')} added successfully`);
 
       await onEntityAdded?.();
+
       onClose();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to save');

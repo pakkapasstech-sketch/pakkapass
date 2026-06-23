@@ -18,15 +18,21 @@ import axiosInstance from '../../api/axiosInstance';
 const ContentManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
 
-  const [selectedFilters, setSelectedFilters] = useState({
+  const [selectedFilters, setSelectedFilters] =
+  useState({
     class: '',
     board: '',
     course: '',
     subject: '',
+
+    selectedContentType: '',
+    selectedContentTypeId: '',
+
     chapter: '',
     chapterId: '',
+
     section: '',
-    // topic: '',
+
     contentType: '',
   });
 

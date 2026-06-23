@@ -23,6 +23,7 @@ import PartnerDetailsPage from '../pages/Partners/PartnerDetailsPage';
 import EditPartnerPage from '../pages/Partners/EditPartnerPage';
 import PlanDetailsPage from '../pages/subscription/PlanDetailsPage';
 import CreateEditPlanPage from '../pages/subscription/CreateEditPlanPage';
+import ContentHierarchyPage from '../pages/ContentManagement/ContentHierarchyPage';
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
@@ -51,53 +52,32 @@ const AppRoutes = () => (
             <ProtectedRoute permission={PERMISSIONS.INSTITUTION_VIEW} roles={[ROLES.ADMIN]} />
           }
         >
-          <Route
-  path="partners"
-  element={<PartnersPage />}
-/>
+          <Route path="partners" element={<PartnersPage />} />
 
-<Route
-  path="partners/add"
-  element={<AddPartnerPage />}
-/>
+          <Route path="partners/add" element={<AddPartnerPage />} />
 
-<Route
-  path="partners/:id"
-  element={
-    <PartnerDetailsPage />
-  }
-/>
+          <Route path="partners/:id" element={<PartnerDetailsPage />} />
 
-<Route
-  path="partners/:id/edit"
-  element={
-    <EditPartnerPage />
-  }
-/>
+          <Route path="partners/:id/edit" element={<EditPartnerPage />} />
         </Route>
 
         <Route element={<ProtectedRoute permission={PERMISSIONS.RESOURCE_VIEW} />}>
           <Route path="content" element={<ContentManagement />} />
+          <Route
+  path="/admin/content-hierarchy"
+  element={<ContentHierarchyPage />}
+/>
         </Route>
 
         <Route
           element={<ProtectedRoute permission={PERMISSIONS.COUPON_VIEW} roles={[ROLES.ADMIN]} />}
         >
           <Route path="subscriptions" element={<SubscriptionManagementPage />} />
-          <Route
-  path="/admin/subscriptions/plans/:planId"
-  element={<PlanDetailsPage />}
-/>
+          <Route path="/admin/subscriptions/plans/:planId" element={<PlanDetailsPage />} />
 
-<Route
-  path="/admin/subscriptions/plans/create"
-  element={<CreateEditPlanPage />}
-/>
+          <Route path="/admin/subscriptions/plans/create" element={<CreateEditPlanPage />} />
 
-<Route
-  path="/admin/subscriptions/plans/:planId/edit"
-  element={<CreateEditPlanPage />}
-/>
+          <Route path="/admin/subscriptions/plans/:planId/edit" element={<CreateEditPlanPage />} />
           <Route path="coupons" element={<ReferralManagementPage />} />
         </Route>
 
