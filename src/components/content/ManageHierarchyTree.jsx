@@ -7,14 +7,18 @@ import {
   HiTrash,
 } from 'react-icons/hi';
 import './manageHierarchyTree.css';
-
+import toast from 'react-hot-toast';
+import entityService from '../../services/entity.service';
 const HierarchyItem = ({
   node,
   level = 0,
+  refresh,
+  setEditingNode,
+  setEditedName,
 }) => {
   const [expanded, setExpanded] =
     useState(false);
-
+ 
   const children =
     node.boards ||
     node.courses ||
@@ -26,7 +30,53 @@ const HierarchyItem = ({
 
   const hasChildren =
     children.length > 0;
+    const isChapter =
+  Array.isArray(
+    node.sections
+  );
 
+const isTopic =
+  !node.sections &&
+  !node.chapters &&
+  !node.contentTypes &&
+  !node.subjects &&
+  !node.courses &&
+  !node.boards;
+  
+  const handleDelete =
+  async () => {
+    if (
+      !window.confirm(
+        `Delete ${node.name}?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      if (isTopic) {
+  await entityService.deleteTopic(
+    node.id
+  );
+} else if (
+  isChapter
+) {
+  await entityService.deleteChapter(
+    node.id
+  );
+}
+
+      toast.success(
+        'Deleted successfully'
+      );
+
+      refresh();
+    } catch {
+      toast.error(
+        'Delete failed'
+      );
+    }
+  };
   return (
     <>
       <div
@@ -64,32 +114,51 @@ const HierarchyItem = ({
         </div>
 
         <div className="manage-tree-actions">
-          <button
-            type="button"
-            title="Edit"
-          >
-            <HiPencil />
-          </button>
+  {(isChapter ||
+    isTopic) && (
+    <>
+      <button
+  type="button"
+  title="Edit"
+  onClick={() => {
+    setEditingNode(node);
+    setEditedName(
+      node.name
+    );
+  }}
+>
+  <HiPencil />
+</button>
 
-          <button
-            type="button"
-            title="Delete"
-          >
-            <HiTrash />
-          </button>
-        </div>
+      <button
+        type="button"
+        title="Delete"
+        onClick={
+          handleDelete
+        }
+      >
+        <HiTrash />
+      </button>
+    </>
+  )}
+</div>
       </div>
 
       {expanded &&
         children.map(
           (child) => (
             <HierarchyItem
-              key={`${child.id}-${child.name}`}
-              node={child}
-              level={
-                level + 1
-              }
-            />
+  key={`${child.id}-${child.name}`}
+  node={child}
+  level={level + 1}
+  refresh={refresh}
+  setEditingNode={
+    setEditingNode
+  }
+  setEditedName={
+    setEditedName
+  }
+/>
           )
         )}
     </>
@@ -99,7 +168,71 @@ const HierarchyItem = ({
 const ManageHierarchyTree = ({
   options,
   content,
+  refresh,
 }) => {
+  const [editingNode, setEditingNode] =
+  useState(null);
+
+const [editedName, setEditedName] =
+  useState('');
+  const handleSave = async () => {
+  if (
+    !editingNode ||
+    !editedName.trim()
+  ) {
+    return;
+  }
+
+  try {
+    const isChapter =
+      Array.isArray(
+        editingNode.sections
+      );
+
+    const isTopic =
+      !editingNode.sections &&
+      !editingNode.chapters &&
+      !editingNode.contentTypes &&
+      !editingNode.subjects &&
+      !editingNode.courses &&
+      !editingNode.boards;
+
+    if (isTopic) {
+      await entityService.updateTopic(
+        editingNode.id,
+        {
+          name:
+            editedName.trim(),
+        }
+      );
+    } else if (
+      isChapter
+    ) {
+      await entityService.updateChapter(
+        editingNode.id,
+        {
+          name:
+            editedName.trim(),
+        }
+      );
+    }
+
+    toast.success(
+      'Updated successfully'
+    );
+
+    setEditingNode(null);
+    setEditedName('');
+
+    refresh();
+  } catch (error) {
+    toast.error(
+      error.response?.data
+        ?.message ||
+        'Update failed'
+    );
+  }
+};
   const gradeCounts =
   useMemo(() => {
     const counts = {};
@@ -313,11 +446,63 @@ const ManageHierarchyTree = ({
       {hierarchy.map(
         (grade) => (
           <HierarchyItem
-            key={`${grade.id}-${grade.name}`}
-            node={grade}
-          />
+  key={`${grade.id}-${grade.name}`}
+  node={grade}
+  refresh={refresh}
+  setEditingNode={
+    setEditingNode
+  }
+  setEditedName={
+    setEditedName
+  }
+/>
         )
       )}
+      {editingNode && (
+  <div className="modal-overlay">
+  <div className="entity-modal">
+    <h3>Edit Name</h3>
+
+    <p>
+      Update the chapter or topic
+      name below.
+    </p>
+
+    <input
+      className="entity-input"
+      value={editedName}
+      onChange={(e) =>
+        setEditedName(
+          e.target.value
+        )
+      }
+      placeholder="Enter name"
+    />
+
+    <div className="modal-actions">
+      <button
+        className="cancel-btn"
+        onClick={() => {
+          setEditingNode(null);
+          setEditedName('');
+        }}
+      >
+        Cancel
+      </button>
+
+      <button
+  className="save-btn"
+  onClick={handleSave}
+  disabled={
+    !editedName.trim()
+  }
+>
+  Save Changes
+</button>
+    </div>
+  </div>
+</div>
+)}
     </div>
   );
 };

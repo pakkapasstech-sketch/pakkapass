@@ -169,6 +169,16 @@ if (filters.selectedContentTypeId) {
 
     return data;
   },
+  updateAsset: (id, data) =>
+  axiosInstance.put(
+    `/admin/content-asset/${id}`,
+    data
+  ),
+
+deleteAsset: (id) =>
+  axiosInstance.delete(
+    `/admin/content-asset/${id}`
+  ),
 };
 
 export default contentService;

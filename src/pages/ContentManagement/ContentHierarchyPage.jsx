@@ -1,6 +1,9 @@
 import { HiArrowLeft } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
 import ManageHierarchyTree from '../../components/content/ManageHierarchyTree';
 
@@ -9,6 +12,8 @@ import './contentHierarchyPage.css';
 const ContentHierarchyPage = () => {
   const navigate =
     useNavigate();
+    const queryClient =
+  useQueryClient();
   const {
   data: contentData,
 } = useQuery({
@@ -93,6 +98,15 @@ const ContentHierarchyPage = () => {
         <ManageHierarchyTree
   options={options}
   content={contentData || []}
+  refresh={async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['content'],
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ['content-options'],
+    });
+  }}
 />
       </div>
     </div>

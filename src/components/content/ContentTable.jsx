@@ -4,7 +4,9 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
 } from 'react-icons/hi';
-
+import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { contentService } from '../../services/content.service';
 import './contentTable.css';
 
 const PAGE_SIZE = 5;
@@ -16,7 +18,8 @@ const ContentTable = ({
 }) => {
   const [search, setSearch] =
     useState('');
-
+  const queryClient =
+  useQueryClient();
   const [page, setPage] =
     useState(1);
 // console.log(content);
@@ -25,37 +28,16 @@ const ContentTable = ({
 // console.log('ACTIVE TAB', activeTab);
 // console.log(content[0].grade);
 // console.log(filters.class);
-console.log('CONTENT', content);
-console.log('FILTERS', filters);
+// console.log('CONTENT', content);
+// console.log('FILTERS', filters);
  const filteredContent = useMemo(() => {
 
   
 
   return content.filter((item) => {
-    console.log('ITEM', item);
+    //console.log('ITEM', item);
 
-console.log({
-  grade: item.grade,
-  filterGrade: filters.class,
 
-  board: item.board,
-  filterBoard: filters.board,
-
-  course: item.course,
-  filterCourse: filters.course,
-
-  subject: item.subject,
-  filterSubject: filters.subject,
-
-  chapter: item.chapter,
-  filterChapter: filters.chapter,
-
-  section: item.section,
-  filterSection: filters.section,
-
-  type: item.type,
-  activeTab,
-});
     
     const matchSearch =
   item.title
@@ -145,23 +127,87 @@ useEffect(() => {
       page * PAGE_SIZE
     );
 
-  const handleDelete = (
-    id
-  ) => {
-    console.log(
-      'Delete:',
+  const handleDelete = async (
+  id
+) => {
+  try {
+    if (
+      !window.confirm(
+        'Delete this content?'
+      )
+    ) {
+      return;
+    }
+
+    await contentService.deleteAsset(
       id
     );
-  };
 
-  const handleEdit = (
-    item
-  ) => {
-    console.log(
-      'Edit:',
-      item
+    toast.success(
+      'Content deleted'
     );
-  };
+
+    queryClient.invalidateQueries(
+      {
+        queryKey: ['content'],
+      }
+    );
+  } catch (error) {
+    toast.error(
+      error.response?.data
+        ?.message ||
+        'Delete failed'
+    );
+  }
+};
+
+  const handleEdit = async (
+  item
+) => {
+  const title =
+    window.prompt(
+      'Title',
+      item.title
+    );
+
+  if (
+    title === null
+  ) {
+    return;
+  }
+
+  const description =
+    window.prompt(
+      'Description',
+      item.description || ''
+    );
+
+  try {
+    await contentService.updateAsset(
+      item.id,
+      {
+        title,
+        description,
+      }
+    );
+
+    toast.success(
+      'Content updated'
+    );
+
+    queryClient.invalidateQueries(
+      {
+        queryKey: ['content'],
+      }
+    );
+  } catch (error) {
+    toast.error(
+      error.response?.data
+        ?.message ||
+        'Update failed'
+    );
+  }
+};
 
   const handleView = (
     item

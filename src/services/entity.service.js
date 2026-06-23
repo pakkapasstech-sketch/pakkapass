@@ -33,6 +33,19 @@ const entityService = {
   addChapter: (data) => axiosInstance.post('/admin/chapter', data),
 
   addTopic: (data) => axiosInstance.post('/admin/topic', data),
+  // Chapters
+updateChapter: (id, data) =>
+  axiosInstance.put(`/admin/chapter/${id}`, data),
+
+deleteChapter: (id) =>
+  axiosInstance.delete(`/admin/chapter/${id}`),
+
+// Topics
+updateTopic: (id, data) =>
+  axiosInstance.put(`/admin/topic/${id}`, data),
+
+deleteTopic: (id) =>
+  axiosInstance.delete(`/admin/topic/${id}`),
 };
 
 export default entityService;
