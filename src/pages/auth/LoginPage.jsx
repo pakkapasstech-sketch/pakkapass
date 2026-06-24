@@ -18,6 +18,7 @@ import { useAuth } from '../../auth/AuthProvider';
 import { getDefaultRoute } from '../../config/menu.config';
 import logo from '../../assets/PP Final Logo Tagline White 02 1.svg';
 import '../../styles/login.css';
+import Loader from '../../components/common/Loader';
 
 const OTP_COOLDOWN = 60;
 
@@ -166,7 +167,9 @@ const LoginPage = () => {
     if (isParent && step === 'credentials') return loading ? 'Sending OTP...' : 'Get OTP';
     return loading ? 'Verifying...' : 'Login';
   };
-
+  if (loading || authLoading) {
+  return <Loader />;
+}
   return (
     <div className="login-page">
       <div className="login-left">
@@ -401,12 +404,14 @@ const LoginPage = () => {
             )}
           </AnimatePresence>
 
-          <p className="contact-admin">
-            Don&apos;t have an account?{' '}
-            <Link to="/contact-admin" className="contact-admin-link">
-              Contact your administrator
-            </Link>
-          </p>
+          {!isAdmin && (
+            <p className="contact-admin">
+              Don&apos;t have an account?{' '}
+              <Link to="/contact-admin" className="contact-admin-link">
+                Contact your administrator
+              </Link>
+            </p>
+          )}
         </motion.div>
 
         <div className="login-footer-bar">

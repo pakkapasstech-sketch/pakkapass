@@ -10,7 +10,7 @@ import {
 } from 'react-icons/hi';
 import '../../styles/subscriptionManagement.css';
 import { getPlans } from '../../services/SubscriptionServices';
-
+import Loader from '../../components/common/Loader';
 const SubscriptionManagementPage = () => {
   const navigate = useNavigate();
 
@@ -91,7 +91,9 @@ const SubscriptionManagementPage = () => {
     selectedBoard,
     selectedBranch,
   ]);
-
+  if (loading) {
+    return <Loader />;
+  }
   return (
     <div className="subscription-management-page">
       <div className="subscription-header">

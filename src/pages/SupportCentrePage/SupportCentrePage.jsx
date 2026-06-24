@@ -8,7 +8,6 @@ import {
 } from 'react-icons/hi';
 
 import '../../styles/supportCentrePage.css';
-
 const faqs = [
   {
     question:

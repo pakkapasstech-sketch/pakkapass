@@ -16,7 +16,7 @@ import PartnerTable from '../../components/partners/PartnerTable';
 import partnerService from '../../services/partner.service';
 
 import '../../styles/partners.css';
-
+import Loader from '../../components/common/Loader';
 const PartnersPage = () => {
   const navigate =
     useNavigate();
@@ -99,17 +99,8 @@ const PartnersPage = () => {
     statusFilter,
   ]);
 
-  if (
-    loading &&
-    !partners.length
-  ) {
-    return (
-      <div className="partners-page">
-        <div className="loading-skeleton">
-          Loading partners...
-        </div>
-      </div>
-    );
+  if (loading && !partners.length) {
+    return <Loader />;
   }
 
   return (

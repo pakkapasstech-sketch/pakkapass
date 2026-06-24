@@ -25,6 +25,7 @@ import {
 } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
 import { useContent } from '../../hooks/useContent';
+import Loader from '../../components/common/Loader';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -222,7 +223,9 @@ const totalPYQ =
   //   { key: 'conversions', header: 'Conversions', accessor: (r) => r.conversions },
   //   { key: 'revenue', header: 'Revenue', accessor: (r) => `₹${r.revenue?.toLocaleString()}` },
   // ];
-
+if ( stats.isLoading || registrations.isLoading || payments.isLoading || contentLoading || plansLoading) {
+  return <Loader />;
+}
   return (
     <div className="dashboard-page">
       <div className="dashboard-stats-grid">

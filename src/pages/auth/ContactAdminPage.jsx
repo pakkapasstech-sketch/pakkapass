@@ -12,7 +12,7 @@ import {
 } from 'react-icons/hi';
 
 import '../../styles/contact-admin.css';
-
+import Loader from '../../components/common/Loader';
 const ContactAdminPage = () => {
   const navigate = useNavigate();
 
@@ -49,7 +49,9 @@ const ContactAdminPage = () => {
   const onSubmit = () => {
     submitAccessRequest();
   };
-
+if (loading ) {
+  return <Loader />;
+}
   return (
     <div className="contact-admin-page">
       <motion.div

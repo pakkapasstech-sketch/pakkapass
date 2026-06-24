@@ -14,7 +14,7 @@ import { buildHierarchy } from '../../utils/buildHierarchy';
 import './contentManagement.css';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
-
+import Loader from '../../components/common/Loader';
 const ContentManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
 
@@ -83,7 +83,7 @@ const ContentManagement = () => {
     }
   };
 
-  if (isLoading) return <LoadingSkeleton rows={8} />;
+  if (isLoading) return <Loader />;
   if (isError) {
     return <ErrorState message="Failed to load content" onRetry={refetch} />;
   }

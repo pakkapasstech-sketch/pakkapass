@@ -5,7 +5,7 @@ import StudentFilters from './StudentFilters';
 import StudentStatsCards from './StudentStatsCards';
 import StudentTable from './StudentTable';
 
-import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+
 import ErrorState from '../../components/loaders/ErrorState';
 
 import { useStudents } from '../../hooks/useStudents';
@@ -13,7 +13,7 @@ import { usePermissions } from '../../auth/usePermissions';
 import { PERMISSIONS } from '../../auth/permissions';
 
 import '../../styles/student-management.css';
-
+import Loader from '../../components/common/Loader';
 const StudentManagementPage = () => {
   const [filters, setFilters] =
     useState({
@@ -132,11 +132,7 @@ const StudentManagementPage = () => {
       : filteredStudents;
 
   if (isLoading) {
-    return (
-      <LoadingSkeleton
-        rows={8}
-      />
-    );
+    return <Loader />;
   }
 
   if (isError) {

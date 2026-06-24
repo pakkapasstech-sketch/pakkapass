@@ -4,13 +4,13 @@ import {
 } from 'react';
 import DataTable from '../../components/tables/DataTable';
 import StatusBadge from '../../components/tables/StatusBadge';
-import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+
 import ErrorState from '../../components/loaders/ErrorState';
 import { useRecentPayments } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
 import './recentPaymentsPage.css';
 import StatisticCard from '../../components/cards/StatisticCard';
-
+import Loader from '../../components/common/Loader';
 const RecentPaymentsPage = () => {
   const {
     data: payments = [],
@@ -153,12 +153,9 @@ const pendingPayments =
   ];
 
   if (isLoading) {
-    return (
-      <LoadingSkeleton
-        rows={8}
-      />
-    );
+    return <Loader />;
   }
+  
 
   if (isError) {
     return (

@@ -6,7 +6,7 @@ import {
   //HiOutlineEye,
 } from 'react-icons/hi';
 
-import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+import Loader from '../../components/common/Loader';
 import ErrorState from '../../components/loaders/ErrorState';
 import { useParents } from '../../hooks/useParents';
 
@@ -29,7 +29,7 @@ const ParentsManagement = () => {
       .includes(search.toLowerCase())
 );
 
-  if (isLoading) return <LoadingSkeleton rows={6} />;
+  if (isLoading) return <Loader />;
 
   if (isError) {
     return (

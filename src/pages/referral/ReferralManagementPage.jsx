@@ -3,7 +3,7 @@ import DataTable from '../../components/tables/DataTable';
 import StatusBadge from '../../components/tables/StatusBadge';
 import { useReferralConversions } from '../../hooks/useDashboard';
 import '../../styles/referralManagement.css';
-
+import Loader from '../../components/common/Loader';
 const ReferralManagementPage = () => {
   // Loads real referral data from GET /admin/referrals
   const referrals = useReferralConversions();
@@ -44,7 +44,9 @@ const ReferralManagementPage = () => {
       ),
     },
   ];
-
+  if (referrals.isLoading) {
+  return <Loader />;
+}
   return (
     <div className="referral-management-page">
       <div className="referral-header">
