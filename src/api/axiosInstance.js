@@ -22,7 +22,7 @@ const clearTokens = () => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 20000,
   headers: { 'Content-Type': 'application/json' },
 });
@@ -43,7 +43,7 @@ axiosInstance.interceptors.response.use(
       if (refreshToken) {
         try {
           const { data } = await axios.post(
-            `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/auth/refresh`,
+            `${import.meta.env.VITE_API_URL}/auth/refresh`,
             { refreshToken }
           );
           setTokens(data.accessToken, data.refreshToken);
