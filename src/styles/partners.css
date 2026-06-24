@@ -403,3 +403,176 @@
     grid-template-columns: 1fr;
   }
 }
+/* ================= DARK MODE ================= */
+
+.dark .partners-page,
+[data-theme='dark'] .partners-page {
+  background: var(--color-main-bg);
+}
+
+/* Header */
+
+.dark .partners-badge,
+[data-theme='dark'] .partners-badge {
+  background: rgba(79, 70, 229, 0.18);
+  color: #c4b5fd;
+}
+
+.dark .partners-header h1,
+.dark .table-header h2,
+.dark .empty-partners h3,
+[data-theme='dark'] .partners-header h1,
+[data-theme='dark'] .table-header h2,
+[data-theme='dark'] .empty-partners h3 {
+  color: var(--color-text-primary);
+}
+
+.dark .partners-description,
+.dark .empty-partners p,
+[data-theme='dark'] .partners-description,
+[data-theme='dark'] .empty-partners p {
+  color: var(--color-text-secondary);
+}
+
+/* Buttons */
+
+.dark .partners-btn-secondary,
+[data-theme='dark'] .partners-btn-secondary {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .partners-btn-secondary:hover,
+[data-theme='dark'] .partners-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Stats */
+
+.dark .stat-card,
+[data-theme='dark'] .stat-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.dark .stat-card h3,
+[data-theme='dark'] .stat-card h3 {
+  color: var(--color-text-primary);
+}
+
+.dark .stat-card p,
+[data-theme='dark'] .stat-card p {
+  color: var(--color-text-secondary);
+}
+
+/* Filters */
+
+.dark .search-box,
+.dark .partner-filters select,
+[data-theme='dark'] .search-box,
+[data-theme='dark'] .partner-filters select {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .search-box svg,
+[data-theme='dark'] .search-box svg {
+  color: var(--color-text-muted);
+}
+
+.dark .search-box input,
+.dark .partner-filters select,
+[data-theme='dark'] .search-box input,
+[data-theme='dark'] .partner-filters select {
+  color: var(--color-text-primary);
+}
+
+.dark .search-box input::placeholder,
+[data-theme='dark'] .search-box input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dark .search-box:focus-within,
+.dark .partner-filters select:focus,
+[data-theme='dark'] .search-box:focus-within,
+[data-theme='dark'] .partner-filters select:focus {
+  border-color: #6653af;
+  box-shadow: 0 0 0 4px rgba(102, 83, 175, 0.2);
+}
+
+/* Table */
+
+.dark .partners-table-card,
+[data-theme='dark'] .partners-table-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .table-header,
+[data-theme='dark'] .table-header {
+  border-bottom-color: var(--color-border);
+}
+
+.dark .partners-table th,
+[data-theme='dark'] .partners-table th {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.dark .partners-table td,
+[data-theme='dark'] .partners-table td {
+  color: var(--color-text-primary);
+  border-top-color: var(--color-border);
+}
+
+.dark .partners-table tbody tr:hover,
+.dark .partner-row:hover,
+[data-theme='dark'] .partners-table tbody tr:hover,
+[data-theme='dark'] .partner-row:hover {
+  background: rgba(102, 83, 175, 0.08);
+}
+
+/* Status */
+
+.dark .status-badge.active,
+[data-theme='dark'] .status-badge.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.dark .status-badge.inactive,
+[data-theme='dark'] .status-badge.inactive {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
+
+.dark .status-badge.suspended,
+[data-theme='dark'] .status-badge.suspended {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+/* Actions */
+
+.dark .table-actions button,
+[data-theme='dark'] .table-actions button {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.dark .table-actions button:hover,
+[data-theme='dark'] .table-actions button:hover {
+  background: rgba(102, 83, 175, 0.12);
+  color: #c4b5fd;
+}
+
+/* Empty State */
+
+.dark .empty-partners,
+[data-theme='dark'] .empty-partners {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}

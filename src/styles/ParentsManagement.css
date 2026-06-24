@@ -277,3 +277,120 @@
     padding: 14px;
   }
 }
+/* =========================
+   DARK MODE
+========================= */
+
+.dark .parents-page,
+[data-theme='dark'] .parents-page {
+  background: var(--color-main-bg);
+}
+
+/* Stats Cards */
+
+.dark .stat-card,
+[data-theme='dark'] .stat-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.dark .stat-title,
+[data-theme='dark'] .stat-title {
+  color: var(--color-text-secondary);
+}
+
+.dark .stat-value,
+[data-theme='dark'] .stat-value {
+  color: var(--color-text-primary);
+}
+
+/* Search */
+
+.dark .search-box,
+[data-theme='dark'] .search-box {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .search-box svg,
+[data-theme='dark'] .search-box svg {
+  color: var(--color-text-secondary);
+}
+
+.dark .search-box input,
+[data-theme='dark'] .search-box input {
+  color: var(--color-text-primary);
+}
+
+.dark .search-box input::placeholder,
+[data-theme='dark'] .search-box input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Table */
+
+.dark .parents-table-wrapper,
+[data-theme='dark'] .parents-table-wrapper {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .parents-table th,
+[data-theme='dark'] .parents-table th {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.dark .parents-table td,
+[data-theme='dark'] .parents-table td {
+  color: var(--color-text-primary);
+  border-top-color: var(--color-border);
+}
+
+.dark .parent-row:hover,
+[data-theme='dark'] .parent-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Avatar */
+
+.dark .parent-avatar,
+[data-theme='dark'] .parent-avatar {
+  background: rgba(102, 83, 175, 0.18);
+  color: #c4b5fd;
+}
+
+/* Status */
+
+.dark .status-badge.active,
+[data-theme='dark'] .status-badge.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.dark .status-badge.inactive,
+[data-theme='dark'] .status-badge.inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+/* View Button */
+
+.dark .view-btn,
+[data-theme='dark'] .view-btn {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+}
+
+.dark .view-btn:hover,
+[data-theme='dark'] .view-btn:hover {
+  background: rgba(37, 99, 235, 0.25);
+}
+
+/* Empty State */
+
+.dark .empty-table,
+[data-theme='dark'] .empty-table {
+  color: var(--color-text-muted);
+}

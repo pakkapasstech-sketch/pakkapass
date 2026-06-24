@@ -82,3 +82,20 @@
     content: '...';
   }
 }
+/* ================= DARK MODE ================= */
+
+.dark .loader-overlay,
+[data-theme='dark'] .loader-overlay {
+  background: rgba(15, 23, 42, 0.92);
+}
+
+.dark .spinner-ring,
+[data-theme='dark'] .spinner-ring {
+  border: 5px solid rgba(255, 255, 255, 0.14);
+  border-top: 5px solid #a78bfa;
+}
+
+.dark .loader-text,
+[data-theme='dark'] .loader-text {
+  color: #c4b5fd;
+}

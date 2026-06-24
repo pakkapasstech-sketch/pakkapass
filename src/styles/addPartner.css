@@ -456,3 +456,228 @@ input[type="file"] {
     font-size: 26px;
   }
 }
+/* ================= DARK MODE ================= */
+
+.dark .add-partner-page,
+[data-theme='dark'] .add-partner-page {
+  background: var(--color-main-bg);
+}
+
+/* ================= HEADER ================= */
+
+.dark .page-badge,
+[data-theme='dark'] .page-badge {
+  background: rgba(79, 70, 229, 0.18);
+  color: #c4b5fd;
+}
+
+.dark .page-header h1,
+[data-theme='dark'] .page-header h1 {
+  color: var(--color-text-primary);
+}
+
+.dark .page-header p,
+[data-theme='dark'] .page-header p {
+  color: var(--color-text-secondary);
+}
+
+/* ================= TABS ================= */
+
+.dark .partner-tabs,
+[data-theme='dark'] .partner-tabs {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .partner-tab,
+[data-theme='dark'] .partner-tab {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.dark .partner-tab.completed,
+[data-theme='dark'] .partner-tab.completed {
+  background: rgba(79, 70, 229, 0.18);
+  color: #c4b5fd;
+}
+
+.dark .partner-tab.active,
+[data-theme='dark'] .partner-tab.active {
+  background: linear-gradient(
+    135deg,
+    #6653af,
+    #7a68c2
+  );
+  color: #ffffff;
+}
+
+.dark .partner-tab.disabled,
+[data-theme='dark'] .partner-tab.disabled {
+  opacity: 0.5;
+}
+
+/* ================= FORM CARD ================= */
+
+.dark .partner-form-card,
+[data-theme='dark'] .partner-form-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+.dark .partner-form-card h2,
+[data-theme='dark'] .partner-form-card h2 {
+  color: var(--color-text-primary);
+}
+
+.dark .partner-form-card h2::after,
+[data-theme='dark'] .partner-form-card h2::after {
+  background: #a78bfa;
+}
+
+/* ================= FORM ================= */
+
+.dark .partner-form-group label,
+[data-theme='dark'] .partner-form-group label {
+  color: var(--color-text-primary);
+}
+
+.dark .partner-form-group input,
+.dark .partner-form-group select,
+.dark .partner-form-group textarea,
+[data-theme='dark'] .partner-form-group input,
+[data-theme='dark'] .partner-form-group select,
+[data-theme='dark'] .partner-form-group textarea {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .partner-form-group input::placeholder,
+.dark .partner-form-group textarea::placeholder,
+[data-theme='dark'] .partner-form-group input::placeholder,
+[data-theme='dark'] .partner-form-group textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dark .partner-form-group input:focus,
+.dark .partner-form-group select:focus,
+.dark .partner-form-group textarea:focus,
+[data-theme='dark'] .partner-form-group input:focus,
+[data-theme='dark'] .partner-form-group select:focus,
+[data-theme='dark'] .partner-form-group textarea:focus {
+  border-color: #6653af;
+  box-shadow: 0 0 0 4px rgba(102, 83, 175, 0.2);
+}
+
+/* File Input */
+
+.dark input[type="file"],
+[data-theme='dark'] input[type="file"] {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* ================= INFO CARDS ================= */
+
+.dark .info-card,
+[data-theme='dark'] .info-card {
+  background: linear-gradient(
+    135deg,
+    var(--color-card),
+    var(--color-surface)
+  );
+  border-color: var(--color-border);
+}
+
+.dark .info-card span,
+[data-theme='dark'] .info-card span {
+  color: var(--color-text-secondary);
+}
+
+.dark .info-card h3,
+[data-theme='dark'] .info-card h3 {
+  color: var(--color-text-primary);
+}
+
+/* ================= STATUS ================= */
+
+.dark .status-chip,
+[data-theme='dark'] .status-chip {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.dark .status-chip:hover,
+[data-theme='dark'] .status-chip:hover {
+  border-color: #6653af;
+  color: #c4b5fd;
+}
+
+.dark .status-chip.active,
+[data-theme='dark'] .status-chip.active {
+  background: #6653af;
+  border-color: #6653af;
+  color: #ffffff;
+}
+
+/* ================= REFERRAL ================= */
+
+.dark .referral-card,
+.dark .message-card,
+[data-theme='dark'] .referral-card,
+[data-theme='dark'] .message-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .referral-card p,
+[data-theme='dark'] .referral-card p {
+  color: var(--color-text-secondary);
+}
+
+.dark .referral-card h1,
+[data-theme='dark'] .referral-card h1 {
+  color: #a78bfa;
+}
+
+.dark .message-card h3,
+[data-theme='dark'] .message-card h3 {
+  color: var(--color-text-primary);
+}
+
+.dark .message-card textarea,
+[data-theme='dark'] .message-card textarea {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+/* ================= ACTIONS ================= */
+
+.dark .form-actions,
+[data-theme='dark'] .form-actions {
+  border-top-color: var(--color-border);
+}
+
+.dark .btn-secondary,
+[data-theme='dark'] .btn-secondary {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .btn-secondary:hover:not(:disabled),
+[data-theme='dark'] .btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ================= ERROR ================= */
+
+.dark .form-error,
+[data-theme='dark'] .form-error {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}

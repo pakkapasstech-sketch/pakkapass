@@ -64,3 +64,26 @@
     min-width: unset;
   }
 }
+/* ================= DARK MODE ================= */
+
+.dark .payments-filter-input,
+.dark .payments-filter-select,
+[data-theme='dark'] .payments-filter-input,
+[data-theme='dark'] .payments-filter-select {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .payments-filter-input::placeholder,
+[data-theme='dark'] .payments-filter-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dark .payments-filter-input:focus,
+.dark .payments-filter-select:focus,
+[data-theme='dark'] .payments-filter-input:focus,
+[data-theme='dark'] .payments-filter-select:focus {
+  border-color: #6653af;
+  box-shadow: 0 0 0 3px rgba(102, 83, 175, 0.2);
+}

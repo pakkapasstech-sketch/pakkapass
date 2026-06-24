@@ -30,10 +30,30 @@
 }
 
 .hierarchy-card {
-  background: white;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 24px;
-  box-shadow:
-    0 1px 3px
-      rgb(0 0 0 / 10%);
+  box-shadow: var(--shadow-sm);
+}
+.dark .content-hierarchy-page {
+  background: var(--color-main-bg);
+}
+
+.dark .back-btn {
+  color: #8b9fff;
+}
+
+.dark .hierarchy-header h1 {
+  color: var(--color-text-primary);
+}
+
+.dark .hierarchy-header p {
+  color: var(--color-text-muted);
+}
+
+.dark .hierarchy-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }

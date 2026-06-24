@@ -106,7 +106,8 @@
 
 .tree-row {
   min-height: 42px;
-  min-width: max-content;
+  min-width: 0;
+  width: 100%;
 
   display: flex;
   align-items: center;
@@ -247,6 +248,16 @@
 }
 
 /* ==========================================
+   LAPTOP
+========================================== */
+
+@media (max-width: 1200px) {
+  .content-tree {
+    min-height: 650px;
+  }
+}
+
+/* ==========================================
    TABLET
 ========================================== */
 
@@ -254,7 +265,6 @@
   .content-tree {
     min-height: auto;
     max-height: 500px;
-
     padding: 16px;
   }
 
@@ -263,8 +273,31 @@
     padding-bottom: 16px;
   }
 
+  .tree-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .manage-hierarchy-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .tree-row {
     min-height: 40px;
+    min-width: 0;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .tree-label {
+    flex: 1;
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -274,21 +307,79 @@
 
 @media (max-width: 480px) {
   .content-tree {
+    max-height: none;
+    min-height: auto;
     padding: 14px;
+    border-radius: 14px;
+  }
+
+  .tree-header {
+    margin-bottom: 12px;
+  }
+
+  .tree-title {
+    position: static;
+    padding-bottom: 12px;
+    font-size: 16px;
   }
 
   .tree-row {
     min-height: 38px;
-
+    min-width: 0;
     padding: 0 10px;
     gap: 8px;
+  }
+
+  .tree-arrow {
+    width: 16px;
+  }
+
+  .tree-icon {
+    font-size: 16px;
   }
 
   .tree-label {
     font-size: 13px;
   }
 
-  .tree-icon {
-    font-size: 16px;
+  .manage-hierarchy-btn {
+    width: 100%;
+    height: 40px;
+    font-size: 13px;
   }
+}
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .manage-hierarchy-btn,
+[data-theme='dark'] .manage-hierarchy-btn {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .manage-hierarchy-btn:hover,
+[data-theme='dark'] .manage-hierarchy-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark .tree-row:hover,
+[data-theme='dark'] .tree-row:hover {
+  background: rgba(102, 83, 175, 0.12);
+}
+
+.dark .tree-row.active,
+[data-theme='dark'] .tree-row.active {
+  background: rgba(102, 83, 175, 0.18);
+}
+
+.dark .tree-icon,
+[data-theme='dark'] .tree-icon {
+  color: #fbbf24;
+}
+
+.dark .content-tree::-webkit-scrollbar-thumb,
+[data-theme='dark'] .content-tree::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
 }

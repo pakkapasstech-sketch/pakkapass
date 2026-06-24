@@ -344,3 +344,69 @@
     flex-wrap: wrap;
   }
 }
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .student-table-card,
+[data-theme='dark'] .student-table-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .student-table thead,
+[data-theme='dark'] .student-table thead {
+  background: var(--color-surface);
+}
+
+.dark .student-table th,
+[data-theme='dark'] .student-table th {
+  color: var(--color-text-secondary);
+}
+
+.dark .student-table td,
+[data-theme='dark'] .student-table td {
+  color: var(--color-text-primary);
+  border-top-color: var(--color-border);
+}
+
+.dark .student-table tbody tr:hover,
+[data-theme='dark'] .student-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dark .clickable-row:hover,
+.dark .clickable-row:hover td,
+[data-theme='dark'] .clickable-row:hover,
+[data-theme='dark'] .clickable-row:hover td {
+  background: rgba(102, 83, 175, 0.12);
+}
+
+.dark .clickable-row:active,
+[data-theme='dark'] .clickable-row:active {
+  background: rgba(102, 83, 175, 0.18);
+}
+
+.dark .plan-badge,
+[data-theme='dark'] .plan-badge {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+}
+
+.dark .view-btn,
+.dark .edit-btn,
+.dark .delete-btn,
+[data-theme='dark'] .view-btn,
+[data-theme='dark'] .edit-btn,
+[data-theme='dark'] .delete-btn {
+  background: var(--color-surface);
+}
+
+.dark .view-btn:hover,
+.dark .edit-btn:hover,
+.dark .delete-btn:hover,
+[data-theme='dark'] .view-btn:hover,
+[data-theme='dark'] .edit-btn:hover,
+[data-theme='dark'] .delete-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}

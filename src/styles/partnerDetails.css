@@ -386,3 +386,92 @@
     text-align: left;
   }
 }
+/* ================= DARK MODE ================= */
+
+.dark .partner-details-page,
+[data-theme='dark'] .partner-details-page {
+  background: var(--color-main-bg);
+}
+
+/* Header */
+
+.dark .details-header,
+[data-theme='dark'] .details-header {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.dark .partner-back-btn,
+[data-theme='dark'] .partner-back-btn {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dark .partner-back-btn svg,
+[data-theme='dark'] .partner-back-btn svg {
+  color: var(--color-text-primary);
+}
+
+.dark .partner-back-btn:hover,
+[data-theme='dark'] .partner-back-btn:hover {
+  background: rgba(102, 83, 175, 0.12);
+}
+
+.dark .partner-back-btn:hover svg,
+[data-theme='dark'] .partner-back-btn:hover svg {
+  color: #c4b5fd;
+}
+
+/* Header Content */
+
+.dark .header-content h1,
+[data-theme='dark'] .header-content h1 {
+  color: var(--color-text-primary);
+}
+
+.dark .header-content p,
+[data-theme='dark'] .header-content p {
+  color: var(--color-text-secondary);
+}
+
+/* Cards */
+
+.dark .detail-card,
+[data-theme='dark'] .detail-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.dark .detail-card:hover,
+[data-theme='dark'] .detail-card:hover {
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dark .detail-card h3,
+[data-theme='dark'] .detail-card h3 {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-border);
+}
+
+.dark .detail-card p,
+.dark .detail-card p span,
+[data-theme='dark'] .detail-card p,
+[data-theme='dark'] .detail-card p span {
+  color: var(--color-text-secondary);
+}
+
+.dark .detail-card p strong,
+[data-theme='dark'] .detail-card p strong {
+  color: var(--color-text-primary);
+}
+
+/* Revenue */
+
+.dark .revenue-card h1,
+[data-theme='dark'] .revenue-card h1 {
+  color: #a78bfa;
+}

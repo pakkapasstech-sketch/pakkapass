@@ -190,3 +190,89 @@
     transform: translateY(0) scale(1);
   }
 }
+/* ==========================================
+   DARK MODE
+========================================== */
+
+[data-theme='dark'] .manage-tree-row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-theme='dark'] .tree-label {
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .tree-count {
+  background: rgba(102, 83, 175, 0.18);
+  color: #a78bfa;
+}
+
+[data-theme='dark'] .manage-tree-actions button {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .manage-tree-actions button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .tree-empty {
+  color: var(--color-text-muted);
+}
+
+/* Modal */
+
+[data-theme='dark'] .modal-overlay {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+[data-theme='dark'] .entity-modal {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.45),
+    0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme='dark'] .entity-modal h3 {
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .entity-modal p {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .entity-input {
+  background: var(--color-main-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .entity-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .entity-input:focus {
+  border-color: #6653af;
+  box-shadow: 0 0 0 4px rgba(102, 83, 175, 0.2);
+}
+
+[data-theme='dark'] .cancel-btn {
+  background: var(--color-main-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .save-btn {
+  background: #6653af;
+  color: #ffffff;
+}
+
+[data-theme='dark'] .save-btn:hover {
+  background: #7a68c2;
+}

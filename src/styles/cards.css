@@ -52,7 +52,10 @@
 .chart-card {
   border-radius: 18px;
 }
-
+.dark .stat-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+}
 .card:hover,
 .stat-card:hover,
 .analytics-card:hover,
