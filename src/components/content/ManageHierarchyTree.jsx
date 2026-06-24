@@ -363,16 +363,17 @@ const [editedName, setEditedName] =
     })
   );
   
+
 const topicCounts = {};
 
-(content || []).forEach((asset) => {
-  const topicId = asset.topicId;
-
-  if (!topicId) return;
-
-  topicCounts[topicId] =
-    (topicCounts[topicId] || 0) + 1;
+(content || []).forEach((chapter) => {
+  (chapter.topics || []).forEach((topic) => {
+    topicCounts[topic.id] =
+      (topic.assets || []).length;
+  });
 });
+
+console.log('TOPIC COUNTS', topicCounts);
 
 
 

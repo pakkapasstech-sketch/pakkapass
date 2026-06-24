@@ -15,7 +15,8 @@ const ContentHierarchyPage = () => {
     const queryClient =
   useQueryClient();
   const {
-  data: contentData,
+  data: contentData = [],
+  isLoading: contentLoading,
 } = useQuery({
   queryKey: ['content'],
   queryFn: async () => {
@@ -26,6 +27,9 @@ const ContentHierarchyPage = () => {
 
     return data.content;
   },
+  staleTime: 0,
+  refetchOnMount: 'always',
+  refetchOnWindowFocus: true,
 });
   const {
     data: options,
@@ -43,14 +47,13 @@ const ContentHierarchyPage = () => {
 
       return data;
     },
+    staleTime: 0,
+  refetchOnMount: 'always',
+  refetchOnWindowFocus: true,
   });
 
-  console.log(
-    'OPTIONS',
-    options
-  );
 
-  if (isLoading) {
+  if (isLoading || contentLoading) {
     return (
       <div className="content-hierarchy-page">
         Loading...
@@ -106,6 +109,13 @@ const ContentHierarchyPage = () => {
     await queryClient.invalidateQueries({
       queryKey: ['content-options'],
     });
+    await queryClient.refetchQueries({
+  queryKey: ['content'],
+});
+
+await queryClient.refetchQueries({
+  queryKey: ['content-options'],
+});
   }}
 />
       </div>
