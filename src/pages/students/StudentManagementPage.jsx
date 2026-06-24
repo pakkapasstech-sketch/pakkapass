@@ -152,17 +152,18 @@ const StudentManagementPage = () => {
 
   return (
     <div className="student-management-page">
+      <StudentStatsCards
+        students={
+          filteredStudents
+        }
+      />
       <StudentFilters
         onFilterChange={
           setFilters
         }
       />
 
-      <StudentStatsCards
-        students={
-          filteredStudents
-        }
-      />
+      
 
       <StudentTable
         students={

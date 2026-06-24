@@ -9,6 +9,7 @@ import ErrorState from '../../components/loaders/ErrorState';
 import { useRecentPayments } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
 import './recentPaymentsPage.css';
+import StatisticCard from '../../components/cards/StatisticCard';
 
 const RecentPaymentsPage = () => {
   const {
@@ -79,8 +80,35 @@ const RecentPaymentsPage = () => {
       selectedPlan,
       selectedStatus,
     ]);
+    const totalRevenue = payments.reduce(
+  (sum, payment) =>
+    sum + Number(payment.amount || 0),
+  0
+);
 
+const totalPayments =
+  payments.length;
+
+const successfulPayments =
+  payments.filter(
+    (payment) =>
+      payment.status ===
+      'Success'
+  ).length;
+
+const pendingPayments =
+  payments.filter(
+    (payment) =>
+      payment.status ===
+      'Pending'
+  ).length;
   const columns = [
+    {
+  key: 'id',
+  header: 'Student ID',
+  accessor: (r) =>
+    r.id || '—',
+},
     {
       key: 'student',
       header: 'Student',
@@ -145,6 +173,41 @@ const RecentPaymentsPage = () => {
 
   return (
     <div className="dashboard-page">
+      <div className="dashboard-stats-grid">
+  <StatisticCard
+    title="Total Revenue"
+    value={`₹${totalRevenue.toLocaleString(
+      'en-IN'
+    )}`}
+    icon="commissions"
+    iconBg="bg-green-100"
+    iconColor="text-green-600"
+  />
+
+  <StatisticCard
+    title="Total Payments"
+    value={totalPayments}
+    icon="subscriptions"
+    iconBg="bg-blue-100"
+    iconColor="text-blue-600"
+  />
+
+  <StatisticCard
+    title="Successful Payments"
+    value={successfulPayments}
+    icon="success"
+    iconBg="bg-emerald-100"
+    iconColor="text-emerald-600"
+  />
+
+  <StatisticCard
+    title="Pending Payments"
+    value={pendingPayments}
+    icon="clock"
+    iconBg="bg-yellow-100"
+    iconColor="text-yellow-600"
+  />
+</div>
       <div className="payments-filters">
         <input
           type="text"

@@ -243,99 +243,7 @@ const [editedName, setEditedName] =
     );
   }
 };
-  // const gradeCounts =
-  // useMemo(() => {
-  //   const counts = {};
 
-  //   (content || []).forEach(
-  //     (chapter) => {
-  //       const gradeName =
-  //         chapter.grade?.name;
-
-  //       if (!gradeName)
-  //         return;
-
-  //       let total = 0;
-
-  //       (
-  //         chapter.topics || []
-  //       ).forEach(
-  //         (topic) => {
-  //           total +=
-  //             (
-  //               topic.assets ||
-  //               []
-  //             ).length;
-  //         }
-  //       );
-
-  //       counts[
-  //         gradeName
-  //       ] =
-  //         (counts[
-  //           gradeName
-  //         ] || 0) + total;
-  //     }
-  //   );
-
-  //   return counts;
-  // }, [content]);
-//   const getResourceCount = (node) => {
-//   if (node.sections) {
-//     return node.sections.reduce(
-//       (sum, section) =>
-//         sum + getResourceCount(section),
-//       0
-//     );
-//   }
-
-//   if (node.chapters) {
-//     return node.chapters.reduce(
-//       (sum, chapter) =>
-//         sum + getResourceCount(chapter),
-//       0
-//     );
-//   }
-
-//   if (node.contentTypes) {
-//     return node.contentTypes.reduce(
-//       (sum, type) =>
-//         sum + getResourceCount(type),
-//       0
-//     );
-//   }
-
-//   if (node.subjects) {
-//     return node.subjects.reduce(
-//       (sum, subject) =>
-//         sum + getResourceCount(subject),
-//       0
-//     );
-//   }
-
-//   if (node.courses) {
-//     return node.courses.reduce(
-//       (sum, course) =>
-//         sum + getResourceCount(course),
-//       0
-//     );
-//   }
-
-//   if (node.boards) {
-//     return node.boards.reduce(
-//       (sum, board) =>
-//         sum + getResourceCount(board),
-//       0
-//     );
-//   }
-
-//   // topic node
-//   const topic = options?.topics?.find(
-//     (t) => t.id === node.id
-//   );
-
-//   return topic?.assetCount || 0;
-// };
   const hierarchy = useMemo(() => {
   if (!options) return [];
 
@@ -467,16 +375,7 @@ const topicCounts = {};
 });
 
 
-(content || []).forEach(
-  (chapter) => {
-    (chapter.topics || []).forEach(
-      (topic) => {
-        topicCounts[topic.id] =
-          topic.assets?.length || 0;
-      }
-    );
-  }
-);
+
   const addCounts = (
     nodes
   ) => {

@@ -318,11 +318,11 @@ const LoginPage = () => {
                       {isPartner ? (
                         <input
                           type="tel"
-                          placeholder="Mobile Number"
+                          placeholder="Email Address"
                           value={mobile}
                           maxLength={10}
                           onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
-                          aria-label="Mobile Number"
+                          aria-label="Email"
                         />
                       ) : (
                         <input

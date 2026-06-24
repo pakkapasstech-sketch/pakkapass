@@ -100,7 +100,7 @@ const StudentTable = ({ students = [] }) => {
                   <td>
   {student.referralCode ||
     student.refCode ||
-    '—'}
+    "Null"}
 </td>
 
                   <td>

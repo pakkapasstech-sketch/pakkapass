@@ -8,7 +8,7 @@ import {
 const StudentStatsCards = ({ students = [] }) => {
   const total = students.length;
   const active = students.filter((s) => s.status === 'Active').length;
-  const inactive = students.filter((s) => s.status !== 'Active').length;
+  const inactive = students.filter((s) => s.status === 'Inactive').length;
 
   const stats = [
     { title: 'Total Students', value: total.toLocaleString(), growth: '', icon: HiOutlineUsers, color: '#6366f1' },
