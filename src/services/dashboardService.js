@@ -19,7 +19,7 @@ export const dashboardService = {
           value:
             stats.totalStudents ||
             0,
-          icon: 'users',
+          icon: 'students',
           iconBg:
             'bg-blue-100',
           iconColor:
@@ -32,7 +32,7 @@ export const dashboardService = {
           value:
             stats.totalParents ||
             0,
-          icon: 'users',
+          icon: 'parents',
           iconBg:
             'bg-green-100',
           iconColor:
@@ -46,38 +46,20 @@ export const dashboardService = {
             stats.totalInstitutes ||
             0,
           icon:
-            'office-building',
+            'partners',
           iconBg:
             'bg-purple-100',
           iconColor:
             'text-purple-600',
         },
         {
-          id: 4,
-          title:
-            'Chapters',
-          value:
-            stats.totalChapters ||
-            0,
-          icon: 'book-open',
-          iconBg:
-            'bg-yellow-100',
-          iconColor:
-            'text-yellow-600',
-        },
-        {
-          id: 5,
-          title:
-            'Topics',
-          value:
-            stats.totalTopics ||
-            0,
-          icon: 'collection',
-          iconBg:
-            'bg-pink-100',
-          iconColor:
-            'text-pink-600',
-        },
+  id: 4,
+  title: 'Plans',
+  value: stats.totalPlans || 0,
+  icon: 'subscriptions',
+  iconBg: 'bg-yellow-100',
+  iconColor: 'text-yellow-600',
+},
       ],
 
       recentRegistrations:

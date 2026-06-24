@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { getIcon } from '../../utils/iconMap';
 //import SparklineChart from '../charts/SparklineChart';
 
-const AnalyticsCard = ({ title, value, subtitle,  color, icon,  isLoading }) => {
+const AnalyticsCard = ({ title, value,   color, icon,  isLoading }) => {
   if (isLoading) {
     return (
 <div className="analytics-card analytics-card-loading">

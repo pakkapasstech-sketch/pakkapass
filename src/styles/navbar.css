@@ -229,24 +229,54 @@
 }
 
 .navbar-date-btn {
-  height: 40px;
+  height: 42px;
 
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 
-  padding: 0 12px;
+  padding: 0 16px;
 
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: 14px;
 
   background: var(--color-card);
+  color: var(--color-text-primary);
 
-  white-space: nowrap;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04);
 
   transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast);
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.navbar-date-btn:hover {
+  background: var(--navbar-hover-bg);
+  border-color: var(--navbar-border-hover);
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(99, 102, 241, 0.12);
+}
+.navbar-date-btn .navbar-small-icon {
+  width: 18px;
+  height: 18px;
+
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+.navbar-date-text {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--color-text-primary);
+}
+.dark .navbar-date-btn {
+  background: rgba(31, 41, 55, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .navbar-date-btn:hover {

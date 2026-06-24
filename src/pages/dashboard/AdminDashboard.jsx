@@ -11,6 +11,8 @@ import StatusBadge from '../../components/tables/StatusBadge';
 import Avatar from '../../components/common/Avatar';
 import ErrorState from '../../components/loaders/ErrorState';
 import Modal from '../../components/modals/Modal';
+import { getPlans } from '../../services/SubscriptionServices';
+import { useQuery } from '@tanstack/react-query';
 import {
   useAdminDashboard,
   //useSubscriptionGrowth,
@@ -38,6 +40,20 @@ const AdminDashboard = () => {
   data: content = [],
   isLoading: contentLoading,
 } = useContent();
+const { data: plans = [], isLoading: plansLoading } = useQuery({
+  queryKey: ['plans'],
+  queryFn: getPlans,
+});
+const totalPlans = plans.length;
+const cards =
+  stats.data?.cards?.map((card) =>
+    card.title === 'Plans'
+      ? {
+          ...card,
+          value: totalPlans,
+        }
+      : card
+  ) || [];
   const [modal, setModal] = useState({ open: false, row: null, type: '' });
 
   if (stats.isError) {
@@ -210,9 +226,15 @@ const totalPYQ =
   return (
     <div className="dashboard-page">
       <div className="dashboard-stats-grid">
-        {(stats.data?.cards || Array.from({ length: 5 })).map((card, i) => (
-          <StatisticCard key={card?.id || i} {...card} isLoading={stats.isLoading} />
-        ))}
+        {(cards.length ? cards : Array.from({ length: 4 })).map(
+  (card, i) => (
+    <StatisticCard
+      key={card?.id || i}
+      {...card}
+      isLoading={stats.isLoading || plansLoading}
+    />
+  )
+)}
       </div>
 
       {/* <div className="dashboard-chart-grid">
@@ -242,7 +264,7 @@ const totalPYQ =
     value={totalContent}
     subtitle="Uploaded files"
     color="#6366f1"
-    icon="folder"
+    icon="collection"
     isLoading={
       contentLoading
     }
@@ -253,7 +275,7 @@ const totalPYQ =
     value={totalVideos}
     subtitle="Uploaded videos"
     color="#ef4444"
-    icon="video"
+    icon="film"
     isLoading={
       contentLoading
     }
@@ -275,7 +297,7 @@ const totalPYQ =
     value={totalEbooks}
     subtitle="E-book files"
     color="#10b981"
-    icon="book"
+    icon="book-open"
     isLoading={
       contentLoading
     }
@@ -286,7 +308,7 @@ const totalPYQ =
     value={totalMindMaps}
     subtitle="Mind map files"
     color="#8b5cf6"
-    icon="academic-cap"
+    icon="light-bulb"
     isLoading={
       contentLoading
     }
@@ -297,7 +319,7 @@ const totalPYQ =
     value={totalPYQ}
     subtitle="Previous year papers"
     color="#06b6d4"
-    icon="document-text"
+    icon="clipboard-list"
     isLoading={
       contentLoading
     }

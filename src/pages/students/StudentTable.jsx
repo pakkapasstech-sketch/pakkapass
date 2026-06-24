@@ -51,7 +51,7 @@ const StudentTable = ({ students = [] }) => {
               <th>Class</th>
               <th>Board</th>
               <th>Institution</th>
-              <th>State</th>
+              <th>REFCODE</th>
               <th>Subscription Plan</th>
               <th>Status</th>
               <th>Registered On</th>
@@ -97,7 +97,11 @@ const StudentTable = ({ students = [] }) => {
 
                   <td>{student.institution}</td>
 
-                  <td>{student.state}</td>
+                  <td>
+  {student.referralCode ||
+    student.refCode ||
+    '—'}
+</td>
 
                   <td>
                     <span className="plan-badge">{student.plan}</span>

@@ -78,7 +78,7 @@ const StudentFilters = ({
     <div className="student-filters">
       <input
         type="text"
-        placeholder="Search by Name..."
+        placeholder="Search..."
         value={filters.search}
         onChange={(e) =>
           handleChange(

@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { DateRange } from 'react-date-range';
+//import { DateRange } from 'react-date-range';
 import {
   HiOutlineMenu,
-  HiOutlineCalendar,
+  //HiOutlineCalendar,
   HiOutlineBell,
+  HiOutlineClock,
   HiOutlineChevronDown,
   HiOutlineMoon,
   HiOutlineSun,
@@ -16,8 +17,8 @@ import { useSidebar } from '../../contexts/SidebarContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import Avatar from '../common/Avatar';
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+//import 'react-date-range/dist/styles.css';
+//import 'react-date-range/dist/theme/default.css';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../contexts/NotificationContext';
 import '../../styles/navbar.css';
@@ -26,7 +27,14 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
   const { toggleMobileSidebar, toggleSidebar, isCollapsed } = useSidebar();
   const navigate =
   useNavigate();
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+  const timer = setInterval(() => {
+    setCurrentTime(new Date());
+  }, 6000); // updates every second
 
+  return () => clearInterval(timer);
+}, []);
 const {
   unreadCount,
 } =
@@ -35,15 +43,15 @@ const {
   const { isDark, toggleTheme } = useTheme();
 
   const [profileOpen, setProfileOpen] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
+  // const [showCalendar, setShowCalendar] = useState(false);
 
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: 'selection',
-    },
-  ]);
+  // const [dateRange, setDateRange] = useState([
+  //   {
+  //     startDate: new Date(),
+  //     endDate: new Date(),
+  //     key: 'selection',
+  //   },
+  // ]);
   
   return (
     <header className={`navbar ${isCollapsed ? 'navbar-collapsed' : 'navbar-expanded'}`}>
@@ -87,30 +95,13 @@ const {
         </button>
 
         <div className="navbar-date-picker">
-          <button className="navbar-date-btn" onClick={() => setShowCalendar(!showCalendar)}>
-            <HiOutlineCalendar className="navbar-small-icon" />
+  <div className="navbar-date-btn">
+    <HiOutlineClock className="navbar-small-icon" />
 
-            <span className="navbar-date-text">
-              {format(dateRange[0].startDate, 'MMM dd, yyyy')} -{' '}
-              {format(dateRange[0].endDate, 'MMM dd, yyyy')}
-            </span>
-          </button>
-
-          {showCalendar && (
-            <div className="navbar-calendar-dropdown">
-              <DateRange
-                ranges={dateRange}
-                onChange={(item) => setDateRange([item.selection])}
-                editableDateInputs
-                moveRangeOnFirstSelection={false}
-                showMonthAndYearPickers
-                showDateDisplay={false}
-                months={2}
-                direction="horizontal"
-              />
-            </div>
-          )}
-        </div>
+    <span className="navbar-date-text">
+{format(currentTime, 'MMM dd, yyyy • hh:mm a')}    </span>
+  </div>
+</div>
 
 <button
   className="navbar-icon-btn navbar-bell-btn"
