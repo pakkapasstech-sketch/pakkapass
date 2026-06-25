@@ -1,0 +1,275 @@
+.parentdashboard-page {
+  padding: 32px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Header */
+
+.parentdashboard-header {
+  margin-bottom: 28px;
+}
+
+.parentdashboard-header h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.parentdashboard-header p {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+/* Student Profile */
+
+.parentdashboard-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+
+  padding: 28px;
+  margin-bottom: 30px;
+
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.parentdashboard-avatar {
+  width: 80px;
+  height: 80px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+
+  color: white;
+  font-size: 32px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.parentdashboard-profile-info {
+  flex: 1;
+}
+
+.parentdashboard-profile-info h3 {
+  margin: 0 0 20px;
+  color: #1e293b;
+  font-size: 24px;
+}
+
+.parentdashboard-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.parentdashboard-profile-grid span {
+  display: block;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.parentdashboard-profile-grid strong {
+  color: #1e293b;
+  font-size: 16px;
+}
+
+/* Statistics */
+
+.parentdashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+  margin-bottom: 30px;
+}
+
+/* Grid */
+
+.parentdashboard-grid {
+  display: grid;
+  grid-template-columns: repeat( 1fr);
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+/* Card */
+
+.parentdashboard-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.parentdashboard-card h3 {
+  margin: 0 0 22px;
+  font-size: 20px;
+  color: #1e293b;
+}
+
+/* Lists */
+
+.parentdashboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.parentdashboard-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 16px 18px;
+
+  background: #f8fafc;
+  border-radius: 14px;
+}
+
+.parentdashboard-list-item span {
+  color: #475569;
+}
+
+.parentdashboard-list-item strong {
+  color: #1e293b;
+}
+
+/* Activity */
+
+.parentdashboard-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.parentdashboard-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 16px 18px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  transition: all 0.2s ease;
+}
+
+.parentdashboard-activity-item:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+
+.parentdashboard-check {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background: #dcfce7;
+  color: #16a34a;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+
+  flex-shrink: 0;
+}
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+  .parentdashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .parentdashboard-profile-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .parentdashboard-page {
+    padding: 20px;
+  }
+
+  .parentdashboard-profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .parentdashboard-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .parentdashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .parentdashboard-header h2 {
+    font-size: 24px;
+  }
+
+  .parentdashboard-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Theme Support */
+
+.parentdashboard-page {
+  background: var(--color-main-bg);
+}
+
+.parentdashboard-profile-card,
+.parentdashboard-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.parentdashboard-header p,
+.parentdashboard-profile-grid span,
+.parentdashboard-list-item span {
+  color: var(--color-text-secondary);
+}
+
+.parentdashboard-header h2,
+.parentdashboard-profile-info h3,
+.parentdashboard-card h3,
+.parentdashboard-profile-grid strong,
+.parentdashboard-list-item strong,
+.parentdashboard-activity-item {
+  color: var(--color-text-primary);
+}
+
+.parentdashboard-list-item {
+  background: var(--color-surface);
+}
+
+.parentdashboard-activity-item {
+  border-color: var(--color-border);
+}
+
+.parentdashboard-activity-item:hover {
+  background: var(--color-surface);
+}

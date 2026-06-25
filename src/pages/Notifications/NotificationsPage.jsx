@@ -7,8 +7,9 @@ import {
   HiOutlineCheck,
 } from 'react-icons/hi';
 
-import '../../styles/NotificationsPage.css';
-
+import '../../styles/NotificationsPage.css'
+import { useAuth } from '../../auth/AuthProvider';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 const initialNotifications = [
  {
   id: 1,
@@ -131,7 +132,9 @@ const NotificationsPage = () => {
           )
       );
     };
+  const { user } = useAuth();
 
+const isAdmin = user?.role === 'ADMIN';
   const deleteNotification =
     (id) => {
       setNotifications(
@@ -184,7 +187,7 @@ const NotificationsPage = () => {
             <HiOutlineCheck />
             Mark All Read
           </button>
-
+{isAdmin && (
           <button
             className="create-btn"
             onClick={() =>
@@ -196,6 +199,7 @@ const NotificationsPage = () => {
             <HiOutlinePlus />
             Add Notification
           </button>
+)}
         </div>
       </div>
 
@@ -295,183 +299,119 @@ const NotificationsPage = () => {
       {/* Add Notification Modal */}
 
       {showModal && (
-        <div className="modal-overlay">
-          <div className="notification-modal">
-            <h2>
-              Add Notification
-            </h2>
+  <div className="modal-overlay">
+    <div className="notification-modal">
 
-            <div className="form-group">
-              <label>
-                Title
-              </label>
+      <div className="notification-modal-header">
+        <h2>Add Notification</h2>
 
-              <input
-                value={
-                  form.title
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm(
-                    (
-                      prev
-                    ) => ({
-                      ...prev,
-                      title:
-                        e
-                          .target
-                          .value,
-                    })
-                  )
-                }
-              />
-            </div>
+        
+      </div>
 
-            <div className="form-group">
-              <label>
-                Message
-              </label>
+      <div className="notification-modal-body">
 
-              <textarea
-                rows="4"
-                value={
-                  form.message
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm(
-                    (
-                      prev
-                    ) => ({
-                      ...prev,
-                      message:
-                        e
-                          .target
-                          .value,
-                    })
-                  )
-                }
-              />
-            </div>
+        <div className="form-group">
+          <label>Title</label>
 
-            <div className="form-group">
-              <label>
-                Audience
-              </label>
-
-              <select
-                value={
-                  form.audience
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm(
-                    (
-                      prev
-                    ) => ({
-                      ...prev,
-                      audience:
-                        e
-                          .target
-                          .value,
-                    })
-                  )
-                }
-              >
-                <option>
-                  All Students
-                </option>
-
-                <option>
-                  Class 10
-                </option>
-
-                <option>
-                  Class 11
-                </option>
-
-                <option>
-                  Class 12
-                </option>
-
-                <option>
-                  JEE Students
-                </option>
-
-                <option>
-                  NEET Students
-                </option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>
-                Priority
-              </label>
-
-              <select
-                value={
-                  form.priority
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm(
-                    (
-                      prev
-                    ) => ({
-                      ...prev,
-                      priority:
-                        e
-                          .target
-                          .value,
-                    })
-                  )
-                }
-              >
-                <option value="info">
-                  Info
-                </option>
-
-                <option value="success">
-                  Success
-                </option>
-
-                <option value="warning">
-                  Warning
-                </option>
-
-                <option value="urgent">
-                  Urgent
-                </option>
-              </select>
-            </div>
-
-            <div className="modal-actions">
-              <button
-                onClick={() =>
-                  setShowModal(
-                    false
-                  )
-                }
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={
-                  handleCreate
-                }
-              >
-                Send
-              </button>
-            </div>
-          </div>
+          <input
+            placeholder="Enter notification title"
+            value={form.title}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                title: e.target.value,
+              }))
+            }
+          />
         </div>
-      )}
+
+        <div className="form-group">
+          <label>Message</label>
+
+          <textarea
+            rows="5"
+            placeholder="Write your notification..."
+            value={form.message}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                message: e.target.value,
+              }))
+            }
+          />
+        </div>
+
+        <div className="notification-modal-grid">
+
+          <div className="form-group">
+            <label>Audience</label>
+
+            <CommonFilterDropdown
+  placeholder="Select Audience"
+  value={form.audience}
+  options={[
+    'All Students',
+    'Class 10',
+    'Class 11',
+    'Class 12',
+    'JEE Students',
+    'NEET Students',
+  ]}
+  onChange={(value) =>
+    setForm((prev) => ({
+      ...prev,
+      audience: value,
+    }))
+  }
+/>
+          </div>
+
+          <div className="form-group">
+            <label>Priority</label>
+
+            <CommonFilterDropdown
+  placeholder="Priority"
+  value={form.priority}
+  options={[
+    'info',
+    'success',
+    'warning',
+    'urgent',
+  ]}
+  onChange={(value) =>
+    setForm((prev) => ({
+      ...prev,
+      priority: value,
+    }))
+  }
+/>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div className="modal-actions">
+
+        <button
+          className="notification-cancel-btn"
+          onClick={() => setShowModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="notification-send-btn"
+          onClick={handleCreate}
+        >
+          Send Notification
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   );
 };

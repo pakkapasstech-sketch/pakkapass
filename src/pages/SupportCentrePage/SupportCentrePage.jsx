@@ -10,7 +10,7 @@ import {
 
 import '../../styles/supportCentrePage.css';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
-
+import { useAuth } from '../../auth/AuthProvider';
 const faqs = [
   {
     question: 'How do I upload content?',
@@ -52,7 +52,9 @@ const initialTickets = [
 const SupportCentrePage = () => {
   const [tickets, setTickets] = useState(initialTickets);
   const [activeTicket, setActiveTicket] = useState(null);
+  const { user } = useAuth();
 
+const isAdmin = user?.role === 'ADMIN';
   const handleStatusChange = (newStatus) => {
     setTickets((prev) =>
       prev.map((t) => (t.id === activeTicket.id ? { ...t, status: newStatus } : t))
@@ -69,10 +71,12 @@ const SupportCentrePage = () => {
           <p>Get help, raise tickets and find answers quickly.</p>
         </div>
 
-        <button className="create-ticket-btn">
-          <HiOutlineTicket />
-          Create Ticket
-        </button>
+        {isAdmin && (
+  <button className="create-ticket-btn">
+    <HiOutlineTicket />
+    Create Ticket
+  </button>
+)}
       </div>
 
       {/* Quick Actions (Live Chat Removed) */}
@@ -89,7 +93,8 @@ const SupportCentrePage = () => {
           <p>+91 98765 43210</p>
         </div>
       </div>
-
+{isAdmin && (
+<>
       <div className="support-grid">
         {/* Tickets */}
         <div className="support-section">
@@ -122,6 +127,7 @@ const SupportCentrePage = () => {
         </div>
 
         {/* FAQs */}
+        {isAdmin && (
         <div className="support-section">
           <div className="section-title">
             <HiOutlineQuestionMarkCircle />
@@ -137,8 +143,81 @@ const SupportCentrePage = () => {
             ))}
           </div>
         </div>
+        )}
       </div>
+</>
+)}{!isAdmin && (
+<div className="support-grid">
 
+<div className="support-section">
+
+<div className="section-title">
+<HiOutlineSupport />
+<h2>Contact Support</h2>
+</div>
+
+<div className="support-form">
+
+<div className="support-form-group">
+<label>Name</label>
+
+<input
+type="text"
+value={user?.name || ''}
+readOnly
+/>
+</div>
+
+<div className="support-form-group">
+<label>Email</label>
+
+<input
+type="email"
+value={user?.email || ''}
+readOnly
+/>
+</div>
+
+<div className="support-form-group">
+<label>Message</label>
+
+<textarea
+rows={6}
+placeholder="Describe your issue..."
+></textarea>
+</div>
+
+<button className="create-ticket-btn">
+Send Message
+</button>
+
+</div>
+
+</div>
+
+<div className="support-section">
+
+<div className="section-title">
+<HiOutlineQuestionMarkCircle />
+<h2>Frequently Asked Questions</h2>
+</div>
+
+<div className="faq-list">
+{faqs.map((faq,index)=>(
+<div key={index} className="faq-item">
+
+<h4>{faq.question}</h4>
+
+<p>{faq.answer}</p>
+
+</div>
+))}
+</div>
+
+</div>
+
+</div>
+)}
       {/* Ticket Details Popup Modal */}
       {activeTicket && (
         <div className="modal-overlay-wrapper">
@@ -152,12 +231,7 @@ const SupportCentrePage = () => {
             </div>
 
             <div className="modal-content">
-              <div className="ticket-detail-group">
-                <label className="ticket-detail-label">Subject</label>
-                <div className="ticket-detail-value" style={{ fontWeight: '600', fontSize: '16px', color: 'var(--color-text-primary)' }}>
-                  {activeTicket.title}
-                </div>
-              </div>
+              
 
               <div
                 className="ticket-student-info-grid"

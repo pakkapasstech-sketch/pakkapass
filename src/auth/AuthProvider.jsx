@@ -93,73 +93,172 @@ console.log('Normalized user:', normalized);
     return { ...data, user: userData };
   };
 
- const sendOtp = async ({
+//  const sendOtp = async ({
+//   email,
+//   mobile,
+//   role,
+// }) => {
+//   console.log(
+//     'SEND OTP:',
+//     {
+//       role,
+//       email,
+//       mobile,
+//     }
+//   );
+
+//   if (role === 'parent') {
+//     return authService.sendParentOtp({
+//       email,
+//     });
+//   }
+
+//   if (role === 'partner') {
+//     return authService.sendPartnerOtp({
+//       mobile,
+//     });
+//   }
+
+//   throw new Error(
+//     'Invalid role for OTP'
+//   );
+// };
+
+//   const verifyOtp = async ({
+//   email,
+//   mobile,
+//   otp,
+//   role,
+//   rememberMe = true,
+// }) => {
+//   let data;
+
+//   if (role === 'parent') {
+//     data =
+//       await authService.verifyParentOtp({
+//         email,
+//         otp,
+//       });
+//   } else if (
+//     role === 'partner'
+//   ) {
+//     data =
+//       await authService.verifyPartnerOtp(
+//         {
+//           mobile,
+//           otp,
+//         }
+//       );
+//   } else {
+//     throw new Error(
+//       'Invalid role for OTP'
+//     );
+//   }
+
+//   const userData = {
+//     ...data.user,
+//     role: normalizeRole(
+//       data.user.role
+//     ),
+//   };
+
+//   persistSession(
+//     {
+//       ...data,
+//       user: userData,
+//     },
+//     rememberMe
+//   );
+
+//   return {
+//     ...data,
+//     user: userData,
+//   };
+// };
+const sendOtp = async ({
   email,
   mobile,
   role,
 }) => {
-  console.log(
-    'SEND OTP:',
-    {
-      role,
-      email,
-      mobile,
-    }
-  );
+  console.log("SEND OTP", {
+    role,
+    email,
+    mobile,
+  });
 
-  if (role === 'parent') {
+  // DEVELOPMENT ONLY
+  if (import.meta.env.DEV) {
+    console.log("Mock OTP: 123456");
+
+    return {
+      success: true,
+      message: "OTP sent successfully",
+    };
+  }
+
+  if (role === "parent") {
     return authService.sendParentOtp({
       email,
     });
   }
 
-  if (role === 'partner') {
+  if (role === "partner") {
     return authService.sendPartnerOtp({
       mobile,
     });
   }
 
-  throw new Error(
-    'Invalid role for OTP'
-  );
+  throw new Error("Invalid role");
 };
-
-  const verifyOtp = async ({
+const verifyOtp = async ({
   email,
   mobile,
   otp,
   role,
   rememberMe = true,
 }) => {
+
+  // DEVELOPMENT ONLY
+  if (import.meta.env.DEV) {
+    const mockUser = {
+      id: 1,
+      name: role === "parent" ? "Demo Parent" : "Demo Partner",
+      email: email || `${role}@demo.com`,
+      mobile,
+      role: normalizeRole(role),
+    };
+
+    const data = {
+      accessToken: "mock-access-token",
+      refreshToken: "mock-refresh-token",
+      user: mockUser,
+    };
+
+    persistSession(data, rememberMe);
+
+    return data;
+  }
+
+  // Existing backend code
   let data;
 
   if (role === 'parent') {
-    data =
-      await authService.verifyParentOtp({
-        email,
-        otp,
-      });
-  } else if (
-    role === 'partner'
-  ) {
-    data =
-      await authService.verifyPartnerOtp(
-        {
-          mobile,
-          otp,
-        }
-      );
+    data = await authService.verifyParentOtp({
+      email,
+      otp,
+    });
+  } else if (role === 'partner') {
+    data = await authService.verifyPartnerOtp({
+      mobile,
+      otp,
+    });
   } else {
-    throw new Error(
-      'Invalid role for OTP'
-    );
+    throw new Error('Invalid role for OTP');
   }
 
   const userData = {
     ...data.user,
-    role: normalizeRole(
-      data.user.role
-    ),
+    role: normalizeRole(data.user.role),
   };
 
   persistSession(
@@ -175,7 +274,6 @@ console.log('Normalized user:', normalized);
     user: userData,
   };
 };
-
   const logout = async () => {
     try {
       await authService.logout();

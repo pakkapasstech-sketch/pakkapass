@@ -2,15 +2,16 @@ import { PERMISSIONS } from '../auth/permissions';
 
 export const MENU_ITEMS = [
   { title: 'Dashboard', path: '/dashboard', icon: 'dashboard', permission: null },
-  { title: 'Students', path: '/students', icon: 'students', permission: PERMISSIONS.STUDENT_VIEW },
+  { title: 'Students', path: '/students', icon: 'students', permission: PERMISSIONS.STUDENT_VIEW ,roles: ['ADMIN']},
   { title: 'Parents', path: '/parents', icon: 'parents', permission: PERMISSIONS.STUDENT_VIEW, roles: ['ADMIN'] },
   { title: 'Partners', path: '/partners', icon: 'partners', permission: PERMISSIONS.INSTITUTION_VIEW },
-  { title: 'Content', path: '/content', icon: 'content', permission: PERMISSIONS.RESOURCE_VIEW },
+  { title: 'Content', path: '/content', icon: 'content', permission: PERMISSIONS.RESOURCE_VIEW ,roles: ['ADMIN']},
   { title: 'Subscriptions', path: '/subscriptions', icon: 'subscriptions', permission: PERMISSIONS.COUPON_VIEW, roles: ['ADMIN'] },
   {
   title: 'Revenue and Payments',
   path: '/payments',
   icon: 'commissions',
+  roles: ['ADMIN'],
 },
   //{ title: 'Commissions', path: '/commissions', icon: 'commissions', permission: PERMISSIONS.COMMISSION_VIEW },
   //{ title: 'Coupons', path: '/coupons', icon: 'coupons', permission: PERMISSIONS.COUPON_VIEW, roles: ['ADMIN'] },
