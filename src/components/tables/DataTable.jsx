@@ -245,6 +245,7 @@ const DataTable = ({
                         ? 'data-table-th-sortable'
                         : ''
                     }`}
+                    style={col.width ? { width: col.width } : {}}
                   >
                     {
                       col.header
@@ -290,6 +291,7 @@ const DataTable = ({
                           col.key
                         }
                         className="data-table-td"
+                        style={col.width ? { width: col.width } : {}}
                       >
                         {col.render
                           ? col.render(

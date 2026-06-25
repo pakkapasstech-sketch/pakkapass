@@ -7,6 +7,7 @@ import {
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { contentService } from '../../services/content.service';
+import { formatFileSize } from '../../utils/formatters';
 import './contentTable.css';
 
 const PAGE_SIZE = 5;
@@ -316,7 +317,7 @@ useEffect(() => {
 
                     <td>
                       {
-                        item.fileSize
+                        formatFileSize(item.fileSize)
                       }
                     </td>
 

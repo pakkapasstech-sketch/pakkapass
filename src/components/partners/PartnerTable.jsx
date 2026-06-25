@@ -24,11 +24,11 @@ const PartnerTable = ({
 
   return (
     <div className="partners-table-card">
-      <div className="table-header">
+      {/* <div className="table-header">
         <h2>
           Channel Partners
         </h2>
-      </div>
+      </div> */}
 
       <div className="table-wrapper">
         <table className="partners-table">

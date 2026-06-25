@@ -268,3 +268,9 @@
     gap: 8px;
   }
 }
+
+/* Prevent Student Name from overlapping Class column in dashboard */
+.dashboard-table-grid .student-table th:nth-child(2),
+.dashboard-table-grid .student-table td:nth-child(2) {
+  min-width: 170px;
+}

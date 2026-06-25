@@ -7,10 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   HiOutlinePlus,
   HiOutlineSearch,
+  HiOutlineDownload,
 } from 'react-icons/hi';
+import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
 import '../../styles/subscriptionManagement.css';
 import { getPlans } from '../../services/SubscriptionServices';
 import Loader from '../../components/common/Loader';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 const SubscriptionManagementPage = () => {
   const navigate = useNavigate();
 
@@ -55,12 +58,38 @@ const SubscriptionManagementPage = () => {
 
   const filteredPlans = useMemo(() => {
     return plans.filter((plan) => {
-      const searchMatch =
-        plan.name
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          );
+      const searchTerm = search.trim().toLowerCase();
+
+const searchMatch =
+  searchTerm === '' ||
+  String(plan.id || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  (plan.name || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  String(plan.price || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  String(plan.durationDays || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  (plan.grade?.name || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  (plan.board?.name || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  (plan.branch?.name || '')
+    .toLowerCase()
+    .includes(searchTerm) ||
+  (plan.createdAt
+    ? new Date(plan.createdAt)
+        .toLocaleDateString('en-IN')
+        .toLowerCase()
+    : '')
+    .includes(searchTerm) ||
+  'active'.includes(searchTerm);
 
       const classMatch =
         !selectedClass ||
@@ -96,200 +125,226 @@ const SubscriptionManagementPage = () => {
   }
   return (
     <div className="subscription-management-page">
-      <div className="subscription-header">
+      <div className="page-header flex justify-between items-start flex-wrap gap-6">
         <div>
-          <h1>Subscription Plans</h1>
-
-          <p className="subscription-description">
-            Manage pricing plans and
-            academic mappings.
+          <h1 className="page-title">Subscription Plans</h1>
+          <p className="page-subtitle">
+            Manage pricing plans and academic mappings.
           </p>
         </div>
-      </div>
-
-      <div className="subscription-card">
-        <div className="subscription-toolbar">
-          <div className="subscription-search">
-            <HiOutlineSearch />
-
-            <input
-              type="text"
-              placeholder="Search plans..."
-              value={search}
-              onChange={(e) =>
-                setSearch(
-                  e.target.value
-                )
-              }
-            />
-          </div>
-
-          <select
-            value={selectedClass}
-            onChange={(e) =>
-              setSelectedClass(
-                e.target.value
-              )
-            }
+        <div className="header-actions flex gap-4">
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => {
+              const exportCols = [
+                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Plan Name', accessor: (r) => r.name },
+                { header: 'Price', accessor: (r) => r.price },
+                { header: 'Duration (Days)', accessor: (r) => r.durationDays },
+                { header: 'Class', accessor: (r) => r.grade?.name || '—' },
+                { header: 'Board', accessor: (r) => r.board?.name || '—' },
+                { header: 'Branch', accessor: (r) => r.branch?.name || '—' },
+                { header: 'Created At', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—' },
+              ];
+              exportToCSV(filteredPlans, exportCols, 'subscription_plans.csv');
+            }}
           >
-            <option value="">
-              All Classes
-            </option>
-            <option value="10th">
-              Class 10
-            </option>
-            <option value="11th">
-              Class 11
-            </option>
-            <option value="12th">
-              Class 12
-            </option>
-          </select>
-
-          <select
-            value={selectedBoard}
-            onChange={(e) =>
-              setSelectedBoard(
-                e.target.value
-              )
-            }
+            <HiOutlineDownload />
+            CSV
+          </button>
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => {
+              const exportCols = [
+                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Plan Name', accessor: (r) => r.name },
+                { header: 'Price', accessor: (r) => r.price },
+                { header: 'Duration (Days)', accessor: (r) => r.durationDays },
+                { header: 'Class', accessor: (r) => r.grade?.name || '—' },
+                { header: 'Board', accessor: (r) => r.board?.name || '—' },
+                { header: 'Branch', accessor: (r) => r.branch?.name || '—' },
+                { header: 'Created At', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—' },
+              ];
+              exportToExcel(filteredPlans, exportCols, 'subscription_plans.xlsx');
+            }}
           >
-            <option value="">
-              All Boards
-            </option>
-            <option value="State">
-              State
-            </option>
-            <option value="CBSE">
-              CBSE
-            </option>
-            <option value="ICSE">
-              ICSE
-            </option>
-          </select>
-
-          <select
-            value={selectedBranch}
-            onChange={(e) =>
-              setSelectedBranch(
-                e.target.value
-              )
-            }
-          >
-            <option value="">
-              All Branches
-            </option>
-            <option value="PCM">
-              PCM
-            </option>
-            <option value="BiPC">
-              BiPC
-            </option>
-            <option value="MEC">
-              MEC
-            </option>
-            <option value="CEC">
-              CEC
-            </option>
-          </select>
-
+            <HiOutlineDownload />
+            Excel
+          </button>
           <button
             className="primary-btn"
-            onClick={() =>
-              navigate(
-                '/admin/subscriptions/plans/create'
-              )
-            }
+            onClick={() => navigate('/admin/subscriptions/plans/create')}
           >
             <HiOutlinePlus />
             Create Plan
           </button>
         </div>
+      </div>
 
-        <div className="subscription-table-wrapper">
-          <table className="subscription-table">
+<div className="subscription-filters">
+          <div className="search-box">
+          <HiOutlineSearch />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <CommonFilterDropdown
+  placeholder="All Classes"
+  value={selectedClass || 'All Classes'}
+  options={[
+    'All Classes',
+    '10th',
+    '11th',
+    '12th',
+  ]}
+  onChange={(value) =>
+    setSelectedClass(
+      value === 'All Classes'
+        ? ''
+        : value
+    )
+  }
+/>
+        <CommonFilterDropdown
+  placeholder="All Boards"
+  value={selectedBoard || 'All Boards'}
+  options={[
+    'All Boards',
+    'State',
+    'CBSE',
+    'ICSE',
+  ]}
+  onChange={(value) =>
+    setSelectedBoard(
+      value === 'All Boards'
+        ? ''
+        : value
+    )
+  }
+/>
+
+        <CommonFilterDropdown
+  placeholder="All Branches"
+  value={selectedBranch || 'All Branches'}
+  options={[
+    'All Branches',
+    'PCM',
+    'BiPC',
+    'MEC',
+    'CEC',
+  ]}
+  onChange={(value) =>
+    setSelectedBranch(
+      value === 'All Branches'
+        ? ''
+        : value
+    )
+  }
+/>
+      </div>
+
+      <div
+  className="student-table-card"
+  style={{ marginTop: '24px' }}
+>
+  <div className="student-table-wrapper">
+    <table className="student-table">
+          
             <thead>
-              <tr>
-                <th>Plan Name</th>
-                <th>Price</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th>Created Date</th>
-              </tr>
-            </thead>
+  <tr>
+    <th>ID</th>
+    <th>Plan Name</th>
+    <th>Price</th>
+    <th>Duration</th>
+    <th>Status</th>
+    <th>Created Date</th>
+  </tr>
+</thead>
 
             <tbody>
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan="5"
-                    className="empty-table"
-                  >
-                    Loading...
-                  </td>
-                </tr>
-              ) : filteredPlans.length >
-                0 ? (
-                filteredPlans.map(
-                  (plan) => (
-                    <tr
-                      key={plan.id}
-                      className="clickable-row"
-                      onClick={() =>
-                        navigate(
-                          `/admin/subscriptions/plans/${plan.id}`
-                        )
-                      }
-                    >
-                      <td>
-                        {plan.name}
-                      </td>
+  {loading ? (
+    <tr>
+      <td colSpan="6" className="empty-table">
+        Loading...
+      </td>
+    </tr>
+  ) : filteredPlans.length > 0 ? (
+    filteredPlans.map((plan) => (
+      <tr
+        key={plan.id}
+        className="clickable-row"
+        onClick={() =>
+          navigate(
+            `/admin/subscriptions/plans/${plan.id}`
+          )
+        }
+      >
+        <td>{plan.id}</td>
 
-                      <td>
-                        ₹
-                        {Number(
-                          plan.price || 0
-                        ).toLocaleString(
-                          'en-IN'
-                        )}
-                      </td>
+        <td>
+          <div className="student-user">
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                plan.name
+              )}`}
+              alt={plan.name}
+              className="student-avatar"
+            />
 
-                      <td>
-                        {
-                          plan.durationDays
-                        }{' '}
-                        Days
-                      </td>
+            <div>
+              <div className="student-name">
+                {plan.name}
+              </div>
+            </div>
+          </div>
+        </td>
 
-                      <td>
-                        <span className="status-pill active">
-                          Active
-                        </span>
-                      </td>
+        <td>
+          ₹
+          {Number(
+            plan.price || 0
+          ).toLocaleString('en-IN')}
+        </td>
 
-                      <td>
-                        {plan.createdAt
-                          ? new Date(
-                              plan.createdAt
-                            ).toLocaleDateString(
-                              'en-IN'
-                            )
-                          : '-'}
-                      </td>
-                    </tr>
-                  )
-                )
-              ) : (
-                <tr>
-                  <td
-                    colSpan="5"
-                    className="empty-table"
-                  >
-                    No plans found
-                  </td>
-                </tr>
-              )}
-            </tbody>
+        <td>
+          <span className="plan-badge">
+            {plan.durationDays} Days
+          </span>
+        </td>
+
+        <td>
+          <span className="status-badge status-active">
+            Active
+          </span>
+        </td>
+
+        <td>
+          {plan.createdAt
+            ? new Date(
+                plan.createdAt
+              ).toLocaleDateString(
+                'en-IN'
+              )
+            : '-'}
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="6" className="empty-table">
+        No plans found
+      </td>
+    </tr>
+  )}
+</tbody>
           </table>
         </div>
       </div>

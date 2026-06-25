@@ -12,7 +12,7 @@ const getPageMeta = (pathname) => {
       title: item.title,
       breadcrumbs: pathname === '/dashboard'
         ? [{ label: item.title, path: '/dashboard' }]
-        : [{ label: 'Home', path: '/dashboard' }, { label: item.title, path: item.path }],
+        : [{ label: 'Dashboard', path: '/dashboard' }, { label: item.title, path: item.path }],
     };
   }
   if (pathname.startsWith('/students/')) {

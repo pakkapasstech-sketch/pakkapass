@@ -94,3 +94,26 @@
     padding-bottom: 24px;
   }
 }
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+.page-header {
+  margin-bottom: 8px;
+}
+
+.page-header h1,
+.page-header .page-title {
+  font-size: clamp(24px, 4vw, 30px);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.page-header p,
+.page-header .page-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}

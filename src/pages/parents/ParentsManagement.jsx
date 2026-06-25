@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  HiOutlineSearch,
-  // HiOutlineDownload,
-  //HiOutlineEye,
-} from 'react-icons/hi';
+import { HiOutlineSearch, HiOutlineDownload } from 'react-icons/hi';
+import StatisticCard from '../../components/cards/StatisticCard';
+import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
 
 import Loader from '../../components/common/Loader';
 import ErrorState from '../../components/loaders/ErrorState';
 import { useParents } from '../../hooks/useParents';
 
 import '../../styles/ParentsManagement.css';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 
 const ParentsManagement = () => {
   const navigate = useNavigate();
@@ -18,79 +17,119 @@ const ParentsManagement = () => {
   const { data: parents = [], isLoading, isError, refetch } = useParents();
 
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const filteredParents = parents.filter(
-  (p) =>
-    p.name
-      ?.toLowerCase()
-      .includes(search.toLowerCase()) ||
-    p.phone
-      ?.toLowerCase()
-      .includes(search.toLowerCase())
-);
+  const filteredParents = parents.filter((p) => {
+  const searchTerm = search.trim().toLowerCase();
+
+  const matchesSearch =
+    searchTerm === '' ||
+    String(p.id).toLowerCase().includes(searchTerm) ||
+    (p.name || '').toLowerCase().includes(searchTerm) ||
+    (p.email || '').toLowerCase().includes(searchTerm) ||
+    (p.phone || '').toLowerCase().includes(searchTerm) ||
+    String(p.students || '').toLowerCase().includes(searchTerm) ||
+    (p.status || '').toLowerCase().includes(searchTerm);
+
+  const matchesStatus =
+    statusFilter === '' || p.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
 
   if (isLoading) return <Loader />;
 
   if (isError) {
-    return (
-      <ErrorState
-        message="Failed to load parents"
-        onRetry={refetch}
-      />
-    );
+    return <ErrorState message="Failed to load parents" onRetry={refetch} />;
   }
 
   const totalParents = parents.length;
-  const activeParents = parents.filter(
-    (p) => p.status === 'Active'
-  ).length;
+  const activeParents = parents.filter((p) => p.status === 'Active').length;
 
   const inactiveParents = totalParents - activeParents;
 
-  const linkedStudents = parents.reduce(
-    (total, parent) => total + parent.students,
-    0
-  );
+  const linkedStudents = parents.reduce((total, parent) => total + parent.students, 0);
 
   return (
     <div className="parents-page">
+      <div className="page-header flex justify-between items-start flex-wrap gap-6">
+        <div>
+          <h1 className="page-title">Parent Management</h1>
+          <p className="page-subtitle">
+            Search parents, manage records, and view their linked students and details.
+          </p>
+        </div>
+        <div className="header-actions flex gap-4">
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => {
+              const exportCols = [
+                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Parent Name', accessor: (r) => r.name },
+                { header: 'Email', accessor: (r) => r.email },
+                { header: 'Phone', accessor: (r) => r.phone },
+                { header: 'Students', accessor: (r) => r.students },
+                { header: 'Status', accessor: (r) => r.status },
+              ];
+              exportToCSV(parents, exportCols, 'parents.csv');
+            }}
+          >
+            <HiOutlineDownload />
+            CSV
+          </button>
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => {
+              const exportCols = [
+                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Parent Name', accessor: (r) => r.name },
+                { header: 'Email', accessor: (r) => r.email },
+                { header: 'Phone', accessor: (r) => r.phone },
+                { header: 'Students', accessor: (r) => r.students },
+                { header: 'Status', accessor: (r) => r.status },
+              ];
+              exportToExcel(parents, exportCols, 'parents.xlsx');
+            }}
+          >
+            <HiOutlineDownload />
+            Excel
+          </button>
+        </div>
+      </div>
       {/* Stats */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <p className="stat-title">
-            Total Parents
-          </p>
-          <h3 className="stat-value">
-            {totalParents}
-          </h3>
-        </div>
-
-        <div className="stat-card">
-          <p className="stat-title">
-            Active Parents
-          </p>
-          <h3 className="stat-value">
-            {activeParents}
-          </h3>
-        </div>
-
-        <div className="stat-card">
-          <p className="stat-title">
-            Inactive Parents
-          </p>
-          <h3 className="stat-value">
-            {inactiveParents}
-          </h3>
-        </div>
-
-        <div className="stat-card">
-          <p className="stat-title">
-            Students Linked
-          </p>
-          <h3 className="stat-value">
-            {linkedStudents}
-          </h3>
-        </div>
+      <div className="dashboard-stats-grid">
+        <StatisticCard
+          title="Total Parents"
+          value={totalParents}
+          icon="users"
+          iconBg="bg-blue-100"
+          iconColor="text-blue-600"
+        />
+        <StatisticCard
+          title="Active Parents"
+          value={activeParents}
+          icon="user-group"
+          iconBg="bg-green-100"
+          iconColor="text-green-600"
+        />
+        <StatisticCard
+          title="Inactive Parents"
+          value={inactiveParents}
+          icon="user-remove"
+          iconBg="bg-red-100"
+          iconColor="text-red-600"
+        />
+        <StatisticCard
+          title="Students Linked"
+          value={linkedStudents}
+          icon="students"
+          iconBg="bg-purple-100"
+          iconColor="text-purple-600"
+        />
       </div>
 
       {/* Toolbar */}
@@ -100,21 +139,26 @@ const ParentsManagement = () => {
 
           <input
             type="text"
-            placeholder="Search by name or phone..."
+            placeholder="Search..."
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        {/* <button
-          type="button"
-          className="export-btn"
-        >
-          <HiOutlineDownload />
-          Export
-        </button> */}
+        <CommonFilterDropdown
+  placeholder="All Status"
+  value={statusFilter || 'All Status'}
+  options={[
+    'All Status',
+    'Active',
+    'Inactive',
+  ]}
+  onChange={(value) =>
+    setStatusFilter(
+      value === 'All Status' ? '' : value
+    )
+  }
+/>
       </div>
 
       {/* Table */}
@@ -128,7 +172,6 @@ const ParentsManagement = () => {
               <th>Phone</th>
               <th>Students</th>
               <th>Status</th>
-              {/* <th>Actions</th> */}
             </tr>
           </thead>
 
@@ -138,9 +181,7 @@ const ParentsManagement = () => {
                 <tr
                   key={p.id}
                   className="parent-row"
-                  onClick={() =>
-                    navigate(`/parents/${p.id}`)
-                  }
+                  onClick={() => navigate(`/parents/${p.id}`)}
                 >
                   <td>{p.id}</td>
 
@@ -175,26 +216,11 @@ const ParentsManagement = () => {
                       {p.status}
                     </span>
                   </td>
-
-                    {/* <button
-                      className="view-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(
-                          `/parents/${p.id}`
-                        );
-                      }}
-                    >
-                      <HiOutlineEye />
-                    </button> */}
                 </tr>
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="7"
-                  className="empty-table"
-                >
+                <td colSpan="6" className="empty-table">
                   No parents found
                 </td>
               </tr>

@@ -10,16 +10,16 @@ import {
 import '../../styles/NotificationsPage.css';
 
 const initialNotifications = [
-  {
-    id: 1,
-    title: 'Platform Maintenance',
-    message:
-      'Platform maintenance scheduled on Sunday at 2:00 AM.',
-    audience: 'All Students',
-    priority: 'warning',
-    date: '16 Jul 2025',
-    read: false,
-  },
+ {
+  id: 1,
+  title: 'Question Paper Uploaded',
+  message:
+    'The Mathematics Mid-Term Question Paper has been uploaded successfully.',
+  audience: 'Class 10 Students',
+  priority: 'info',
+  date: '16 Jul 2025',
+  read: false,
+},
   {
     id: 2,
     title: 'New Physics Videos',

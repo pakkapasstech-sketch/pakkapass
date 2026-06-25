@@ -413,6 +413,19 @@ input[type="file"] {
   font-size: 14px;
   font-weight: 500;
 }
+.partner-grid .common-dropdown {
+  width: 100%;
+}
+
+.partner-grid .common-dropdown-trigger {
+  width: 100%;
+  height: 48px;
+}
+
+.partner-grid .common-dropdown-menu {
+  width: 100%;
+  z-index: 1000;
+}
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 992px) {

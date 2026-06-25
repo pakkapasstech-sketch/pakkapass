@@ -15,7 +15,7 @@ const StatisticCard = ({
     return <StatCardSkeleton />;
   }
 
-  const Icon = getIcon(icon);
+  const Icon = typeof icon === 'string' ? getIcon(icon) : (icon || getIcon('dashboard'));
 
   return (
     <motion.div

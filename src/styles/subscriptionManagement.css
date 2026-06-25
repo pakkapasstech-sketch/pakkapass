@@ -2,26 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 8px 8px 24px;
-}
-
-/* Header */
-
-.subscription-header {
-  padding-left: 8px;
-}
-
-.subscription-header h1 {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.subscription-description {
-  margin-top: 8px;
-  font-size: 15px;
-  color: var(--color-text-secondary);
+  padding: 28px;
 }
 
 /* Main Card */
@@ -389,6 +370,58 @@
 
 .clickable-row:hover td {
   background: #faf5ff;
+}
+.subscription-filters {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.subscription-filters .search-box {
+  flex: 1;
+}
+
+.subscription-filters .common-dropdown {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.subscription-filters .common-dropdown-trigger {
+  height: 52px;
+}
+
+@media (max-width: 1024px) {
+  .subscription-filters {
+    flex-wrap: wrap;
+  }
+
+  .subscription-filters .search-box {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .subscription-filters .common-dropdown {
+    width: calc(33.333% - 11px);
+  }
+}
+
+@media (max-width: 768px) {
+  .subscription-filters .common-dropdown {
+    width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 480px) {
+  .subscription-filters {
+    flex-direction: column;
+  }
+
+  .subscription-filters .common-dropdown,
+  .subscription-filters .search-box {
+    width: 100%;
+  }
 }
 
 /* Tablet */

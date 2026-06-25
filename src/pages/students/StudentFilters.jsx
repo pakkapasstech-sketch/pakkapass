@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { indianStates } from '../../data/states';
+import { HiOutlineSearch } from 'react-icons/hi';
 import '../../styles/student-filters.css';
 import { useStudents, useStudentFilterOptions } from '../../hooks/useStudents';
-
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 const statuses = [
   'All',
   'Active',
@@ -75,129 +76,73 @@ const StudentFilters = ({
   };
 
   return (
-    <div className="student-filters">
-      <input
-        type="text"
-        placeholder="Search..."
-        value={filters.search}
-        onChange={(e) =>
-          handleChange(
-            'search',
-            e.target.value
-          )
-        }
-      />
+    <div className="student-filters-container">
+      <div className="student-search-row">
+        <div className="search-box">
+          <HiOutlineSearch />
+          <input
+            type="text"
+            placeholder="Search students by name, email, phone, refcode..."
+            value={filters.search}
+            onChange={(e) =>
+              handleChange(
+                'search',
+                e.target.value
+              )
+            }
+          />
+        </div>
+      </div>
 
-      <select
-        value={
-          filters.class ||
-          'All Classes'
-        }
-        onChange={(e) =>
-          handleChange(
-            'class',
-            e.target.value
-          )
-        }
-      >
-        {classes.map((item) => (
-          <option key={item}>
-            {item}
-          </option>
-        ))}
-      </select>
+      <div className="student-dropdowns-row">
+  <CommonFilterDropdown
+    placeholder="All Classes"
+    value={filters.class || 'All Classes'}
+    options={classes}
+    onChange={(value) =>
+      handleChange('class', value)
+    }
+  />
 
-      <select
-        value={
-          filters.board ||
-          'All Boards'
-        }
-        onChange={(e) =>
-          handleChange(
-            'board',
-            e.target.value
-          )
-        }
-      >
-        {boards.map((item) => (
-          <option key={item}>
-            {item}
-          </option>
-        ))}
-      </select>
+  <CommonFilterDropdown
+    placeholder="All Boards"
+    value={filters.board || 'All Boards'}
+    options={boards}
+    onChange={(value) =>
+      handleChange('board', value)
+    }
+  />
 
-      <select
-        value={
-          filters.college ||
-          'All Colleges'
-        }
-        onChange={(e) =>
-          handleChange(
-            'college',
-            e.target.value
-          )
-        }
-      >
-        {colleges.map(
-          (college) => (
-            <option
-              key={college}
-            >
-              {college}
-            </option>
-          )
-        )}
-      </select>
+  <CommonFilterDropdown
+    placeholder="All Colleges"
+    value={filters.college || 'All Colleges'}
+    options={colleges}
+    onChange={(value) =>
+      handleChange('college', value)
+    }
+  />
 
-      <select
-        value={
-          filters.state ||
-          'All States'
-        }
-        onChange={(e) =>
-          handleChange(
-            'state',
-            e.target.value
-          )
-        }
-      >
-        <option>
-          All States
-        </option>
+  <CommonFilterDropdown
+    placeholder="All States"
+    value={filters.state || 'All States'}
+    options={[
+      'All States',
+      ...indianStates,
+    ]}
+    onChange={(value) =>
+      handleChange('state', value)
+    }
+  />
 
-        {indianStates.map(
-          (state) => (
-            <option
-              key={state}
-            >
-              {state}
-            </option>
-          )
-        )}
-      </select>
-
-      <select
-        value={
-          filters.status ||
-          'All'
-        }
-        onChange={(e) =>
-          handleChange(
-            'status',
-            e.target.value
-          )
-        }
-      >
-        {statuses.map(
-          (status) => (
-            <option
-              key={status}
-            >
-              {status}
-            </option>
-          )
-        )}
-      </select>
+  <CommonFilterDropdown
+    placeholder="All Status"
+    value={filters.status || 'All'}
+    options={statuses}
+    onChange={(value) =>
+      handleChange('status', value)
+    }
+  />
+</div>
     </div>
   );
 };

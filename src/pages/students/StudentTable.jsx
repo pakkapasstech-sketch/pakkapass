@@ -3,7 +3,7 @@ import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/student-table.css';
 
-const StudentTable = ({ students = [] }) => {
+const StudentTable = ({ students = [], noCard = false, hideInstitution = false }) => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,107 +37,106 @@ const StudentTable = ({ students = [] }) => {
     );
   };
 
-  return (
-    <div className="student-table-card">
-      <div className="student-table-wrapper">
-        <table className="student-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Student Name</th>
-              {/* <th>
-                Mobile Number
-              </th> */}
-              <th>Class</th>
-              <th>Board</th>
-              <th>Institution</th>
-              <th>REFCODE</th>
-              <th>Subscription Plan</th>
-              <th>Status</th>
-              <th>Registered On</th>
-            </tr>
-          </thead>
+  const tableContent = (
+    <div className="student-table-wrapper">
+      <table className="student-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student Name</th>
+            <th>Class</th>
+            <th>Board</th>
+            {!hideInstitution && <th>Institution</th>}
+            <th>REFCODE</th>
+            <th>Subscription Plan</th>
+            <th>Status</th>
+            <th>Registered On</th>
+          </tr>
+        </thead>
 
-          <tbody>
-            {currentStudents.length > 0 ? (
-              currentStudents.map((student, index) => (
-                <tr
-                  key={`${student.id}-${startIndex + index}`}
-                  className="clickable-row"
-                  onClick={() => navigate(`/students/${student.id}`)}
-                >
-                  <td>{startIndex + index + 1}</td>
+        <tbody>
+          {currentStudents.length > 0 ? (
+            currentStudents.map((student, index) => (
+              <tr
+                key={`${student.id}-${startIndex + index}`}
+                className="clickable-row"
+                onClick={() => navigate(`/students/${student.id}`)}
+              >
+                <td>{student.id || '—'}</td>
 
-                  <td>
-                    <div className="student-user">
-                      <img
-                        src={
-                          student.photo ||
-                          `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`
-                        }
-                        alt={student.name}
-                        className="student-avatar"
-                      />
-
-                      <div>
-                        <div className="student-name">{student.name}</div>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* <td>
-                      {
-                        student.mobile
+                <td>
+                  <div className="student-user">
+                    <img
+                      src={
+                        student.photo ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`
                       }
-                    </td> */}
+                      alt={student.name}
+                      className="student-avatar"
+                    />
 
-                  <td>{student.class}</td>
+                    <div>
+                      <div className="student-name">{student.name}</div>
+                    </div>
+                  </div>
+                </td>
 
-                  <td>{student.board}</td>
+                <td>{student.class}</td>
 
-                  <td>{student.institution}</td>
+                <td>{student.board}</td>
 
-                  <td>
-  {student.referralCode ||
-    student.refCode ||
-    "Null"}
-</td>
+                {!hideInstitution && <td>{student.institution}</td>}
 
-                  <td>
-                    <span className="plan-badge">{student.plan}</span>
-                  </td>
+                <td>
+                  {student.referralCode ||
+                    student.refCode ||
+                    "Null"}
+                </td>
 
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        student.status === 'Active'
-                          ? 'status-active'
-                          : student.status === 'Inactive'
-                            ? 'status-inactive'
-                            : 'status-pending'
-                      }`}
-                    >
-                      {student.status}
-                    </span>
-                  </td>
+                <td>
+                  <span className="plan-badge">{student.plan}</span>
+                </td>
 
-                  <td>
-                    {student.createdAt
-                      ? new Date(student.createdAt).toLocaleDateString()
-                      : student.registeredOn || '—'}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="10" className="empty-table">
-                  No students found
+                <td>
+                  <span
+                    className={`status-badge ${
+                      student.status === 'Active'
+                        ? 'status-active'
+                        : student.status === 'Inactive'
+                          ? 'status-inactive'
+                          : 'status-pending'
+                    }`}
+                  >
+                    {student.status}
+                  </span>
+                </td>
+
+                <td>
+                  {student.createdAt
+                    ? new Date(student.createdAt).toLocaleDateString()
+                    : student.registeredOn || '—'}
                 </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={hideInstitution ? "8" : "9"} className="empty-table">
+                No students found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  if (noCard) {
+    return tableContent;
+  }
+
+  return (
+    <div className="student-table-card">
+      {tableContent}
 
       {totalStudents > 0 && (
         <div className="pagination">

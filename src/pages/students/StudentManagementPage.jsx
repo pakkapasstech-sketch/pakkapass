@@ -14,6 +14,8 @@ import { PERMISSIONS } from '../../auth/permissions';
 
 import '../../styles/student-management.css';
 import Loader from '../../components/common/Loader';
+import { HiOutlineDownload } from 'react-icons/hi';
+import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
 const StudentManagementPage = () => {
   const [filters, setFilters] =
     useState({
@@ -148,6 +150,63 @@ const StudentManagementPage = () => {
 
   return (
     <div className="student-management-page">
+      <div className="page-header flex justify-between items-start flex-wrap gap-6">
+        <div>
+          <h1 className="page-title">
+            Student Management
+          </h1>
+          <p className="page-subtitle">
+            Search students, manage records, and view their details.
+          </p>
+        </div>
+        <div className="header-actions flex gap-4">
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => {
+              const exportCols = [
+                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Student Name', accessor: (r) => r.name },
+                { header: 'Class', accessor: (r) => r.class },
+                { header: 'Board', accessor: (r) => r.board },
+                { header: 'Institution', accessor: (r) => r.institution },
+                { header: 'REFCODE', accessor: (r) => r.referralCode || r.refCode || 'Null' },
+                { header: 'Subscription Plan', accessor: (r) => r.plan },
+                { header: 'Status', accessor: (r) => r.status },
+                { header: 'Registered On', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : r.registeredOn || '—' },
+              ];
+              exportToCSV(displayStudents, exportCols, 'students.csv');
+            }}
+          >
+            <HiOutlineDownload />
+            CSV
+          </button>
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => {
+              const exportCols = [
+                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Student Name', accessor: (r) => r.name },
+                { header: 'Class', accessor: (r) => r.class },
+                { header: 'Board', accessor: (r) => r.board },
+                { header: 'Institution', accessor: (r) => r.institution },
+                { header: 'REFCODE', accessor: (r) => r.referralCode || r.refCode || 'Null' },
+                { header: 'Subscription Plan', accessor: (r) => r.plan },
+                { header: 'Status', accessor: (r) => r.status },
+                { header: 'Registered On', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : r.registeredOn || '—' },
+              ];
+              exportToExcel(displayStudents, exportCols, 'students.xlsx');
+            }}
+          >
+            <HiOutlineDownload />
+            Excel
+          </button>
+        </div>
+      </div>
+
       <StudentStatsCards
         students={
           filteredStudents

@@ -1,3 +1,5 @@
+import StatisticCard from '../cards/StatisticCard';
+
 const PartnerStats = ({
   partners,
 }) => {
@@ -32,44 +34,46 @@ const revenue =
 
   const cards = [
     {
-      title:
-        'Total Partners',
+      title: 'Total Partners',
       value: total,
+      icon: 'partners',
+      iconBg: 'bg-indigo-100',
+      iconColor: 'text-indigo-600',
     },
     {
-      title:
-        'Active Partners',
+      title: 'Active Partners',
       value: active,
+      icon: 'user-group',
+      iconBg: 'bg-emerald-100',
+      iconColor: 'text-emerald-600',
     },
     {
-      title:
-        'Total Referrals',
+      title: 'Total Referrals',
       value: students,
+      icon: 'students',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600',
     },
     {
-      title:
-        'Revenue Generated',
-      value:
-        '₹' +
-        revenue.toLocaleString(),
+      title: 'Revenue Generated',
+      value: '₹' + revenue.toLocaleString(),
+      icon: 'commissions',
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600',
     },
   ];
 
   return (
-    <div className="stats-grid">
+    <div className="dashboard-stats-grid">
       {cards.map((card) => (
-        <div
+        <StatisticCard
           key={card.title}
-          className="stat-card"
-        >
-          <h3>
-            {card.value}
-          </h3>
-
-          <p>
-            {card.title}
-          </p>
-        </div>
+          title={card.title}
+          value={card.value}
+          icon={card.icon}
+          iconBg={card.iconBg}
+          iconColor={card.iconColor}
+        />
       ))}
     </div>
   );

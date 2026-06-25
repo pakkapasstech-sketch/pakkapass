@@ -1,3 +1,4 @@
+import CommonFilterDropdown from '../common/CommonFilterDropdown'; 
 const PartnerForm = ({ step, formData, updateField }) => {
   
   switch (step) {
@@ -40,18 +41,24 @@ const PartnerForm = ({ step, formData, updateField }) => {
             <div className="form-group">
               <label>Gender</label>
 
-              <select
-                value={formData.gender}
-                onChange={(e) => updateField('gender', e.target.value)}
-              >
-                <option value="">Select Gender</option>
-
-                <option>Male</option>
-
-                <option>Female</option>
-
-                <option>Other</option>
-              </select>
+              <CommonFilterDropdown
+  placeholder="Select Gender"
+  value={formData.gender || 'Select Gender'}
+  options={[
+    'Select Gender',
+    'Male',
+    'Female',
+    'Other',
+  ]}
+  onChange={(value) =>
+    updateField(
+      'gender',
+      value === 'Select Gender'
+        ? ''
+        : value
+    )
+  }
+/>
             </div>
 
             <div className="form-group">
@@ -95,22 +102,29 @@ const PartnerForm = ({ step, formData, updateField }) => {
             <div className="form-group">
               <label>Institution Type*</label>
 
-              <select
-                value={formData.institutionType}
-                onChange={(e) => updateField('institutionType', e.target.value)}
-              >
-                <option value="">Select Type</option>
-
-                <option>Junior College</option>
-
-                <option>Coaching Center</option>
-
-                <option>School</option>
-
-                <option>Educational Consultant</option>
-
-                <option>Individual Agent</option>
-              </select>
+              <CommonFilterDropdown
+  placeholder="Select Type"
+  value={
+    formData.institutionType ||
+    'Select Type'
+  }
+  options={[
+    'Select Type',
+    'Junior College',
+    'Coaching Center',
+    'School',
+    'Educational Consultant',
+    'Individual Agent',
+  ]}
+  onChange={(value) =>
+    updateField(
+      'institutionType',
+      value === 'Select Type'
+        ? ''
+        : value
+    )
+  }
+/>
             </div>
 
             <div className="form-group">
@@ -307,14 +321,20 @@ const PartnerForm = ({ step, formData, updateField }) => {
             <div className="form-group">
               <label>Discount Type</label>
 
-              <select
-                value={formData.discountType}
-                onChange={(e) => updateField('discountType', e.target.value)}
-              >
-                <option>Percentage</option>
-
-                <option>Fixed Amount</option>
-              </select>
+              <CommonFilterDropdown
+  placeholder="Discount Type"
+  value={formData.discountType}
+  options={[
+    'Percentage',
+    'Fixed Amount',
+  ]}
+  onChange={(value) =>
+    updateField(
+      'discountType',
+      value
+    )
+  }
+/>
             </div>
 
             <div className="form-group">

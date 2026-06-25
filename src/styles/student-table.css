@@ -51,12 +51,11 @@
 }
 
 .student-table th {
-  padding: 16px 20px;
+  padding: 16px 12px;
   text-align: left;
   font-size: 13px;
   font-weight: 600;
   color: #64748b;
-  white-space: nowrap;
 }
 
 /* ==========================================
@@ -64,7 +63,7 @@
 ========================================== */
 
 .student-table td {
-  padding: 18px 20px;
+  padding: 18px 12px;
   border-top: 1px solid #f1f5f9;
   font-size: 14px;
   color: #334155;
@@ -112,6 +111,7 @@
   color: #2563eb;
   font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
 }
 /* ==========================================
    STATUS BADGE
@@ -409,4 +409,4 @@
 [data-theme='dark'] .edit-btn:hover,
 [data-theme='dark'] .delete-btn:hover {
   background: rgba(255, 255, 255, 0.08);
-}
+}

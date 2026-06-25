@@ -1,6 +1,6 @@
 import { HiOutlineSearch }
   from 'react-icons/hi';
-
+import CommonFilterDropdown from '../common/CommonFilterDropdown';
 const PartnerFilters = ({
   search,
   setSearch,
@@ -19,34 +19,25 @@ const PartnerFilters = ({
               e.target.value
             )
           }
-          placeholder="Search partners..."
+          placeholder="Search..."
         />
       </div>
 
-      <select
-        value={statusFilter}
-        onChange={(e) =>
-          setStatusFilter(
-            e.target.value
-          )
-        }
-      >
-        <option value="">
-          All Statuses
-        </option>
-
-        <option>
-          Active
-        </option>
-
-        <option>
-          Inactive
-        </option>
-
-        <option>
-          Suspended
-        </option>
-      </select>
+      <CommonFilterDropdown
+  placeholder="All Status"
+  value={statusFilter || 'All Status'}
+  options={[
+    'All Status',
+    'Active',
+    'Inactive',
+    'Suspended',
+  ]}
+  onChange={(value) =>
+    setStatusFilter(
+      value === 'All Status' ? '' : value
+    )
+  }
+/>
     </div>
   );
 };

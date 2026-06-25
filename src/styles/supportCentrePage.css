@@ -132,6 +132,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ticket-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
 }
 
 .ticket-card h4,
@@ -146,7 +154,6 @@
 
 .ticket-status {
   display: inline-flex;
-
   padding: 6px 12px;
 
   border-radius: 999px;
@@ -164,7 +171,18 @@
   background: #dcfce7;
   color: #16a34a;
 }
+.ticket-detail-group .common-dropdown {
+  width: 180px;
+}
 
+.ticket-detail-group .common-dropdown-trigger {
+  height: 44px;
+}
+
+.ticket-detail-group .common-dropdown-menu {
+  width: 100%;
+  z-index: 10000;
+}
 @media (max-width: 1024px) {
   .support-grid {
     grid-template-columns: 1fr;
@@ -205,4 +223,34 @@
 .ticket-card p,
 .faq-item p {
   color: var(--color-text-secondary);
+}
+
+/* Ticket Details Modal */
+.ticket-detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ticket-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.ticket-detail-value {
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+
+.ticket-message-box {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark .ticket-message-box {
+  background: rgba(255, 255, 255, 0.02) !important;
 }

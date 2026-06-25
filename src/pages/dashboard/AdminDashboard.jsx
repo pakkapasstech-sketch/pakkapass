@@ -6,7 +6,11 @@ import { useNavigate } from 'react-router-dom';
 //import SubscriptionGrowthChart from '../../components/charts/SubscriptionGrowthChart';
 //import RevenueTrendChart from '../../components/charts/RevenueTrendChart';
 //import StudentsByStateCard from '../../components/charts/StudentsByStateCard';
-import DataTable from '../../components/tables/DataTable';
+import StudentTable from '../students/StudentTable';
+import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
+import { HiOutlineDownload } from 'react-icons/hi';
+import '../../styles/table.css';
+import '../../styles/student-table.css';
 import StatusBadge from '../../components/tables/StatusBadge';
 import Avatar from '../../components/common/Avatar';
 import ErrorState from '../../components/loaders/ErrorState';
@@ -65,120 +69,7 @@ const cards =
     );
   }
 
-  const registrationColumns = [
-  {
-    key: 'name',
-    header: 'Student Name',
-    sortable: true,
-    accessor: (r) => r.name,
-    render: (r) => (
-      <div className="dashboard-student-cell">
-        <Avatar
-          initials={r.avatar}
-          size="sm"
-        />
-        <span>{r.name}</span>
-      </div>
-    ),
-  },
-  {
-  key: 'class',
-  header: 'Class',
-  accessor: (r) =>
-    r.class || '—',
-},
-{
-  key: 'board',
-  header: 'Board',
-  accessor: (r) =>
-    r.board || '—',
-},
-  {
-    key: 'institution',
-    header: 'Institution',
-    accessor: (r) =>
-      r.institution?.name ||
-      r.institution ||
-      '—',
-  },
-  {
-    key: 'state',
-    header: 'State',
-    accessor: (r) =>
-      r.state?.name ||
-      r.state ||
-      '—',
-  },
-  {
-    key: 'plan',
-    header:
-      'Subscription Plan',
-    accessor: (r) =>
-      r.plan?.name ||
-      r.plan ||
-      '—',
-  },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (r) => (
-      <StatusBadge
-        status={
-          r.status ||
-          'Active'
-        }
-      />
-    ),
-  },
-  {
-    key: 'date',
-    header:
-      'Registered On',
-    accessor: (r) =>
-      formatDate(
-        r.createdAt
-      ),
-  },
-];
 
-  const paymentColumns = [
-  {
-    key: 'student',
-    header: 'Student',
-    accessor: (r) => r.student,
-  },
-  {
-    key: 'plan',
-    header: 'Plan',
-    accessor: (r) => r.plan,
-  },
-  {
-    key: 'amount',
-    header: 'Amount',
-    accessor: (r) => `₹${r.amount}`,
-  },
-  {
-    key: 'referralCode',
-    header: 'Referral Code',
-    accessor: (r) =>
-      r.referralCode || 'Null',
-  },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (r) => (
-      <StatusBadge
-        status={r.status}
-      />
-    ),
-  },
-  {
-    key: 'date',
-    header: 'Date',
-    accessor: (r) =>
-      formatDate(r.date),
-  },
-];
 const totalContent =
   content.length;
 
@@ -247,18 +138,182 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
       </div> */}
 
       <div className="dashboard-table-grid">
-        <DataTable title="Recent Registrations" columns={registrationColumns} data={registrations.data || []} isLoading={registrations.isLoading} viewAllLink={() =>
-  navigate('/students', {
-    state: {
-      sortRecent: true,
-    },
-  })
-}
-  />
-        <DataTable title="Recent Payments" columns={paymentColumns} data={payments.data || []} isLoading={payments.isLoading} viewAllLink={() =>
-    navigate('/payments')
-  } />
-        {/* <DataTable title="Referral Conversions" columns={referralColumns} data={referrals.data || []} isLoading={referrals.isLoading} viewAllLink /> */}
+        {/* Recent Registrations Table using StudentTable */}
+        <div className="data-table-container" style={{ minHeight: 'unset' }}>
+          <div className="data-table-header">
+            <h3 className="data-table-title">Recent Registrations</h3>
+            <div className="data-table-toolbar">
+              <button
+                onClick={() => {
+                  const exportCols = [
+                    { header: 'ID', accessor: (r) => r.id },
+                    { header: 'Student Name', accessor: (r) => r.name },
+                    { header: 'Class', accessor: (r) => r.class },
+                    { header: 'Board', accessor: (r) => r.board },
+                    { header: 'Institution', accessor: (r) => r.institution },
+                    { header: 'REFCODE', accessor: (r) => r.referralCode || r.refCode || 'Null' },
+                    { header: 'Subscription Plan', accessor: (r) => r.plan },
+                    { header: 'Status', accessor: (r) => r.status },
+                    { header: 'Registered On', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—' },
+                  ];
+                  exportToCSV(registrations.data || [], exportCols, 'recent_registrations.csv');
+                }}
+                className="data-table-export-btn"
+              >
+                <HiOutlineDownload />
+                CSV
+              </button>
+              <button
+                onClick={() => {
+                  const exportCols = [
+                    { header: 'ID', accessor: (r) => r.id },
+                    { header: 'Student Name', accessor: (r) => r.name },
+                    { header: 'Class', accessor: (r) => r.class },
+                    { header: 'Board', accessor: (r) => r.board },
+                    { header: 'Institution', accessor: (r) => r.institution },
+                    { header: 'REFCODE', accessor: (r) => r.referralCode || r.refCode || 'Null' },
+                    { header: 'Subscription Plan', accessor: (r) => r.plan },
+                    { header: 'Status', accessor: (r) => r.status },
+                    { header: 'Registered On', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—' },
+                  ];
+                  exportToExcel(registrations.data || [], exportCols, 'recent_registrations.xlsx');
+                }}
+                className="data-table-export-btn"
+              >
+                <HiOutlineDownload />
+                Excel
+              </button>
+              <button
+                className="data-table-view-all"
+                onClick={() =>
+                  navigate('/students', {
+                    state: {
+                      sortRecent: true,
+                    },
+                  })
+                }
+              >
+                View All
+              </button>
+            </div>
+          </div>
+          <StudentTable students={registrations.data || []} noCard={true} hideInstitution={true} />
+        </div>
+
+        {/* Recent Payments Custom Table styled like StudentTable */}
+        <div className="data-table-container" style={{ minHeight: 'unset' }}>
+          <div className="data-table-header">
+            <h3 className="data-table-title">Recent Payments</h3>
+            <div className="data-table-toolbar">
+              <button
+                onClick={() => {
+                  const exportCols = [
+                    { header: 'Student', accessor: (r) => r.student },
+                    { header: 'Plan', accessor: (r) => r.plan },
+                    { header: 'Amount', accessor: (r) => `₹${r.amount}` },
+                    { header: 'Referral Code', accessor: (r) => r.referralCode || 'Null' },
+                    { header: 'Status', accessor: (r) => r.status },
+                    { header: 'Date', accessor: (r) => formatDate(r.date) },
+                  ];
+                  exportToCSV(payments.data || [], exportCols, 'recent_payments.csv');
+                }}
+                className="data-table-export-btn"
+              >
+                <HiOutlineDownload />
+                CSV
+              </button>
+              <button
+                onClick={() => {
+                  const exportCols = [
+                    { header: 'Student', accessor: (r) => r.student },
+                    { header: 'Plan', accessor: (r) => r.plan },
+                    { header: 'Amount', accessor: (r) => `₹${r.amount}` },
+                    { header: 'Referral Code', accessor: (r) => r.referralCode || 'Null' },
+                    { header: 'Status', accessor: (r) => r.status },
+                    { header: 'Date', accessor: (r) => formatDate(r.date) },
+                  ];
+                  exportToExcel(payments.data || [], exportCols, 'recent_payments.xlsx');
+                }}
+                className="data-table-export-btn"
+              >
+                <HiOutlineDownload />
+                Excel
+              </button>
+              <button
+                className="data-table-view-all"
+                onClick={() => navigate('/payments')}
+              >
+                View All
+              </button>
+            </div>
+          </div>
+
+          <div className="student-table-wrapper">
+            <table className="student-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40px' }} className="student-col-index"></th>
+                  <th style={{ width: '25%', minWidth: '130px' }}>Student</th>
+                  <th style={{ width: '15%', minWidth: '80px' }}>Plan</th>
+                  <th style={{ width: '12%', minWidth: '70px' }}>Amount</th>
+                  <th style={{ width: '18%', minWidth: '110px' }}>Referral Code</th>
+                  <th style={{ width: '15%', minWidth: '85px' }}>Status</th>
+                  <th style={{ width: '15%', minWidth: '100px' }}>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.data && payments.data.length > 0 ? (
+                  payments.data.slice(0, 5).map((payment, index) => (
+                    <tr
+                      key={payment.id || index}
+                      className="clickable-row"
+                      onClick={() => navigate(`/payments`)}
+                    >
+                      <td>{index + 1}</td>
+                      <td>
+                        <div className="student-user">
+                          <img
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(payment.student)}`}
+                            alt={payment.student}
+                            className="student-avatar"
+                          />
+                          <div>
+                            <div className="student-name">{payment.student}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="plan-badge">{payment.plan}</span>
+                      </td>
+                      <td>₹{payment.amount}</td>
+                      <td>{payment.referralCode || 'Null'}</td>
+                      <td>
+                        <span
+                          className={`status-badge ${
+                            payment.status === 'Success'
+                              ? 'status-active'
+                              : payment.status === 'Failed'
+                                ? 'status-inactive'
+                                : 'status-pending'
+                          }`}
+                        >
+                          {payment.status}
+                        </span>
+                      </td>
+                      <td>{formatDate(payment.date)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="empty-table">
+                      No payments found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div className="dashboard-performance-grid">

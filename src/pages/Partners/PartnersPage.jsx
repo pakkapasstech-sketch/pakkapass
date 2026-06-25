@@ -39,6 +39,32 @@ const PartnersPage = () => {
 
   const [loading, setLoading] =
     useState(true);
+  const filteredPartners = partners.filter((partner) => {
+  const searchTerm = search.trim().toLowerCase();
+
+  const matchesSearch =
+    searchTerm === '' ||
+    String(partner.id || '').toLowerCase().includes(searchTerm) ||
+    (partner.name || '').toLowerCase().includes(searchTerm) ||
+    (partner.email || '').toLowerCase().includes(searchTerm) ||
+    (partner.mobile || partner.phone || '')
+      .toLowerCase()
+      .includes(searchTerm) ||
+    (partner.organizationName || '')
+      .toLowerCase()
+      .includes(searchTerm) ||
+    (partner.referralCode || '')
+      .toLowerCase()
+      .includes(searchTerm) ||
+    (partner.status || '')
+      .toLowerCase()
+      .includes(searchTerm);
+
+  const matchesStatus =
+    statusFilter === '' || partner.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
 
   useEffect(() => {
     const timer =
@@ -69,8 +95,7 @@ const PartnersPage = () => {
         const res =
           await partnerService.getAll(
             {
-              search:
-                debouncedSearch,
+              
               status:
                 statusFilter,
             }
@@ -171,7 +196,7 @@ const PartnersPage = () => {
 
       <PartnerTable
         partners={
-          partners
+          filteredPartners
         }
       />
     </div>

@@ -91,6 +91,14 @@ const ContentManagement = () => {
   return (
     <>
       <div className="content-management-page">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Content Management</h1>
+            <p className="page-subtitle">
+              Manage educational content hierarchy, uploads, and resources.
+            </p>
+          </div>
+        </div>
         <ContentFilters
           filters={selectedFilters}
           setFilters={setSelectedFilters}

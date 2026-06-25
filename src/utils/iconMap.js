@@ -21,6 +21,9 @@ import {
   HiOutlineDocument,
   HiOutlineFilm,
   HiOutlineClipboardList,
+  HiOutlineUsers,
+  HiOutlineUserRemove,
+  HiOutlineClock,
 } from 'react-icons/hi';
 
 const iconMap = {
@@ -48,7 +51,9 @@ const iconMap = {
   'book-open': HiOutlineBookOpen,
   'light-bulb': HiOutlineLightBulb,
   'clipboard-list': HiOutlineClipboardList,
-
+  users: HiOutlineUsers,
+  'user-remove': HiOutlineUserRemove,
+  clock: HiOutlineClock,
 };
 
 export const getIcon = (name) => iconMap[name] || HiOutlineViewGrid;

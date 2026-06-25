@@ -5,7 +5,8 @@ const Loader = () => {
   return (
     <div className="loader-overlay">
       <div className="loader-wrapper">
-        <div className="spinner-ring">
+        <div className="logo-container">
+          <div className="spinner-ring"></div>
           <img
             src={logo}
             alt="PakkaPass"

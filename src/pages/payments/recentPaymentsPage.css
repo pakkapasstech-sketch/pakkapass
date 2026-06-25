@@ -8,7 +8,7 @@
 
 .payments-filter-input,
 .payments-filter-select {
-  height: 44px;
+  height: 52px;
   padding: 0 16px;
   border: 1px solid
     var(--border-color, #e2e8f0);
@@ -52,6 +52,236 @@
   color: #94a3b8;
 }
 
+/* ================= TABLE CARD ================= */
+
+.student-table-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+/* ================= TABLE WRAPPER ================= */
+
+.student-table-wrapper {
+  overflow-x: auto;
+}
+
+/* ================= TABLE ================= */
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  background: transparent;
+}
+
+.student-table thead {
+  background: var(--color-background-secondary, #f8fafc);
+}
+
+.student-table th {
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.student-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.student-table tbody tr {
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-table tbody tr:hover {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+/* Remove border from last row */
+.student-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ================= STUDENT COLUMN ================= */
+
+.student-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.student-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+}
+
+.student-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ================= PLAN BADGE ================= */
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ================= AMOUNT COLUMN ================= */
+
+
+
+/* ================= STATUS BADGES ================= */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-active {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.status-inactive {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* ================= INDEX COLUMN ================= */
+
+.student-col-index,
+.student-table td:first-child {
+  width: 60px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.empty-table {
+  padding: 80px 20px !important;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+}
+
+/* ================= SCROLLBAR ================= */
+
+.student-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.student-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.student-table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.student-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ================= DARK MODE ================= */
+
+.dark .student-table thead,
+[data-theme='dark'] .student-table thead {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dark .student-table tbody tr:hover,
+[data-theme='dark'] .student-table tbody tr:hover {
+  background: rgba(102, 83, 175, 0.12);
+}
+
+.dark .plan-badge,
+[data-theme='dark'] .plan-badge {
+  background: rgba(102, 83, 175, 0.18);
+  color: #b4a6ff;
+}
+.payments-filters {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.payments-filter-input {
+  flex: 1;
+}
+
+.payments-filters .common-dropdown {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.payments-filters .common-dropdown-trigger {
+  height: 52px;
+}
+
+@media (max-width: 992px) {
+  .payments-filters {
+    flex-wrap: wrap;
+  }
+
+  .payments-filter-input {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .payments-filters .common-dropdown {
+    width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 576px) {
+  .payments-filters {
+    flex-direction: column;
+  }
+
+  .payments-filter-input,
+  .payments-filters .common-dropdown {
+    width: 100%;
+  }
+}
 @media (max-width: 768px) {
   .payments-filters {
     flex-direction: column;
