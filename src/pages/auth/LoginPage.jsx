@@ -168,8 +168,8 @@ const LoginPage = () => {
     return loading ? 'Verifying...' : 'Login';
   };
   if (loading || authLoading) {
-  return <Loader />;
-}
+    return <Loader />;
+  }
   return (
     <div className="login-page">
       <div className="login-left">
