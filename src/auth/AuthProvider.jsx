@@ -177,13 +177,11 @@ console.log('Normalized user:', normalized);
 // };
 const sendOtp = async ({
   email,
-  mobile,
   role,
 }) => {
   console.log("SEND OTP", {
     role,
     email,
-    mobile,
   });
 
   // DEVELOPMENT ONLY
@@ -196,15 +194,9 @@ const sendOtp = async ({
     };
   }
 
-  if (role === "parent") {
+  if (role === "parent" || role === "partner") {
     return authService.sendParentOtp({
       email,
-    });
-  }
-
-  if (role === "partner") {
-    return authService.sendPartnerOtp({
-      mobile,
     });
   }
 
@@ -212,7 +204,6 @@ const sendOtp = async ({
 };
 const verifyOtp = async ({
   email,
-  mobile,
   otp,
   role,
   rememberMe = true,
@@ -224,7 +215,6 @@ const verifyOtp = async ({
       id: 1,
       name: role === "parent" ? "Demo Parent" : "Demo Partner",
       email: email || `${role}@demo.com`,
-      mobile,
       role: normalizeRole(role),
     };
 
@@ -242,14 +232,9 @@ const verifyOtp = async ({
   // Existing backend code
   let data;
 
-  if (role === 'parent') {
+  if (role === 'parent' || role === 'partner') {
     data = await authService.verifyParentOtp({
       email,
-      otp,
-    });
-  } else if (role === 'partner') {
-    data = await authService.verifyPartnerOtp({
-      mobile,
       otp,
     });
   } else {
