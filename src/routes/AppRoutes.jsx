@@ -25,6 +25,9 @@ import PlanDetailsPage from '../pages/subscription/PlanDetailsPage';
 import CreateEditPlanPage from '../pages/subscription/CreateEditPlanPage';
 import ContentHierarchyPage from '../pages/ContentManagement/ContentHierarchyPage';
 import RecentPaymentsPage from '../pages/payments/RecentPaymentsPage';
+import StudentsData from '../pages/parentDashboardPages/studentsData';
+import SubscriptionPage from '../pages/parentDashboardPages/SubscriptionPage';
+import TransactionPage from '../pages/parentDashboardPages/TransactionPage';
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
@@ -64,14 +67,8 @@ const AppRoutes = () => (
 
         <Route element={<ProtectedRoute permission={PERMISSIONS.RESOURCE_VIEW} />}>
           <Route path="content" element={<ContentManagement />} />
-          <Route
-  path="/admin/content-hierarchy"
-  element={<ContentHierarchyPage />}
-  
-/><Route
-  path="/payments"
-  element={<RecentPaymentsPage />}
-/>
+          <Route path="/admin/content-hierarchy" element={<ContentHierarchyPage />} />
+          <Route path="/payments" element={<RecentPaymentsPage />} />
         </Route>
 
         <Route
@@ -89,7 +86,23 @@ const AppRoutes = () => (
         <Route element={<ProtectedRoute permission={PERMISSIONS.COMMISSION_VIEW} />}>
           <Route path="commissions" element={<ReferralManagementPage />} />
         </Route>
+          <Route
+  element={
+    <ProtectedRoute roles={[ROLES.PARENT]} />
+  }
+>
+  <Route path="parent/student" element={<StudentsData />} />
 
+  <Route
+    path="parent/subscription"
+    element={<SubscriptionPage />}
+  />
+
+  <Route
+    path="parent/transactions"
+    element={<TransactionPage />}
+  />
+</Route>
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="support" element={<SupportCentrePage />} />
         <Route path="settings" element={<SettingsPage />} />

@@ -22,7 +22,16 @@ const getStoredUser = () => {
 
 const getTokenStorage = () =>
   localStorage.getItem(STORAGE_KEYS.rememberMe) === 'true' ? localStorage : sessionStorage;
-
+const DEMO_USERS = {
+  parent: {
+    email: "parent@demo.com",
+    otp: "1234",
+  },
+  partner: {
+    email: "partner@demo.com",
+    otp: "1234",
+  },
+};
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(getStoredUser);
   const [loading, setLoading] = useState(true);
@@ -175,18 +184,11 @@ console.log('Normalized user:', normalized);
 //     user: userData,
 //   };
 // };
-const sendOtp = async ({
-  email,
-  role,
-}) => {
-  console.log("SEND OTP", {
-    role,
-    email,
-  });
+const sendOtp = async ({ email, role }) => {
+  const demo = DEMO_USERS[role];
 
-  // DEVELOPMENT ONLY
-  if (import.meta.env.DEV) {
-    console.log("Mock OTP: 123456");
+  if (demo && email === demo.email) {
+    console.log("Demo OTP:", demo.otp);
 
     return {
       success: true,
@@ -194,10 +196,12 @@ const sendOtp = async ({
     };
   }
 
-  if (role === "parent" || role === "partner") {
-    return authService.sendParentOtp({
-      email,
-    });
+  if (role === "parent") {
+    return authService.sendParentOtp({ email });
+  }
+
+  if (role === "partner") {
+    return authService.sendPartnerOtp({ email });
   }
 
   throw new Error("Invalid role");
@@ -208,37 +212,38 @@ const verifyOtp = async ({
   role,
   rememberMe = true,
 }) => {
+  const demo = DEMO_USERS[role];
 
-  // DEVELOPMENT ONLY
-  if (import.meta.env.DEV) {
-    const mockUser = {
-      id: 1,
-      name: role === "parent" ? "Demo Parent" : "Demo Partner",
-      email: email || `${role}@demo.com`,
-      role: normalizeRole(role),
-    };
-
+  if (demo && email === demo.email && otp === demo.otp) {
     const data = {
-      accessToken: "mock-access-token",
-      refreshToken: "mock-refresh-token",
-      user: mockUser,
+      accessToken: "demo-access-token",
+      refreshToken: "demo-refresh-token",
+      user: {
+        id: 1,
+        name: role === "parent" ? "Demo Parent" : "Demo Partner",
+        email,
+        role: normalizeRole(role),
+      },
     };
 
     persistSession(data, rememberMe);
-
     return data;
   }
 
-  // Existing backend code
   let data;
 
-  if (role === 'parent' || role === 'partner') {
+  if (role === "parent") {
     data = await authService.verifyParentOtp({
       email,
       otp,
     });
+  } else if (role === "partner") {
+    data = await authService.verifyPartnerOtp({
+      email,
+      otp,
+    });
   } else {
-    throw new Error('Invalid role for OTP');
+    throw new Error("Invalid role");
   }
 
   const userData = {

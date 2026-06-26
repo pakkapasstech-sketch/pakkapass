@@ -57,6 +57,7 @@ const LoginPage = () => {
     setOtp('');
     setCooldown(0);
     setEmail('');
+   
   }, []);
 
   useEffect(() => {

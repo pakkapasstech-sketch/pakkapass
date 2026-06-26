@@ -16,10 +16,13 @@
 .support-header h1 {
   margin-bottom: 8px;
   font-size: 32px;
+  font-size: 32px;
+  font-weight: 700;
 }
 
 .support-header p {
   color: #64748b;
+  font-size: 15px;
 }
 
 .create-ticket-btn {
