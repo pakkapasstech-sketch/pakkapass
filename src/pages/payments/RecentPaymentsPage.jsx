@@ -137,7 +137,7 @@ const pendingPayments =
       'Pending'
   ).length;
   const [currentPage, setCurrentPage] = useState(1);
-  const paymentsPerPage = 10;
+  const paymentsPerPage = 5;
 
   useEffect(() => {
     setCurrentPage(1);
@@ -309,6 +309,7 @@ const pendingPayments =
     <th>Referral Code</th>
     <th>Status</th>
     <th>Date</th>
+    
   </tr>
 </thead>
             <tbody>

@@ -44,7 +44,11 @@ const FilterDropdown = ({
         handleClick
       );
   }, []);
-
+useEffect(() => {
+  if (!value && options.length > 0 && onSelect) {
+    onSelect(options[0]);
+  }
+}, [options]);
   const filtered =
     options.filter((item) =>
       item
@@ -71,8 +75,8 @@ const FilterDropdown = ({
         }
       >
         <span>
-          {value || label}
-        </span>
+  {value || options[0] || label}
+</span>
 
         <HiOutlineChevronDown />
       </button>
@@ -83,7 +87,7 @@ const FilterDropdown = ({
             <HiOutlineSearch />
 
             <input
-              placeholder={`Search ${label}`}
+              placeholder={`Search `}
               value={search}
               onChange={(e) =>
                 setSearch(
@@ -123,7 +127,7 @@ const FilterDropdown = ({
           >
             <HiOutlinePlus />
 
-            Add New {label}
+            Add {label}
           </button>
         </div>
       )}

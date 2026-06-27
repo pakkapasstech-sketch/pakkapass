@@ -140,7 +140,50 @@
 }
 
 
+.upload-content-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 
+  height: 44px;
+  padding: 0 20px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #6653AF;
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.upload-content-btn:hover:not(:disabled) {
+  background: #5745a3;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 83, 175, 0.25);
+}
+
+.upload-content-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.upload-content-btn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.upload-btn-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
 /* ==========================================
    LARGE TABLET
 ========================================== */

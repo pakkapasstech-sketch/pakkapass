@@ -10,7 +10,7 @@
 
   padding: 28px;
 
-  background: #f8fafc;
+  background: var(--color-main-bg);;
 }
 
 /* ================= HEADER ================= */

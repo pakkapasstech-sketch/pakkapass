@@ -5,7 +5,7 @@
 :root {
   --navbar-height: 72px;
 
-  --navbar-bg: rgba(255, 255, 255, 0.92);
+  --navbar-bg:#e4ebf5;
   --navbar-dark-bg: rgba(17, 24, 39, 0.92);
 
   --navbar-shadow:
@@ -26,92 +26,86 @@
 /* ==========================================
    NAVBAR
 ========================================== */
+/* ================= NAVBAR ================= */
 
-.navbar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 30;
+.navbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
 
-  height: var(--navbar-height);
+    height:72px;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display:flex;
+    align-items:center;
 
-  padding: 0 24px;
+    background:#fff;
 
-  background: var(--navbar-bg);
-  backdrop-filter: blur(18px);
+    border-bottom:1px solid var(--color-border);
 
-  border-bottom: 1px solid var(--color-border);
-
-  box-shadow: var(--navbar-shadow);
-
-  transition:
-    left var(--transition-normal),
-    background var(--transition-normal);
+    z-index:100;
 }
 
-.dark .navbar {
-  background: var(--navbar-dark-bg);
+/* ================= LOGO ================= */
+
+.navbar-logo{
+    width:260px;
+    height:72px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    /* border-right:1px solid var(--color-border); */
+
+    flex-shrink:0;
 }
 
-/* ==========================================
-   SIDEBAR STATES
-========================================== */
-
-.navbar-expanded {
-  left: 260px;
+.navbar-logo-image{
+    width:180px;
+    height:auto;
+    object-fit:contain;
 }
 
-.navbar-collapsed {
-  left: 72px;
+/* ================= LEFT ================= */
+
+.navbar-left{
+    flex:1;
+
+    display:flex;
+    align-items:center;
+
+    padding-left:24px;
 }
 
-/* ==========================================
-   LEFT SECTION
-========================================== */
+/* Hide desktop hamburger */
 
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-
-  min-width: 0;
+.navbar-desktop-btn{
+    display:none;
 }
 
-.navbar-title-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* Mobile only */
 
-  min-width: 0;
+.navbar-mobile-btn{
+    display:none;
 }
 
-.navbar-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+@media(max-width:1024px){
 
-  font-size: clamp(18px, 2vw, 20px);
-  font-weight: 700;
-  line-height: 1.2;
-
-  color: var(--color-text-primary);
+.navbar-mobile-btn{
+    display:flex;
 }
 
-.navbar-subtitle {
-  margin-top: 3px;
+}
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* ================= RIGHT ================= */
 
-  font-size: 13px;
-  line-height: 1.4;
+.navbar-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
 
-  color: var(--color-text-secondary);
+    padding-right:24px;
 }
 
 /* ==========================================
@@ -600,7 +594,81 @@
 .navbar-download-text {
   white-space: nowrap;
 }
+/* ================= Logo ================= */
 
+.navbar-logo{
+    width:260px;
+    height:72px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    position:relative;
+
+    flex-shrink:0;
+
+    border-right:1px solid var(--color-border);
+}
+
+.navbar-logo-image{
+    width:170px;
+    height:auto;
+    object-fit:contain;
+}
+
+/* ================= Sidebar Toggle ================= */
+
+.navbar-sidebar-toggle{
+
+    position:absolute;
+
+    right:-16px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:32px;
+    height:32px;
+
+    border-radius:50%;
+
+    border:1px solid var(--color-border);
+
+    background:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    color:#6b7280;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+
+    transition:.25s;
+
+    z-index:200;
+}
+
+.navbar-sidebar-toggle:hover{
+
+    background:#6653AF;
+
+    color:#fff;
+
+    transform:translateY(-50%) scale(1.08);
+
+}
+
+.navbar-sidebar-toggle svg{
+
+    width:18px;
+    height:18px;
+
+}
 /* Mobile */
 @media (max-width: 768px) {
   .navbar-download-btn {
@@ -776,4 +844,63 @@
   .navbar-desktop-btn {
     display: none;
   }
+}
+/* ==========================================
+   WHITE NAVBAR EVEN IN DARK MODE
+========================================== */
+
+.dark .navbar{
+    background:#fff !important;
+    border-bottom:1px solid #e5e7eb;
+}
+
+/* Username */
+.dark .navbar-user-name{
+    color:#111827 !important;
+}
+
+/* Calendar Button */
+.dark .navbar-date-btn{
+    background:#fff !important;
+    border:1px solid #d1d5db !important;
+    color:#111827 !important;
+}
+
+.dark .navbar-date-text{
+    color:#111827 !important;
+}
+
+.dark .navbar-date-btn svg{
+    color:#6653AF !important;
+}
+
+/* Theme Toggle / Icon Buttons */
+.dark .navbar-icon-btn{
+    background:#fff !important;
+    color:#111827 !important;
+    border:1px solid #d1d5db;
+}
+
+.dark .navbar-icon-btn svg{
+    color:#111827 !important;
+}
+
+.dark .navbar-icon-btn:hover{
+    background:#f3f4f6 !important;
+}
+
+/* Profile Button */
+.dark .navbar-profile-btn{
+    background:#fff !important;
+    color:#111827 !important;
+}
+
+.dark .navbar-profile-btn svg{
+    color:#111827 !important;
+}
+
+/* Sidebar Toggle */
+.dark .navbar-sidebar-toggle{
+    background:#fff !important;
+    color:#111827 !important;
 }

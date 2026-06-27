@@ -130,7 +130,8 @@
   margin-top: 12px;
   margin-bottom: 0;
   color: var(--color-text-primary);
-  font-size: 28px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 /* Students */
@@ -345,6 +346,116 @@
 
 .partnerdashboard-table::-webkit-scrollbar-track {
   background: transparent;
+}
+.partnerdashboard-dashboard-section{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:24px;
+    align-items:start;
+}
+
+.partnerdashboard-table-card{
+    background:#fff;
+    border:1px solid #E5E7EB;
+    border-radius:16px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+}
+
+.partnerdashboard-table-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 24px;
+    border-bottom:1px solid #E5E7EB;
+}
+
+.partnerdashboard-table-title h3{
+    margin:0;
+    font-size:18px;
+    font-weight:600;
+}
+
+.partnerdashboard-view-all{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:#6653AF;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+}
+
+.partnerdashboard-view-all:hover{
+    color:#4f46e5;
+}
+
+.partnerdashboard-data-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.partnerdashboard-data-table th{
+    background:#F8FAFC;
+    padding:14px 18px;
+    text-align:left;
+    font-size:13px;
+    font-weight:600;
+    color:#64748B;
+}
+
+.partnerdashboard-data-table td{
+    padding:14px 18px;
+    border-top:1px solid #F1F5F9;
+    font-size:14px;
+    color:#111827;
+}
+
+.partnerdashboard-data-table tbody tr:hover{
+    background:#FAFAFA;
+}
+.partnerdashboard-table-wrapper{
+    overflow-x:auto;
+}
+.partnerdashboard-dashboard-section{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:24px;
+    align-items:stretch;   /* instead of start */
+}
+
+.partnerdashboard-table-card{
+    background:#fff;
+    border:1px solid #E5E7EB;
+    border-radius:16px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+}
+
+.partnerdashboard-table-wrapper{
+    flex:1;
+    overflow-x:auto;
+    padding:16px 20px 20px;
+}
+.partnerdashboard-data-table thead th:first-child{
+    border-top-left-radius:10px;
+}
+
+.partnerdashboard-data-table thead th:last-child{
+    border-top-right-radius:10px;
+}
+@media (max-width:1200px){
+    .partnerdashboard-dashboard-section{
+        grid-template-columns:1fr;
+    }
+}
+@media (max-width:1200px){
+    .partnerdashboard-dashboard-section{
+        grid-template-columns:1fr;
+    }
 }
 
 /* ================================

@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: 28px;
   padding: 28px;
-  background: #f8fafc;
+  background: var(--color-main-bg);
   min-height: 100%;
 }
 
@@ -45,7 +45,27 @@
   line-height: 1.7;
   font-size: 15px;
 }
+.partner-status-select {
+  width: 120px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
 
+.partner-status-select:hover,
+.partner-status-select:focus {
+  border-color: var(--color-primary);
+}
+
+.partner-status-select option {
+  color: #111827;
+}
 /* ================= BUTTONS ================= */
 
 .header-actions {
@@ -247,15 +267,15 @@
 }
 
 .partners-table th {
-  background: #f8fafc;
-  padding: 18px 22px;
-
-  text-align: left;
-  font-size: 13px;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.4px;
-}
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;}
 
 .partners-table td {
   padding: 18px 22px;

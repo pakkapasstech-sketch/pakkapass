@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HiOutlineSearch, HiOutlineDownload } from 'react-icons/hi';
+import { HiOutlineSearch, HiOutlineDownload ,HiOutlineChevronLeft,
+  HiOutlineChevronRight,HiOutlineEye } from 'react-icons/hi';
 import StatisticCard from '../../components/cards/StatisticCard';
 import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
 
@@ -10,6 +11,7 @@ import { useParents } from '../../hooks/useParents';
 
 import '../../styles/ParentsManagement.css';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+import '../../styles/student-table.css';
 
 const ParentsManagement = () => {
   const navigate = useNavigate();
@@ -18,7 +20,12 @@ const ParentsManagement = () => {
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
+const parentsPerPage = 5;
+ useEffect(() => {
+  setCurrentPage(1);
+}, [search, statusFilter]);
   const filteredParents = parents.filter((p) => {
   const searchTerm = search.trim().toLowerCase();
 
@@ -36,6 +43,29 @@ const ParentsManagement = () => {
 
   return matchesSearch && matchesStatus;
 });
+const totalParentsFiltered = filteredParents.length;
+
+const totalPages =
+  Math.ceil(totalParentsFiltered / parentsPerPage) || 1;
+
+const startIndex = (currentPage - 1) * parentsPerPage;
+
+const endIndex = startIndex + parentsPerPage;
+
+const currentParents = filteredParents.slice(
+  startIndex,
+  endIndex
+);
+
+const getVisiblePages = () => {
+  const start = Math.max(currentPage - 2, 1);
+  const end = Math.min(currentPage + 2, totalPages);
+
+  return Array.from(
+    { length: end - start + 1 },
+    (_, i) => start + i
+  );
+};
 
   if (isLoading) return <Loader />;
 
@@ -49,7 +79,7 @@ const ParentsManagement = () => {
   const inactiveParents = totalParents - activeParents;
 
   const linkedStudents = parents.reduce((total, parent) => total + parent.students, 0);
-
+ 
   return (
     <div className="parents-page">
       <div className="page-header flex justify-between items-start flex-wrap gap-6">
@@ -172,17 +202,17 @@ const ParentsManagement = () => {
               <th>Phone</th>
               <th>Students</th>
               <th>Status</th>
+              <th>view</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredParents.length > 0 ? (
-              filteredParents.map((p) => (
+              currentParents.map((p) => (
                 <tr
-                  key={p.id}
-                  className="parent-row"
-                  onClick={() => navigate(`/parents/${p.id}`)}
-                >
+  key={p.id}
+  className="parent-row"
+>
                   <td>{p.id}</td>
 
                   <td>
@@ -216,18 +246,65 @@ const ParentsManagement = () => {
                       {p.status}
                     </span>
                   </td>
+                  <td className="table-actions">
+  <button
+    className="table-action-btn"
+    onClick={() => navigate(`/parents/${p.id}`)}
+    title="View Parent"
+  >
+    <HiOutlineEye />
+  </button>
+</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="empty-table">
+                <td colSpan="7" className="empty-table">
                   No parents found
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        {totalParentsFiltered > 0 && (
+  <div className="pagination">
+    <p>
+      Showing {startIndex + 1} to{' '}
+      {Math.min(endIndex, totalParentsFiltered)} of{' '}
+      {totalParentsFiltered} parents
+    </p>
+
+    <div className="pagination-buttons">
+      <button
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage((prev) => prev - 1)}
+      >
+        <HiOutlineChevronLeft />
+      </button>
+
+      {getVisiblePages().map((page) => (
+        <button
+          key={page}
+          onClick={() => setCurrentPage(page)}
+          className={
+            currentPage === page ? 'active-page' : ''
+          }
+        >
+          {page}
+        </button>
+      ))}
+
+      <button
+        disabled={currentPage === totalPages}
+        onClick={() => setCurrentPage((prev) => prev + 1)}
+      >
+        <HiOutlineChevronRight />
+      </button>
+    </div>
+  </div>
+)}
       </div>
+      
     </div>
   );
 };

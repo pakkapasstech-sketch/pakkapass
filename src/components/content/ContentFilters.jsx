@@ -284,7 +284,7 @@ const sectionOptions =
         {/* Chapter */}
 
         <FilterDropdown
-  label="Chapter"
+  label="Title"
   value={filters.chapter}
 disabled={
   !filters.selectedContentType
@@ -314,7 +314,7 @@ disabled={
         {/* Section */}
 
         <FilterDropdown
-          label="Topic"
+          label="SubTitle"
           value={filters.section}
           disabled={!filters.chapter}
           options={sectionOptions}

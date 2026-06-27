@@ -15,6 +15,7 @@ import './contentManagement.css';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
 import Loader from '../../components/common/Loader';
+import { HiCloudArrowUp } from 'react-icons/hi2';
 const ContentManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
 
@@ -132,12 +133,16 @@ const ContentManagement = () => {
               </div>
 
               <button
-                className="upload-content-btn"
-                disabled={!selectedFilters.selectedContentType || !selectedFilters.chapter}
-                onClick={() => setShowUploadModal(true)}
-              >
-                {`+ Upload ${selectedFilters.selectedContentType || 'Content'}`}
-              </button>
+  className="upload-content-btn"
+  disabled={
+    !selectedFilters.selectedContentType ||
+    !selectedFilters.chapter
+  }
+  onClick={() => setShowUploadModal(true)}
+>
+  <HiCloudArrowUp className="upload-btn-icon" />
+  <span>Upload</span>
+</button>
             </div>
 
             <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />

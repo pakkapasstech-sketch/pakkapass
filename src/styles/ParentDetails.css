@@ -1,5 +1,6 @@
 .parent-details-page {
   padding: 24px;
+  background: var(--color-main-bg);
 }
 
 .profile-card {

@@ -28,6 +28,8 @@ import RecentPaymentsPage from '../pages/payments/RecentPaymentsPage';
 import StudentsData from '../pages/parentDashboardPages/studentsData';
 import SubscriptionPage from '../pages/parentDashboardPages/SubscriptionPage';
 import TransactionPage from '../pages/parentDashboardPages/TransactionPage';
+import PartnerStudentsPage from '../pages/PartnerDashboardPages/PartnerStudentsPage';
+import PartnerPaymentsPage from '../pages/PartnerDashboardPages/PartnerPaymentsPage';
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
@@ -101,6 +103,21 @@ const AppRoutes = () => (
   <Route
     path="parent/transactions"
     element={<TransactionPage />}
+  />
+</Route>
+<Route
+  element={
+    <ProtectedRoute roles={[ROLES.PARTNER]} />
+  }
+>
+  <Route
+    path="partner/students"
+    element={<PartnerStudentsPage />}
+  />
+
+  <Route
+    path="partner/payments"
+    element={<PartnerPaymentsPage />}
   />
 </Route>
         <Route path="notifications" element={<NotificationsPage />} />

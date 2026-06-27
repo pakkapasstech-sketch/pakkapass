@@ -1,6 +1,6 @@
 .parentdashboard-page {
   padding: 32px;
-  background: #f8fafc;
+  background: var(--color-main-bg);;
   min-height: 100vh;
 }
 

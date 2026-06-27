@@ -116,7 +116,24 @@ const PartnersPage = () => {
         setLoading(false);
       }
     };
+const handleStatusChange = async (id, status) => {
+  try {
+    await partnerService.updateStatus(id, status);
 
+    setPartners((prev) =>
+      prev.map((partner) =>
+        partner.id === id
+          ? {
+              ...partner,
+              status,
+            }
+          : partner
+      )
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
   useEffect(() => {
     fetchPartners();
   }, [
@@ -195,9 +212,8 @@ const PartnersPage = () => {
       )}
 
       <PartnerTable
-        partners={
-          filteredPartners
-        }
+        partners={filteredPartners}
+  onStatusChange={handleStatusChange}
       />
     </div>
   );

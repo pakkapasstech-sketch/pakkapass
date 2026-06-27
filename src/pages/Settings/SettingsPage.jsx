@@ -6,7 +6,7 @@ import { authService } from '../../services/auth.service';
 import { usePermissions } from '../../auth/usePermissions';
 import { ROLES } from '../../auth/roles';
 import '../../styles/settings.css';
-
+import PartnerSettings from './PartnerSettings';
 const SettingsPage = () => {
   const { user, updateUser } = useAuth();
   const { isDark, setIsDark } = useTheme();
@@ -55,9 +55,12 @@ const SettingsPage = () => {
       setSaving(false);
     }
   };
-
+  if (role === ROLES.PARTNER) {
+  return <PartnerSettings />;
+}
   return (
     <div className="settings-page">
+      
       <section className="settings-section">
         <h3>Profile</h3>
         <div className="settings-form">

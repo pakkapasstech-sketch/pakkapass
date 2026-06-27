@@ -1,20 +1,13 @@
-import { useMemo, useState } from 'react';
-import {
-  HiOutlineClipboardCopy,
-  HiOutlineSearch,
-} from 'react-icons/hi';
+import { HiOutlineClipboardCopy } from 'react-icons/hi';
 
 import StatisticCard from '../../components/cards/StatisticCard';
-import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+import { HiOutlineArrowRight } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
 import '../../styles/PartnerDashboard.css';
 
 const PartnerDashboard = () => {
   const isLoading = false;
-
-  const [search, setSearch] = useState('');
-  const [selectedClass, setSelectedClass] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
 
   const partner = {
     organizationName: 'ABC Educational Services',
@@ -85,16 +78,16 @@ const PartnerDashboard = () => {
     },
   ];
 
-  const referredStudents = [
+  const recentRegistrations = [
     {
       id: 1,
       studentId: 'STU1001',
       name: 'Rahul Sharma',
       class: '10',
       parent: 'Amit Sharma',
-      registeredOn: '15 Jun 2026',
+      referralCode: partner.referralCode,
       status: 'Active',
-      fee: '₹12,000',
+      registeredOn: '15 Jun 2026',
     },
     {
       id: 2,
@@ -102,9 +95,9 @@ const PartnerDashboard = () => {
       name: 'Sneha Reddy',
       class: '9',
       parent: 'Suresh Reddy',
-      registeredOn: '18 Jun 2026',
+      referralCode: partner.referralCode,
       status: 'Pending',
-      fee: '₹9,500',
+      registeredOn: '18 Jun 2026',
     },
     {
       id: 3,
@@ -112,9 +105,9 @@ const PartnerDashboard = () => {
       name: 'Arjun Kumar',
       class: '8',
       parent: 'Raj Kumar',
-      registeredOn: '20 Jun 2026',
+      referralCode: partner.referralCode,
       status: 'Active',
-      fee: '₹10,500',
+      registeredOn: '20 Jun 2026',
     },
     {
       id: 4,
@@ -122,9 +115,9 @@ const PartnerDashboard = () => {
       name: 'Priya Singh',
       class: '10',
       parent: 'Neha Singh',
-      registeredOn: '22 Jun 2026',
+      referralCode: partner.referralCode,
       status: 'Active',
-      fee: '₹11,000',
+      registeredOn: '22 Jun 2026',
     },
     {
       id: 5,
@@ -132,283 +125,236 @@ const PartnerDashboard = () => {
       name: 'Vikram Patel',
       class: '7',
       parent: 'Ramesh Patel',
-      registeredOn: '24 Jun 2026',
+      referralCode: partner.referralCode,
       status: 'Active',
-      fee: '₹8,500',
+      registeredOn: '24 Jun 2026',
     },
   ];
 
-  const filteredStudents = useMemo(() => {
-    return referredStudents.filter((student) => {
-      const matchesSearch =
-        student.studentId
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        student.name
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        student.parent
-          .toLowerCase()
-          .includes(search.toLowerCase());
-
-      const matchesClass =
-        !selectedClass ||
-        student.class === selectedClass;
-
-      const matchesStatus =
-        !selectedStatus ||
-        student.status === selectedStatus;
-
-      return (
-        matchesSearch &&
-        matchesClass &&
-        matchesStatus
-      );
-    });
-  }, [
-    search,
-    selectedClass,
-    selectedStatus,
-  ]);
+  const recentPayments = [
+    {
+      id: 1,
+      student: 'Rahul Sharma',
+      plan: 'Premium',
+      amount: '₹12,000',
+      referralCode: partner.referralCode,
+      status: 'Paid',
+      date: '15 Jun 2026',
+    },
+    {
+      id: 2,
+      student: 'Sneha Reddy',
+      plan: 'Standard',
+      amount: '₹9,500',
+      referralCode: partner.referralCode,
+      status: 'Paid',
+      date: '18 Jun 2026',
+    },
+    {
+      id: 3,
+      student: 'Arjun Kumar',
+      plan: 'Premium',
+      amount: '₹10,500',
+      referralCode: partner.referralCode,
+      status: 'Pending',
+      date: '20 Jun 2026',
+    },
+    {
+      id: 4,
+      student: 'Priya Singh',
+      plan: 'Premium',
+      amount: '₹11,000',
+      referralCode: partner.referralCode,
+      status: 'Paid',
+      date: '22 Jun 2026',
+    },
+    {
+      id: 5,
+      student: 'Vikram Patel',
+      plan: 'Basic',
+      amount: '₹8,500',
+      referralCode: partner.referralCode,
+      status: 'Paid',
+      date: '24 Jun 2026',
+    },
+  ];
 
   const copyReferralCode = () => {
-    navigator.clipboard.writeText(
-      partner.referralCode
-    );
+    navigator.clipboard.writeText(partner.referralCode);
   };
 
   return (
     <div className="partnerdashboard-page">
-
       <div className="partnerdashboard-header">
         <div>
           <h2>{partner.organizationName}</h2>
           <p>
-            Referral Code{' '}
-            <strong>{partner.referralCode}</strong>
+            Referral Code <strong>{partner.referralCode}</strong>
           </p>
         </div>
       </div>
 
       <div className="partnerdashboard-stats">
         {statCards.map((card) => (
-          <StatisticCard
-            key={card.id}
-            {...card}
-            isLoading={isLoading}
-          />
+          <StatisticCard key={card.id} {...card} isLoading={isLoading} />
         ))}
       </div>
 
       <div className="partnerdashboard-referral-card">
-
         <div className="partnerdashboard-referral-header">
-
           <h3>Your Referral Message</h3>
 
-          <button
-            className="partnerdashboard-copy-btn"
-            onClick={copyReferralCode}
-          >
+          <button className="partnerdashboard-copy-btn" onClick={copyReferralCode}>
             <HiOutlineClipboardCopy />
             Copy Referral Code
           </button>
-
         </div>
 
-        <div className="partnerdashboard-referral-code">
-          {partner.referralCode}
-        </div>
+        <div className="partnerdashboard-referral-code">{partner.referralCode}</div>
 
         <p>{partner.referralMessage}</p>
-
       </div>
 
       <div className="partnerdashboard-summary">
-
         <div className="partnerdashboard-summary-card">
           <span>Total Commission Earned</span>
-          <h3>
-            ₹
-            {analytics.revenue.totalCommissionEarned.toLocaleString()}
-          </h3>
+          <h3>₹{analytics.revenue.totalCommissionEarned.toLocaleString()}</h3>
         </div>
 
         <div className="partnerdashboard-summary-card">
           <span>Total Commission Paid</span>
-          <h3>
-            ₹
-            {analytics.revenue.totalCommissionPaid.toLocaleString()}
-          </h3>
+          <h3>₹{analytics.revenue.totalCommissionPaid.toLocaleString()}</h3>
         </div>
 
         <div className="partnerdashboard-summary-card">
           <span>Monthly Registrations</span>
-          <h3>
-            {analytics.students.monthlyRegistrations}
-          </h3>
+          <h3>{analytics.students.monthlyRegistrations}</h3>
         </div>
 
         <div className="partnerdashboard-summary-card">
           <span>Monthly Revenue</span>
-          <h3>
-            ₹
-            {analytics.revenue.monthlyRevenue.toLocaleString()}
-          </h3>
+          <h3>₹{analytics.revenue.monthlyRevenue.toLocaleString()}</h3>
         </div>
-
       </div>
-            <div className="partnerdashboard-students">
+      <div className="partnerdashboard-dashboard-section">
+        {/* Recent Registrations */}
 
-        <div className="partnerdashboard-section-header">
-          <h3>Students Registered Using Your Referral Code</h3>
+        <div className="partnerdashboard-table-card">
+          <div className="partnerdashboard-table-title">
+            <h3>Recent Registrations</h3>
 
-          <span>
-            {filteredStudents.length} Students
-          </span>
-        </div>
-
-        {/* Toolbar */}
-
-        <div className="partnerdashboard-toolbar">
-
-          <div className="partnerdashboard-search">
-
-            <HiOutlineSearch />
-
-            <input
-              type="text"
-              placeholder="Search Student ID, Student or Parent..."
-              value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
-            />
-
+            <Link to="/partner/students" className="partnerdashboard-view-all">
+              View All
+              <HiOutlineArrowRight />
+            </Link>
           </div>
+          <div className="partnerdashboard-table-wrapper">
+            <table className="partnerdashboard-data-table">
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Student</th>
+                  <th>Class</th>
+                  <th>Parent</th>
+                  <th>Referral Code</th>
+                  <th>Status</th>
+                  <th>Registered On</th>
+                </tr>
+              </thead>
 
-          <CommonFilterDropdown
-            placeholder="Class"
-            value={selectedClass}
-            options={[
-              '7',
-              '8',
-              '9',
-              '10',
-            ]}
-            onChange={setSelectedClass}
-          />
+              <tbody>
+                {recentRegistrations.map((student) => (
+                  <tr key={student.id}>
+                    <td>{student.studentId}</td>
 
-          <CommonFilterDropdown
-            placeholder="Status"
-            value={selectedStatus}
-            options={[
-              'Active',
-              'Pending',
-            ]}
-            onChange={setSelectedStatus}
-          />
+                    <td>{student.name}</td>
 
-          {/* <button
-            className="partnerdashboard-reset-btn"
-            onClick={() => {
-              setSearch('');
-              setSelectedClass('');
-              setSelectedStatus('');
-            }}
-          >
-            Reset
-          </button> */}
+                    <td>Class {student.class}</td>
 
-        </div>
+                    <td>{student.parent}</td>
 
-        {/* Students Table */}
+                    <td>{student.referralCode}</td>
 
-        <div className="partnerdashboard-table">
+                    <td>
+                      <span
+                        className={`partnerdashboard-status ${
+                          student.status === 'Active'
+                            ? 'partnerdashboard-status-active'
+                            : 'partnerdashboard-status-pending'
+                        }`}
+                      >
+                        {student.status}
+                      </span>
+                    </td>
 
-          <div className="partnerdashboard-table-header">
-
-            <div>Student ID</div>
-
-            <div>Student Name</div>
-
-            <div>Class</div>
-
-            <div>Parent</div>
-
-            <div>Registered On</div>
-
-            <div>Status</div>
-
-            <div>Subscription</div>
-
+                    <td>{student.registeredOn}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          {filteredStudents.length === 0 ? (
-
-            <div className="partnerdashboard-empty">
-
-              No students found.
-
-            </div>
-
-          ) : (
-
-            filteredStudents.map((student) => (
-
-              <div
-                className="partnerdashboard-table-row"
-                key={student.id}
-              >
-
-                <div className="partnerdashboard-student-id">
-                  {student.studentId}
-                </div>
-
-                <div className="partnerdashboard-student-name">
-                  {student.name}
-                </div>
-
-                <div>
-                  Class {student.class}
-                </div>
-
-                <div>
-                  {student.parent}
-                </div>
-
-                <div>
-                  {student.registeredOn}
-                </div>
-
-                <div>
-
-                  <span
-                    className={`partnerdashboard-status ${
-                      student.status === 'Active'
-                        ? 'partnerdashboard-status-active'
-                        : 'partnerdashboard-status-pending'
-                    }`}
-                  >
-                    {student.status}
-                  </span>
-
-                </div>
-
-                <div className="partnerdashboard-fee">
-                  {student.fee}
-                </div>
-
-              </div>
-
-            ))
-
-          )}
-
         </div>
 
+        {/* Recent Payments */}
+
+        <div className="partnerdashboard-table-card">
+          <div className="partnerdashboard-table-title">
+            <h3>Recent Payments</h3>
+
+            <Link to="/partner/payments" className="partnerdashboard-view-all">
+              View All
+              <HiOutlineArrowRight />
+            </Link>
+          </div>
+          <div className="partnerdashboard-table-wrapper">
+            <table className="partnerdashboard-data-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+
+                  <th>Plan</th>
+
+                  <th>Amount</th>
+
+                  <th>Referral Code</th>
+
+                  <th>Status</th>
+
+                  <th>Date</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {recentPayments.map((payment) => (
+                  <tr key={payment.id}>
+                    <td>{payment.student}</td>
+
+                    <td>{payment.plan}</td>
+
+                    <td>{payment.amount}</td>
+
+                    <td>{payment.referralCode}</td>
+
+                    <td>
+                      <span
+                        className={`partnerdashboard-status ${
+                          payment.status === 'Paid'
+                            ? 'partnerdashboard-status-active'
+                            : 'partnerdashboard-status-pending'
+                        }`}
+                      >
+                        {payment.status}
+                      </span>
+                    </td>
+
+                    <td>{payment.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-
     </div>
   );
 };

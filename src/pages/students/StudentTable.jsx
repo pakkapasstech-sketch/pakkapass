@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
+import { HiOutlineChevronLeft, HiOutlineChevronRight,HiOutlineEye } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/student-table.css';
 
@@ -51,6 +51,7 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
             <th>Subscription Plan</th>
             <th>Status</th>
             <th>Registered On</th>
+            <th>view</th>
           </tr>
         </thead>
 
@@ -58,10 +59,8 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
           {currentStudents.length > 0 ? (
             currentStudents.map((student, index) => (
               <tr
-                key={`${student.id}-${startIndex + index}`}
-                className="clickable-row"
-                onClick={() => navigate(`/students/${student.id}`)}
-              >
+  key={`${student.id}-${startIndex + index}`}
+>
                 <td>{student.id || '—'}</td>
 
                 <td>
@@ -116,6 +115,17 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
                     ? new Date(student.createdAt).toLocaleDateString()
                     : student.registeredOn || '—'}
                 </td>
+                
+
+<td className="table-actions">
+  <button
+    className="table-action-btn"
+    onClick={() => navigate(`/students/${student.id}`)}
+    title="View Student"
+  >
+    <HiOutlineEye />
+  </button>
+</td>
               </tr>
             ))
           ) : (

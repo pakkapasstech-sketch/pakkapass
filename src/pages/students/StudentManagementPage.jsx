@@ -65,7 +65,7 @@ const StudentManagementPage = () => {
     student.partner?.referralCode,
     student.profile?.partner?.referralCode,
     student.institution,
-    student.grade,
+    student.class,
     student.board,
     student.state,
     student.status,
@@ -83,9 +83,8 @@ const StudentManagementPage = () => {
     );
 
         const classMatch =
-          !filters.class ||
-          student.grade ===
-            filters.class;
+  !filters.class ||
+  student.class === filters.class;
 
         const boardMatch =
           !filters.board ||

@@ -143,7 +143,7 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
           <div className="data-table-header">
             <h3 className="data-table-title">Recent Registrations</h3>
             <div className="data-table-toolbar">
-              <button
+              {/* <button
                 onClick={() => {
                   const exportCols = [
                     { header: 'ID', accessor: (r) => r.id },
@@ -182,7 +182,7 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
               >
                 <HiOutlineDownload />
                 Excel
-              </button>
+              </button> */}
               <button
                 className="data-table-view-all"
                 onClick={() =>
@@ -205,7 +205,7 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
           <div className="data-table-header">
             <h3 className="data-table-title">Recent Payments</h3>
             <div className="data-table-toolbar">
-              <button
+              {/* <button
                 onClick={() => {
                   const exportCols = [
                     { header: 'Student', accessor: (r) => r.student },
@@ -221,8 +221,8 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
               >
                 <HiOutlineDownload />
                 CSV
-              </button>
-              <button
+              </button> */}
+              {/* <button
                 onClick={() => {
                   const exportCols = [
                     { header: 'Student', accessor: (r) => r.student },
@@ -238,7 +238,7 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
               >
                 <HiOutlineDownload />
                 Excel
-              </button>
+              </button> */}
               <button
                 className="data-table-view-all"
                 onClick={() => navigate('/payments')}

@@ -42,12 +42,7 @@ PAGE
 .student-dashboard {
 min-height: 100vh;
 padding: var(--student-page-padding);
-background:
-linear-gradient(
-180deg,
-#f8fafc,
-#eef2ff
-);
+background: var(--color-main-bg);
 }
 
 /* ==========================================
