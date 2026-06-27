@@ -37,7 +37,7 @@
   border: none;
   border-radius: 12px;
 
-  background: #6366f1;
+  background: var(--color-primary);
   color: white;
 
   font-weight: 600;
@@ -71,7 +71,7 @@
 
 .support-card svg {
   font-size: 30px;
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
 .support-card h3 {

@@ -172,3 +172,93 @@
     align-self: flex-start;
   }
 }
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .parentdashboard-page,
+[data-theme='dark'] .parentdashboard-page {
+  background: var(--color-main-bg);
+}
+
+/* Header */
+
+.dark .parentdashboard-header h2,
+[data-theme='dark'] .parentdashboard-header h2 {
+  color: var(--color-text-primary);
+}
+
+.dark .parentdashboard-header p,
+[data-theme='dark'] .parentdashboard-header p {
+  color: var(--color-text-secondary);
+}
+
+/* Profile Card */
+
+.dark .parentdashboard-profile-card,
+[data-theme='dark'] .parentdashboard-profile-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.dark .parentdashboard-profile-info h3,
+[data-theme='dark'] .parentdashboard-profile-info h3 {
+  color: var(--color-text-primary);
+}
+
+.dark .parentdashboard-profile-grid span,
+[data-theme='dark'] .parentdashboard-profile-grid span {
+  color: var(--color-text-secondary);
+}
+
+.dark .parentdashboard-profile-grid strong,
+[data-theme='dark'] .parentdashboard-profile-grid strong {
+  color: var(--color-text-primary);
+}
+
+/* Cards */
+
+.dark .parentdashboard-card,
+[data-theme='dark'] .parentdashboard-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.dark .parentdashboard-card h3,
+[data-theme='dark'] .parentdashboard-card h3 {
+  color: var(--color-text-primary);
+}
+
+/* List Items */
+
+.dark .parentdashboard-list-item,
+[data-theme='dark'] .parentdashboard-list-item {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.dark .parentdashboard-list-item:hover,
+[data-theme='dark'] .parentdashboard-list-item:hover {
+  background: rgba(102, 83, 175, 0.12);
+  border-color: var(--color-primary);
+}
+
+.dark .parentdashboard-list-item strong,
+[data-theme='dark'] .parentdashboard-list-item strong {
+  color: var(--color-text-primary);
+}
+
+.dark .parentdashboard-list-item p,
+[data-theme='dark'] .parentdashboard-list-item p {
+  color: var(--color-text-secondary);
+}
+
+/* Badge */
+
+.dark .parentdashboard-list-item span,
+[data-theme='dark'] .parentdashboard-list-item span {
+  background: rgba(102, 83, 175, 0.18);
+  color: #c4b5fd;
+}

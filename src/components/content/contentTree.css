@@ -105,26 +105,24 @@
 ========================================== */
 
 .tree-row {
-  min-height: 42px;
-  min-width: 0;
-  width: 100%;
-
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
 
+  min-width: calc(100% + 28px);
+  width: max-content;
+
+  margin-left: -14px;
   padding: 0 14px;
 
+  min-height: 42px;
   border-radius: 12px;
-
-  white-space: nowrap;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease,
-    color 0.2s ease;
+  box-sizing: border-box;
+}
+.tree-node,
+.tree-wrapper,
+.tree-children {
+  width: max-content;
+  min-width: 100%;
 }
 
 .tree-row:hover {
@@ -187,13 +185,10 @@
 
 .tree-label {
   white-space: nowrap;
-
+  flex-shrink: 0;
+  color: var(--color-text-primary);
   font-size: 14px;
-
-  color:
-    var(--color-text-primary);
 }
-
 /* ==========================================
    CHILDREN
 ========================================== */

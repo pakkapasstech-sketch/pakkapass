@@ -7,54 +7,66 @@ import {
 
 const SidebarContext = createContext(null);
 
-export const SidebarProvider = ({
-  children,
-}) => {
-  const [isCollapsed, setIsCollapsed] =
-    useState(false);
+export const SidebarProvider = ({ children }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const [isMobileOpen, setIsMobileOpen] =
-    useState(false);
+  const [expandedMenus, setExpandedMenus] = useState({
+    content: true,
+  });
 
-  const [expandedMenus, setExpandedMenus] =
-    useState({
-      content: true,
-    });
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth < 1024
+  );
 
   useEffect(() => {
-    const handleResize = () => {
-      const isMobile =
-        window.innerWidth < 1024;
+    const media = window.matchMedia('(max-width: 1023px)');
 
-      if (isMobile) {
+    const handleChange = (e) => {
+      const mobile = e.matches;
+
+      setIsMobile(mobile);
+
+      if (mobile) {
+        setIsMobileOpen(false);
         setIsCollapsed(false);
       } else {
         setIsMobileOpen(false);
       }
     };
 
-    handleResize();
+    handleChange(media);
 
-    window.addEventListener(
-      'resize',
-      handleResize
-    );
+    if (media.addEventListener) {
+      media.addEventListener('change', handleChange);
+    } else {
+      media.addListener(handleChange);
+    }
 
-    return () =>
-      window.removeEventListener(
-        'resize',
-        handleResize
-      );
+    return () => {
+      if (media.removeEventListener) {
+        media.removeEventListener('change', handleChange);
+      } else {
+        media.removeListener(handleChange);
+      }
+    };
   }, []);
 
-  const toggleSidebar = () =>
-    setIsCollapsed((prev) => !prev);
+  const toggleSidebar = () => {
+    if (!isMobile) {
+      setIsCollapsed((prev) => !prev);
+    }
+  };
 
-  const toggleMobileSidebar = () =>
-    setIsMobileOpen((prev) => !prev);
+  const toggleMobileSidebar = () => {
+    if (isMobile) {
+      setIsMobileOpen((prev) => !prev);
+    }
+  };
 
-  const closeMobileSidebar = () =>
+  const closeMobileSidebar = () => {
     setIsMobileOpen(false);
+  };
 
   const toggleMenu = (id) =>
     setExpandedMenus((prev) => ({
@@ -66,6 +78,7 @@ export const SidebarProvider = ({
     <SidebarContext.Provider
       value={{
         isCollapsed,
+        isMobile,
         isMobileOpen,
         expandedMenus,
 
@@ -81,8 +94,7 @@ export const SidebarProvider = ({
 };
 
 export const useSidebar = () => {
-  const context =
-    useContext(SidebarContext);
+  const context = useContext(SidebarContext);
 
   if (!context) {
     throw new Error(

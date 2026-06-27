@@ -8,16 +8,15 @@ import {
   HiOutlineChevronRight,
   HiOutlineEye,
 } from 'react-icons/hi';
-import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
+import {  exportToExcel } from '../../utils/exportUtils';
 import '../../styles/subscriptionManagement.css';
 import { getPlans } from '../../services/SubscriptionServices';
-import Loader from '../../components/common/Loader';
+import { useLoading } from '../../contexts/LoadingContext';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 import '../../styles/student-table.css';
 const SubscriptionManagementPage = () => {
   const navigate = useNavigate();
-
-  const [plans, setPlans] = useState([]);
+const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedBoard, setSelectedBoard] = useState('');
@@ -89,21 +88,20 @@ const SubscriptionManagementPage = () => {
   const startIndex = (currentPage - 1) * plansPerPage;
   const paginatedPlans = filteredPlans.slice(startIndex, startIndex + plansPerPage);
   const getVisiblePages = () => {
-  const start = Math.max(currentPage - 2, 1);
+    const start = Math.max(currentPage - 2, 1);
 
-  const end = Math.min(currentPage + 2, totalPages);
+    const end = Math.min(currentPage + 2, totalPages);
 
-  return Array.from(
-    { length: end - start + 1 },
-    (_, i) => start + i
-  );
-};
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
   useEffect(() => {
     setCurrentPage(1);
   }, [search, selectedClass, selectedBoard, selectedBranch]);
-  if (loading) {
-    return <Loader />;
-  }
+  useEffect(() => {
+  setGlobalLoading(loading);
+
+  return () => setGlobalLoading(false);
+}, [loading, setGlobalLoading]);
 
   return (
     <div className="subscription-management-page">
@@ -113,7 +111,7 @@ const SubscriptionManagementPage = () => {
           <p className="page-subtitle">Manage pricing plans and academic mappings.</p>
         </div>
         <div className="header-actions flex gap-4">
-          <button
+          {/* <button
             type="button"
             className="secondary-btn flex items-center gap-2"
             style={{
@@ -146,7 +144,7 @@ const SubscriptionManagementPage = () => {
           >
             <HiOutlineDownload />
             CSV
-          </button>
+          </button> */}
           <button
             type="button"
             className="secondary-btn flex items-center gap-2"
@@ -179,7 +177,7 @@ const SubscriptionManagementPage = () => {
             }}
           >
             <HiOutlineDownload />
-            Excel
+            Export
           </button>
           <button
             className="primary-btn"
@@ -247,10 +245,7 @@ const SubscriptionManagementPage = () => {
                 </tr>
               ) : filteredPlans.length > 0 ? (
                 paginatedPlans.map((plan) => (
-                  <tr
-                    key={plan.id}
-                   
-                  >
+                  <tr key={plan.id}>
                     <td>{plan.id}</td>
 
                     <td>
@@ -281,16 +276,14 @@ const SubscriptionManagementPage = () => {
                       {plan.createdAt ? new Date(plan.createdAt).toLocaleDateString('en-IN') : '-'}
                     </td>
                     <td className="table-actions">
-  <button
-    className="table-action-btn"
-    onClick={() =>
-      navigate(`/admin/subscriptions/plans/${plan.id}`)
-    }
-    title="View Plan"
-  >
-    <HiOutlineEye />
-  </button>
-</td>
+                      <button
+                        className="table-action-btn"
+                        onClick={() => navigate(`/admin/subscriptions/plans/${plan.id}`)}
+                        title="View Plan"
+                      >
+                        <HiOutlineEye />
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -304,40 +297,40 @@ const SubscriptionManagementPage = () => {
           </table>
         </div>
         {filteredPlans.length > 0 && (
-  <div className="pagination">
-    <p>
-      Showing {startIndex + 1} to{' '}
-      {Math.min(startIndex + plansPerPage, filteredPlans.length)} of{' '}
-      {filteredPlans.length} plans
-    </p>
+          <div className="pagination">
+            <p>
+              Showing {startIndex + 1} to{' '}
+              {Math.min(startIndex + plansPerPage, filteredPlans.length)} of {filteredPlans.length}{' '}
+              plans
+            </p>
 
-    <div className="pagination-buttons">
-      <button
-        disabled={currentPage === 1}
-        onClick={() => setCurrentPage((prev) => prev - 1)}
-      >
-        <HiOutlineChevronLeft />
-      </button>
+            <div className="pagination-buttons">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                <HiOutlineChevronLeft />
+              </button>
 
-      {getVisiblePages().map((page) => (
-        <button
-          key={page}
-          onClick={() => setCurrentPage(page)}
-          className={currentPage === page ? 'active-page' : ''}
-        >
-          {page}
-        </button>
-      ))}
+              {getVisiblePages().map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={currentPage === page ? 'active-page' : ''}
+                >
+                  {page}
+                </button>
+              ))}
 
-      <button
-        disabled={currentPage === totalPages}
-        onClick={() => setCurrentPage((prev) => prev + 1)}
-      >
-        <HiOutlineChevronRight />
-      </button>
-    </div>
-  </div>
-)}
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                <HiOutlineChevronRight />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

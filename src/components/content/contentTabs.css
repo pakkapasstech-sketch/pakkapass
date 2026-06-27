@@ -90,12 +90,7 @@
 }
 
 .tab-btn.active {
-  background:
-    linear-gradient(
-      135deg,
-      var(--color-primary),
-      #6366f1
-    );
+  background:var(--color-primary);
 
   border-color:
     var(--color-primary);

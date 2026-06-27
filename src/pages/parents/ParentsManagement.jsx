@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { HiOutlineSearch, HiOutlineDownload ,HiOutlineChevronLeft,
   HiOutlineChevronRight,HiOutlineEye } from 'react-icons/hi';
 import StatisticCard from '../../components/cards/StatisticCard';
-import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
+import {  exportToExcel } from '../../utils/exportUtils';
 
-import Loader from '../../components/common/Loader';
+import { useLoading } from '../../contexts/LoadingContext';
 import ErrorState from '../../components/loaders/ErrorState';
 import { useParents } from '../../hooks/useParents';
 
@@ -15,7 +15,7 @@ import '../../styles/student-table.css';
 
 const ParentsManagement = () => {
   const navigate = useNavigate();
-
+  const { setLoading } = useLoading();
   const { data: parents = [], isLoading, isError, refetch } = useParents();
 
   const [search, setSearch] = useState('');
@@ -67,7 +67,11 @@ const getVisiblePages = () => {
   );
 };
 
-  if (isLoading) return <Loader />;
+ useEffect(() => {
+  setLoading(isLoading);
+
+  return () => setLoading(false);
+}, [isLoading, setLoading]);
 
   if (isError) {
     return <ErrorState message="Failed to load parents" onRetry={refetch} />;
@@ -90,7 +94,7 @@ const getVisiblePages = () => {
           </p>
         </div>
         <div className="header-actions flex gap-4">
-          <button
+          {/* <button
             type="button"
             className="secondary-btn flex items-center gap-2"
             style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
@@ -108,7 +112,7 @@ const getVisiblePages = () => {
           >
             <HiOutlineDownload />
             CSV
-          </button>
+          </button> */}
           <button
             type="button"
             className="secondary-btn flex items-center gap-2"
@@ -126,7 +130,7 @@ const getVisiblePages = () => {
             }}
           >
             <HiOutlineDownload />
-            Excel
+            Export
           </button>
         </div>
       </div>

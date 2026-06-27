@@ -1,12 +1,27 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import './uploadContentModal.css';
 import toast from 'react-hot-toast';
 import entityService from '../../services/entity.service';
 
-const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
-  const [name, setName] = useState('');
+const EntityModal = ({ title, filters, onClose, onEntityAdded ,initialData = null,
+  isEdit = false,}) => {
+  const [name, setName] = useState(initialData?.title || '');
+
+useEffect(() => {
+  if (initialData) {
+    setName(initialData.title || '');
+  }
+}, [initialData]);
 
   const handleSave = async () => {
+    if (isEdit) {
+  await onEntityAdded({
+    name,
+  });
+
+  onClose();
+  return;
+}
     if (!name.trim()) {
       toast.error('Please enter a name');
       return;
@@ -89,7 +104,7 @@ const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
         }}
       >
         <div className="modal-header">
-          <h2>{title}</h2>
+          <h2>{isEdit ? 'Edit Content' : title}</h2>
 
           <button onClick={onClose} className="modal-close-btn">
             ✕
@@ -104,7 +119,11 @@ const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={`Enter ${title.replace('Add ', '').toLowerCase()} name`}
+              placeholder={
+  isEdit
+    ? 'Enter title'
+    : `Enter ${title.replace('Add ', '').toLowerCase()} name`
+}
             />
           </div>
         </div>
@@ -115,7 +134,7 @@ const EntityModal = ({ title, filters, onClose, onEntityAdded }) => {
           </button>
 
           <button className="save-btn" onClick={handleSave}>
-            Save
+            {isEdit ? 'Update' : 'Save'}
           </button>
         </div>
       </div>

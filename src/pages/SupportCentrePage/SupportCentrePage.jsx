@@ -71,12 +71,12 @@ const isAdmin = user?.role === 'ADMIN';
           <p>Get help, raise tickets and find answers quickly.</p>
         </div>
 
-        {isAdmin && (
+        {/* {isAdmin && (
   <button className="create-ticket-btn">
     <HiOutlineTicket />
     Create Ticket
   </button>
-)}
+)} */}
       </div>
 
       {/* Quick Actions (Live Chat Removed) */}

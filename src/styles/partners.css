@@ -94,7 +94,7 @@
 }
 
 .partners-btn-primary {
-  background: #4f46e5;
+  background:var(--color-primary);
   color: #fff;
   box-shadow: 0 8px 20px
     rgba(79, 70, 229, 0.2);

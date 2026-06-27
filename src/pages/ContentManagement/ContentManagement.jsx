@@ -6,7 +6,7 @@ import ContentTree from '../../components/content/ContentTree';
 import ContentTabs from '../../components/content/ContentTabs';
 import ContentTable from '../../components/content/ContentTable';
 import UploadContentModal from '../../components/content/UploadContentModal';
-import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+//import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
 import ErrorState from '../../components/loaders/ErrorState';
 import { useContent } from '../../hooks/useContent';
 import { contentService } from '../../services/content.service';
@@ -16,7 +16,9 @@ import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
 import Loader from '../../components/common/Loader';
 import { HiCloudArrowUp } from 'react-icons/hi2';
+import { useLoading } from '../../contexts/LoadingContext';
 const ContentManagement = () => {
+  const { setLoading } = useLoading();
   const [activeTab, setActiveTab] = useState('all');
 
   const [selectedFilters, setSelectedFilters] = useState({
@@ -84,7 +86,11 @@ const ContentManagement = () => {
     }
   };
 
-  if (isLoading) return <Loader />;
+  useEffect(() => {
+  setLoading(isLoading);
+
+  return () => setLoading(false);
+}, [isLoading, setLoading]);
   if (isError) {
     return <ErrorState message="Failed to load content" onRetry={refetch} />;
   }

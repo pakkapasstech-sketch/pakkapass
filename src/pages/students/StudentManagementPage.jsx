@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import StudentFilters from './StudentFilters';
@@ -13,10 +13,11 @@ import { usePermissions } from '../../auth/usePermissions';
 import { PERMISSIONS } from '../../auth/permissions';
 
 import '../../styles/student-management.css';
-import Loader from '../../components/common/Loader';
+import { useLoading } from '../../contexts/LoadingContext';
 import { HiOutlineDownload } from 'react-icons/hi';
-import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
+import {  exportToExcel } from '../../utils/exportUtils';
 const StudentManagementPage = () => {
+  const { setLoading } = useLoading();
   const [filters, setFilters] =
     useState({
       search: '',
@@ -132,9 +133,11 @@ const StudentManagementPage = () => {
         )
       : filteredStudents;
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  useEffect(() => {
+  setLoading(isLoading);
+
+  return () => setLoading(false);
+}, [isLoading, setLoading]);
 
   if (isError) {
     return (
@@ -159,7 +162,7 @@ const StudentManagementPage = () => {
           </p>
         </div>
         <div className="header-actions flex gap-4">
-          <button
+          {/* <button
             type="button"
             className="secondary-btn flex items-center gap-2"
             style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
@@ -180,7 +183,7 @@ const StudentManagementPage = () => {
           >
             <HiOutlineDownload />
             CSV
-          </button>
+          </button> */}
           <button
             type="button"
             className="secondary-btn flex items-center gap-2"
@@ -201,7 +204,7 @@ const StudentManagementPage = () => {
             }}
           >
             <HiOutlineDownload />
-            Excel
+            Export
           </button>
         </div>
       </div>

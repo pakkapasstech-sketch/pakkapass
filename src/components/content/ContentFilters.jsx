@@ -203,7 +203,15 @@ const sectionOptions =
         )
         .map((topic) => topic.name) || []
     : [];
+        const getTitleLabel = () =>
+  filters.selectedContentType
+    ? filters.selectedContentType.replace(/s$/, '')
+    : 'Title';
 
+const getAddTitle = () =>
+  filters.selectedContentType
+    ? `Add ${filters.selectedContentType.replace(/s$/, '')}`
+    : 'Add Title';
   return (
     <>
       <div className="content-filters">
@@ -284,7 +292,7 @@ const sectionOptions =
         {/* Chapter */}
 
         <FilterDropdown
-  label="Title"
+  label={getTitleLabel()}
   value={filters.chapter}
 disabled={
   !filters.selectedContentType
@@ -308,13 +316,13 @@ disabled={
       contentType: '',
     }));
   }}
-  onAdd={() => setModal('Add Chapter')}
+  onAdd={() => setModal(getAddTitle())}
 />
 
         {/* Section */}
 
         <FilterDropdown
-          label="SubTitle"
+          label="Title"
           value={filters.section}
           disabled={!filters.chapter}
           options={sectionOptions}

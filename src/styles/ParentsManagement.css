@@ -468,6 +468,36 @@
   .parents-table td {
     padding: 14px;
   }
+   .parents-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box,
+  .export-btn,
+  .parents-toolbar select {
+    width: 100% !important;
+  }
+
+  .search-box {
+    min-height: 52px;
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-box input {
+    height: 100%;
+    font-size: 14px;
+  }
+
+  .search-box svg {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
 }
 /* =========================
    DARK MODE
@@ -585,4 +615,11 @@
 .dark .empty-table,
 [data-theme='dark'] .empty-table {
   color: var(--color-text-muted);
+}
+.dark .parent-row:hover,
+.dark .parent-row:hover td,
+[data-theme='dark'] .parent-row:hover,
+[data-theme='dark'] .parent-row:hover td {
+  background: rgba(255,255,255,0.05) !important;
+  color: var(--color-text-primary) !important;
 }

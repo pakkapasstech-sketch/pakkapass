@@ -240,3 +240,151 @@
     white-space: nowrap;
   }
 }
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .transaction-page,
+[data-theme='dark'] .transaction-page {
+  background: var(--color-main-bg);
+}
+
+/* Header */
+
+.dark .transaction-header h2,
+[data-theme='dark'] .transaction-header h2 {
+  color: var(--color-text-primary);
+}
+
+.dark .transaction-header p,
+[data-theme='dark'] .transaction-header p {
+  color: var(--color-text-secondary);
+}
+
+/* Stat Cards */
+
+.dark .transaction-stat-card,
+[data-theme='dark'] .transaction-stat-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.dark .transaction-stat-card:hover,
+[data-theme='dark'] .transaction-stat-card:hover {
+  border-color: var(--color-primary);
+}
+
+.dark .transaction-stat-card svg,
+[data-theme='dark'] .transaction-stat-card svg {
+  color: var(--color-primary);
+}
+
+.dark .transaction-stat-card span,
+[data-theme='dark'] .transaction-stat-card span {
+  color: var(--color-text-secondary);
+}
+
+.dark .transaction-stat-card h3,
+[data-theme='dark'] .transaction-stat-card h3 {
+  color: var(--color-text-primary);
+}
+
+/* Table Card */
+
+.dark .transaction-table-card,
+[data-theme='dark'] .transaction-table-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Search */
+
+.dark .transaction-search,
+[data-theme='dark'] .transaction-search {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .transaction-search:focus-within,
+[data-theme='dark'] .transaction-search:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(102, 83, 175, 0.18);
+}
+
+.dark .transaction-search svg,
+[data-theme='dark'] .transaction-search svg {
+  color: var(--color-text-secondary);
+}
+
+.dark .transaction-search input,
+[data-theme='dark'] .transaction-search input {
+  color: var(--color-text-primary);
+}
+
+.dark .transaction-search input::placeholder,
+[data-theme='dark'] .transaction-search input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* Table */
+
+.dark .transaction-table thead,
+[data-theme='dark'] .transaction-table thead {
+  background: var(--color-surface);
+}
+
+.dark .transaction-table th,
+[data-theme='dark'] .transaction-table th {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-border);
+}
+
+.dark .transaction-table td,
+[data-theme='dark'] .transaction-table td {
+  color: var(--color-text-secondary);
+  border-bottom-color: var(--color-border);
+}
+
+.dark .transaction-table tbody tr:hover,
+[data-theme='dark'] .transaction-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark .transaction-table tbody tr:hover td,
+[data-theme='dark'] .transaction-table tbody tr:hover td {
+  color: var(--color-text-primary);
+}
+
+/* Status */
+
+.dark .transaction-status.success,
+[data-theme='dark'] .transaction-status.success {
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+}
+
+.dark .transaction-status.failed,
+[data-theme='dark'] .transaction-status.failed {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+}
+
+.dark .transaction-status.pending,
+[data-theme='dark'] .transaction-status.pending {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fde68a;
+}
+
+/* Download Button */
+
+.dark .transaction-download-btn,
+[data-theme='dark'] .transaction-download-btn {
+  background: var(--color-primary);
+}
+
+.dark .transaction-download-btn:hover,
+[data-theme='dark'] .transaction-download-btn:hover {
+  filter: brightness(1.08);
+}

@@ -13,11 +13,11 @@
   --sidebar-card-bg: rgba(255, 255, 255, 0.05);
   --sidebar-card-hover: rgba(255, 255, 255, 0.08);
 
-  --sidebar-item-hover: rgba(255, 255, 255, 0.08);
-  --sidebar-submenu-hover: rgba(255, 255, 255, 0.05);
-  --sidebar-active-bg: var(--color-primary);
+  --sidebar-item-hover:#453487;
+  --sidebar-submenu-hover: #5642a3;
+  --sidebar-active-bg: #453487;
 
-  --sidebar-text: #d1d5db;
+  --sidebar-text: #ffffff;
   --sidebar-text-muted: #9ca3af;
 
   --sidebar-logo-gradient: linear-gradient(
@@ -532,8 +532,8 @@
     top: 0;
     left: 0;
 
-    width: 300px;
-    max-width: 85vw;
+    width: 200px;
+    max-width: 75vw;
     height: 100dvh;
 
     overflow-y: auto;
@@ -570,4 +570,13 @@
 
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(3px);
+}
+@media (max-width: 1024px) {
+  .sidebar {
+    top: 60px;
+    height: calc(100dvh - 72px);
+
+    width: 200px;
+    max-width: 75vw;
+  }
 }

@@ -60,7 +60,11 @@
 
     flex-shrink:0;
 }
-
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .navbar-logo-image{
     width:180px;
     height:auto;
@@ -469,6 +473,9 @@
 
   color: var(--color-text-muted);
 }
+.avatar {
+  background: var(--color-primary);
+}
 
 /* ==========================================
    PROFILE DROPDOWN
@@ -711,7 +718,22 @@
     height: 64px;
     padding: 0 12px;
   }
+/* Hide on mobile */
+.navbar-date-btn,
+.navbar-icon-btn:not(.navbar-mobile-btn),
+.navbar-profile-btn {
+  display: none;
+}
 
+/* Keep only sidebar toggle */
+.navbar-mobile-btn {
+  display: flex;
+}
+
+/* Right section disappears */
+.navbar-right {
+  gap: 0;
+}
   .navbar-left {
     flex: 1;
     min-width: 0;
@@ -800,7 +822,9 @@
     width: 36px;
     height: 36px;
   }
-
+ .navbar-date-btn {
+    display: none;
+  }
   .navbar-icon {
     width: 18px;
     height: 18px;
@@ -903,4 +927,26 @@
 .dark .navbar-sidebar-toggle{
     background:#fff !important;
     color:#111827 !important;
+}
+@media (max-width: 1024px) {
+  .navbar-sidebar-toggle {
+    display: none;
+  }
+
+  .navbar-mobile-btn {
+    display: flex;
+  }
+}
+.navbar-mobile-btn {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .navbar-mobile-btn {
+    display: flex;
+  }
+
+  .navbar-sidebar-toggle {
+    display: none;
+  }
 }

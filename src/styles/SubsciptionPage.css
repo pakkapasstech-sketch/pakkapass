@@ -219,3 +219,122 @@
     font-size: 24px;
   }
 }
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .subscription-page,
+[data-theme='dark'] .subscription-page {
+  background: var(--color-main-bg);
+}
+
+/* Header */
+
+.dark .subscription-header h2,
+[data-theme='dark'] .subscription-header h2 {
+  color: var(--color-text-primary);
+}
+
+.dark .subscription-header p,
+[data-theme='dark'] .subscription-header p {
+  color: var(--color-text-secondary);
+}
+
+/* Cards */
+
+.dark .subscription-current-card,
+.dark .subscription-card,
+.dark .subscription-info-card,
+[data-theme='dark'] .subscription-current-card,
+[data-theme='dark'] .subscription-card,
+[data-theme='dark'] .subscription-info-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.dark .subscription-current-card h3,
+.dark .subscription-card h3,
+[data-theme='dark'] .subscription-current-card h3,
+[data-theme='dark'] .subscription-card h3 {
+  color: var(--color-text-primary);
+}
+
+.dark .subscription-current-card p,
+.dark .subscription-info-card span,
+[data-theme='dark'] .subscription-current-card p,
+[data-theme='dark'] .subscription-info-card span {
+  color: var(--color-text-secondary);
+}
+
+.dark .subscription-info-card strong,
+[data-theme='dark'] .subscription-info-card strong {
+  color: var(--color-text-primary);
+}
+
+.dark .subscription-info-card:hover,
+[data-theme='dark'] .subscription-info-card:hover {
+  border-color: var(--color-primary);
+}
+
+/* Status */
+
+.dark .subscription-status.active,
+.dark .subscription-badge.active,
+[data-theme='dark'] .subscription-status.active,
+[data-theme='dark'] .subscription-badge.active {
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+}
+
+.dark .subscription-status.expired,
+.dark .subscription-badge.expired,
+[data-theme='dark'] .subscription-status.expired,
+[data-theme='dark'] .subscription-badge.expired {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+}
+
+/* Features */
+
+.dark .subscription-feature,
+[data-theme='dark'] .subscription-feature {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .subscription-feature:hover,
+[data-theme='dark'] .subscription-feature:hover {
+  background: rgba(102, 83, 175, 0.12);
+  border-color: var(--color-primary);
+}
+
+/* Table */
+
+.dark .subscription-table thead,
+[data-theme='dark'] .subscription-table thead {
+  background: var(--color-surface);
+}
+
+.dark .subscription-table th,
+[data-theme='dark'] .subscription-table th {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-border);
+}
+
+.dark .subscription-table td,
+[data-theme='dark'] .subscription-table td {
+  color: var(--color-text-secondary);
+  border-bottom-color: var(--color-border);
+}
+
+.dark .subscription-table tbody tr:hover,
+[data-theme='dark'] .subscription-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark .subscription-table tbody tr:hover td,
+[data-theme='dark'] .subscription-table tbody tr:hover td {
+  color: var(--color-text-primary);
+}

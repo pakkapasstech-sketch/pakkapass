@@ -1,5 +1,5 @@
 import '../../styles/DashboardPage.css';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import StatisticCard from '../../components/cards/StatisticCard';
 import AnalyticsCard from '../../components/cards/AnalyticsCard';
 import { useNavigate } from 'react-router-dom';
@@ -7,12 +7,12 @@ import { useNavigate } from 'react-router-dom';
 //import RevenueTrendChart from '../../components/charts/RevenueTrendChart';
 //import StudentsByStateCard from '../../components/charts/StudentsByStateCard';
 import StudentTable from '../students/StudentTable';
-import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
-import { HiOutlineDownload } from 'react-icons/hi';
+//import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
+//import { HiOutlineDownload } from 'react-icons/hi';
 import '../../styles/table.css';
 import '../../styles/student-table.css';
-import StatusBadge from '../../components/tables/StatusBadge';
-import Avatar from '../../components/common/Avatar';
+//import StatusBadge from '../../components/tables/StatusBadge';
+//import Avatar from '../../components/common/Avatar';
 import ErrorState from '../../components/loaders/ErrorState';
 import Modal from '../../components/modals/Modal';
 import { getPlans } from '../../services/SubscriptionServices';
@@ -29,36 +29,31 @@ import {
 } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
 import { useContent } from '../../hooks/useContent';
-import Loader from '../../components/common/Loader';
-
+import { useLoading } from '../../contexts/LoadingContext';
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { setLoading } = useLoading();
   const stats = useAdminDashboard();
-  //const growth = useSubscriptionGrowth();
-  //const revenue = useRevenueTrend();
-  //const states = useStudentsByState();
+
   const registrations = useRecentRegistrations();
   const payments = useRecentPayments();
   //const referrals = useReferralConversions();
   //const performance = usePerformanceMetrics();
-  const {
-  data: content = [],
-  isLoading: contentLoading,
-} = useContent();
-const { data: plans = [], isLoading: plansLoading } = useQuery({
-  queryKey: ['plans'],
-  queryFn: getPlans,
-});
-const totalPlans = plans.length;
-const cards =
-  stats.data?.cards?.map((card) =>
-    card.title === 'Plans'
-      ? {
-          ...card,
-          value: totalPlans,
-        }
-      : card
-  ) || [];
+  const { data: content = [], isLoading: contentLoading } = useContent();
+  const { data: plans = [], isLoading: plansLoading } = useQuery({
+    queryKey: ['plans'],
+    queryFn: getPlans,
+  });
+  const totalPlans = plans.length;
+  const cards =
+    stats.data?.cards?.map((card) =>
+      card.title === 'Plans'
+        ? {
+            ...card,
+            value: totalPlans,
+          }
+        : card
+    ) || [];
   const [modal, setModal] = useState({ open: false, row: null, type: '' });
 
   if (stats.isError) {
@@ -69,44 +64,17 @@ const cards =
     );
   }
 
+  const totalContent = content.length;
 
-const totalContent =
-  content.length;
+  const totalVideos = content.filter((item) => item.type === 'video').length;
 
-const totalVideos =
-  content.filter(
-    (item) =>
-      item.type ===
-      'video'
-  ).length;
+  const totalPDFs = content.filter((item) => item.type !== 'video').length;
 
-const totalPDFs =
-  content.filter(
-    (item) =>
-      item.type !==
-      'video'
-  ).length;
+  const totalEbooks = content.filter((item) => item.hierarchyType === 'Ebooks').length;
 
-const totalEbooks =
-  content.filter(
-    (item) =>
-      item.hierarchyType ===
-      'Ebooks'
-  ).length;
+  const totalMindMaps = content.filter((item) => item.hierarchyType === 'Mind Maps').length;
 
-const totalMindMaps =
-  content.filter(
-    (item) =>
-      item.hierarchyType ===
-      'Mind Maps'
-  ).length;
-
-const totalPYQ =
-  content.filter(
-    (item) =>
-      item.hierarchyType ===
-      'PYQ'
-  ).length;
+  const totalPYQ = content.filter((item) => item.hierarchyType === 'PYQ').length;
 
   // const referralColumns = [
   //   { key: 'code', header: 'Referral Code', accessor: (r) => r.code },
@@ -114,21 +82,27 @@ const totalPYQ =
   //   { key: 'conversions', header: 'Conversions', accessor: (r) => r.conversions },
   //   { key: 'revenue', header: 'Revenue', accessor: (r) => `₹${r.revenue?.toLocaleString()}` },
   // ];
-if ( stats.isLoading || registrations.isLoading || payments.isLoading || contentLoading || plansLoading) {
-  return <Loader />;
-}
+  const pageLoading =
+  stats.isLoading ||
+  registrations.isLoading ||
+  payments.isLoading ||
+  contentLoading ||
+  plansLoading;
+  useEffect(() => {
+  setLoading(pageLoading);
+
+  return () => setLoading(false);
+}, [pageLoading, setLoading]);
   return (
     <div className="dashboard-page">
       <div className="dashboard-stats-grid">
-        {(cards.length ? cards : Array.from({ length: 4 })).map(
-  (card, i) => (
-    <StatisticCard
-      key={card?.id || i}
-      {...card}
-      isLoading={stats.isLoading || plansLoading}
-    />
-  )
-)}
+        {(cards.length ? cards : Array.from({ length: 4 })).map((card, i) => (
+          <StatisticCard
+            key={card?.id || i}
+            {...card}
+            isLoading={stats.isLoading || plansLoading}
+          />
+        ))}
       </div>
 
       {/* <div className="dashboard-chart-grid">
@@ -239,10 +213,7 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
                 <HiOutlineDownload />
                 Excel
               </button> */}
-              <button
-                className="data-table-view-all"
-                onClick={() => navigate('/payments')}
-              >
+              <button className="data-table-view-all" onClick={() => navigate('/payments')}>
                 View All
               </button>
             </div>
@@ -317,74 +288,66 @@ if ( stats.isLoading || registrations.isLoading || payments.isLoading || content
       </div>
 
       <div className="dashboard-performance-grid">
-  <AnalyticsCard
-    title="Total Content"
-    value={totalContent}
-    subtitle="Uploaded files"
-    color="#6366f1"
-    icon="collection"
-    isLoading={
-      contentLoading
-    }
-  />
+        <AnalyticsCard
+          title="Total Content"
+          value={totalContent}
+          subtitle="Uploaded files"
+          color="#6366f1"
+          icon="collection"
+          isLoading={contentLoading}
+        />
 
-  <AnalyticsCard
-    title="Total Videos"
-    value={totalVideos}
-    subtitle="Uploaded videos"
-    color="#ef4444"
-    icon="film"
-    isLoading={
-      contentLoading
-    }
-  />
+        <AnalyticsCard
+          title="Total Videos"
+          value={totalVideos}
+          subtitle="Uploaded videos"
+          color="#ef4444"
+          icon="film"
+          isLoading={contentLoading}
+        />
 
-  <AnalyticsCard
-    title="Total PDFs"
-    value={totalPDFs}
-    subtitle="Uploaded PDFs"
-    color="#f59e0b"
-    icon="document"
-    isLoading={
-      contentLoading
-    }
-  />
+        <AnalyticsCard
+          title="Total PDFs"
+          value={totalPDFs}
+          subtitle="Uploaded PDFs"
+          color="#f59e0b"
+          icon="document"
+          isLoading={contentLoading}
+        />
 
-  <AnalyticsCard
-    title="E-books"
-    value={totalEbooks}
-    subtitle="E-book files"
-    color="#10b981"
-    icon="book-open"
-    isLoading={
-      contentLoading
-    }
-  />
+        <AnalyticsCard
+          title="E-books"
+          value={totalEbooks}
+          subtitle="E-book files"
+          color="#10b981"
+          icon="book-open"
+          isLoading={contentLoading}
+        />
 
-  <AnalyticsCard
-    title="Mind Maps"
-    value={totalMindMaps}
-    subtitle="Mind map files"
-    color="#8b5cf6"
-    icon="light-bulb"
-    isLoading={
-      contentLoading
-    }
-  />
+        <AnalyticsCard
+          title="Mind Maps"
+          value={totalMindMaps}
+          subtitle="Mind map files"
+          color="#8b5cf6"
+          icon="light-bulb"
+          isLoading={contentLoading}
+        />
 
-  <AnalyticsCard
-    title="Prev. Papers"
-    value={totalPYQ}
-    subtitle="Previous year papers"
-    color="#06b6d4"
-    icon="clipboard-list"
-    isLoading={
-      contentLoading
-    }
-  />
-</div>
+        <AnalyticsCard
+          title="Prev. Papers"
+          value={totalPYQ}
+          subtitle="Previous year papers"
+          color="#06b6d4"
+          icon="clipboard-list"
+          isLoading={contentLoading}
+        />
+      </div>
 
-      <Modal isOpen={modal.open} onClose={() => setModal({ open: false })} title={`${modal.type} Details`}>
+      <Modal
+        isOpen={modal.open}
+        onClose={() => setModal({ open: false })}
+        title={`${modal.type} Details`}
+      >
         <pre className="dashboard-modal-content">{JSON.stringify(modal.row, null, 2)}</pre>
       </Modal>
     </div>

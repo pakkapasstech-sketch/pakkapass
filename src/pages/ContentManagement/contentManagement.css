@@ -45,7 +45,7 @@
   border: none;
   border-radius: 12px;
 
-  background: #4f46e5;
+  background:var(--color-primary);
   color: white;
 
   font-size: 14px;

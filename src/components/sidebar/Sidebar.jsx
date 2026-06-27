@@ -6,7 +6,7 @@ import { useSidebar } from '../../contexts/SidebarContext';
 import { useAuth } from '../../auth/AuthProvider';
 import { usePermissions } from '../../auth/usePermissions';
 import LogoutConfirmModal, { useLogoutConfirm } from '../modals/LogoutConfirmModal';
-
+import { useTheme } from '../../contexts/ThemeContext';
 import '../../styles/sidebar.css';
 
 const Tooltip = ({ label, show }) =>
@@ -19,7 +19,7 @@ const Sidebar = () => {
   const { isCollapsed, isMobileOpen, closeMobileSidebar, toggleSidebar } = useSidebar();
 
   const { logout, user } = useAuth();
-
+  const { setIsDark } = useTheme();
   const { hasPermission, role } = usePermissions();
 
   const { open, loading, showLogoutConfirm, hideLogoutConfirm, confirmLogout } = useLogoutConfirm();
@@ -36,8 +36,11 @@ const Sidebar = () => {
     ${isMobile ? (isMobileOpen ? 'sidebar-mobile-open' : 'sidebar-mobile-closed') : ''}
   `;
 
-  const handleLogout = () => confirmLogout(logout, navigate);
-
+const handleLogout = () =>
+  confirmLogout(async () => {
+    setIsDark(false);
+    await logout();
+  }, navigate);
   const isActive = (path) =>
     path === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(path);
 

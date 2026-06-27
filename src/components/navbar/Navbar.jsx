@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 //import { DateRange } from 'react-date-range';
 import {
-  HiOutlineMenu,
+  //HiOutlineMenu,
   HiOutlineBell,
   HiOutlineClock,
   HiOutlineChevronDown,
@@ -25,7 +25,7 @@ import '../../styles/navbar.css';
 import SidebarLogo from "../../assets/sidebarlogo.svg"
 
 const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) => {
-  const { toggleMobileSidebar, toggleSidebar, isCollapsed } = useSidebar();
+  const { toggleMobileSidebar, toggleSidebar, isCollapsed,isMobileOpen } = useSidebar();
   const navigate =
   useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -57,7 +57,21 @@ const {
   return (
    <header className="navbar">
   {/* Logo Section */}
-  <div className="navbar-logo">
+  {/* Logo Section */}
+<div className="navbar-logo">
+
+  {/* Mobile Toggle */}
+  <button
+    onClick={toggleMobileSidebar}
+    className="navbar-icon-btn navbar-mobile-btn"
+  >
+    {isMobileOpen ? (
+      <HiOutlineChevronLeft className="navbar-icon" />
+    ) : (
+      <HiOutlineChevronRight className="navbar-icon" />
+    )}
+  </button>
+
   <img
     src={SidebarLogo}
     alt="PakkaPass"
@@ -75,18 +89,13 @@ const {
       <HiOutlineChevronLeft />
     )}
   </button>
+
 </div>
 
   {/* Left */}
   <div className="navbar-left">
 
-    {/* Mobile menu only */}
-    <button
-      onClick={toggleMobileSidebar}
-      className="navbar-icon-btn navbar-mobile-btn"
-    >
-      <HiOutlineMenu className="navbar-icon" />
-    </button>
+    
 
     <div className="navbar-title-wrapper">
 

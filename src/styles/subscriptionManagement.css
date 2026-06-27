@@ -458,6 +458,27 @@
     border-radius: 20px;
   }
 
+  .subscription-search {
+    height: 52px;
+    min-height: 52px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+    .payments-filter-input {
+    height: 52px;
+    min-height: 52px;
+    padding: 0 16px;
+    font-size: 14px;
+    border-radius: 14px;
+  }
+  .subscription-search svg {
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+
   .subscription-table th,
   .subscription-table td {
     padding: 14px;

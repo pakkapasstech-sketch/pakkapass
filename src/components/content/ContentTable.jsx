@@ -9,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { contentService } from '../../services/content.service';
 import { formatFileSize } from '../../utils/formatters';
 import './contentTable.css';
-
+import EntityModal from './EntityModal';'./EntityModal';
 const PAGE_SIZE = 5;
 
 const ContentTable = ({
@@ -23,6 +23,7 @@ const ContentTable = ({
   useQueryClient();
   const [page, setPage] =
     useState(1);
+    const [editingItem, setEditingItem] = useState(null);
 // console.log(content);
 // console.log('CONTENT', content);
 // console.log('FILTERS', filters);
@@ -162,52 +163,8 @@ useEffect(() => {
   }
 };
 
-  const handleEdit = async (
-  item
-) => {
-  const title =
-    window.prompt(
-      'Title',
-      item.title
-    );
-
-  if (
-    title === null
-  ) {
-    return;
-  }
-
-  const description =
-    window.prompt(
-      'Description',
-      item.description || ''
-    );
-
-  try {
-    await contentService.updateAsset(
-      item.id,
-      {
-        title,
-        description,
-      }
-    );
-
-    toast.success(
-      'Content updated'
-    );
-
-    queryClient.invalidateQueries(
-      {
-        queryKey: ['content'],
-      }
-    );
-  } catch (error) {
-    toast.error(
-      error.response?.data
-        ?.message ||
-        'Update failed'
-    );
-  }
+const handleEdit = (item) => {
+  setEditingItem(item);
 };
 
   const handleView = (
@@ -395,6 +352,36 @@ useEffect(() => {
           Next
         </button>
       </div>
+      {editingItem && (
+  <EntityModal
+    title="Edit Content"
+    isEdit
+    initialData={editingItem}
+    filters={filters}
+    onClose={() => setEditingItem(null)}
+    onEntityAdded={async ({ name }) => {
+      try {
+        await contentService.updateAsset(editingItem.id, {
+          title: name,
+          description: editingItem.description || '',
+        });
+
+        toast.success('Content updated');
+
+        queryClient.invalidateQueries({
+          queryKey: ['content'],
+        });
+
+        setEditingItem(null);
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            'Update failed'
+        );
+      }
+    }}
+  />
+)}
     </div>
   );
 };
