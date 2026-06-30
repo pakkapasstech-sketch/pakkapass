@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { parentService } from '../services/parent.service';
-import { parents as mockParents } from '../data/parents';
+import  parentService  from '../services/parent.service';
 export const useParents = () =>
   useQuery({
     queryKey: ['parents'],
@@ -8,9 +7,7 @@ export const useParents = () =>
       try {
         const data = await parentService.getAll();
 
-        if (!data || data.length === 0) {
-          return mockParents;
-        }
+        
 
         return data.map((p) => ({
   id: p.id,
@@ -32,7 +29,7 @@ export const useParents = () =>
       : 'Inactive',
 }));
       } catch {
-        return mockParents;
+        return 
       }
     },
   });

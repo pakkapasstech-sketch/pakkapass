@@ -5,10 +5,17 @@ import { HiOutlineArrowRight } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 
 import '../../styles/PartnerDashboard.css';
-
+import { toast } from 'react-hot-toast';
 const PartnerDashboard = () => {
   const isLoading = false;
-
+  const copyMessage = async () => {
+  try {
+    await navigator.clipboard.writeText(partner.referralMessage);
+    toast.success('Referral message copied!');
+  } catch {
+    toast.error('Failed to copy referral message');
+  }
+};
   const partner = {
     organizationName: 'ABC Educational Services',
     referralCode: 'PARTNER2026',
@@ -179,9 +186,14 @@ const PartnerDashboard = () => {
     },
   ];
 
-  const copyReferralCode = () => {
-    navigator.clipboard.writeText(partner.referralCode);
-  };
+  const copyReferralCode = async () => {
+  try {
+    await navigator.clipboard.writeText(partner.referralCode);
+    toast.success('Referral code copied!');
+  } catch {
+    toast.error('Failed to copy referral code');
+  }
+};
 
   return (
     <div className="partnerdashboard-page">
@@ -200,20 +212,39 @@ const PartnerDashboard = () => {
         ))}
       </div>
 
-      <div className="partnerdashboard-referral-card">
-        <div className="partnerdashboard-referral-header">
-          <h3>Your Referral Message</h3>
+     <div className="partnerdashboard-referral-container">
+  <div className="partnerdashboard-referral-card">
+    <p>Generated Referral Code</p>
 
-          <button className="partnerdashboard-copy-btn" onClick={copyReferralCode}>
-            <HiOutlineClipboardCopy />
-            Copy Referral Code
-          </button>
-        </div>
+    <h1>{partner.referralCode}</h1>
 
-        <div className="partnerdashboard-referral-code">{partner.referralCode}</div>
+    <button
+      className="partnerdashboard-copy-code-btn"
+      onClick={copyReferralCode}
+    >
+      <HiOutlineClipboardCopy />
+      Copy Code
+    </button>
+  </div>
 
-        <p>{partner.referralMessage}</p>
-      </div>
+  <div className="partnerdashboard-message-card">
+    <h3>Referral Message</h3>
+
+    <textarea
+      value={partner.referralMessage}
+      readOnly
+      rows={8}
+    />
+
+    <button
+      className="partnerdashboard-copy-message-btn"
+      onClick={copyMessage}
+    >
+      <HiOutlineClipboardCopy />
+      Copy Message
+    </button>
+  </div>
+</div>
 
       <div className="partnerdashboard-summary">
         <div className="partnerdashboard-summary-card">

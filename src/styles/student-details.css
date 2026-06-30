@@ -67,12 +67,12 @@ font-weight: 600;
 
 cursor: pointer;
 
-transition: 0.25s;
+/* transition: 0.25s; */
 }
 
-.back-link:hover {
+/* .back-link:hover {
 transform: translateX(-4px);
-}
+} */
 
 /* ==========================================
 TABS

@@ -1,6 +1,36 @@
+import { useEffect, useState } from 'react';
 import '../../styles/SubsciptionPage.css';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+import studentService from '../../services/student.service';
 
 const SubscriptionPage = () => {
+  const [linkedStudents, setLinkedStudents] = useState([]);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+
+  useEffect(() => {
+    const loadStudents = async () => {
+      try {
+        const students = await studentService.getParentStudents();
+
+        setLinkedStudents(students);
+
+        if (students.length > 0) {
+          setSelectedStudentId(students[0].id);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadStudents();
+  }, []);
+
+  const selectedStudent =
+    linkedStudents.find(
+      (student) => String(student.id) === String(selectedStudentId)
+    ) || {};
+
+  // Replace this with backend data later
   const currentPlan = {
     name: 'Premium Plan',
     amount: '₹1,999',
@@ -44,15 +74,38 @@ const SubscriptionPage = () => {
     <div className="subscription-page">
 
       <div className="subscription-header">
-        <h2>Subscription</h2>
-        <p>Manage your child's subscription details.</p>
+
+        <div>
+          <h2>Subscription</h2>
+          <p>Manage your child's subscription details.</p>
+        </div>
+
+        <div style={{ width: 260 }}>
+          <CommonFilterDropdown
+            placeholder="Select Student"
+            value={selectedStudent.name || 'Select Student'}
+            options={linkedStudents.map((student) => student.name)}
+            onChange={(name) => {
+              const student = linkedStudents.find(
+                (s) => s.name === name
+              );
+
+              if (student) {
+                setSelectedStudentId(student.id);
+              }
+            }}
+          />
+        </div>
+
       </div>
 
       <div className="subscription-current-card">
 
         <div>
           <h3>{currentPlan.name}</h3>
-          <p>{currentPlan.amount} / {currentPlan.duration}</p>
+          <p>
+            {currentPlan.amount} / {currentPlan.duration}
+          </p>
         </div>
 
         <span className="subscription-status active">
@@ -90,7 +143,6 @@ const SubscriptionPage = () => {
         <h3>Plan Features</h3>
 
         <div className="subscription-features">
-
           {features.map((feature) => (
             <div
               key={feature}
@@ -99,7 +151,6 @@ const SubscriptionPage = () => {
               ✓ {feature}
             </div>
           ))}
-
         </div>
 
       </div>
@@ -124,7 +175,6 @@ const SubscriptionPage = () => {
           <tbody>
 
             {history.map((item) => (
-
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.plan}</td>
@@ -143,7 +193,6 @@ const SubscriptionPage = () => {
                   </span>
                 </td>
               </tr>
-
             ))}
 
           </tbody>

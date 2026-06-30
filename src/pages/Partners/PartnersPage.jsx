@@ -12,7 +12,7 @@ import { useLoading } from '../../contexts/LoadingContext';
 import { exportToExcel } from '../../utils/exportUtils';
 const PartnersPage = () => {
   const navigate = useNavigate();
-  const { setLoading :setGlobalLoading} = useLoading();
+  const { loading, setLoading } = useLoading();
   const [search, setSearch] = useState('');
 
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -21,12 +21,8 @@ const PartnersPage = () => {
 
   const [partners, setPartners] = useState([]);
 
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-  setGlobalLoading(loading);
 
-  return () => setGlobalLoading(false);
-}, [loading, setGlobalLoading]);
+
   const filteredPartners = partners.filter((partner) => {
     const searchTerm = search.trim().toLowerCase();
 
@@ -56,25 +52,20 @@ const PartnersPage = () => {
   }, [search]);
 
   const fetchPartners = async () => {
-    try {
-      // show loading only on first load
-      if (!partners.length) {
-        setLoading(true);
-      }
+  try {
+    setLoading(true);
 
-      const res = await partnerService.getAll({
-        status: statusFilter,
-      });
+    const res = await partnerService.getAll({
+      status: statusFilter,
+    });
 
-      console.log('PARTNERS', res);
-
-      setPartners(res.partners || []);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setPartners(res.partners || []);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
   const handleStatusChange = async (id, status) => {
     try {
       await partnerService.updateStatus(id, status);
@@ -170,7 +161,7 @@ const PartnersPage = () => {
         setStatusFilter={setStatusFilter}
       />
 
-      {loading && <div className="table-loading">Updating...</div>}
+     
 
       <PartnerTable partners={filteredPartners} onStatusChange={handleStatusChange} />
     </div>

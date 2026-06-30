@@ -861,3 +861,128 @@
   background: #6653af;
   color: #ffffff;
 }
+/* ==========================================
+   ADD NOTIFICATION MODAL
+========================================== */
+
+.notification-modal {
+  width: min(700px, 95vw);
+  height: 78vh;
+  max-height: 85vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--color-card);
+  border-radius: 24px;
+
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.notification-modal-header {
+  flex-shrink: 0;
+
+  /* padding: 28px 32px; */
+
+  border-bottom: 1px solid var(--color-border);
+
+  background: var(--color-card);
+}
+
+.notification-modal-header h2 {
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  color: var(--color-text-primary);
+}
+
+.notification-modal-body {
+  flex: 1;
+
+  padding: 28px 32px;
+
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+.notification-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 22px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: var(--color-text-primary);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+
+  padding: 14px 16px;
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  background: var(--color-surface);
+
+  color: var(--color-text-primary);
+
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 180px;
+}
+
+/* Footer */
+
+.modal-actions {
+  flex-shrink: 0;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 24px 32px;
+
+  border-top: 1px solid var(--color-border);
+
+  background: var(--color-card);
+}
+.notification-modal .common-dropdown {
+  position: relative;
+  overflow: visible;
+}
+
+.notification-modal .common-dropdown-menu {
+  position: absolute;
+
+  bottom: calc(100% + 8px);
+  top: auto;
+
+  left: 0;
+  width: 100%;
+
+  border-radius: 14px;
+
+  z-index: 99999;
+}

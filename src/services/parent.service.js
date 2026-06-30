@@ -1,6 +1,17 @@
 import axiosInstance from '../api/axiosInstance';
 
-export const parentService = {
+const parentService = {
+  getDashboard: async () => {
+    const { data } = await axiosInstance.get('/parent/dashboard');
+    return data;
+  },
+
+  getStudents: async () => {
+    const { data } = await axiosInstance.get('/parent/students');
+    return data;
+  },
+
+  // Admin page
   getAll: async () => {
     const { data } = await axiosInstance.get('/admin/parents');
     return data.parents || [];

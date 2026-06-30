@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { studentService } from '../services/student.service';
 import { useAuth } from '../auth/AuthProvider';
 import { ROLES } from '../auth/roles';
-//import { mockStudents } from '../mock/students';
-//import { students } from '../data/students';
+
 const mapStudent = (s) => ({
   id: s.id,
   name: s.name || 'Unknown',
@@ -42,7 +41,7 @@ export const useStudent = (id) =>
       try {
         return await studentService.getById(id);
       } catch {
-        const student = students.find(
+        const student = student.find(
           (s) => String(s.id) === String(id)
         );
 

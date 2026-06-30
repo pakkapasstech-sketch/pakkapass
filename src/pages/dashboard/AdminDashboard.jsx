@@ -70,7 +70,6 @@ const AdminDashboard = () => {
 
   const totalPDFs = content.filter((item) => item.type !== 'video').length;
 
-  const totalEbooks = content.filter((item) => item.hierarchyType === 'Ebooks').length;
 
   const totalMindMaps = content.filter((item) => item.hierarchyType === 'Mind Maps').length;
 
@@ -315,14 +314,6 @@ const AdminDashboard = () => {
           isLoading={contentLoading}
         />
 
-        <AnalyticsCard
-          title="E-books"
-          value={totalEbooks}
-          subtitle="E-book files"
-          color="#10b981"
-          icon="book-open"
-          isLoading={contentLoading}
-        />
 
         <AnalyticsCard
           title="Mind Maps"

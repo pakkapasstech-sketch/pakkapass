@@ -1,30 +1,61 @@
 import StatisticCard from '../../components/cards/StatisticCard';
 import '../../styles/ParentDashboard.css';
-
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../auth/AuthProvider';
+import parentService from '../../services/parent.service';
+import { useNavigate } from 'react-router-dom';
+import { useLoading } from '../../contexts/LoadingContext';
 const ParentDashboard = () => {
+  const navigate = useNavigate();
   const isLoading = false;
+  const { user } = useAuth();
+  const { setLoading } = useLoading();
+const [dashboard, setDashboard] = useState([]);
+const [linkedStudents, setLinkedStudents] = useState([]);
 
-  const parent = {
-    parentId: 'PAR1001',
-    name: 'Rajesh Sharma',
-    email: 'rajesh@gmail.com',
-    phone: '+91 9876543210',
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const [dashboardRes, studentsRes] = await Promise.all([
+        parentService.getDashboard(),
+        parentService.getStudents(),
+      ]);
+
+      setDashboard(dashboardRes.dashboards || []);
+      setLinkedStudents(studentsRes.students || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const linkedStudents = [
-    {
-      id: 'STU1001',
-      name: 'Rahul Sharma',
-      class: '10',
-      school: 'Delhi Public School',
-    },
-    {
-      id: 'STU1002',
-      name: 'Priya Sharma',
-      class: '7',
-      school: 'Delhi Public School',
-    },
-  ];
+  fetchData();
+}, [setLoading]);
+  // const parent = {
+  //   parentId: 'PAR1001',
+  //   name: 'Rajesh Sharma',
+  //   email: 'rajesh@gmail.com',
+  //   phone: '+91 9876543210',
+  // };
+
+  // const linkedStudents = [
+  //   {
+  //     id: 'STU1001',
+  //     name: 'Rahul Sharma',
+  //     class: '10',
+  //     school: 'Delhi Public School',
+  //   },
+  //   {
+  //     id: 'STU1002',
+  //     name: 'Priya Sharma',
+  //     class: '7',
+  //     school: 'Delhi Public School',
+  //   },
+  // ];
 
   const statCards = [
     {
@@ -62,28 +93,28 @@ const ParentDashboard = () => {
       <div className="parentdashboard-profile-card">
 
         <div className="parentdashboard-avatar">
-          {parent.name.charAt(0)}
+          {user?.name.charAt(0)}
         </div>
 
         <div className="parentdashboard-profile-info">
 
-          <h3>{parent.name}</h3>
+          <h3>{user?.name}</h3>
 
           <div className="parentdashboard-profile-grid">
 
             <div>
               <span>Parent ID</span>
-              <strong>{parent.parentId}</strong>
+              <strong>{user?.id}</strong>
             </div>
 
             <div>
               <span>Email</span>
-              <strong>{parent.email}</strong>
+              <strong>{user?.email}</strong>
             </div>
 
             <div>
               <span>Phone</span>
-              <strong>{parent.phone}</strong>
+              <strong>{user?.mobile}</strong>
             </div>
 
           </div>
@@ -113,20 +144,28 @@ const ParentDashboard = () => {
         <div className="parentdashboard-list">
 
           {linkedStudents.map((student) => (
-            <div
-              key={student.id}
-              className="parentdashboard-list-item"
-            >
-              <div>
-                <strong>{student.name}</strong>
-                <p>{student.school}</p>
-              </div>
+  <div
+    key={student.id}
+    className="parentdashboard-list-item"
+    onClick={() =>
+      navigate("/parent/student", {
+    state: {
+        studentId: student.id,
+    },
+})
+    }
+    style={{ cursor: 'pointer' }}
+  >
+    <div>
+      <strong>{student.name}</strong>
+      <p>{student.email}</p>
+    </div>
 
-              <div>
-                <span>Class {student.class}</span>
-              </div>
-            </div>
-          ))}
+    <div>
+      <span>Streak: {student.profile?.streak ?? 0}</span>
+    </div>
+  </div>
+))}
 
         </div>
 

@@ -646,3 +646,33 @@
     width: 100%;
   }
 }
+.partner-status-dropdown {
+  width: 140px;
+}
+
+.partner-status-dropdown .common-dropdown-trigger {
+  height: 38px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.partner-status-dropdown .common-dropdown-menu {
+  width: 100%;
+  z-index: 10000;
+}
+.partner-status-cell {
+  position: relative;
+  overflow: visible;
+}
+
+.partner-status-dropdown {
+  position: relative;
+  z-index: 100;
+}
+
+.partner-status-dropdown .common-dropdown-menu {
+  position: absolute;
+  z-index: 99999;
+}

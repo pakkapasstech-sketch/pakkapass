@@ -1,5 +1,5 @@
-import { HiOutlinePencil, HiOutlineTrash, HiArrowLeft } from 'react-icons/hi';
-
+import { HiOutlinePencil, HiOutlineTrash, HiArrowLeft,HiOutlineClipboardCopy } from 'react-icons/hi';
+import { toast } from 'react-hot-toast';
 
 import '../../styles/partnerDetails.css';
 
@@ -21,7 +21,14 @@ const PartnerDetailsPage = () => {
   const navigate = useNavigate();
 const { id } =
   useParams();
-
+const copyReferralCode = async () => {
+  try {
+    await navigator.clipboard.writeText(partner.referralCode || '');
+    toast.success('Referral code copied');
+  } catch {
+    toast.error('Failed to copy referral code');
+  }
+};
 const [partner,
   setPartner] =
   useState(null);
@@ -54,11 +61,12 @@ const fetchPartner =
   return null;
   return (
     <div className="partner-details-page">
-      <div className="details-header">
-        <button className="back-link" onClick={() => navigate(-1)}>
+      <button className="back-link" onClick={() => navigate(-1)}>
           <HiArrowLeft />
-          <span>Back</span>
+          <span>Back to partners</span>
         </button>
+      <div className="details-header">
+        
 
         <div className="header-content">
           <h1>{partner.contactPerson}</h1>
@@ -130,11 +138,28 @@ const fetchPartner =
           <h3>Referral Details</h3>
 
           <p>
-            <span>Code</span>
+  <span>Code</span>
 
-            <strong>{partner.referralCode}</strong>
-          </p>
+  <strong
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    }}
+  >
+    {partner.referralCode}
 
+    <HiOutlineClipboardCopy
+      size={18}
+      style={{
+        cursor: 'pointer',
+        color: '#6653AF',
+      }}
+      title="Copy referral code"
+      onClick={copyReferralCode}
+    />
+  </strong>
+</p>
           <p>
             <span>Students</span>
 

@@ -45,18 +45,22 @@ verifyPartnerOtp:
     return data;
   },
   sendParentOtp: async ({ email }) => {
-    const { data } = await axiosInstance.post('/admin/parent/login', { email });
-    return data;
-  },
+  const { data } = await axiosInstance.post('/parent/login', { email });
+  return data;
+},
 
-  verifyParentOtp: async ({ email, otp }) => {
-    const { data } = await axiosInstance.post('/admin/parent/verify-otp', { email, otp });
-    return {
-      accessToken: data.token,
-      refreshToken: null,
-      user: data.user,
-    };
-  },
+ verifyParentOtp: async ({ email, otp }) => {
+  const { data } = await axiosInstance.post('/parent/verify-otp', {
+    email,
+    otp,
+  });
+
+  return {
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+    user: data.user || data.parent,
+  };
+},
 
   getMe: async () => {
     const { data } = await axiosInstance.get('/auth/me');

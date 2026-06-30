@@ -8,15 +8,23 @@ import {
   HiOutlineChevronRight,
   HiOutlineEye,
 } from 'react-icons/hi';
-import {  exportToExcel } from '../../utils/exportUtils';
+import { exportToExcel } from '../../utils/exportUtils';
 import '../../styles/subscriptionManagement.css';
 import { getPlans } from '../../services/SubscriptionServices';
 import { useLoading } from '../../contexts/LoadingContext';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 import '../../styles/student-table.css';
+import studentService from '../../services/student.service';
+
 const SubscriptionManagementPage = () => {
   const navigate = useNavigate();
-const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] = useState([]);
+  const { setLoading: setGlobalLoading } = useLoading();
+  const [plans, setPlans] = useState([]);
+  const [options, setOptions] = useState({
+    grades: [],
+    boards: [],
+    branches: [],
+  });
   const [search, setSearch] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedBoard, setSelectedBoard] = useState('');
@@ -27,8 +35,29 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
   const plansPerPage = 5;
   useEffect(() => {
     loadPlans();
+    loadOptions();
   }, []);
+  const loadOptions = async () => {
+    try {
+      const data = await studentService.getFilterOptions();
 
+      setOptions({
+        grades: data.grades || [],
+        boards: data.boards || [],
+        branches: data.branches || [],
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const getGradeNames = (ids = []) =>
+    options.grades.filter((g) => ids.includes(g.id)).map((g) => g.name);
+
+  const getBoardNames = (ids = []) =>
+    options.boards.filter((b) => ids.includes(b.id)).map((b) => b.name);
+
+  const getBranchNames = (ids = []) =>
+    options.branches.filter((b) => ids.includes(b.id)).map((b) => b.name);
   const loadPlans = async () => {
     try {
       setLoading(true);
@@ -62,23 +91,21 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
         String(plan.durationDays || '')
           .toLowerCase()
           .includes(searchTerm) ||
-        (plan.grade?.name || '').toLowerCase().includes(searchTerm) ||
-        (plan.board?.name || '').toLowerCase().includes(searchTerm) ||
-        (plan.branch?.name || '').toLowerCase().includes(searchTerm) ||
+        getGradeNames(plan.gradeIds).join(',').toLowerCase().includes(searchTerm) ||
+        getBoardNames(plan.boardIds).join(',').toLowerCase().includes(searchTerm) ||
+        getBranchNames(plan.branchIds).join(',').toLowerCase().includes(searchTerm) ||
         (plan.createdAt
           ? new Date(plan.createdAt).toLocaleDateString('en-IN').toLowerCase()
           : ''
         ).includes(searchTerm) ||
-        'active'.includes(searchTerm);
+        (plan.status || '').toLowerCase().includes(searchTerm);
 
-      const classMatch =
-        !selectedClass || plan.grade?.name?.toLowerCase() === selectedClass.toLowerCase();
+      const classMatch = !selectedClass || getGradeNames(plan.gradeIds).includes(selectedClass);
 
-      const boardMatch =
-        !selectedBoard || plan.board?.name?.toLowerCase() === selectedBoard.toLowerCase();
+      const boardMatch = !selectedBoard || getBoardNames(plan.boardIds).includes(selectedBoard);
 
       const branchMatch =
-        !selectedBranch || plan.branch?.name?.toLowerCase() === selectedBranch.toLowerCase();
+        !selectedBranch || getBranchNames(plan.branchIds).includes(selectedBranch);
 
       return searchMatch && classMatch && boardMatch && branchMatch;
     });
@@ -98,10 +125,10 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
     setCurrentPage(1);
   }, [search, selectedClass, selectedBoard, selectedBranch]);
   useEffect(() => {
-  setGlobalLoading(loading);
+    setGlobalLoading(loading);
 
-  return () => setGlobalLoading(false);
-}, [loading, setGlobalLoading]);
+    return () => setGlobalLoading(false);
+  }, [loading, setGlobalLoading]);
 
   return (
     <div className="subscription-management-page">
@@ -165,9 +192,18 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
                 { header: 'Plan Name', accessor: (r) => r.name },
                 { header: 'Price', accessor: (r) => r.price },
                 { header: 'Duration (Days)', accessor: (r) => r.durationDays },
-                { header: 'Class', accessor: (r) => r.grade?.name || '—' },
-                { header: 'Board', accessor: (r) => r.board?.name || '—' },
-                { header: 'Branch', accessor: (r) => r.branch?.name || '—' },
+                {
+                  header: 'Class',
+                  accessor: (r) => getGradeNames(r.gradeIds).join(', ') || '—',
+                },
+                {
+                  header: 'Board',
+                  accessor: (r) => getBoardNames(r.boardIds).join(', ') || '—',
+                },
+                {
+                  header: 'Branch',
+                  accessor: (r) => getBranchNames(r.branchIds).join(', ') || '—',
+                },
                 {
                   header: 'Created At',
                   accessor: (r) => (r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'),
@@ -181,7 +217,7 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
           </button>
           <button
             className="primary-btn"
-            onClick={() => navigate('/admin/subscriptions/plans/create')}
+            onClick={() => navigate('/subscriptions/plans/create')}
           >
             <HiOutlinePlus />
             Create Plan
@@ -203,20 +239,20 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
         <CommonFilterDropdown
           placeholder="All Classes"
           value={selectedClass || 'All Classes'}
-          options={['All Classes', '10th', '11th', '12th']}
+          options={['All Classes', ...options.grades.map((g) => g.name)]}
           onChange={(value) => setSelectedClass(value === 'All Classes' ? '' : value)}
         />
         <CommonFilterDropdown
           placeholder="All Boards"
           value={selectedBoard || 'All Boards'}
-          options={['All Boards', 'State', 'CBSE', 'ICSE']}
+          options={['All Boards', ...options.boards.map((b) => b.name)]}
           onChange={(value) => setSelectedBoard(value === 'All Boards' ? '' : value)}
         />
 
         <CommonFilterDropdown
           placeholder="All Branches"
           value={selectedBranch || 'All Branches'}
-          options={['All Branches', 'PCM', 'BiPC', 'MEC', 'CEC']}
+          options={['All Branches', ...options.branches.map((b) => b.name)]}
           onChange={(value) => setSelectedBranch(value === 'All Branches' ? '' : value)}
         />
       </div>
@@ -245,7 +281,11 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
                 </tr>
               ) : filteredPlans.length > 0 ? (
                 paginatedPlans.map((plan) => (
-                  <tr key={plan.id}>
+                  <tr
+                    key={plan.id}
+                    className="clickable-row"
+                    onClick={() => navigate(`/subscriptions/plans/${plan.id}`)}
+                  >
                     <td>{plan.id}</td>
 
                     <td>
@@ -269,7 +309,13 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
                     </td>
 
                     <td>
-                      <span className="status-badge status-active">Active</span>
+                      <span
+                        className={`status-badge ${
+                          plan.status === 'Active' ? 'status-active' : 'status-inactive'
+                        }`}
+                      >
+                        {plan.status}
+                      </span>{' '}
                     </td>
 
                     <td>
@@ -278,7 +324,7 @@ const { setLoading: setGlobalLoading } = useLoading();  const [plans, setPlans] 
                     <td className="table-actions">
                       <button
                         className="table-action-btn"
-                        onClick={() => navigate(`/admin/subscriptions/plans/${plan.id}`)}
+                        onClick={() => navigate(`/subscriptions/plans/${plan.id}`)}
                         title="View Plan"
                       >
                         <HiOutlineEye />

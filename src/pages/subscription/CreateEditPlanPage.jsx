@@ -2,44 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { HiArrowLeft, HiOutlinePlus } from 'react-icons/hi';
 import '../../styles/createEditPlan.css';
-
-// Replace this with API data later
-const mockPlans = [
-  {
-    id: '1',
-    name: 'Class 10 Annual Plan',
-    description: 'Complete access for Class 10 students.',
-    price: '4999',
-    duration: '365',
-    status: 'Active',
-    classes: ['10th'],
-    boards: ['State'],
-    branches: [],
-    features: ['Full Video Access', 'PDF Notes Access'],
-  },
-  {
-    id: '2',
-    name: 'Class 11 MPC Premium Plan',
-    description: 'Complete access for Class 11 and 12 MPC students.',
-    price: '2999',
-    duration: '180',
-    status: 'Active',
-    classes: ['11th', '12th'],
-    boards: ['State'],
-    branches: ['MPC'],
-    features: ['Full Video Access', 'Question Papers Access', 'Learning Analytics'],
-  },
-];
-
-const classOptions = ['10th', '11th', '12th'];
-
-const boardOptions = ['State', 'CBSE', 'ICSE'];
-
-const branchOptions = ['MPC', 'BiPC', 'MEC', 'CEC'];
+import { getPlanById, createPlan, updatePlan } from '../../services/SubscriptionServices';
+import { contentService } from '../../services/content.service';
+import toast from 'react-hot-toast';
 
 const initialForm = {
   name: '',
-  description: '',
+  // description: '',
   price: '',
   duration: '',
   status: 'Active',
@@ -52,36 +21,74 @@ const initialForm = {
 const CreateEditPlanPage = () => {
   const navigate = useNavigate();
   const { planId } = useParams();
-
+  const [grades, setGrades] = useState([]);
+  const [boards, setBoards] = useState([]);
+  const [branches, setBranches] = useState([]);
   const isEdit = Boolean(planId);
 
   const [featureInput, setFeatureInput] = useState('');
 
   const [formData, setFormData] = useState(initialForm);
+  useEffect(() => {
+    loadOptions();
+  }, []);
 
+  const loadOptions = async () => {
+    try {
+      const content = await contentService.getAll();
+
+      const grades = [
+        ...new Map(
+          content.filter((item) => item.grade?.id).map((item) => [item.grade.id, item.grade])
+        ).values(),
+      ];
+
+      const boards = [
+        ...new Map(
+          content.filter((item) => item.board?.id).map((item) => [item.board.id, item.board])
+        ).values(),
+      ];
+
+      const branches = [
+        ...new Map(
+          content.filter((item) => item.course?.id).map((item) => [item.course.id, item.course])
+        ).values(),
+      ];
+
+      setGrades(grades);
+      setBoards(boards);
+      setBranches(branches);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
     if (!isEdit) {
       setFormData(initialForm);
       return;
     }
 
-    const selectedPlan = mockPlans.find((plan) => plan.id === planId);
+    const loadPlan = async () => {
+      try {
+        const selectedPlan = await getPlanById(planId);
 
-    if (selectedPlan) {
-      setFormData({
-        name: selectedPlan.name,
-        description: selectedPlan.description,
-        price: selectedPlan.price,
-        duration: selectedPlan.duration,
-        status: selectedPlan.status,
-        classes: selectedPlan.classes,
-        boards: selectedPlan.boards,
-        branches: selectedPlan.branches,
-        features: selectedPlan.features,
-      });
-    }
+        setFormData({
+          name: selectedPlan.name || '',
+          price: selectedPlan.price || '',
+          duration: selectedPlan.durationDays || '',
+          status: selectedPlan.status || 'Active',
+          classes: selectedPlan.gradeIds || [],
+          boards: selectedPlan.boardIds || [],
+          branches: selectedPlan.branchIds || [],
+          features: selectedPlan.features || [],
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadPlan();
   }, [planId, isEdit]);
-
   const updateField = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -123,22 +130,34 @@ const CreateEditPlanPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isEdit) {
-      console.log('Update Plan', formData);
+    try {
+      const payload = {
+        name: formData.name,
+        price: Number(formData.price),
+        durationDays: Number(formData.duration),
+        gradeIds: formData.classes,
+        boardIds: formData.boards,
+        branchIds: formData.branches,
+        features: formData.features,
+        status: formData.status,
+      };
 
-      // PUT API
-      // /plans/:planId
-    } else {
-      console.log('Create Plan', formData);
+      if (isEdit) {
+        await updatePlan(planId, payload);
+        toast.success('Plan updated successfully');
+      } else {
+        await createPlan(payload);
+        toast.success('Plan created successfully');
+      }
 
-      // POST API
-      // /plans
+      navigate('/subscriptions');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Failed to save plan');
     }
-
-    navigate('/admin/subscriptions/plans');
   };
 
   return (
@@ -178,7 +197,7 @@ const CreateEditPlanPage = () => {
             />
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label>Description</label>
 
             <textarea
@@ -187,7 +206,7 @@ const CreateEditPlanPage = () => {
               value={formData.description}
               onChange={(e) => updateField('description', e.target.value)}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Academic Mapping */}
@@ -199,14 +218,14 @@ const CreateEditPlanPage = () => {
             <label>Classes</label>
 
             <div className="options">
-              {classOptions.map((item) => (
+              {grades.map((grade) => (
                 <button
                   type="button"
-                  key={item}
-                  className={`option ${formData.classes.includes(item) ? 'selected' : ''}`}
-                  onClick={() => toggleSelection('classes', item)}
+                  key={grade.id}
+                  className={`option ${formData.classes.includes(grade.id) ? 'selected' : ''}`}
+                  onClick={() => toggleSelection('classes', grade.id)}
                 >
-                  {item}
+                  {grade.name}
                 </button>
               ))}
             </div>
@@ -214,14 +233,14 @@ const CreateEditPlanPage = () => {
             <label>Boards</label>
 
             <div className="options">
-              {boardOptions.map((item) => (
+              {boards.map((board) => (
                 <button
                   type="button"
-                  key={item}
-                  className={`option ${formData.boards.includes(item) ? 'selected' : ''}`}
-                  onClick={() => toggleSelection('boards', item)}
+                  key={board.id}
+                  className={`option ${formData.boards.includes(board.id) ? 'selected' : ''}`}
+                  onClick={() => toggleSelection('boards', board.id)}
                 >
-                  {item}
+                  {board.name}
                 </button>
               ))}
             </div>
@@ -229,14 +248,14 @@ const CreateEditPlanPage = () => {
             <label>Branches</label>
 
             <div className="options">
-              {branchOptions.map((item) => (
+              {branches.map((branch) => (
                 <button
                   type="button"
-                  key={item}
-                  className={`option ${formData.branches.includes(item) ? 'selected' : ''}`}
-                  onClick={() => toggleSelection('branches', item)}
+                  key={branch.id}
+                  className={`option ${formData.branches.includes(branch.id) ? 'selected' : ''}`}
+                  onClick={() => toggleSelection('branches', branch.id)}
                 >
-                  {item}
+                  {branch.name}
                 </button>
               ))}
             </div>

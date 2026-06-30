@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { HiOutlineLogout, HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
+import { HiOutlineLogout, HiOutlineClipboardCopy } from 'react-icons/hi';
 import { getMenuForUser } from '../../config/menu.config';
 import { getIcon } from '../../utils/iconMap';
 import { useSidebar } from '../../contexts/SidebarContext';
@@ -8,14 +8,22 @@ import { usePermissions } from '../../auth/usePermissions';
 import LogoutConfirmModal, { useLogoutConfirm } from '../modals/LogoutConfirmModal';
 import { useTheme } from '../../contexts/ThemeContext';
 import '../../styles/sidebar.css';
-
+import {toast} from "react-hot-toast"
 const Tooltip = ({ label, show }) =>
   show ? <span className="sidebar-tooltip">{label}</span> : null;
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const copyReferralCode = async () => {
+  try {
+    await navigator.clipboard.writeText(user?.referralCode || 'PARTNER2026');
+    toast.success('Referral code copied!');
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to copy referral code');
+  }
+};
   const { isCollapsed, isMobileOpen, closeMobileSidebar, toggleSidebar } = useSidebar();
 
   const { logout, user } = useAuth();
@@ -102,7 +110,15 @@ const handleLogout = () =>
             <div className="sidebar-referral-card">
               <span className="sidebar-referral-label">Referral Code</span>
 
-              <div className="sidebar-referral-value">{user?.referralCode || 'PARTNER2026'}</div>
+              <div className="sidebar-referral-value">
+  <span>{user?.referralCode || 'PARTNER2026'}</span>
+
+  <HiOutlineClipboardCopy
+    className="sidebar-copy-icon"
+    title="Copy referral code"
+    onClick={copyReferralCode}
+  />
+</div>
             </div>
           )}
           <button className="sidebar-logout-btn" onClick={showLogoutConfirm}>

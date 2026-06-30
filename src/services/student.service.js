@@ -22,6 +22,19 @@ export const studentService = {
 
   return data;
 },
+getProfile: async (studentId) => {
+  const { data } = await axiosInstance.get(
+    `/student/profile/${studentId}`
+  );
+  return data;
+},
+
+getAnalytics: async (studentId) => {
+  const { data } = await axiosInstance.get(
+    `/student/${studentId}/analytics`
+  );
+  return data;
+},
 };
 
 export default studentService;

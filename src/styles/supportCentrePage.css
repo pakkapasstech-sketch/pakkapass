@@ -301,3 +301,33 @@ min-height:150px;
 .support-form button{
 align-self:flex-start;
 }
+.support-form-group,
+.ticket-detail-group {
+  overflow: visible;
+}
+
+.support-section,
+.support-card {
+  overflow: visible;
+}
+.ticket-message-box {
+  min-height: 180px;
+  padding: 20px !important;
+  font-size: 15px !important;
+}
+.ticket-detail-group .common-dropdown {
+  position: relative;
+  overflow: visible;
+}
+
+.ticket-detail-group .common-dropdown-menu {
+  position: absolute;
+
+  top: auto;
+  bottom: calc(100% + 8px);
+
+  left: 0;
+  width: 100%;
+
+  z-index: 99999;
+}

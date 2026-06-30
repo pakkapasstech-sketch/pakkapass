@@ -23,10 +23,10 @@ const getStoredUser = () => {
 const getTokenStorage = () =>
   localStorage.getItem(STORAGE_KEYS.rememberMe) === 'true' ? localStorage : sessionStorage;
 const DEMO_USERS = {
-  parent: {
-    email: "parent@demo.com",
-    otp: "1234",
-  },
+  // parent: {
+  //   email: "parent@demo.com",
+  //   otp: "1234",
+  // },
   partner: {
     email: "partner@demo.com",
     otp: "1234",

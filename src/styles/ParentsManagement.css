@@ -221,7 +221,7 @@
 .table-action-btn {
   width: 36px;
   height: 36px;
-  border: 1px solid #e5e7eb;
+  /* border: 1px solid #e5e7eb; */
   background: #fff;
   border-radius: 8px;
   display: inline-flex;

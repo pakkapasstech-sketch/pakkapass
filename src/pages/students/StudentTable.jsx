@@ -60,6 +60,8 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
             currentStudents.map((student, index) => (
               <tr
   key={`${student.id}-${startIndex + index}`}
+  className="clickable-row"
+  onClick={() => navigate(`/students/${student.id}`)}
 >
                 <td>{student.id || '—'}</td>
 
@@ -117,7 +119,7 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
                 </td>
                 
 
-<td className="table-actions">
+<td>
   <button
     className="table-action-btn"
     onClick={() => navigate(`/students/${student.id}`)}
@@ -130,7 +132,7 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
             ))
           ) : (
             <tr>
-              <td colSpan={hideInstitution ? "8" : "9"} className="empty-table">
+              <td colSpan={hideInstitution ? "9" : "10"} className="empty-table">
                 No students found
               </td>
             </tr>

@@ -72,7 +72,7 @@ const ContentHierarchyPage = () => {
   return (
     <div className="content-hierarchy-page">
       <button
-        className="back-btn"
+        className="back-link"
         onClick={() =>
           navigate(-1)
         }

@@ -3,12 +3,12 @@ import { ROLES } from '../../auth/roles';
 import AdminDashboard from './AdminDashboard';
 import PartnerDashboard from './PartnerDashboard';
 import ParentDashboard from './ParentDashboard';
-import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
+// import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
 
 const DashboardPage = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
-  if (loading) return <LoadingSkeleton rows={8} />;
+  // if (loading) return <LoadingSkeleton rows={8} />;
 
   switch (user?.role) {
     case ROLES.PARTNER:

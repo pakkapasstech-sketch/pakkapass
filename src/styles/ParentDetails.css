@@ -1,6 +1,5 @@
 .parent-details-page {
   padding: 24px;
-  background: var(--color-main-bg);
 }
 
 .profile-card {
@@ -49,25 +48,26 @@
   font-weight: 600;
 }
 .parent-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin-bottom: 20px;
+display: inline-flex;
+align-items: center;
+gap: 10px;
 
-  cursor: pointer;
+border: none;
+background: transparent;
 
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 500;
+color: var(--color-primary);
+font-size: 14px;
+font-weight: 600;
 
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
+cursor: pointer;
 }
+.parent-back-btn:hover {
+  text-decoration: underline;
+}
+/* 
+
+
 
 .parent-back-btn svg {
   width: 18px;

@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
-import { mockDashboardCharts } from '../mock/dashboard';
 import { QUERY_KEYS } from '../constants/queryKeys';
 import paymentService from '../services/payment.service';
-import { mockPayments } from '../mock/payments'
 import {
   mockPerformanceMetrics,
 } from '../mocks/mockData';
@@ -55,11 +53,7 @@ export const useRevenueTrend = () =>
     ],
   });
 
-export const useStudentsByState = () =>
-  useQuery({
-    queryKey: QUERY_KEYS.dashboard.studentsByState,
-    queryFn: async () => mockDashboardCharts.studentsByState,
-  });
+
 const mapDashboardStudent = (s) => ({
   id: s.id,
   name: s.name || 'Unknown',
@@ -143,14 +137,10 @@ export const useRecentPayments = () =>
       try {
         const payments = await paymentService.getAll();
 
-        // Backend returns []
-        if (!payments?.length) {
-          return mockPayments;
-        }
-
-        return payments;
-      } catch {
-        return mockPayments;
+        return payments || [];
+      } catch (error) {
+        console.error('Failed to fetch payments:', error);
+        return [];
       }
     },
   });

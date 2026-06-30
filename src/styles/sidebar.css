@@ -580,3 +580,92 @@
     max-width: 75vw;
   }
 }
+.sidebar-referral-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-copy-icon {
+  font-size: 16px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-copy-icon:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+/* ==========================
+   Tablet (769px - 1024px)
+========================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 72px;                 /* same as desktop */
+    left: 0;
+
+    width: 220px;
+    max-width: 75vw;
+    height: calc(100vh - 72px);
+
+    overflow-y: auto;
+
+    z-index: 1001;
+
+    transform: translateX(-100%);
+    transition: transform .3s ease;
+  }
+
+  .sidebar-mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile-closed {
+    transform: translateX(-100%);
+  }
+}
+
+/* ==========================
+   Mobile (≤768px)
+========================== */
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 60px;                  /* mobile navbar */
+    left: 0;
+
+    width: 200px;
+    max-width: 80vw;
+    height: calc(100vh - 60px);
+
+    overflow-y: auto;
+
+    z-index: 1001;
+
+    transform: translateX(-100%);
+    transition: transform .3s ease;
+  }
+
+  .sidebar-mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile-closed {
+    transform: translateX(-100%);
+  }
+}
+
+/* Small phones */
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+}

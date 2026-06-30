@@ -46,6 +46,7 @@ const getPageMeta = (pathname) => {
 };
 
 const DashboardLayout = () => {
+  
   const {
   isCollapsed,
   //isMobile,
@@ -56,6 +57,7 @@ const DashboardLayout = () => {
   const { pathname } = useLocation();
 
   const { title, breadcrumbs } = getPageMeta(pathname);
+  
 
   const [isMobile, setIsMobile] = useState(
     window.innerWidth <= 1024

@@ -57,23 +57,17 @@ const StudentFilters = ({
     ),
   ];
 
-  const handleChange = (
-    field,
-    value
-  ) => {
-    const updated = {
-      ...filters,
-      [field]:
-        value.startsWith(
-          'All'
-        )
-          ? ''
-          : value,
-    };
-
-    setFilters(updated);
-    onFilterChange(updated);
+  const handleChange = (field, value) => {
+  const updated = {
+    ...filters,
+    [field]: value.startsWith('All') ? '' : value,
   };
+
+  console.log("Updated Filters:", updated);
+
+  setFilters(updated);
+  onFilterChange(updated);
+};
 
   return (
     <div className="student-filters-container">

@@ -53,20 +53,20 @@ const mapContentFromApi = (
                 fileSize:
                   asset.fileSize,
 
-                grade:
-                  chapter.grade
-                    ?.name ||
-                  '',
+                grade: {
+  id: chapter.grade?.id,
+  name: chapter.grade?.name,
+},
 
-                board:
-                  chapter.board
-                    ?.name ||
-                  '',
+board: {
+  id: chapter.board?.id,
+  name: chapter.board?.name,
+},
 
-                course:
-                  chapter.branch
-                    ?.name ||
-                  'General',
+course: {
+  id: chapter.branch?.id,
+  name: chapter.branch?.name,
+},
 
                 subject:
                   chapter.subject

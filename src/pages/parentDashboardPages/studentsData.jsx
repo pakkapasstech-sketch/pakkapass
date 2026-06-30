@@ -1,143 +1,182 @@
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import StatisticCard from '../../components/cards/StatisticCard';
+import studentService from '../../services/student.service';
 import '../../styles/StudentData.css';
+import { useLoading } from '../../contexts/LoadingContext';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+
 
 const StudentsData = () => {
-  const isLoading = false;
+  const { state } = useLocation();
 
-  const student = {
-    studentId: 'STU1001',
-    name: 'Rahul Sharma',
-    class: '10',
-    section: 'A',
-    board: 'CBSE',
-    school: 'Delhi Public School',
-    parent: 'Mr. Sharma',
-    email: 'rahul@example.com',
-    phone: '+91 9876543210',
-    attendance: '96%',
-    studyStreak: 18,
-    monthlyHours: 72,
-    todayHours: 3.5,
+const [linkedStudents, setLinkedStudents] = useState([]);
+const [selectedStudentId, setSelectedStudentId] = useState(
+  state?.studentId || null
+);
+
+const [student, setStudent] = useState(null);
+const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoadingState] = useState(true);
+const { setLoading } = useLoading();
+ useEffect(() => {
+  const loadStudents = async () => {
+    try {
+      const students = await studentService.getParentStudents();
+
+      setLinkedStudents(students);
+
+      if (students.length > 0) {
+        setSelectedStudentId((prev) => prev || students[0].id);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  loadStudents();
+}, []);
+  useEffect(() => {
+  const fetchStudent = async () => {
+    try {
+      setLoading(true);
+      setLoadingState(true);
+
+      const profile = await studentService.getProfile(selectedStudentId);
+      const analyticsData = await studentService.getAnalytics(selectedStudentId);
+
+      setStudent(profile);
+      setAnalytics(analyticsData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setLoadingState(false);
+    }
+  };
+
+  if (selectedStudentId) {
+    fetchStudent();
+  }
+}, [selectedStudentId, setLoading]);
+
+  
+
+  
 
   const statCards = [
     {
-      id: 'attendance',
-      title: 'Attendance',
-      formattedValue: student.attendance,
-      trend: 2,
-      trendLabel: 'overall',
-      trendUp: true,
-      iconBg: 'bg-amber-100',
-      iconColor: 'text-amber-600',
-      icon: 'students',
-    },
-    {
       id: 'streak',
       title: 'Study Streak',
-      formattedValue: `${student.studyStreak} Days`,
-      trend: 6,
-      trendLabel: 'this week',
-      trendUp: true,
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-indigo-600',
+      formattedValue: `${analytics?.streak ?? 0} Days`,
       icon: 'students',
     },
     {
       id: 'today',
       title: "Today's Study",
-      formattedValue: `${student.todayHours} hrs`,
-      trend: 10,
-      trendLabel: 'today',
-      trendUp: true,
-      iconBg: 'bg-emerald-100',
-      iconColor: 'text-emerald-600',
+      formattedValue: `${analytics?.todayHours ?? 0} hrs`,
       icon: 'dashboard',
     },
     {
       id: 'month',
       title: 'Monthly Study',
-      formattedValue: `${student.monthlyHours} hrs`,
-      trend: 8,
-      trendLabel: 'this month',
-      trendUp: true,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      formattedValue: `${analytics?.monthlyHours ?? 0} hrs`,
+      icon: 'dashboard',
+    },
+    {
+      id: 'completion',
+      title: 'Completion',
+      formattedValue: `${analytics?.completionPercent ?? 0}%`,
       icon: 'dashboard',
     },
   ];
 
-  const subjects = [
-    { subject: 'Mathematics', progress: 82 },
-    { subject: 'Science', progress: 75 },
-    { subject: 'English', progress: 68 },
-    { subject: 'Social Studies', progress: 91 },
-  ];
-
+  const subjects = analytics?.subjectsProgress || [];
+  const studentOptions = linkedStudents.map((student) => ({
+  label: student.name,
+  value: student.id,
+}));
   return (
     <div className="studentsdata-page">
-
       <div className="studentsdata-header">
-        <h2>Student Details</h2>
-        <p>View your child's academic information.</p>
-      </div>
+  <div>
+    <h2>Student Details</h2>
+    <p>View your child's academic information.</p>
+  </div>
+
+  <div style={{ width: '260px' }}>
+    <CommonFilterDropdown
+      placeholder="Select Student"
+      value={
+        studentOptions.find(
+          (s) => String(s.value) === String(selectedStudentId)
+        )?.label || 'Select Student'
+      }
+      options={studentOptions.map((s) => s.label)}
+      onChange={(selectedLabel) => {
+        const selected = studentOptions.find(
+          (s) => s.label === selectedLabel
+        );
+
+        if (selected) {
+          setSelectedStudentId(selected.value);
+        }
+      }}
+    />
+  </div>
+</div>
 
       <div className="studentsdata-profile-card">
-
         <div className="studentsdata-avatar">
-          {student.name.charAt(0)}
+          {(student?.user?.name || '?').charAt(0)}
         </div>
 
         <div className="studentsdata-profile-info">
-
-          <h3>{student.name}</h3>
+          <h3>{student?.user?.name}</h3>
 
           <div className="studentsdata-grid">
-
             <div>
               <span>Student ID</span>
-              <strong>{student.studentId}</strong>
+              <strong>{student?.user?.id}</strong>
             </div>
 
             <div>
-              <span>Class</span>
-              <strong>{student.class}</strong>
-            </div>
-
-            <div>
-              <span>Section</span>
-              <strong>{student.section}</strong>
+              <span>Grade</span>
+              <strong>
+                {student?.profile?.grade?.name}
+              </strong>
             </div>
 
             <div>
               <span>Board</span>
-              <strong>{student.board}</strong>
+              <strong>
+                {student?.profile?.board?.name}
+              </strong>
             </div>
 
             <div>
               <span>School</span>
-              <strong>{student.school}</strong>
+              <strong>{student?.profile?.institution}</strong>
             </div>
 
             <div>
               <span>Parent</span>
-              <strong>{student.parent}</strong>
+              <strong>
+                {student?.profile?.parent?.name ?? '-'}
+              </strong>
             </div>
 
             <div>
               <span>Email</span>
-              <strong>{student.email}</strong>
+              <strong>{student?.user?.email}</strong>
             </div>
 
             <div>
               <span>Phone</span>
-              <strong>{student.phone}</strong>
+              <strong>{student?.user?.mobile}</strong>
             </div>
-
           </div>
-
         </div>
-
       </div>
 
       <div className="studentsdata-stats">
@@ -145,38 +184,39 @@ const StudentsData = () => {
           <StatisticCard
             key={card.id}
             {...card}
-            isLoading={isLoading}
+            isLoading={false}
           />
         ))}
       </div>
 
       <div className="studentsdata-card">
-
         <h3>Subject Progress</h3>
 
-        {subjects.map((item) => (
-          <div
-            key={item.subject}
-            className="studentsdata-progress-item"
-          >
+        {subjects.length === 0 ? (
+          <p>No subject progress available.</p>
+        ) : (
+          subjects.map((item) => (
+            <div
+              key={item.name}
+              className="studentsdata-progress-item"
+            >
+              <div className="studentsdata-progress-header">
+                <span>{item.name}</span>
+                <strong>{item.progress}%</strong>
+              </div>
 
-            <div className="studentsdata-progress-header">
-              <span>{item.subject}</span>
-              <strong>{item.progress}%</strong>
+              <div className="studentsdata-progress-bar">
+                <div
+                  className="studentsdata-progress-fill"
+                  style={{
+                    width: `${item.progress}%`,
+                  }}
+                />
+              </div>
             </div>
-
-            <div className="studentsdata-progress-bar">
-              <div
-                className="studentsdata-progress-fill"
-                style={{ width: `${item.progress}%` }}
-              />
-            </div>
-
-          </div>
-        ))}
-
+          ))
+        )}
       </div>
-
     </div>
   );
 };

@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import {
   HiOutlineSupport,
   HiOutlineQuestionMarkCircle,
   HiOutlinePhone,
   HiOutlineMail,
-  HiOutlineTicket,
+  //HiOutlineTicket,
   HiOutlineX,
 } from 'react-icons/hi';
 
 import '../../styles/supportCentrePage.css';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 import { useAuth } from '../../auth/AuthProvider';
+import { getSupportTickets } from "../../services/supportService";
 const faqs = [
   {
     question: 'How do I upload content?',
@@ -50,18 +51,45 @@ const initialTickets = [
 ];
 
 const SupportCentrePage = () => {
-  const [tickets, setTickets] = useState(initialTickets);
+  const [tickets, setTickets] = useState([]);
+const [loading, setLoading] = useState(false);
   const [activeTicket, setActiveTicket] = useState(null);
   const { user } = useAuth();
 
 const isAdmin = user?.role === 'ADMIN';
-  const handleStatusChange = (newStatus) => {
-    setTickets((prev) =>
-      prev.map((t) => (t.id === activeTicket.id ? { ...t, status: newStatus } : t))
-    );
-    setActiveTicket((prev) => ({ ...prev, status: newStatus }));
-  };
+  const handleStatusChange = (status) => {
+  setActiveTicket((prev) => ({
+    ...prev,
+    status,
+  }));
 
+  setTickets((prev) =>
+    prev.map((ticket) =>
+      ticket.id === activeTicket.id
+        ? { ...ticket, status }
+        : ticket
+    )
+  );
+};
+  useEffect(() => {
+  if (isAdmin) {
+    fetchTickets();
+  }
+}, [isAdmin]);
+
+const fetchTickets = async () => {
+  try {
+    setLoading(true);
+
+    const { data } = await getSupportTickets();
+
+    setTickets(data);
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="support-page">
       {/* Header */}
@@ -111,7 +139,7 @@ const isAdmin = user?.role === 'ADMIN';
                 onClick={() => setActiveTicket(ticket)}
               >
                 <div>
-                  <h4>{ticket.title}</h4>
+                  <h4>{ticket.name}</h4>
                   <p>{ticket.id}</p>
                 </div>
 
@@ -119,8 +147,7 @@ const isAdmin = user?.role === 'ADMIN';
                   <span className={`ticket-status ${ticket.status.toLowerCase()}`}>
                     {ticket.status}
                   </span>
-                  <p>{ticket.date}</p>
-                </div>
+<p>{new Date(ticket.createdAt).toLocaleDateString()}</p>                </div>
               </div>
             ))}
           </div>
@@ -244,7 +271,7 @@ Send Message
               >
                 <div className="ticket-detail-group">
                   <label className="ticket-detail-label">Student Name</label>
-                  <div className="ticket-detail-value">{activeTicket.studentName}</div>
+                  <div className="ticket-detail-value">{activeTicket.student?.user?.name || activeTicket.name}</div>
                 </div>
                 <div className="ticket-detail-group">
                   <label className="ticket-detail-label">Student ID</label>
@@ -254,7 +281,7 @@ Send Message
 
               <div className="ticket-detail-group" style={{ marginTop: '16px' }}>
                 <label className="ticket-detail-label">Student Email</label>
-                <div className="ticket-detail-value">{activeTicket.studentEmail}</div>
+                <div className="ticket-detail-value">{activeTicket.student?.user?.email || activeTicket.email}</div>
               </div>
 
               <div className="ticket-detail-group" style={{ marginTop: '16px' }}>

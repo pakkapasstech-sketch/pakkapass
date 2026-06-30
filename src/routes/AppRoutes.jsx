@@ -77,11 +77,20 @@ const AppRoutes = () => (
           element={<ProtectedRoute permission={PERMISSIONS.COUPON_VIEW} roles={[ROLES.ADMIN]} />}
         >
           <Route path="subscriptions" element={<SubscriptionManagementPage />} />
-          <Route path="/admin/subscriptions/plans/:planId" element={<PlanDetailsPage />} />
+          <Route
+  path="subscriptions/plans/create"
+  element={<CreateEditPlanPage />}
+/>
 
-          <Route path="/admin/subscriptions/plans/create" element={<CreateEditPlanPage />} />
+<Route
+  path="subscriptions/plans/:planId"
+  element={<PlanDetailsPage />}
+/>
 
-          <Route path="/admin/subscriptions/plans/:planId/edit" element={<CreateEditPlanPage />} />
+<Route
+  path="subscriptions/plans/:planId/edit"
+  element={<CreateEditPlanPage />}
+/>
           <Route path="coupons" element={<ReferralManagementPage />} />
         </Route>
 

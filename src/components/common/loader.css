@@ -1,9 +1,10 @@
 .loader-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: transparent;/* rgba(255, 255, 255, 0.75); */
+  backdrop-filter: blur(10px); 
+ 
+  /* -webkit-backdrop-filter: blur(10px); */
 
   display: flex;
   justify-content: center;
@@ -91,9 +92,9 @@
 
 .dark .loader-overlay,
 [data-theme='dark'] .loader-overlay {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: transparent;/* rgba(15, 23, 42, 0.75); */
+  /* backdrop-filter: blur(10px); */
+  /* -webkit-backdrop-filter: blur(10px); */
 }
 
 .dark .spinner-ring,

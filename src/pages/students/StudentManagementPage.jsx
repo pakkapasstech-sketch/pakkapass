@@ -85,22 +85,23 @@ const StudentManagementPage = () => {
 
         const classMatch =
   !filters.class ||
-  student.class === filters.class;
+  student.class?.trim().toLowerCase() ===
+  filters.class?.trim().toLowerCase();
 
-        const boardMatch =
-          !filters.board ||
-          student.board ===
-            filters.board;
+const boardMatch =
+  !filters.board ||
+  student.board?.trim().toLowerCase() ===
+  filters.board?.trim().toLowerCase();
 
         const collegeMatch =
-          !filters.college ||
-          student.institution ===
-            filters.college;
+  !filters.college ||
+  student.institution?.trim().toLowerCase() ===
+  filters.college?.trim().toLowerCase();
 
         const stateMatch =
-          !filters.state ||
-          student.state ===
-            filters.state;
+  !filters.state ||
+  student.state?.trim().toLowerCase() ===
+  filters.state?.trim().toLowerCase();
 
         const statusMatch =
           !filters.status ||

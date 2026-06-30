@@ -490,3 +490,116 @@
     font-size: 16px;
   }
 }
+.subscription-filters {
+  display: flex;
+  /* align-items: center; */
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 24px 0;
+}
+
+.subscription-filters .search-box {
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+
+.subscription-filters .common-dropdown {
+  flex: 1 1 180px;
+  min-width: 180px;
+  max-width: 240px;
+}
+
+.subscription-filters .common-dropdown-trigger {
+  width: 100%;
+  height: 54px;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+@media (max-width:1024px){
+
+  .subscription-management-page{
+    padding:20px;
+  }
+
+  .subscription-card{
+    padding:20px;
+  }
+
+  .subscription-filters{
+    gap:12px;
+  }
+
+  .subscription-filters .search-box{
+    flex:1 1 100%;
+    max-width:100%;
+  }
+
+  .subscription-filters .common-dropdown{
+    flex:1 1 calc(33.33% - 8px);
+    max-width:none;
+  }
+
+  .header-actions{
+    width:100%;
+  }
+
+  .header-actions button{
+    flex:1;
+  }
+}
+@media (max-width:768px){
+
+  .subscription-management-page{
+    padding:16px;
+  }
+
+  .page-header{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .header-actions{
+    width:100%;
+  }
+
+  .header-actions button{
+    width:100%;
+    justify-content:center;
+  }
+
+  .subscription-filters{
+    gap:12px;
+  }
+
+  .subscription-filters .search-box{
+    width:100%;
+    min-width:100%;
+  }
+
+  .subscription-filters .common-dropdown{
+    flex:1 1 calc(50% - 6px);
+    min-width:160px;
+  }
+
+  .subscription-table th,
+  .subscription-table td{
+    padding:14px;
+  }
+}
+.subscription-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

@@ -39,12 +39,6 @@
 }
 
 .common-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-
-  width: 100%;
-
   background: var(--color-card);
 
   border: 1px solid var(--color-border);
@@ -52,13 +46,12 @@
 
   box-shadow: 0 16px 40px rgba(0,0,0,.12);
 
-  z-index: 999;
+  overflow: hidden;
 }
 
 .common-dropdown-search {
   display: flex;
   align-items: center;
-  gap: 10px;
 
   padding: 12px;
 
@@ -66,7 +59,7 @@
 }
 
 .common-dropdown-search input {
-  flex: 1;
+  width: 100%;
 
   border: none;
   outline: none;
@@ -74,6 +67,7 @@
   background: transparent;
 
   color: var(--color-text-primary);
+  font-size: 14px;
 }
 
 .common-dropdown-options {

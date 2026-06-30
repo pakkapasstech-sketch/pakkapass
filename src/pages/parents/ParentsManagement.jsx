@@ -10,7 +10,7 @@ import ErrorState from '../../components/loaders/ErrorState';
 import { useParents } from '../../hooks/useParents';
 
 import '../../styles/ParentsManagement.css';
-import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+//import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 import '../../styles/student-table.css';
 
 const ParentsManagement = () => {
@@ -19,13 +19,13 @@ const ParentsManagement = () => {
   const { data: parents = [], isLoading, isError, refetch } = useParents();
 
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  // const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
 const parentsPerPage = 5;
  useEffect(() => {
   setCurrentPage(1);
-}, [search, statusFilter]);
+}, [search]);
   const filteredParents = parents.filter((p) => {
   const searchTerm = search.trim().toLowerCase();
 
@@ -38,10 +38,10 @@ const parentsPerPage = 5;
     String(p.students || '').toLowerCase().includes(searchTerm) ||
     (p.status || '').toLowerCase().includes(searchTerm);
 
-  const matchesStatus =
-    statusFilter === '' || p.status === statusFilter;
+  // const matchesStatus =
+  //   statusFilter === '' || p.status === statusFilter;
 
-  return matchesSearch && matchesStatus;
+  return matchesSearch ;
 });
 const totalParentsFiltered = filteredParents.length;
 
@@ -69,9 +69,7 @@ const getVisiblePages = () => {
 
  useEffect(() => {
   setLoading(isLoading);
-
-  return () => setLoading(false);
-}, [isLoading, setLoading]);
+}, [isLoading]);
 
   if (isError) {
     return <ErrorState message="Failed to load parents" onRetry={refetch} />;
@@ -179,7 +177,7 @@ const getVisiblePages = () => {
           />
         </div>
 
-        <CommonFilterDropdown
+        {/* <CommonFilterDropdown
   placeholder="All Status"
   value={statusFilter || 'All Status'}
   options={[
@@ -192,7 +190,7 @@ const getVisiblePages = () => {
       value === 'All Status' ? '' : value
     )
   }
-/>
+/> */}
       </div>
 
       {/* Table */}
@@ -205,7 +203,7 @@ const getVisiblePages = () => {
               <th>Email</th>
               <th>Phone</th>
               <th>Students</th>
-              <th>Status</th>
+              {/* <th>Status</th> */}
               <th>view</th>
             </tr>
           </thead>
@@ -215,7 +213,8 @@ const getVisiblePages = () => {
               currentParents.map((p) => (
                 <tr
   key={p.id}
-  className="parent-row"
+  className="parent-row clickable-row"
+  onClick={() => navigate(`/parents/${p.id}`)}
 >
                   <td>{p.id}</td>
 
@@ -239,18 +238,7 @@ const getVisiblePages = () => {
 
                   <td>{p.students}</td>
 
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        p.status === 'Active'
-                          ? 'active'
-                          : 'inactive'
-                      }`}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className="table-actions">
+                  <td >
   <button
     className="table-action-btn"
     onClick={() => navigate(`/parents/${p.id}`)}

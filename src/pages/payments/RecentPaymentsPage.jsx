@@ -246,7 +246,7 @@ useEffect(() => {
               {paginatedPayments.length > 0 ? (
                 paginatedPayments.map((payment, index) => (
                   <tr key={payment.id || index} className="clickable-row">
-                    <td>{studentIdMap[payment.student?.trim().toLowerCase()] ?? '—'}</td>{' '}
+                    <td>{studentIdMap[payment.student?.trim().toLowerCase()] ?? '—'}</td>
                     <td>
                       <div className="student-user">
                         <img

@@ -585,3 +585,179 @@
   background: rgba(245, 158, 11, 0.18);
   color: #fde68a;
 }
+/* ========================================
+   Partner Dashboard Referral Section
+======================================== */
+
+.partnerdashboard-referral-container {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  margin: 28px 0 32px;
+  align-items: stretch;
+}
+
+.partnerdashboard-referral-card,
+.partnerdashboard-message-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ================= Code Card ================= */
+
+.partnerdashboard-referral-card {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.partnerdashboard-referral-card p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.partnerdashboard-referral-card h1 {
+  margin: 22px 0 30px;
+  padding: 14px 30px;
+  border-radius: 14px;
+
+  background: rgba(102, 83, 175, 0.08);
+  color: var(--color-primary);
+
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+/* ================= Message Card ================= */
+
+.partnerdashboard-message-card h3 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.partnerdashboard-message-card textarea {
+  flex: 1;
+
+  min-height: 0;
+  resize: none;
+
+  padding: 16px;
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  background: var(--color-surface);
+
+  color: var(--color-text-primary);
+
+  font-size: 14px;
+  line-height: 1.8;
+
+  outline: none;
+}
+
+.partnerdashboard-message-card textarea:focus {
+  border-color: var(--color-primary);
+}
+
+/* ================= Buttons ================= */
+
+.partnerdashboard-copy-code-btn,
+.partnerdashboard-copy-message-btn {
+  height: 46px;
+  padding: 0 22px;
+  margin-top: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: all .25s ease;
+}
+
+.partnerdashboard-copy-code-btn {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.partnerdashboard-copy-code-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(102, 83, 175, 0.25);
+}
+
+.partnerdashboard-copy-message-btn {
+  align-self: flex-end;
+
+  background: #f8fafc;
+  color: var(--color-primary);
+
+  border: 1px solid var(--color-border);
+}
+
+.partnerdashboard-copy-message-btn:hover {
+  background: rgba(102, 83, 175, 0.08);
+}
+
+/* ================= Responsive ================= */
+
+@media (max-width: 900px) {
+  .partnerdashboard-referral-container {
+    grid-template-columns: 1fr;
+  }
+
+  .partnerdashboard-referral-card h1 {
+    font-size: 26px;
+  }
+
+  .partnerdashboard-copy-message-btn {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+/* ================= Dark Mode ================= */
+
+.dark .partnerdashboard-referral-card,
+.dark .partnerdashboard-message-card,
+[data-theme='dark'] .partnerdashboard-referral-card,
+[data-theme='dark'] .partnerdashboard-message-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.dark .partnerdashboard-message-card textarea,
+[data-theme='dark'] .partnerdashboard-message-card textarea {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.dark .partnerdashboard-copy-message-btn,
+[data-theme='dark'] .partnerdashboard-copy-message-btn {
+  background: var(--color-surface);
+  color: #c4b5fd;
+  border-color: var(--color-border);
+}

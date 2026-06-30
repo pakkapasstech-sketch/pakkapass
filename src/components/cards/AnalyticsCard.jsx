@@ -3,17 +3,10 @@ import { motion } from 'framer-motion';
 import { getIcon } from '../../utils/iconMap';
 //import SparklineChart from '../charts/SparklineChart';
 
-const AnalyticsCard = ({ title, value,   color, icon,  isLoading }) => {
-  if (isLoading) {
-    return (
-<div className="analytics-card analytics-card-loading">
-          <div className="h-20 rounded bg-gray-200 dark:bg-gray-700" />
-      </div>
-    );
-  }
+const AnalyticsCard = ({ title, value,   color, icon}) => {
+  
 
   const Icon = getIcon(icon);
-  //const trendUp = trend >= 0;
 
   return (
     <motion.div
@@ -48,9 +41,6 @@ const AnalyticsCard = ({ title, value,   color, icon,  isLoading }) => {
     </div>
   </div>
 
-  <p className="analytics-subtitle">
-    {/* {subtitle} */}
-  </p>
 </motion.div>
   );
 };

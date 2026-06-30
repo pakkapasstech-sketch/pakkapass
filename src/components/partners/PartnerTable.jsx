@@ -5,6 +5,9 @@ import {
   HiOutlineChevronRight,
   HiOutlineEye,
 } from 'react-icons/hi';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+
+
 const PartnerTable = ({
   partners = [],
   onStatusChange,
@@ -81,7 +84,8 @@ const PartnerTable = ({
             {currentPartners.map((partner) => (
               <tr
   key={partner.id}
-  className="partner-row"
+  className="partner-row clickable-row"
+  onClick={() => navigate(`/partners/${partner.id}`)}
 >
                 <td>{partner.id}</td>
 
@@ -108,24 +112,27 @@ const PartnerTable = ({
                   ).toLocaleString()}
                 </td>
 
-                <td>
-  <select
-    className="partner-status-select"
-    value={partner.status}
-    onChange={(e) => {
-  console.log('Selected:', e.target.value);
-  onStatusChange(partner.id, e.target.value);
-}}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <option value="Active">Active</option>
-<option value="Inactive">Inactive</option>
-<option value="Suspended">Suspended</option>
-  </select>
+                <td
+  className="partner-status-cell"
+  onClick={(e) => e.stopPropagation()}
+>
+  <div className="partner-status-dropdown">
+    <CommonFilterDropdown
+    placeholder=""
+      value={partner.status}
+      options={[
+        'Active',
+        'Inactive',
+        'Suspended',
+      ]}
+      onChange={(value) =>
+        onStatusChange(partner.id, value)
+      }
+    />
+  </div>
 </td>
-<td className="partner-actions">
+<td>
   <button
-  className="partner-action-btn"
   onClick={(e) => {
     e.stopPropagation();
     navigate(`/partners/${partner.id}`);
