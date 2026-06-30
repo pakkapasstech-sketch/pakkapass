@@ -1,20 +1,12 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { usePermissions } from './usePermissions';
-import LoadingSkeleton from '../components/loaders/LoadingSkeleton';
 
 const ProtectedRoute = ({ permission, permissions = [], roles = [], redirectTo = '/login' }) => {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { isAuthenticated,  user } = useAuth();
   const { hasPermission, hasAnyPermission } = usePermissions();
   const location = useLocation();
 
-  if (loading) {
-    return (
-      <div className="page-loading">
-        <LoadingSkeleton rows={6} />
-      </div>
-    );
-  }
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />;

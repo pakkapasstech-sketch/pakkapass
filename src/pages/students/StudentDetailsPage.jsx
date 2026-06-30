@@ -10,7 +10,6 @@ import {
 
 import '../../styles/student-details.css';
 import { useStudent } from '../../hooks/useStudents';
-import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
 import ErrorState from '../../components/loaders/ErrorState';
 
 const tabs = [
@@ -25,12 +24,11 @@ const tabs = [
 const StudentDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: student, isLoading, isError, refetch } = useStudent(id);
+  const { data: student, isError, refetch } = useStudent(id);
 
   const [activeTab, setActiveTab] =
     useState('Overview');
 
-  if (isLoading) return <LoadingSkeleton rows={6} />;
 
   if (isError) {
     return (

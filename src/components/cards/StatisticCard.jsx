@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { getIcon } from '../../utils/iconMap';
-import { StatCardSkeleton } from '../loaders/LoadingSkeleton';
 
 const StatisticCard = ({
   title,
@@ -9,11 +8,9 @@ const StatisticCard = ({
   iconBg,
   iconColor,
   icon,
-  isLoading,
+
 }) => {
-  if (isLoading) {
-    return <StatCardSkeleton />;
-  }
+
 
   const Icon = typeof icon === 'string' ? getIcon(icon) : (icon || getIcon('dashboard'));
 

@@ -14,7 +14,6 @@ import { buildHierarchy } from '../../utils/buildHierarchy';
 import './contentManagement.css';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
-import Loader from '../../components/common/Loader';
 import { HiCloudArrowUp } from 'react-icons/hi2';
 import { useLoading } from '../../contexts/LoadingContext';
 const ContentManagement = () => {

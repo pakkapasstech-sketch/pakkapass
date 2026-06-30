@@ -46,6 +46,47 @@ updateTopic: (id, data) =>
 
 deleteTopic: (id) =>
   axiosInstance.delete(`/admin/topic/${id}`),
+updateGrade(id, body) {
+  return axiosInstance.put(`/admin/grade/${id}`, body);
+},
+
+deleteGrade(id) {
+  return axiosInstance.delete(`/admin/grade/${id}`);
+},
+
+updateBoard(id, body) {
+  return axiosInstance.put(`/admin/board/${id}`, body);
+},
+
+deleteBoard(id) {
+  return axiosInstance.delete(`/admin/board/${id}`);
+},
+
+updateBranch(id, body) {
+  return axiosInstance.put(`/admin/branch/${id}`, body);
+},
+
+deleteBranch(id) {
+  return axiosInstance.delete(`/admin/branch/${id}`);
+},
+
+updateSubject(id, body) {
+  return axiosInstance.put(`/admin/subject/${id}`, body);
+},
+
+deleteSubject(id) {
+  return axiosInstance.delete(`/admin/subject/${id}`);
+},
+
+
+updateContentAsset(id, body) {
+  return axiosInstance.put(`/admin/content-asset/${id}`, body);
+},
+
+deleteContentAsset(id) {
+  return axiosInstance.delete(`/admin/content-asset/${id}`);
+},
 };
+
 
 export default entityService;
