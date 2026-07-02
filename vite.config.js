@@ -9,7 +9,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'https://api.fivopayunion.in',
+        target: 'http://10.54.49.65:8000',
         changeOrigin: true,
       }
     }

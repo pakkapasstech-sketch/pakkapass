@@ -53,6 +53,7 @@ useEffect(() => {
           await entityService.addContentType(name);
           break;
         case 'Add Chapter':
+        case `Add ${filters?.selectedContentType?.replace(/s$/, '')}`:
           if (!filters?.class || !filters?.board || !filters?.subject) {
             toast.error('Please select Class, Board and Subject first');
             return;
