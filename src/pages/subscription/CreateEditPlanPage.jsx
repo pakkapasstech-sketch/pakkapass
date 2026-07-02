@@ -46,6 +46,13 @@ const CreateEditPlanPage = () => {
 
   const { grades, boards, branches } = options;
 
+  const filteredBoards = formData.classes.length > 0 
+    ? boards.filter(b => formData.classes.includes(b.gradeId))
+    : boards;
+
+  const filteredBranches = formData.classes.length > 0
+    ? branches.filter(b => formData.classes.includes(b.gradeId))
+    : branches;
   useEffect(() => {
     if (!isEdit) {
       setFormData(initialForm);
@@ -123,8 +130,8 @@ const CreateEditPlanPage = () => {
         price: Number(formData.price),
         durationDays: Number(formData.duration),
         gradeIds: formData.classes,
-        boardIds: formData.boards,
-        branchIds: formData.branches,
+        boardIds: formData.classes.length > 0 ? formData.boards.filter(id => filteredBoards.some(b => b.id === id)) : formData.boards,
+        branchIds: formData.classes.length > 0 ? formData.branches.filter(id => filteredBranches.some(b => b.id === id)) : formData.branches,
         features: formData.features,
         status: formData.status,
       };
@@ -217,7 +224,7 @@ const CreateEditPlanPage = () => {
             <label>Boards</label>
 
             <div className="options">
-              {boards.map((board) => (
+              {filteredBoards.map((board) => (
                 <button
                   type="button"
                   key={board.id}
@@ -229,20 +236,24 @@ const CreateEditPlanPage = () => {
               ))}
             </div>
 
-            <label>Branches</label>
+            {filteredBranches.length > 0 && (
+              <>
+                <label>Branches</label>
 
-            <div className="options">
-              {branches.map((branch) => (
-                <button
-                  type="button"
-                  key={branch.id}
-                  className={`option ${formData.branches.includes(branch.id) ? 'selected' : ''}`}
-                  onClick={() => toggleSelection('branches', branch.id)}
-                >
-                  {branch.name}
-                </button>
-              ))}
-            </div>
+                <div className="options">
+                  {filteredBranches.map((branch) => (
+                    <button
+                      type="button"
+                      key={branch.id}
+                      className={`option ${formData.branches.includes(branch.id) ? 'selected' : ''}`}
+                      onClick={() => toggleSelection('branches', branch.id)}
+                    >
+                      {branch.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
 

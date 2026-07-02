@@ -6,14 +6,16 @@ const entityService = {
       name,
     }),
 
-  addBoard: (name) =>
+  addBoard: (name, gradeName) =>
     axiosInstance.post('/admin/board', {
       name,
+      gradeName,
     }),
 
-  addBranch: (name) =>
+  addBranch: (name, gradeName) =>
     axiosInstance.post('/admin/branch', {
       name,
+      gradeName,
     }),
 
   addSubject: (data) =>

@@ -34,11 +34,11 @@ useEffect(() => {
           break;
 
         case 'Add Board':
-          await entityService.addBoard(name);
+          await entityService.addBoard(name, filters.class);
           break;
 
         case 'Add Course':
-          await entityService.addBranch(name);
+          await entityService.addBranch(name, filters.class);
           break;
 
         case 'Add Subject':

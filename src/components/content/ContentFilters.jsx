@@ -111,18 +111,20 @@ const classOptions =
     (grade) => grade.name
   ) || [];
 
+const selectedGradeObj = options?.grades?.find((g) => g.name === filters.class);
+
 const boardOptions =
-  filters.class
-    ? options?.boards?.map(
-        (board) => board.name
-      ) || []
+  filters.class && selectedGradeObj
+    ? options?.boards
+        ?.filter((board) => board.gradeId === selectedGradeObj.id || !board.gradeId)
+        .map((board) => board.name) || []
     : [];
 
 const courseOptions =
-  filters.board
-    ? options?.branches?.map(
-        (branch) => branch.name
-      ) || []
+  filters.board && selectedGradeObj
+    ? options?.branches
+        ?.filter((branch) => branch.gradeId === selectedGradeObj.id || !branch.gradeId)
+        .map((branch) => branch.name) || []
     : [];
 
 const showCourse = ['11th', '12th'].includes(filters.class);
