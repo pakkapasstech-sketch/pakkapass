@@ -4,12 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  server: { 
-    port: 5173, 
+  server: {
+    port: 5173,
     open: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://api.fivopayunion.in',
         changeOrigin: true,
       }
     }
