@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { HiArrowLeft, HiOutlinePlus } from 'react-icons/hi';
+import { useQuery } from '@tanstack/react-query';
 import '../../styles/createEditPlan.css';
 import { getPlanById, createPlan, updatePlan } from '../../services/SubscriptionServices';
 import { contentService } from '../../services/content.service';
+import api from '../../api/axiosInstance';
 import toast from 'react-hot-toast';
 
 const initialForm = {
@@ -21,47 +23,29 @@ const initialForm = {
 const CreateEditPlanPage = () => {
   const navigate = useNavigate();
   const { planId } = useParams();
-  const [grades, setGrades] = useState([]);
-  const [boards, setBoards] = useState([]);
-  const [branches, setBranches] = useState([]);
   const isEdit = Boolean(planId);
 
   const [featureInput, setFeatureInput] = useState('');
 
   const [formData, setFormData] = useState(initialForm);
-  useEffect(() => {
-    loadOptions();
-  }, []);
 
-  const loadOptions = async () => {
-    try {
-      const content = await contentService.getAll();
+  const {
+    data: options = {
+      grades: [],
+      boards: [],
+      branches: [],
+      subjects: [],
+    },
+  } = useQuery({
+    queryKey: ['content-options'],
+    queryFn: async () => {
+      const { data } = await api.get('/admin/content/options');
+      return data;
+    },
+  });
 
-      const grades = [
-        ...new Map(
-          content.filter((item) => item.grade?.id).map((item) => [item.grade.id, item.grade])
-        ).values(),
-      ];
+  const { grades, boards, branches } = options;
 
-      const boards = [
-        ...new Map(
-          content.filter((item) => item.board?.id).map((item) => [item.board.id, item.board])
-        ).values(),
-      ];
-
-      const branches = [
-        ...new Map(
-          content.filter((item) => item.course?.id).map((item) => [item.course.id, item.course])
-        ).values(),
-      ];
-
-      setGrades(grades);
-      setBoards(boards);
-      setBranches(branches);
-    } catch (err) {
-      console.error(err);
-    }
-  };
   useEffect(() => {
     if (!isEdit) {
       setFormData(initialForm);

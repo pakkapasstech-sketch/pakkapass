@@ -125,6 +125,7 @@ const ContentManagement = () => {
           <ContentTree
             filters={selectedFilters}
             hierarchy={hierarchy}
+            options={options}
             setFilters={setSelectedFilters}
             setViewMode={setViewMode}
             setActiveTab={setActiveTab}

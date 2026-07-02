@@ -48,20 +48,19 @@ const ContentTable = ({
 console.log('ITEM', item);
 const matchClass =
   !filters.class ||
-  item.grade ===
-    filters.class;
+  (item.grade?.name || item.grade) === filters.class;
 
 const matchBoard =
   !filters.board ||
-  item.board === filters.board;
+  (item.board?.name || item.board) === filters.board;
+
 const matchCourse =
       !filters.course ||
-      item.course ===
-        filters.course;
+      (item.course?.name || item.course) === filters.course;
 
 const matchSubject =
   !filters.subject ||
-  item.subject === filters.subject;
+  (item.subject?.name || item.subject) === filters.subject;
 
 
 const matchChapter =

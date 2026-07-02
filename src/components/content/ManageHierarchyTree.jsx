@@ -89,9 +89,11 @@ const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName
                 <HiPencil />
               </button>
 
-              <button type="button" title="Delete" onClick={handleDelete}>
-                <HiTrash />
-              </button>
+              {!(isGrade || isBoard || isBranch) && (
+                <button type="button" title="Delete" onClick={handleDelete}>
+                  <HiTrash />
+                </button>
+              )}
             </>
           )}
         </div>
@@ -168,66 +170,113 @@ const ManageHierarchyTree = ({ options, content, refresh }) => {
   const hierarchy = useMemo(() => {
     if (!options) return [];
 
-    const tree = (options.grades || []).map((grade) => ({
-      id: grade.id,
-      name: grade.name,
-      type: 'grade',
+    const tree = (options.grades || []).map((grade) => {
+      const showCourse = ['11th', '12th'].includes(grade.name);
 
-      boards: (options.boards || [])
-        .map((board) => ({
-          id: board.id,
-          name: board.name,
-          type: 'board',
+      return {
+        id: grade.id,
+        name: grade.name,
+        type: 'grade',
 
-          courses: (options.branches || [])
-            .map((branch) => ({
-              id: branch.id,
-              name: branch.name,
-              type: 'branch',
+        boards: (options.boards || [])
+          .map((board) => {
+            if (!showCourse) {
+              return {
+                id: board.id,
+                name: board.name,
+                type: 'board',
+                subjects: (options.subjects || [])
+                  .filter((subject) => subject.gradeId === grade.id && subject.boardId === board.id)
+                  .map((subject) => ({
+                    id: subject.id,
+                    name: subject.name,
+                    type: 'subject',
 
-              subjects: (options.subjects || [])
-                .filter(
-                  (subject) =>
-                    subject.gradeId === grade.id &&
-                    subject.boardId === board.id &&
-                    (subject.branchId || null) === (branch.id || null)
-                )
-                .map((subject) => ({
-                  id: subject.id,
-                  name: subject.name,
-                  type: 'subject',
+                    contentTypes: (options.contentTypes || [])
+                      .map((type) => ({
+                        id: type.id,
+                        name: type.name,
 
-                  contentTypes: (options.contentTypes || [])
-                    .map((type) => ({
-                      id: type.id,
-                      name: type.name,
+                        chapters: (options.chapters || [])
+                          .filter(
+                            (chapter) =>
+                              chapter.subjectId === subject.id && chapter.contentTypeId === type.id
+                          )
+                          .map((chapter) => ({
+                            id: chapter.id,
+                            name: chapter.name,
+                            type: 'chapter',
 
-                      chapters: (options.chapters || [])
-                        .filter(
-                          (chapter) =>
-                            chapter.subjectId === subject.id && chapter.contentTypeId === type.id
-                        )
-                        .map((chapter) => ({
-                          id: chapter.id,
-                          name: chapter.name,
-                          type: 'chapter',
+                            sections: (options.topics || [])
+                              .filter((topic) => topic.chapterId === chapter.id)
+                              .map((topic) => ({
+                                id: topic.id,
+                                name: topic.name,
+                                type: 'topic',
+                              })),
+                          })),
+                      }))
+                      .filter((type) => type.chapters.length > 0),
+                  })),
+              };
+            }
 
-                          sections: (options.topics || [])
-                            .filter((topic) => topic.chapterId === chapter.id)
-                            .map((topic) => ({
-                              id: topic.id,
-                              name: topic.name,
-                              type: 'topic',
+            return {
+              id: board.id,
+              name: board.name,
+              type: 'board',
+
+              courses: (options.branches || [])
+                .map((branch) => ({
+                  id: branch.id,
+                  name: branch.name,
+                  type: 'branch',
+
+                  subjects: (options.subjects || [])
+                    .filter(
+                      (subject) =>
+                        subject.gradeId === grade.id &&
+                        subject.boardId === board.id &&
+                        (subject.branchId || null) === (branch.id || null)
+                    )
+                    .map((subject) => ({
+                      id: subject.id,
+                      name: subject.name,
+                      type: 'subject',
+
+                      contentTypes: (options.contentTypes || [])
+                        .map((type) => ({
+                          id: type.id,
+                          name: type.name,
+
+                          chapters: (options.chapters || [])
+                            .filter(
+                              (chapter) =>
+                                chapter.subjectId === subject.id && chapter.contentTypeId === type.id
+                            )
+                            .map((chapter) => ({
+                              id: chapter.id,
+                              name: chapter.name,
+                              type: 'chapter',
+
+                              sections: (options.topics || [])
+                                .filter((topic) => topic.chapterId === chapter.id)
+                                .map((topic) => ({
+                                  id: topic.id,
+                                  name: topic.name,
+                                  type: 'topic',
+                                })),
                             })),
-                        })),
-                    }))
-                    .filter((type) => type.chapters.length > 0),
-                })),
-            }))
-            .filter((course) => course.subjects.length > 0),
-        }))
-        .filter((board) => board.courses.length > 0),
-    }));
+                        }))
+                        .filter((type) => type.chapters.length > 0),
+                    })),
+                }))
+                .filter((course) => course.subjects.length > 0),
+            };
+          })
+          .filter((board) => (showCourse ? board.courses.length > 0 : board.subjects.length > 0)),
+      };
+    });
 
     const topicCounts = {};
 

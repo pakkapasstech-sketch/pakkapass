@@ -125,25 +125,18 @@ const courseOptions =
       ) || []
     : [];
 
+const showCourse = ['11th', '12th'].includes(filters.class);
+
 const subjectOptions =
-  filters.course
+  (showCourse ? filters.course : filters.board)
     ? options?.subjects
         ?.filter(
           (subject) =>
-            subject.grade
-              ?.name ===
-              filters.class &&
-            subject.board
-              ?.name ===
-              filters.board &&
-            subject.branch
-              ?.name ===
-              filters.course
+            subject.grade?.name === filters.class &&
+            subject.board?.name === filters.board &&
+            (!showCourse || subject.branch?.name === filters.course)
         )
-        .map(
-          (subject) =>
-            subject.name
-        ) || []
+        .map((subject) => subject.name) || []
     : [];
 const contentTypeOptions =
   filters.subject
@@ -238,21 +231,23 @@ const getAddTitle = () =>
 
         {/* Course */}
 
-        <FilterDropdown
-          label="Course"
-          value={filters.course}
-          disabled={!filters.board}
-          options={courseOptions}
-          onSelect={(v) => update('course', v)}
-          onAdd={() => setModal('Add Course')}
-        />
+        {showCourse && (
+          <FilterDropdown
+            label="Course"
+            value={filters.course}
+            disabled={!filters.board}
+            options={courseOptions}
+            onSelect={(v) => update('course', v)}
+            onAdd={() => setModal('Add Course')}
+          />
+        )}
 
         {/* Subject */}
 
         <FilterDropdown
           label="Subject"
           value={filters.subject}
-          disabled={!filters.course}
+          disabled={showCourse ? !filters.course : !filters.board}
           options={subjectOptions}
           onSelect={(v) => update('subject', v)}
           onAdd={() => setModal('Add Subject')}

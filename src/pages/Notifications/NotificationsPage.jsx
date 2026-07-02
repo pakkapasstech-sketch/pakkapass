@@ -10,6 +10,9 @@ import {
 import '../../styles/NotificationsPage.css'
 import { useAuth } from '../../auth/AuthProvider';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+import notificationService from '../../services/notification.service';
+import toast from 'react-hot-toast';
+import { useEffect } from 'react';
 const initialNotifications = [
  {
   id: 1,
@@ -34,10 +37,20 @@ const initialNotifications = [
 ];
 
 const NotificationsPage = () => {
-  const [notifications, setNotifications] =
-    useState(
-      initialNotifications
-    );
+  const [notifications, setNotifications] = useState([]);
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await notificationService.getAll();
+      setNotifications(Array.isArray(data) ? data : data.notifications || []);
+    } catch (err) {
+      toast.error('Failed to load notifications');
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   const [search, setSearch] =
     useState('');
@@ -69,55 +82,35 @@ const NotificationsPage = () => {
           )
     );
 
-  const handleCreate =
-    () => {
-      if (
-        !form.title ||
-        !form.message
-      ) {
+  const handleCreate = async () => {
+      if (!form.title || !form.message) {
+        toast.error('Please enter title and message');
         return;
       }
 
-      const newNotification =
-        {
-          id: Date.now(),
-
-          title:
-            form.title,
-
-          message:
-            form.message,
-
-          audience:
-            form.audience,
-
-          priority:
-            form.priority,
-
-          date:
-            new Date().toLocaleDateString(),
-
-          read: false,
+      try {
+        const payload = {
+          title: form.title,
+          message: form.message,
+          audience: form.audience,
+          priority: form.priority,
         };
 
-      setNotifications(
-        (prev) => [
-          newNotification,
-          ...prev,
-        ]
-      );
+        const response = await notificationService.create(payload);
+        const newNotification = response.notification || response;
+        setNotifications((prev) => [newNotification, ...prev]);
 
-      setForm({
-        title: '',
-        message: '',
-        audience:
-          'All Students',
-        priority: 'info',
-      });
-
-      setShowModal(
-        false
-      );
+        setForm({
+          title: '',
+          message: '',
+          audience: 'All Students',
+          priority: 'info',
+        });
+        setShowModal(false);
+        toast.success('Notification created successfully');
+      } catch (err) {
+        toast.error('Failed to create notification');
+      }
     };
 
   const markAllRead =
@@ -133,20 +126,17 @@ const NotificationsPage = () => {
       );
     };
   const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
-const isAdmin = user?.role === 'ADMIN';
-  const deleteNotification =
-    (id) => {
-      setNotifications(
-        (prev) =>
-          prev.filter(
-            (item) =>
-              item.id !==
-              id
-          )
-      );
-    };
-
+  const deleteNotification = async (id) => {
+    try {
+      await notificationService.delete(id);
+      setNotifications((prev) => prev.filter((item) => item.id !== id));
+      toast.success('Notification deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete notification');
+    }
+  };
   return (
     <div className="notifications-page">
       {/* Header */}
@@ -274,9 +264,7 @@ const isAdmin = user?.role === 'ADMIN';
                   </span>
 
                   <span>
-                    {
-                      notification.date
-                    }
+                    {new Date(notification.createdAt || notification.date).toLocaleDateString()}
                   </span>
 
                   <button

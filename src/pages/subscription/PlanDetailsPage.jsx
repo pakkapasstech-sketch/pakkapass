@@ -80,11 +80,11 @@ const PlanDetailsPage = () => {
   return (
     <div className="plan-details-page">
       <button className="back-link" onClick={() => navigate(-1)}>
-          <HiArrowLeft />
-          <span>Back</span>
-        </button>
+        <HiArrowLeft />
+        <span>Back</span>
+      </button>
       <div className="details-header">
-        
+
 
         <div className="details-actions">
           <button
@@ -167,21 +167,21 @@ const PlanDetailsPage = () => {
           </div>
         </div>
       </div>
-            <div className="detail-card">
-  <h3>Features</h3>
+      <div className="detail-card">
+        <h3>Features</h3>
 
-  <div className="chips">
-    {plan.features?.length ? (
-      plan.features.map((feature) => (
-        <span key={feature} className="chip">
-          {feature}
-        </span>
-      ))
-    ) : (
-      <span>-</span>
-    )}
-  </div>
-</div>
+        <div className="chips">
+          {plan.features?.length ? (
+            plan.features.map((feature) => (
+              <span key={feature} className="chip">
+                {feature}
+              </span>
+            ))
+          ) : (
+            <span>-</span>
+          )}
+        </div>
+      </div>
       <div className="detail-card">
         <h3>Pricing</h3>
 

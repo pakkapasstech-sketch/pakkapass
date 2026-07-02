@@ -120,26 +120,34 @@ export const contentService = {
     const formData = new FormData();
 
     formData.append('gradeName', filters.class || '');
+    if (filters.classId) formData.append('gradeId', filters.classId);
 
     formData.append('boardName', filters.board || '');
+    if (filters.boardId) formData.append('boardId', filters.boardId);
 
     formData.append('branchName', filters.course || '');
+    if (filters.courseId) formData.append('branchId', filters.courseId);
 
     formData.append('subjectName', filters.subject || '');
-if (filters.selectedContentTypeId) {
-  formData.append(
-    'contentTypeId',
-    filters.selectedContentTypeId
-  );
-}
+    if (filters.subjectId) formData.append('subjectId', filters.subjectId);
+
+    if (filters.selectedContentTypeId) {
+      formData.append(
+        'contentTypeId',
+        filters.selectedContentTypeId
+      );
+    }
+    
     formData.append('chapterName', filters.chapter || '');
+    if (filters.chapterId) formData.append('chapterId', filters.chapterId);
 
     formData.append(
-  'topicName',
-  topicName ||
-    filters.section ||
-    title
-);
+      'topicName',
+      topicName ||
+      filters.section ||
+      title
+    );
+    if (filters.sectionId) formData.append('topicId', filters.sectionId);
 
     formData.append('title', title || '');
 
