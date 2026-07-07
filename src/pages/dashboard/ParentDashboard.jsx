@@ -57,26 +57,7 @@ useEffect(() => {
   //   },
   // ];
 
-  const statCards = [
-    {
-      id: 'students',
-      title: 'Linked Students',
-      formattedValue: linkedStudents.length,
-      trend: 0,
-      trendLabel: 'Total',
-      trendUp: true,
-      icon: 'students',
-    },
-    {
-      id: 'active',
-      title: 'Active Students',
-      formattedValue: linkedStudents.length,
-      trend: 0,
-      trendLabel: 'Currently',
-      trendUp: true,
-      icon: 'dashboard',
-    },
-  ];
+
 
   return (
     <div className="parentdashboard-page">
@@ -117,23 +98,17 @@ useEffect(() => {
               <strong>{user?.mobile}</strong>
             </div>
 
+            <div>
+              <span>Linked Students</span>
+              <strong>{linkedStudents.length || 0}</strong>
+            </div>
+
           </div>
 
         </div>
 
       </div>
 
-      {/* Stats */}
-
-      <div className="parentdashboard-stats">
-        {statCards.map((card) => (
-          <StatisticCard
-            key={card.id}
-            {...card}
-            isLoading={isLoading}
-          />
-        ))}
-      </div>
 
       {/* Linked Students */}
 

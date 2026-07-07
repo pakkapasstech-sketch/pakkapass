@@ -44,11 +44,7 @@ const FilterDropdown = ({
         handleClick
       );
   }, []);
-useEffect(() => {
-  if (!value && options.length > 0 && onSelect) {
-    onSelect(options[0]);
-  }
-}, [options]);
+
   const filtered =
     options.filter((item) =>
       item
@@ -75,7 +71,7 @@ useEffect(() => {
         }
       >
         <span>
-  {value || options[0] || label}
+  {value || label}
 </span>
 
         <HiOutlineChevronDown />

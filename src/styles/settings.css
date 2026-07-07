@@ -196,3 +196,87 @@
     padding: 16px 0;
   }
 }
+
+/* ================= TABS ================= */
+
+.settings-tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 2px solid var(--settings-border);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--settings-text);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.settings-tab-btn:hover {
+  background: var(--settings-border);
+  color: var(--settings-title);
+}
+
+.settings-tab-btn.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.settings-textarea-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-textarea-wrapper textarea {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--settings-input-border);
+  border-radius: 12px;
+  background: var(--settings-input-bg);
+  color: var(--settings-input-text);
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.settings-textarea-wrapper .btn-primary {
+  align-self: flex-start;
+  height: 50px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 12px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-textarea-wrapper .btn-primary:hover {
+  background: #4338ca;
+}
+
+@media (max-width: 600px) {
+  .settings-tabs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .settings-tab-btn {
+    width: 100%;
+    text-align: center;
+  }
+  .settings-textarea-wrapper .btn-primary {
+    width: 100%;
+  }
+}

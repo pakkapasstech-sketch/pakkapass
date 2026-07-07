@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   HiOutlineArrowLeft,
@@ -10,12 +10,13 @@ import {
 
 import '../../styles/student-details.css';
 import { useStudent } from '../../hooks/useStudents';
+import { useLoading } from '../../contexts/LoadingContext';
+
 import ErrorState from '../../components/loaders/ErrorState';
 
 const tabs = [
   'Overview',
   'Parent Details',
-  'Academic Goal',
   'Activity Analytics',
   'Subscription History',
   'Payment History',
@@ -24,11 +25,17 @@ const tabs = [
 const StudentDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: student, isError, refetch } = useStudent(id);
+  const { setLoading } = useLoading();
+  const { data: student, isLoading, isError, refetch } = useStudent(id);
 
   const [activeTab, setActiveTab] =
     useState('Overview');
 
+useEffect(() => {
+  setLoading(isLoading);
+
+  return () => setLoading(false);
+}, [isLoading, setLoading]);
 
   if (isError) {
     return (
@@ -92,17 +99,21 @@ const StudentDetailsPage = () => {
         <aside className="student-sidebar">
 
           <div className="student-profile-avatar">
-            {student.initials}
+            {student.photo ? (
+              <img 
+                src={student.photo} 
+                alt={student.name} 
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+              />
+            ) : (
+              student.initials
+            )}
           </div>
 
           <h2>{student.name}</h2>
 
           <p className="student-code">
-            STU
-            {String(student.id).padStart(
-              5,
-              '0'
-            )}
+            {student.id}
           </p>
 
           <p className="student-class">
@@ -145,11 +156,11 @@ const StudentDetailsPage = () => {
             <div>
               <strong>
                 <HiOutlineOfficeBuilding />
-                Institution
+                Institute
               </strong>
 
               <p>
-                {student.institution}
+                {student.institute}
               </p>
             </div>
 
@@ -190,19 +201,19 @@ const StudentDetailsPage = () => {
             <strong>{student.name}</strong>
           </div>
 
-          <div className="info-item">
+          {/* <div className="info-item">
             <span>Date of Birth</span>
             <strong>
               {student.dob || 'Not Available'}
             </strong>
-          </div>
+          </div> */}
 
-          <div className="info-item">
+          {/* <div className="info-item">
             <span>Gender</span>
             <strong>
               {student.gender || 'Not Available'}
             </strong>
-          </div>
+          </div> */}
 
           <div className="info-item">
             <span>Class</span>
@@ -215,8 +226,8 @@ const StudentDetailsPage = () => {
           </div>
 
           <div className="info-item">
-            <span>Institution</span>
-            <strong>{student.institution}</strong>
+            <span>Institute</span>
+            <strong>{student.institute}</strong>
           </div>
 
           <div className="info-item">
@@ -230,10 +241,10 @@ const StudentDetailsPage = () => {
           </div>
         </div>
 
-        <div className="last-login">
+        {/* <div className="last-login">
           Total Study Hours:{' '}
           {student.totalHours}h
-        </div>
+        </div> */}
       </section>
 
       <section className="student-section">
@@ -246,7 +257,7 @@ const StudentDetailsPage = () => {
           </div>
 
           <div className="activity-item">
-            <span>Subjects Studied</span>
+            <span>Total Subjects</span>
             <strong>{student.subjectWiseUsage?.length || 0}</strong>
           </div>
         </div>
@@ -262,7 +273,7 @@ const StudentDetailsPage = () => {
         <div className="info-item">
           <span>Parent Name</span>
           <strong>
-            {student.fatherName ||
+            {student.parentName ||
               'Not Available'}
           </strong>
         </div>
@@ -341,13 +352,13 @@ const StudentDetailsPage = () => {
           >
             <div className="usage-header">
               <span>{subject.subject}</span>
-              <span>{subject.percentage || subject.hours}%</span>
+              <span>{subject.percentage ?? subject.hours ?? 0}%</span>
             </div>
 
             <div className="bar">
               <span
                 style={{
-                  width: `${subject.percentage || 50}%`,
+                  width: `${subject.percentage ?? 0}%`,
                 }}
               />
             </div>
@@ -361,31 +372,53 @@ const StudentDetailsPage = () => {
 
   {activeTab === 'Subscription History' && (
     <section className="student-section">
-      <h3>Subscription History</h3>
+      <h3>Current Subscription</h3>
 
-      {student.subscriptionHistory?.length > 0 ? (
-        <div className="info-list">
-          {student.subscriptionHistory.map((sub, index) => (
-            <div className="info-item" key={index}>
-              <span>{sub.plan}</span>
-              <strong>
-                ₹{sub.amount} — {sub.status} — {new Date(sub.date).toLocaleDateString('en-IN')}
-              </strong>
-            </div>
-          ))}
+      <div className="info-list" style={{ marginBottom: '2rem' }}>
+        <div className="info-item">
+          <span>Current Plan</span>
+          <strong>{student.plan} {student.isFreeTrial ? '(Free Trial)' : ''}</strong>
         </div>
-      ) : (
-        <div className="info-list">
-          <div className="info-item">
-            <span>Current Plan</span>
-            <strong>{student.plan}</strong>
-          </div>
 
-          <div className="info-item">
-            <span>Status</span>
-            <strong>{student.status}</strong>
-          </div>
+        <div className="info-item">
+          <span>Status</span>
+          <strong>{student.status}</strong>
         </div>
+
+        {student.startDate && (
+          <div className="info-item">
+            <span>Start Date</span>
+            <strong>{new Date(student.startDate).toLocaleDateString('en-IN')}</strong>
+          </div>
+        )}
+
+        {student.endDate && (
+          <div className="info-item">
+            <span>End Date</span>
+            <strong>{new Date(student.endDate).toLocaleDateString('en-IN')}</strong>
+          </div>
+        )}
+
+        <div className="info-item">
+          <span>Days Left</span>
+          <strong>{student.daysLeft} Days</strong>
+        </div>
+      </div>
+
+      {student.subscriptionHistory?.length > 0 && (
+        <>
+          <h3 style={{ marginTop: '2rem', marginBottom: '1rem' }}>Past Subscriptions</h3>
+          <div className="info-list">
+            {student.subscriptionHistory.map((sub, index) => (
+              <div className="info-item" key={index}>
+                <span>{sub.plan}</span>
+                <strong>
+                  ₹{sub.amount} — {sub.status} — {new Date(sub.date).toLocaleDateString('en-IN')}
+                </strong>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </section>
   )}

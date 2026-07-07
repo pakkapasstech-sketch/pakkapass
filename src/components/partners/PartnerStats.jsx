@@ -17,7 +17,7 @@ const PartnerStats = ({
     (sum, p) =>
       sum +
       (Number(
-        p.students
+        p.analytics?.students?.totalStudents
       ) || 0),
     0
   );
@@ -27,7 +27,7 @@ const revenue =
     (sum, p) =>
       sum +
       (Number(
-        p.revenue
+        p.analytics?.revenue?.totalRevenue
       ) || 0),
     0
   );

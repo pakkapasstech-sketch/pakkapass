@@ -76,10 +76,6 @@ const getVisiblePages = () => {
   }
 
   const totalParents = parents.length;
-  const activeParents = parents.filter((p) => p.status === 'Active').length;
-
-  const inactiveParents = totalParents - activeParents;
-
   const linkedStudents = parents.reduce((total, parent) => total + parent.students, 0);
  
   return (
@@ -133,27 +129,13 @@ const getVisiblePages = () => {
         </div>
       </div>
       {/* Stats */}
-      <div className="dashboard-stats-grid">
+      <div className="dashboard-stats-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
         <StatisticCard
           title="Total Parents"
           value={totalParents}
           icon="users"
           iconBg="bg-blue-100"
           iconColor="text-blue-600"
-        />
-        <StatisticCard
-          title="Active Parents"
-          value={activeParents}
-          icon="user-group"
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
-        />
-        <StatisticCard
-          title="Inactive Parents"
-          value={inactiveParents}
-          icon="user-remove"
-          iconBg="bg-red-100"
-          iconColor="text-red-600"
         />
         <StatisticCard
           title="Students Linked"
@@ -198,7 +180,7 @@ const getVisiblePages = () => {
         <table className="parents-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>S.No</th>
               <th>Parent Name</th>
               <th>Email</th>
               <th>Phone</th>
@@ -210,13 +192,13 @@ const getVisiblePages = () => {
 
           <tbody>
             {filteredParents.length > 0 ? (
-              currentParents.map((p) => (
+              currentParents.map((p, index) => (
                 <tr
   key={p.id}
   className="parent-row clickable-row"
   onClick={() => navigate(`/parents/${p.id}`)}
 >
-                  <td>{p.id}</td>
+                  <td>{startIndex + index + 1}</td>
 
                   <td>
                     <div className="parent-user">

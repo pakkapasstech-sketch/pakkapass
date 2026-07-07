@@ -148,7 +148,7 @@ const LoginPage = () => {
 
   const getButtonText = () => {
     if (isAdmin) return loading ? 'Logging In...' : 'Login';
-    if (isParent && step === 'credentials') return loading ? 'Sending OTP...' : 'Get OTP';
+    if ((isParent || isPartner) && step === 'credentials') return loading ? 'Sending OTP...' : 'Get OTP';
     return loading ? 'Verifying...' : 'Login';
   };
   if (loading || authLoading) {
@@ -364,16 +364,7 @@ const LoginPage = () => {
                   </form>
                 )}
               </motion.div>
-            ) : (
-              <motion.div
-                key="partner-coming-soon"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <p style={{ textAlign: 'center', color: '#6b7280' }}>Partner login coming soon</p>
-              </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
 
           {!isAdmin && (
@@ -395,14 +386,7 @@ const LoginPage = () => {
           <span className="footer-dot">•</span>
 
           <p className="footer-text">
-            By continuing, you agree to our{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer" className="footer-link">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="footer-link">
-              Privacy Policy
-            </a>
+            By continuing, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>
       </div>

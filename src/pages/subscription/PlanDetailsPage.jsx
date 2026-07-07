@@ -1,59 +1,74 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { HiArrowLeft, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi';
+import {
+  HiArrowLeft,
+  HiOutlinePencil,
+  HiOutlineTrash,
+} from 'react-icons/hi';
 import '../../styles/planDetails.css';
 import studentService from '../../services/student.service';
-import { getPlanById, deletePlan } from '../../services/SubscriptionServices';
+import {
+  getPlanById,
+  deletePlan,
+} from '../../services/SubscriptionServices';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const PlanDetailsPage = () => {
   const navigate = useNavigate();
   const { planId } = useParams();
+  const { setLoading } = useLoading();
+
   const [options, setOptions] = useState({
     grades: [],
     boards: [],
     branches: [],
   });
+
   const [plan, setPlan] = useState(null);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    loadOptions();
-  }, []);
+  const [loading, setPageLoading] = useState(true);
 
-  const loadOptions = async () => {
-    try {
-      const data = await studentService.getFilterOptions();
-
-      setOptions(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
   useEffect(() => {
-    loadPlan();
+    const loadData = async () => {
+      try {
+        setPageLoading(true);
+
+        const [optionsData, planData] = await Promise.all([
+          studentService.getFilterOptions(),
+          getPlanById(planId),
+        ]);
+
+        setOptions(optionsData);
+        setPlan(planData);
+      } catch (err) {
+        console.error('Failed to load plan:', err);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    loadData();
   }, [planId]);
+
+  useEffect(() => {
+    setLoading(loading);
+
+    return () => setLoading(false);
+  }, [loading, setLoading]);
+
   const getGradeNames = (ids = []) =>
-    options.grades.filter((g) => ids.includes(g.id)).map((g) => g.name);
+    options.grades
+      .filter((g) => ids.includes(g.id))
+      .map((g) => g.name);
 
   const getBoardNames = (ids = []) =>
-    options.boards.filter((b) => ids.includes(b.id)).map((b) => b.name);
+    options.boards
+      .filter((b) => ids.includes(b.id))
+      .map((b) => b.name);
 
   const getBranchNames = (ids = []) =>
-    options.branches.filter((b) => ids.includes(b.id)).map((b) => b.name);
-  const loadPlan = async () => {
-    try {
-      setLoading(true);
-
-      const data = await getPlanById(planId);
-
-      console.log('Plan Details:', data);
-
-      setPlan(data);
-    } catch (err) {
-      console.error('Failed to load plan:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    options.branches
+      .filter((b) => ids.includes(b.id))
+      .map((b) => b.name);
 
   const handleDelete = async () => {
     const confirmed = window.confirm('Delete this plan?');
@@ -62,7 +77,6 @@ const PlanDetailsPage = () => {
 
     try {
       await deletePlan(planId);
-
       navigate('/subscriptions/plans');
     } catch (err) {
       console.error('Delete failed:', err);
@@ -70,11 +84,15 @@ const PlanDetailsPage = () => {
   };
 
   if (loading) {
-    return <div className="plan-details-page">Loading...</div>;
+    return null;
   }
 
   if (!plan) {
-    return <div className="plan-details-page">Plan not found</div>;
+    return (
+      <div className="plan-details-page">
+        Plan not found
+      </div>
+    );
   }
 
   return (
@@ -89,13 +107,18 @@ const PlanDetailsPage = () => {
         <div className="details-actions">
           <button
             className="primary-btn"
-            onClick={() => navigate(`/subscriptions/plans/${planId}/edit`)}
+            onClick={() =>
+              navigate(`/subscriptions/plans/${planId}/edit`)
+            }
           >
             <HiOutlinePencil />
             Edit
           </button>
 
-          <button className="danger-btn" onClick={handleDelete}>
+          <button
+            className="danger-btn"
+            onClick={handleDelete}
+          >
             <HiOutlineTrash />
             Delete
           </button>
@@ -104,7 +127,6 @@ const PlanDetailsPage = () => {
 
       <div className="page-title-card">
         <h1>{plan.name}</h1>
-
         <p>Subscription Plan</p>
       </div>
 
@@ -114,20 +136,25 @@ const PlanDetailsPage = () => {
         <div className="detail-grid">
           <div>
             <label>Status</label>
-
             <p>{plan.status}</p>
           </div>
 
           <div>
             <label>Created At</label>
-
-            <p>{plan.createdAt ? new Date(plan.createdAt).toLocaleDateString('en-IN') : '-'}</p>
+            <p>
+              {plan.createdAt
+                ? new Date(plan.createdAt).toLocaleDateString('en-IN')
+                : '-'}
+            </p>
           </div>
 
           <div>
             <label>Updated At</label>
-
-            <p>{plan.updatedAt ? new Date(plan.updatedAt).toLocaleDateString('en-IN') : '-'}</p>
+            <p>
+              {plan.updatedAt
+                ? new Date(plan.updatedAt).toLocaleDateString('en-IN')
+                : '-'}
+            </p>
           </div>
         </div>
       </div>
@@ -140,7 +167,10 @@ const PlanDetailsPage = () => {
 
           <div className="chips">
             {getGradeNames(plan.gradeIds).map((name) => (
-              <span key={name} className="chip">
+              <span
+                key={name}
+                className="chip"
+              >
                 {name}
               </span>
             ))}
@@ -150,7 +180,10 @@ const PlanDetailsPage = () => {
 
           <div className="chips">
             {getBoardNames(plan.boardIds).map((name) => (
-              <span key={name} className="chip">
+              <span
+                key={name}
+                className="chip"
+              >
                 {name}
               </span>
             ))}
@@ -160,7 +193,10 @@ const PlanDetailsPage = () => {
 
           <div className="chips">
             {getBranchNames(plan.branchIds).map((name) => (
-              <span key={name} className="chip">
+              <span
+                key={name}
+                className="chip"
+              >
                 {name}
               </span>
             ))}
@@ -188,13 +224,13 @@ const PlanDetailsPage = () => {
         <div className="detail-grid">
           <div>
             <label>Original Price</label>
-
-            <p>₹{Number(plan.price || 0).toLocaleString('en-IN')}</p>
+            <p>
+              ₹{Number(plan.price || 0).toLocaleString('en-IN')}
+            </p>
           </div>
 
           <div>
             <label>Duration</label>
-
             <p>{plan.durationDays} Days</p>
           </div>
         </div>

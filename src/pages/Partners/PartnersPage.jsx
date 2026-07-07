@@ -23,25 +23,27 @@ const PartnersPage = () => {
 
 
 
-  const filteredPartners = partners.filter((partner) => {
-    const searchTerm = search.trim().toLowerCase();
+  const filteredPartners = partners
+    .filter((partner) => {
+      const searchTerm = search.trim().toLowerCase();
 
-    const matchesSearch =
-      searchTerm === '' ||
-      String(partner.id || '')
-        .toLowerCase()
-        .includes(searchTerm) ||
-      (partner.name || '').toLowerCase().includes(searchTerm) ||
-      (partner.email || '').toLowerCase().includes(searchTerm) ||
-      (partner.mobile || partner.phone || '').toLowerCase().includes(searchTerm) ||
-      (partner.organizationName || '').toLowerCase().includes(searchTerm) ||
-      (partner.referralCode || '').toLowerCase().includes(searchTerm) ||
-      (partner.status || '').toLowerCase().includes(searchTerm);
+      const matchesSearch =
+        searchTerm === '' ||
+        String(partner.id || '')
+          .toLowerCase()
+          .includes(searchTerm) ||
+        (partner.name || '').toLowerCase().includes(searchTerm) ||
+        (partner.email || '').toLowerCase().includes(searchTerm) ||
+        (partner.mobile || partner.phone || '').toLowerCase().includes(searchTerm) ||
+        (partner.organizationName || '').toLowerCase().includes(searchTerm) ||
+        (partner.referralCode || '').toLowerCase().includes(searchTerm) ||
+        (partner.status || '').toLowerCase().includes(searchTerm);
 
-    const matchesStatus = statusFilter === '' || partner.status === statusFilter;
+      const matchesStatus = statusFilter === '' || partner.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => Number(a.id) - Number(b.id));
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,6 +59,7 @@ const PartnersPage = () => {
 
     const res = await partnerService.getAll({
       status: statusFilter,
+      limit: 1000,
     });
 
     setPartners(res.partners || []);

@@ -3,7 +3,7 @@ import { HiChevronRight, HiChevronDown, HiFolder, HiPencil, HiTrash } from 'reac
 import './manageHierarchyTree.css';
 import toast from 'react-hot-toast';
 import entityService from '../../services/entity.service';
-const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName }) => {
+const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName, setDeletingNode }) => {
   const [expanded, setExpanded] = useState(false);
 
   const children =
@@ -22,33 +22,7 @@ const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName
   const isSubject = node.type === 'subject';
   const isChapter = node.type === 'chapter';
   const isTopic = node.type === 'topic';
-  const handleDelete = async () => {
-    if (!window.confirm(`Delete ${node.name}?`)) {
-      return;
-    }
 
-    try {
-      if (isGrade) {
-        await entityService.deleteGrade(node.id);
-      } else if (isBoard) {
-        await entityService.deleteBoard(node.id);
-      } else if (isBranch) {
-        await entityService.deleteBranch(node.id);
-      } else if (isSubject) {
-        await entityService.deleteSubject(node.id);
-      } else if (isChapter) {
-        await entityService.deleteChapter(node.id);
-      } else if (isTopic) {
-        await entityService.deleteTopic(node.id);
-      }
-
-      toast.success('Deleted successfully');
-
-      refresh();
-    } catch {
-      toast.error('Delete failed');
-    }
-  };
   return (
     <>
       <div
@@ -90,7 +64,7 @@ const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName
               </button>
 
               {!(isGrade || isBoard || isBranch) && (
-                <button type="button" title="Delete" onClick={handleDelete}>
+                <button type="button" title="Delete" onClick={() => setDeletingNode(node)}>
                   <HiTrash />
                 </button>
               )}
@@ -108,6 +82,7 @@ const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName
             refresh={refresh}
             setEditingNode={setEditingNode}
             setEditedName={setEditedName}
+            setDeletingNode={setDeletingNode}
           />
         ))}
     </>
@@ -116,13 +91,52 @@ const HierarchyItem = ({ node, level = 0, refresh, setEditingNode, setEditedName
 
 const ManageHierarchyTree = ({ options, content, refresh }) => {
   const [editingNode, setEditingNode] = useState(null);
-
   const [editedName, setEditedName] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingNode, setDeletingNode] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleConfirmDelete = async () => {
+    if (!deletingNode || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      const isGrade = deletingNode.type === 'grade';
+      const isBoard = deletingNode.type === 'board';
+      const isBranch = deletingNode.type === 'branch';
+      const isSubject = deletingNode.type === 'subject';
+      const isChapter = deletingNode.type === 'chapter';
+      const isTopic = deletingNode.type === 'topic';
+
+      if (isGrade) {
+        await entityService.deleteGrade(deletingNode.id);
+      } else if (isBoard) {
+        await entityService.deleteBoard(deletingNode.id);
+      } else if (isBranch) {
+        await entityService.deleteBranch(deletingNode.id);
+      } else if (isSubject) {
+        await entityService.deleteSubject(deletingNode.id);
+      } else if (isChapter) {
+        await entityService.deleteChapter(deletingNode.id);
+      } else if (isTopic) {
+        await entityService.deleteTopic(deletingNode.id);
+      }
+
+      toast.success('Deleted successfully');
+      setDeletingNode(null);
+      await refresh();
+    } catch {
+      toast.error('Delete failed');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleSave = async () => {
-    if (!editingNode || !editedName.trim()) {
+    if (!editingNode || !editedName.trim() || isSaving) {
       return;
     }
 
+    setIsSaving(true);
     try {
       const isGrade = editingNode.type === 'grade';
       const isBoard = editingNode.type === 'board';
@@ -161,9 +175,11 @@ const ManageHierarchyTree = ({ options, content, refresh }) => {
       setEditingNode(null);
       setEditedName('');
 
-      refresh();
+      await refresh();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Update failed');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -339,6 +355,7 @@ const ManageHierarchyTree = ({ options, content, refresh }) => {
           refresh={refresh}
           setEditingNode={setEditingNode}
           setEditedName={setEditedName}
+          setDeletingNode={setDeletingNode}
         />
       ))}
       {editingNode && (
@@ -366,8 +383,30 @@ const ManageHierarchyTree = ({ options, content, refresh }) => {
                 Cancel
               </button>
 
-              <button className="save-btn" onClick={handleSave} disabled={!editedName.trim()}>
-                Save Changes
+              <button className="save-btn" onClick={handleSave} disabled={!editedName.trim() || isSaving}>
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deletingNode && (
+        <div className="modal-overlay">
+          <div className="entity-modal">
+            <h3>Delete Confirmation</h3>
+            <p>Are you sure you want to delete <strong>{deletingNode.name}</strong>?</p>
+
+            <div className="modal-actions">
+              <button
+                className="cancel-btn"
+                onClick={() => setDeletingNode(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+
+              <button className="save-btn" onClick={handleConfirmDelete} disabled={isDeleting} style={{backgroundColor: '#dc3545'}}>
+                {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>

@@ -9,8 +9,11 @@
 
 .subscription-header {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .subscription-header h2 {

@@ -27,7 +27,26 @@ export const partnerService = {
   },
 
   getDashboard: async () => {
-    const { data } = await axiosInstance.get('/partner/dashboard');
+  const { data } = await axiosInstance.get(
+    '/partner/dashboard'
+  );
+
+  return data;
+},
+getPayments: async () => {
+  const { data } = await axiosInstance.get(
+    '/partner/payments'
+  );
+
+  return data;
+},
+  getStudents: async () => {
+    const { data } = await axiosInstance.get('/partner/students');
+    return data;
+  },
+
+  delete: async (id) => {
+    const { data } = await axiosInstance.delete(`/partner/${id}`);
     return data;
   },
 };

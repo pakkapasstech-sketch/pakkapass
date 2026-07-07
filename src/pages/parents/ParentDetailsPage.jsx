@@ -1,43 +1,29 @@
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { HiArrowLeft } from 'react-icons/hi';
 import StatisticCard from '../../components/cards/StatisticCard';
 import { useParents } from '../../hooks/useParents';
 import '../../styles/ParentDashboard.css';
 import '../../styles/ParentDetails.css';
-
+import { useLoading } from '../../contexts/LoadingContext';
 const ParentDetailsPage = () => {
   const navigate = useNavigate();
+  const { setLoading } = useLoading();
   const { id } = useParams();
-  const { data: parents = [] } = useParents();
+  const { data:parents = [] , isLoading} = useParents();
 
   const parent = parents.find(
     (p) => String(p.id) === id
   );
+  useEffect(() => {
+  setLoading(isLoading);
 
+  return () => setLoading(false);
+}, [isLoading, setLoading]);
   if (!parent) {
     return <div>Parent not found</div>;
   }
 
-  const statCards = [
-    {
-      id: 'students',
-      title: 'Linked Students',
-      formattedValue: parent.studentNames?.length || 0,
-      trend: 0,
-      trendLabel: 'Total',
-      trendUp: true,
-      icon: 'students',
-    },
-    {
-      id: 'status',
-      title: 'Status',
-      formattedValue: parent.status,
-      trend: 0,
-      trendLabel: 'Current',
-      trendUp: parent.status === 'Active',
-      icon: 'dashboard',
-    },
-  ];
 
   return (
     <div className="parentdashboard-page">
@@ -81,22 +67,13 @@ const ParentDetailsPage = () => {
             </div>
 
             <div>
-              <span>Status</span>
-              <strong>{parent.status}</strong>
+              <span>Linked Students</span>
+              <strong>{parent.studentNames?.length || 0}</strong>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="parentdashboard-stats">
-        {statCards.map((card) => (
-          <StatisticCard
-            key={card.id}
-            {...card}
-            isLoading={false}
-          />
-        ))}
-      </div>
 
       <div className="parentdashboard-card">
         <h3>Linked Students</h3>

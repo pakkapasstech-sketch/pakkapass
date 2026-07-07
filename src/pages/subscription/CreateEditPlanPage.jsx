@@ -50,9 +50,11 @@ const CreateEditPlanPage = () => {
     ? boards.filter(b => formData.classes.includes(b.gradeId))
     : boards;
 
-  const filteredBranches = formData.classes.length > 0
-    ? branches.filter(b => formData.classes.includes(b.gradeId))
-    : branches;
+  const filteredBranches = branches.filter((branch) => {
+    const matchClass = formData.classes.length === 0 || !branch.gradeId || formData.classes.includes(branch.gradeId);
+    const matchBoard = formData.boards.length === 0 || !branch.boardId || formData.boards.includes(branch.boardId);
+    return matchClass && matchBoard;
+  });
   useEffect(() => {
     if (!isEdit) {
       setFormData(initialForm);
@@ -130,8 +132,8 @@ const CreateEditPlanPage = () => {
         price: Number(formData.price),
         durationDays: Number(formData.duration),
         gradeIds: formData.classes,
-        boardIds: formData.classes.length > 0 ? formData.boards.filter(id => filteredBoards.some(b => b.id === id)) : formData.boards,
-        branchIds: formData.classes.length > 0 ? formData.branches.filter(id => filteredBranches.some(b => b.id === id)) : formData.branches,
+        boardIds: formData.boards.filter(id => filteredBoards.some(b => b.id === id)),
+        branchIds: formData.branches.filter(id => filteredBranches.some(b => b.id === id)),
         features: formData.features,
         status: formData.status,
       };
@@ -223,35 +225,89 @@ const CreateEditPlanPage = () => {
 
             <label>Boards</label>
 
-            <div className="options">
-              {filteredBoards.map((board) => (
-                <button
-                  type="button"
-                  key={board.id}
-                  className={`option ${formData.boards.includes(board.id) ? 'selected' : ''}`}
-                  onClick={() => toggleSelection('boards', board.id)}
-                >
-                  {board.name}
-                </button>
-              ))}
-            </div>
+            {formData.classes.length > 0 ? (
+              formData.classes.map(classId => {
+                const grade = grades.find(g => g.id === classId);
+                const gradeBoards = boards.filter(b => b.gradeId === classId);
+                
+                if (gradeBoards.length === 0) return null;
+
+                return (
+                  <div key={`boards-${classId}`} style={{ marginBottom: '16px', marginLeft: '8px' }}>
+                    <div style={{ fontSize: '0.85em', color: '#666', marginBottom: '8px', fontWeight: '500' }}>{grade?.name} Boards</div>
+                    <div className="options">
+                      {gradeBoards.map((board) => (
+                        <button
+                          type="button"
+                          key={board.id}
+                          className={`option ${formData.boards.includes(board.id) ? 'selected' : ''}`}
+                          onClick={() => toggleSelection('boards', board.id)}
+                        >
+                          {board.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="options">
+                {boards.map((board) => (
+                  <button
+                    type="button"
+                    key={board.id}
+                    className={`option ${formData.boards.includes(board.id) ? 'selected' : ''}`}
+                    onClick={() => toggleSelection('boards', board.id)}
+                  >
+                    {board.name}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {filteredBranches.length > 0 && (
               <>
                 <label>Branches</label>
 
-                <div className="options">
-                  {filteredBranches.map((branch) => (
-                    <button
-                      type="button"
-                      key={branch.id}
-                      className={`option ${formData.branches.includes(branch.id) ? 'selected' : ''}`}
-                      onClick={() => toggleSelection('branches', branch.id)}
-                    >
-                      {branch.name}
-                    </button>
-                  ))}
-                </div>
+                {formData.classes.length > 0 ? (
+                  formData.classes.map(classId => {
+                    const grade = grades.find(g => g.id === classId);
+                    const gradeBranches = filteredBranches.filter(b => b.gradeId === classId);
+
+                    if (gradeBranches.length === 0) return null;
+
+                    return (
+                      <div key={`branches-${classId}`} style={{ marginBottom: '16px', marginLeft: '8px' }}>
+                        <div style={{ fontSize: '0.85em', color: '#666', marginBottom: '8px', fontWeight: '500' }}>{grade?.name} Branches</div>
+                        <div className="options">
+                          {gradeBranches.map((branch) => (
+                            <button
+                              type="button"
+                              key={branch.id}
+                              className={`option ${formData.branches.includes(branch.id) ? 'selected' : ''}`}
+                              onClick={() => toggleSelection('branches', branch.id)}
+                            >
+                              {branch.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="options">
+                    {filteredBranches.map((branch) => (
+                      <button
+                        type="button"
+                        key={branch.id}
+                        className={`option ${formData.branches.includes(branch.id) ? 'selected' : ''}`}
+                        onClick={() => toggleSelection('branches', branch.id)}
+                      >
+                        {branch.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>

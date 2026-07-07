@@ -6,43 +6,54 @@ import { Link } from 'react-router-dom';
 
 import '../../styles/PartnerDashboard.css';
 import { toast } from 'react-hot-toast';
+import { useEffect, useState } from 'react';
+import partnerService from '../../services/partner.service';
+
 const PartnerDashboard = () => {
   const isLoading = false;
+  const [dashboard, setDashboard] = useState(null);
   const copyMessage = async () => {
-  try {
-    await navigator.clipboard.writeText(partner.referralMessage);
-    toast.success('Referral message copied!');
-  } catch {
-    toast.error('Failed to copy referral message');
-  }
-};
-  const partner = {
-    organizationName: 'ABC Educational Services',
-    referralCode: 'PARTNER2026',
-    referralMessage:
-      'Share your referral code with parents and earn commission on every successful admission.',
+    try {
+      await navigator.clipboard.writeText(partner.referralMessage);
+      toast.success('Referral message copied!');
+    } catch {
+      toast.error('Failed to copy referral message');
+    }
   };
 
-  const analytics = {
-    students: {
-      totalStudents: 128,
-      activeStudents: 102,
-      monthlyRegistrations: 14,
-    },
-    revenue: {
-      totalRevenue: 248500,
-      pendingCommission: 18500,
-      totalCommissionEarned: 74500,
-      totalCommissionPaid: 56000,
-      monthlyRevenue: 48500,
-    },
+  const copyReferralCode = async () => {
+    try {
+      await navigator.clipboard.writeText(partner.referralCode);
+      toast.success('Referral code copied!');
+    } catch {
+      toast.error('Failed to copy referral code');
+    }
   };
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const data = await partnerService.getDashboard();
 
+        setDashboard(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadDashboard();
+  }, []);
+  const partner = dashboard?.partner || {};
+
+  const analytics = dashboard?.analytics || {};
+
+  const recentRegistrations = dashboard?.recentRegistrations || [];
+
+  const recentPayments = dashboard?.recentPayments || [];
   const statCards = [
     {
       id: 'total',
       title: 'Students Referred',
-      formattedValue: String(analytics.students.totalStudents),
+      formattedValue: String(analytics?.students?.totalStudents ?? 0),
       trend: 12,
       trendLabel: 'this month',
       trendUp: true,
@@ -53,7 +64,7 @@ const PartnerDashboard = () => {
     {
       id: 'active',
       title: 'Active Students',
-      formattedValue: String(analytics.students.activeStudents),
+      formattedValue: String(analytics?.students?.activeStudents ?? 0),
       trend: 8,
       trendLabel: 'active',
       trendUp: true,
@@ -64,7 +75,7 @@ const PartnerDashboard = () => {
     {
       id: 'revenue',
       title: 'Total Revenue',
-      formattedValue: `₹${analytics.revenue.totalRevenue.toLocaleString()}`,
+      formattedValue: `₹${(analytics?.revenue?.totalRevenue ?? 0).toLocaleString()}`,
       trend: 18,
       trendLabel: 'generated',
       trendUp: true,
@@ -75,7 +86,7 @@ const PartnerDashboard = () => {
     {
       id: 'commission',
       title: 'Pending Commission',
-      formattedValue: `₹${analytics.revenue.pendingCommission.toLocaleString()}`,
+      formattedValue: `₹${(analytics?.revenue?.pendingCommission ?? 0).toLocaleString()}`,
       trend: 4,
       trendLabel: 'pending',
       trendUp: false,
@@ -84,117 +95,6 @@ const PartnerDashboard = () => {
       icon: 'commissions',
     },
   ];
-
-  const recentRegistrations = [
-    {
-      id: 1,
-      studentId: 'STU1001',
-      name: 'Rahul Sharma',
-      class: '10',
-      parent: 'Amit Sharma',
-      referralCode: partner.referralCode,
-      status: 'Active',
-      registeredOn: '15 Jun 2026',
-    },
-    {
-      id: 2,
-      studentId: 'STU1002',
-      name: 'Sneha Reddy',
-      class: '9',
-      parent: 'Suresh Reddy',
-      referralCode: partner.referralCode,
-      status: 'Pending',
-      registeredOn: '18 Jun 2026',
-    },
-    {
-      id: 3,
-      studentId: 'STU1003',
-      name: 'Arjun Kumar',
-      class: '8',
-      parent: 'Raj Kumar',
-      referralCode: partner.referralCode,
-      status: 'Active',
-      registeredOn: '20 Jun 2026',
-    },
-    {
-      id: 4,
-      studentId: 'STU1004',
-      name: 'Priya Singh',
-      class: '10',
-      parent: 'Neha Singh',
-      referralCode: partner.referralCode,
-      status: 'Active',
-      registeredOn: '22 Jun 2026',
-    },
-    {
-      id: 5,
-      studentId: 'STU1005',
-      name: 'Vikram Patel',
-      class: '7',
-      parent: 'Ramesh Patel',
-      referralCode: partner.referralCode,
-      status: 'Active',
-      registeredOn: '24 Jun 2026',
-    },
-  ];
-
-  const recentPayments = [
-    {
-      id: 1,
-      student: 'Rahul Sharma',
-      plan: 'Premium',
-      amount: '₹12,000',
-      referralCode: partner.referralCode,
-      status: 'Paid',
-      date: '15 Jun 2026',
-    },
-    {
-      id: 2,
-      student: 'Sneha Reddy',
-      plan: 'Standard',
-      amount: '₹9,500',
-      referralCode: partner.referralCode,
-      status: 'Paid',
-      date: '18 Jun 2026',
-    },
-    {
-      id: 3,
-      student: 'Arjun Kumar',
-      plan: 'Premium',
-      amount: '₹10,500',
-      referralCode: partner.referralCode,
-      status: 'Pending',
-      date: '20 Jun 2026',
-    },
-    {
-      id: 4,
-      student: 'Priya Singh',
-      plan: 'Premium',
-      amount: '₹11,000',
-      referralCode: partner.referralCode,
-      status: 'Paid',
-      date: '22 Jun 2026',
-    },
-    {
-      id: 5,
-      student: 'Vikram Patel',
-      plan: 'Basic',
-      amount: '₹8,500',
-      referralCode: partner.referralCode,
-      status: 'Paid',
-      date: '24 Jun 2026',
-    },
-  ];
-
-  const copyReferralCode = async () => {
-  try {
-    await navigator.clipboard.writeText(partner.referralCode);
-    toast.success('Referral code copied!');
-  } catch {
-    toast.error('Failed to copy referral code');
-  }
-};
-
   return (
     <div className="partnerdashboard-page">
       <div className="partnerdashboard-header">
@@ -212,59 +112,49 @@ const PartnerDashboard = () => {
         ))}
       </div>
 
-     <div className="partnerdashboard-referral-container">
-  <div className="partnerdashboard-referral-card">
-    <p>Generated Referral Code</p>
+      <div className="partnerdashboard-referral-container">
+        <div className="partnerdashboard-referral-card">
+          <p>Generated Referral Code</p>
 
-    <h1>{partner.referralCode}</h1>
+          <h1>{partner.referralCode}</h1>
 
-    <button
-      className="partnerdashboard-copy-code-btn"
-      onClick={copyReferralCode}
-    >
-      <HiOutlineClipboardCopy />
-      Copy Code
-    </button>
-  </div>
+          <button className="partnerdashboard-copy-code-btn" onClick={copyReferralCode}>
+            <HiOutlineClipboardCopy />
+            Copy Code
+          </button>
+        </div>
 
-  <div className="partnerdashboard-message-card">
-    <h3>Referral Message</h3>
+        <div className="partnerdashboard-message-card">
+          <h3>Referral Message</h3>
 
-    <textarea
-      value={partner.referralMessage}
-      readOnly
-      rows={8}
-    />
+          <textarea value={partner.referralMessage} readOnly rows={8} />
 
-    <button
-      className="partnerdashboard-copy-message-btn"
-      onClick={copyMessage}
-    >
-      <HiOutlineClipboardCopy />
-      Copy Message
-    </button>
-  </div>
-</div>
+          <button className="partnerdashboard-copy-message-btn" onClick={copyMessage}>
+            <HiOutlineClipboardCopy />
+            Copy Message
+          </button>
+        </div>
+      </div>
 
       <div className="partnerdashboard-summary">
         <div className="partnerdashboard-summary-card">
           <span>Total Commission Earned</span>
-          <h3>₹{analytics.revenue.totalCommissionEarned.toLocaleString()}</h3>
+          <h3>₹{(analytics?.revenue?.totalCommissionEarned ?? 0).toLocaleString()}</h3>
         </div>
 
         <div className="partnerdashboard-summary-card">
           <span>Total Commission Paid</span>
-          <h3>₹{analytics.revenue.totalCommissionPaid.toLocaleString()}</h3>
+          <h3>₹{(analytics?.revenue?.totalCommissionPaid ?? 0).toLocaleString()}</h3>
         </div>
 
         <div className="partnerdashboard-summary-card">
           <span>Monthly Registrations</span>
-          <h3>{analytics.students.monthlyRegistrations}</h3>
+          <h3>{analytics?.students?.monthlyRegistrations ?? 0}</h3>
         </div>
 
         <div className="partnerdashboard-summary-card">
           <span>Monthly Revenue</span>
-          <h3>₹{analytics.revenue.monthlyRevenue.toLocaleString()}</h3>
+          <h3>₹{(analytics?.revenue?.monthlyRevenue ?? 0).toLocaleString()}</h3>
         </div>
       </div>
       <div className="partnerdashboard-dashboard-section">
@@ -283,28 +173,23 @@ const PartnerDashboard = () => {
             <table className="partnerdashboard-data-table">
               <thead>
                 <tr>
-                  <th>Student ID</th>
+                  <th>S.No</th>
                   <th>Student</th>
                   <th>Class</th>
-                  <th>Parent</th>
-                  <th>Referral Code</th>
+
                   <th>Status</th>
                   <th>Registered On</th>
                 </tr>
               </thead>
 
               <tbody>
-                {recentRegistrations.map((student) => (
+                {recentRegistrations.map((student, index) => (
                   <tr key={student.id}>
-                    <td>{student.studentId}</td>
+                    <td>{index + 1}</td>
 
                     <td>{student.name}</td>
 
                     <td>Class {student.class}</td>
-
-                    <td>{student.parent}</td>
-
-                    <td>{student.referralCode}</td>
 
                     <td>
                       <span
@@ -318,7 +203,11 @@ const PartnerDashboard = () => {
                       </span>
                     </td>
 
-                    <td>{student.registeredOn}</td>
+                    <td>
+                      {student.registeredOn
+                        ? new Date(student.registeredOn).toLocaleDateString()
+                        : '-'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -347,7 +236,7 @@ const PartnerDashboard = () => {
 
                   <th>Amount</th>
 
-                  <th>Referral Code</th>
+                 
 
                   <th>Status</th>
 
@@ -364,7 +253,7 @@ const PartnerDashboard = () => {
 
                     <td>{payment.amount}</td>
 
-                    <td>{payment.referralCode}</td>
+                    
 
                     <td>
                       <span
@@ -378,7 +267,7 @@ const PartnerDashboard = () => {
                       </span>
                     </td>
 
-                    <td>{payment.date}</td>
+                    <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

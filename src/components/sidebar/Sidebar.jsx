@@ -9,24 +9,27 @@ import LogoutConfirmModal, { useLogoutConfirm } from '../modals/LogoutConfirmMod
 import { useTheme } from '../../contexts/ThemeContext';
 import '../../styles/sidebar.css';
 import {toast} from "react-hot-toast"
+import { useEffect,useState } from 'react';
+import partnerService from '../../services/partner.service';
 const Tooltip = ({ label, show }) =>
   show ? <span className="sidebar-tooltip">{label}</span> : null;
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [referralCode, setReferralCode] = useState('');
   const copyReferralCode = async () => {
   try {
-    await navigator.clipboard.writeText(user?.referralCode || 'PARTNER2026');
+    await navigator.clipboard.writeText(referralCode);
     toast.success('Referral code copied!');
   } catch (err) {
     console.error(err);
     toast.error('Failed to copy referral code');
   }
 };
-  const { isCollapsed, isMobileOpen, closeMobileSidebar, toggleSidebar } = useSidebar();
+  const { isCollapsed, isMobileOpen, closeMobileSidebar, } = useSidebar();
 
-  const { logout, user } = useAuth();
+  const { logout} = useAuth();
   const { setIsDark } = useTheme();
   const { hasPermission, role } = usePermissions();
 
@@ -51,7 +54,20 @@ const handleLogout = () =>
   }, navigate);
   const isActive = (path) =>
     path === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(path);
+useEffect(() => {
+  if (role !== 'PARTNER') return;
 
+  const loadPartner = async () => {
+    try {
+      const data = await partnerService.getDashboard();
+      setReferralCode(data.partner?.referralCode || '');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadPartner();
+}, [role]);
   return (
     <>
       {isMobile && isMobileOpen && <div className="sidebar-overlay" onClick={closeMobileSidebar} />}
@@ -111,7 +127,7 @@ const handleLogout = () =>
               <span className="sidebar-referral-label">Referral Code</span>
 
               <div className="sidebar-referral-value">
-  <span>{user?.referralCode || 'PARTNER2026'}</span>
+  <span>{referralCode || '-'}</span>
 
   <HiOutlineClipboardCopy
     className="sidebar-copy-icon"

@@ -67,7 +67,7 @@ const PartnerTable = ({
         <table className="partners-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>S.No</th>
               <th>Name</th>
               <th>Partner ID</th>
               <th>Institution</th>
@@ -81,13 +81,13 @@ const PartnerTable = ({
           </thead>
 
           <tbody>
-            {currentPartners.map((partner) => (
+            {currentPartners.map((partner, index) => (
               <tr
   key={partner.id}
   className="partner-row clickable-row"
   onClick={() => navigate(`/partners/${partner.id}`)}
 >
-                <td>{partner.id}</td>
+                <td>{startIndex + index + 1}</td>
 
                 <td>{partner.contactPerson}</td>
 

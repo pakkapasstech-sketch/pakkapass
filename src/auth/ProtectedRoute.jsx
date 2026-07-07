@@ -3,10 +3,14 @@ import { useAuth } from './AuthProvider';
 import { usePermissions } from './usePermissions';
 
 const ProtectedRoute = ({ permission, permissions = [], roles = [], redirectTo = '/login' }) => {
-  const { isAuthenticated,  user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const { hasPermission, hasAnyPermission } = usePermissions();
   const location = useLocation();
 
+
+  if (loading) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />;

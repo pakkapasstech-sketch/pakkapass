@@ -9,6 +9,7 @@ import DashboardPage from '../pages/dashboard/DashboardPage';
 import UnauthorizedPage from '../pages/shared/UnauthorizedPage';
 import StudentManagementPage from '../pages/students/StudentManagementPage';
 import StudentDetailsPage from '../pages/students/StudentDetailsPage';
+import ImportStudentsPage from '../pages/students/ImportStudentsPage';
 import ReferralManagementPage from '../pages/referral/ReferralManagementPage';
 import SubscriptionManagementPage from '../pages/subscription/SubscriptionManagementPage';
 import ContentManagement from '../pages/ContentManagement/ContentManagement';
@@ -17,6 +18,7 @@ import SupportCentrePage from '../pages/SupportCentrePage/SupportCentrePage';
 import NotificationsPage from '../pages/Notifications/NotificationsPage';
 import PartnersPage from '../pages/Partners/PartnersPage';
 import SettingsPage from '../pages/Settings/SettingsPage';
+
 import ParentDetailsPage from '../pages/parents/ParentDetailsPage';
 import AddPartnerPage from '../pages/Partners/AddPartnerPage';
 import PartnerDetailsPage from '../pages/Partners/PartnerDetailsPage';
@@ -33,6 +35,7 @@ import PartnerPaymentsPage from '../pages/PartnerDashboardPages/PartnerPaymentsP
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
+
     <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
     <Route path="/contact-admin" element={<ContactAdminPage />} />
@@ -43,6 +46,7 @@ const AppRoutes = () => (
 
         <Route element={<ProtectedRoute permission={PERMISSIONS.STUDENT_VIEW} />}>
           <Route path="students" element={<StudentManagementPage />} />
+          <Route path="students/import" element={<ImportStudentsPage />} />
           <Route path="students/:id" element={<StudentDetailsPage />} />
         </Route>
 

@@ -193,3 +193,48 @@
 .dark .profile-grid input {
   background: var(--color-main-bg);
 }
+.profile-images{
+display:flex;
+justify-content:flex-start;
+align-items:center;
+gap:60px;
+}
+
+.profile-photo-section{
+position:relative;
+}
+
+.passport-photo{
+width:120px;
+height:150px;
+border-radius:10px;
+object-fit:cover;
+border:3px solid white;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.photo-edit-btn{
+position:absolute;
+bottom:-8px;
+right:-8px;
+width:36px;
+height:36px;
+border:none;
+border-radius:50%;
+background:#6653AF;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+}
+
+.organization-logo{
+width:140px;
+height:140px;
+object-fit:contain;
+background:white;
+padding:15px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+}

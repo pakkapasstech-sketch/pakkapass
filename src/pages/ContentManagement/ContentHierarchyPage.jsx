@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
 import ManageHierarchyTree from '../../components/content/ManageHierarchyTree';
+import Loader from '../../components/common/Loader';
 
 import './contentHierarchyPage.css';
 
@@ -18,7 +19,7 @@ const ContentHierarchyPage = () => {
   data: contentData = [],
   isLoading: contentLoading,
 } = useQuery({
-  queryKey: ['content'],
+  queryKey: ['content-hierarchy-raw'],
   queryFn: async () => {
     const { data } =
       await axiosInstance.get(
@@ -54,11 +55,7 @@ const ContentHierarchyPage = () => {
 
 
   if (isLoading || contentLoading) {
-    return (
-      <div className="content-hierarchy-page">
-        Loading...
-      </div>
-    );
+    return <Loader />;
   }
 
   if (isError) {
@@ -105,12 +102,15 @@ const ContentHierarchyPage = () => {
     await queryClient.invalidateQueries({
       queryKey: ['content'],
     });
+    await queryClient.invalidateQueries({
+      queryKey: ['content-hierarchy-raw'],
+    });
 
     await queryClient.invalidateQueries({
       queryKey: ['content-options'],
     });
     await queryClient.refetchQueries({
-  queryKey: ['content'],
+  queryKey: ['content-hierarchy-raw'],
 });
 
 await queryClient.refetchQueries({

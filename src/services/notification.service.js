@@ -20,6 +20,16 @@ export const notificationService = {
     const { data } = await axiosInstance.delete(`/admin/notifications/${id}`);
     return data;
   },
+
+  markRead: async (notificationId) => {
+    const { data } = await axiosInstance.post('/admin/notifications/read', { notificationId });
+    return data;
+  },
+
+  markAllRead: async () => {
+    const { data } = await axiosInstance.post('/admin/notifications/read', {});
+    return data;
+  },
 };
 
 export default notificationService;

@@ -3,29 +3,18 @@ import { useState,useEffect } from 'react';
 import StatisticCard from '../../components/cards/StatisticCard';
 import AnalyticsCard from '../../components/cards/AnalyticsCard';
 import { useNavigate } from 'react-router-dom';
-//import SubscriptionGrowthChart from '../../components/charts/SubscriptionGrowthChart';
-//import RevenueTrendChart from '../../components/charts/RevenueTrendChart';
-//import StudentsByStateCard from '../../components/charts/StudentsByStateCard';
 import StudentTable from '../students/StudentTable';
-//import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
-//import { HiOutlineDownload } from 'react-icons/hi';
 import '../../styles/table.css';
 import '../../styles/student-table.css';
-//import StatusBadge from '../../components/tables/StatusBadge';
-//import Avatar from '../../components/common/Avatar';
+
 import ErrorState from '../../components/loaders/ErrorState';
 import Modal from '../../components/modals/Modal';
 import { getPlans } from '../../services/SubscriptionServices';
 import { useQuery } from '@tanstack/react-query';
 import {
   useAdminDashboard,
-  //useSubscriptionGrowth,
-  //useRevenueTrend,
-  //useStudentsByState,
   useRecentRegistrations,
   useRecentPayments,
-  //useReferralConversions,
-  //usePerformanceMetrics,
 } from '../../hooks/useDashboard';
 import { formatDate } from '../../utils/formatters';
 import { useContent } from '../../hooks/useContent';
@@ -37,8 +26,6 @@ const AdminDashboard = () => {
 
   const registrations = useRecentRegistrations();
   const payments = useRecentPayments();
-  //const referrals = useReferralConversions();
-  //const performance = usePerformanceMetrics();
   const { data: content = [], isLoading: contentLoading } = useContent();
   const { data: plans = [], isLoading: plansLoading } = useQuery({
     queryKey: ['plans'],
@@ -74,13 +61,6 @@ const AdminDashboard = () => {
   const totalMindMaps = content.filter((item) => item.hierarchyType === 'Mind Maps').length;
 
   const totalPYQ = content.filter((item) => item.hierarchyType === 'PYQ').length;
-
-  // const referralColumns = [
-  //   { key: 'code', header: 'Referral Code', accessor: (r) => r.code },
-  //   { key: 'partner', header: 'Partner', accessor: (r) => r.partner },
-  //   { key: 'conversions', header: 'Conversions', accessor: (r) => r.conversions },
-  //   { key: 'revenue', header: 'Revenue', accessor: (r) => `₹${r.revenue?.toLocaleString()}` },
-  // ];
   const pageLoading =
   stats.isLoading ||
   registrations.isLoading ||
@@ -103,12 +83,6 @@ const AdminDashboard = () => {
           />
         ))}
       </div>
-
-      {/* <div className="dashboard-chart-grid">
-        <SubscriptionGrowthChart data={growth.data} isLoading={growth.isLoading} />
-        <RevenueTrendChart data={revenue.data} isLoading={revenue.isLoading} />
-        <StudentsByStateCard data={states.data} isLoading={states.isLoading} />
-      </div> */}
 
       <div className="dashboard-table-grid">
         {/* Recent Registrations Table using StudentTable */}

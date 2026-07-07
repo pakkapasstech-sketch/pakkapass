@@ -7,7 +7,7 @@
 .support-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* align-items: center; */
   gap: 20px;
 
   margin-bottom: 32px;
@@ -330,4 +330,143 @@ align-self:flex-start;
   width: 100%;
 
   z-index: 99999;
+}
+
+/* ==========================================
+   Admin Tickets Table & Toolbar
+========================================== */
+.support-toolbar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.support-toolbar .search-box {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+
+.support-toolbar .search-box svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-size: 18px;
+}
+
+.support-toolbar .search-box input {
+  padding-left: 44px;
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.support-toolbar .filter-box {
+  width: 200px;
+}
+
+.support-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+
+.support-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.support-table th {
+  padding: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background: var(--color-main-bg);
+  border-bottom: 1px solid var(--color-border);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.support-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.support-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.support-table tbody tr:hover {
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.support-table td.support-message-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   Admin Tickets Pagination
+========================================== */
+.support-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.support-pagination-text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.support-pagination-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.support-pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.support-pagination-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.support-pagination-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
 }

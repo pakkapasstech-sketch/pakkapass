@@ -5,7 +5,13 @@ import toast from 'react-hot-toast';
 export const usePartners = (params = {}) =>
   useQuery({
     queryKey: ['partners', params],
-    queryFn: () => partnerService.getAll(params),
+    queryFn: async () => {
+      const data = await partnerService.getAll(params);
+      if (Array.isArray(data)) {
+        return data.sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
+      }
+      return data;
+    },
   });
 
 export const usePartner = (id) =>

@@ -10,18 +10,22 @@ import '../../styles/student-table.css';
 import '../../styles/table.css';
 import StatisticCard from '../../components/cards/StatisticCard';
 import { useLoading } from '../../contexts/LoadingContext';
-import { useStudents } from '../../hooks/useStudents';
+import { useStudents, useStudentFilterOptions } from '../../hooks/useStudents';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+
 const RecentPaymentsPage = () => {
   const { setLoading } = useLoading();
   const { data: payments = [], isLoading, isError, refetch } = useRecentPayments();
   const { data: students = [] } = useStudents();
+  const { data: filterOptions } = useStudentFilterOptions();
   console.log(students[0]);
   const [search, setSearch] = useState('');
 
   const [selectedPlan, setSelectedPlan] = useState('All Plans');
 
-  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('All Status');
+
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   const plans = useMemo(
     () => ['All Plans', ...new Set(payments.map((p) => p.plan).filter(Boolean))],
@@ -58,7 +62,7 @@ const RecentPaymentsPage = () => {
 
       const matchesPlan = selectedPlan === 'All Plans' || payment.plan === selectedPlan;
 
-      const matchesStatus = selectedStatus === 'All' || payment.status === selectedStatus;
+      const matchesStatus = selectedStatus === 'All Status' || payment.status === selectedStatus;
 
       return matchesSearch && matchesPlan && matchesStatus;
     });
@@ -223,7 +227,7 @@ useEffect(() => {
         <CommonFilterDropdown
           placeholder="All Status"
           value={selectedStatus}
-          options={['All', 'Success', 'Pending', 'Failed']}
+          options={['All Status', 'Success', 'Pending', 'Failed']}
           onChange={setSelectedStatus}
         />
       </div>
@@ -245,7 +249,7 @@ useEffect(() => {
             <tbody>
               {paginatedPayments.length > 0 ? (
                 paginatedPayments.map((payment, index) => (
-                  <tr key={payment.id || index} className="clickable-row">
+                  <tr key={payment.id || index} className="clickable-row" onClick={() => setSelectedPayment(payment)} style={{ cursor: 'pointer' }}>
                     <td>{studentIdMap[payment.student?.trim().toLowerCase()] ?? '—'}</td>
                     <td>
                       <div className="student-user">
@@ -326,6 +330,88 @@ useEffect(() => {
           </div>
         )}
       </div>
+
+      {/* Payment Details Modal */}
+      {selectedPayment && (() => {
+        const studentInfo = students.find(
+          (s) => s.name?.trim().toLowerCase() === selectedPayment.student?.trim().toLowerCase()
+        );
+        return (
+          <div className="payment-modal-overlay" onClick={() => setSelectedPayment(null)}>
+            <div className="payment-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="payment-modal-header">
+                <h2>Payment Details</h2>
+                <button
+                  type="button"
+                  className="payment-modal-close"
+                  onClick={() => setSelectedPayment(null)}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="payment-modal-body">
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <label>Student ID</label>
+                    <span>{studentInfo?.id || '—'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Student Name</label>
+                    <span>{selectedPayment.student}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Class</label>
+                    <span>{studentInfo?.class || '—'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Board</label>
+                    <span>{studentInfo?.board || '—'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Branch</label>
+                    <span>
+                      {
+                        studentInfo?.branch !== 'N/A' 
+                          ? studentInfo?.branch 
+                          : filterOptions?.branches?.find(b => b.id === studentInfo?.profile?.branchId)?.name || '—'
+                      }
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Plan Name</label>
+                    <span>{selectedPayment.plan}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Amount Paid</label>
+                    <strong>₹{selectedPayment.amount}</strong>
+                  </div>
+                  <div className="detail-item">
+                    <label>Referral Code</label>
+                    <span>{selectedPayment.referralCode || 'Null'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Payment Status</label>
+                    <span className={`status-badge ${
+                      selectedPayment.status === 'Success'
+                        ? 'status-active'
+                        : selectedPayment.status === 'Failed'
+                          ? 'status-inactive'
+                          : 'status-pending'
+                    }`}>
+                      {selectedPayment.status}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Payment Date</label>
+                    <span>{formatDate(selectedPayment.date)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

@@ -130,6 +130,23 @@ const SubscriptionManagementPage = () => {
     return () => setGlobalLoading(false);
   }, [loading, setGlobalLoading]);
 
+  const getUniqueNames = (items) => {
+    const seen = new Set();
+    const result = [];
+    (items || []).forEach((item) => {
+      const name = item.name?.trim();
+      if (name && !seen.has(name.toLowerCase())) {
+        seen.add(name.toLowerCase());
+        result.push(name);
+      }
+    });
+    return result;
+  };
+
+  const uniqueClasses = getUniqueNames(options.grades);
+  const uniqueBoards = getUniqueNames(options.boards);
+  const uniqueBranches = getUniqueNames(options.branches);
+
   return (
     <div className="subscription-management-page">
       <div className="page-header flex justify-between items-start flex-wrap gap-6">
@@ -239,20 +256,20 @@ const SubscriptionManagementPage = () => {
         <CommonFilterDropdown
           placeholder="All Classes"
           value={selectedClass || 'All Classes'}
-          options={['All Classes', ...options.grades.map((g) => g.name)]}
+          options={['All Classes', ...uniqueClasses]}
           onChange={(value) => setSelectedClass(value === 'All Classes' ? '' : value)}
         />
         <CommonFilterDropdown
           placeholder="All Boards"
           value={selectedBoard || 'All Boards'}
-          options={['All Boards', ...options.boards.map((b) => b.name)]}
+          options={['All Boards', ...uniqueBoards]}
           onChange={(value) => setSelectedBoard(value === 'All Boards' ? '' : value)}
         />
 
         <CommonFilterDropdown
           placeholder="All Branches"
           value={selectedBranch || 'All Branches'}
-          options={['All Branches', ...options.branches.map((b) => b.name)]}
+          options={['All Branches', ...uniqueBranches]}
           onChange={(value) => setSelectedBranch(value === 'All Branches' ? '' : value)}
         />
       </div>
@@ -280,13 +297,13 @@ const SubscriptionManagementPage = () => {
                   </td>
                 </tr>
               ) : filteredPlans.length > 0 ? (
-                paginatedPlans.map((plan) => (
+                paginatedPlans.map((plan, index) => (
                   <tr
                     key={plan.id}
                     className="clickable-row"
                     onClick={() => navigate(`/subscriptions/plans/${plan.id}`)}
                   >
-                    <td>{plan.id}</td>
+                    <td>{startIndex + index + 1}</td>
 
                     <td>
                       <div className="student-user">

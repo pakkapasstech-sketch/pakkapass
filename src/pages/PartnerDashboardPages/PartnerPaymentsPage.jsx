@@ -15,69 +15,50 @@ import {
 
 import '../../styles/student-table.css';
 import '../../styles/ParentsManagement.css';
+import partnerService from '../../services/partner.service';
 
-const mockPayments = [
-  {
-    id: 'PAY1001',
-    student: 'Rahul Sharma',
-    plan: 'Premium',
-    amount: 12000,
-    referralCode: 'PARTNER2026',
-    status: 'Paid',
-    paymentDate: '15 Jun 2026',
-  },
-  {
-    id: 'PAY1002',
-    student: 'Sneha Reddy',
-    plan: 'Basic',
-    amount: 8500,
-    referralCode: 'PARTNER2026',
-    status: 'Paid',
-    paymentDate: '18 Jun 2026',
-  },
-  {
-    id: 'PAY1003',
-    student: 'Arjun Kumar',
-    plan: 'Premium',
-    amount: 10500,
-    referralCode: 'PARTNER2026',
-    status: 'Paid',
-    paymentDate: '20 Jun 2026',
-  },
-  {
-    id: 'PAY1004',
-    student: 'Priya Singh',
-    plan: 'Standard',
-    amount: 9500,
-    referralCode: 'PARTNER2026',
-    status: 'Paid',
-    paymentDate: '22 Jun 2026',
-  },
-  {
-    id: 'PAY1005',
-    student: 'Vikram Patel',
-    plan: 'Basic',
-    amount: 7500,
-    referralCode: 'PARTNER2026',
-    status: 'Failed',
-    paymentDate: '24 Jun 2026',
-  },
-];
+
 
 const PartnerPaymentsPage = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [planFilter, setPlanFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [payments, setPayments] = useState([]);
 
+  const plans = useMemo(
+    () => ['All Plans', ...new Set(payments.map((p) => p.plan).filter(Boolean))],
+    [payments]
+  );
+
+const [summary, setSummary] = useState({
+  totalPayments: 0,
+  paid: 0,
+  pending: 0,
+  failed: 0,
+  revenue: 0,
+});
   const paymentsPerPage = 5;
+  useEffect(() => {
+  const loadPayments = async () => {
+    try {
+      const data = await partnerService.getPayments();
 
+      setPayments(data.payments || []);
+      setSummary(data.summary || {});
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadPayments();
+}, []);
   useEffect(() => {
     setCurrentPage(1);
   }, [search, statusFilter, planFilter]);
 
   const filteredPayments = useMemo(() => {
-    return mockPayments.filter((payment) => {
+    return payments.filter((payment) => {
       const searchTerm = search.trim().toLowerCase();
 
       const matchesSearch =
@@ -100,7 +81,7 @@ const PartnerPaymentsPage = () => {
         matchesPlan
       );
     });
-  }, [search, statusFilter, planFilter]);
+  }, [payments, search, statusFilter, planFilter]);
 
   const totalPayments = filteredPayments.length;
 
@@ -146,10 +127,7 @@ const PartnerPaymentsPage = () => {
       header: 'Amount',
       accessor: (r) => r.amount,
     },
-    {
-      header: 'Referral Code',
-      accessor: (r) => r.referralCode,
-    },
+    
     {
       header: 'Status',
       accessor: (r) => r.status,
@@ -230,20 +208,16 @@ const PartnerPaymentsPage = () => {
 
       <div className="dashboard-stats-grid">
         <StatisticCard
-          title="Total Payments"
-          value={filteredPayments.length}
-          icon="commissions"
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
-        />
+  title="Total Payments"
+  value={summary.totalPayments}
+  icon="commissions"
+  iconBg="bg-blue-100"
+  iconColor="text-blue-600"
+/>
 
         <StatisticCard
           title="Paid"
-          value={
-            filteredPayments.filter(
-              (p) => p.status === 'Paid'
-            ).length
-          }
+          value={summary.paid}
           icon="commissions"
           iconBg="bg-green-100"
           iconColor="text-green-600"
@@ -251,11 +225,7 @@ const PartnerPaymentsPage = () => {
 
         <StatisticCard
           title="Pending"
-          value={
-            filteredPayments.filter(
-              (p) => p.status === 'Pending'
-            ).length
-          }
+          value={summary.pending}
           icon="commissions"
           iconBg="bg-yellow-100"
           iconColor="text-yellow-600"
@@ -263,13 +233,7 @@ const PartnerPaymentsPage = () => {
 
         <StatisticCard
           title="Revenue"
-          value={`₹${filteredPayments
-            .filter((p) => p.status === 'Paid')
-            .reduce(
-              (sum, p) => sum + p.amount,
-              0
-            )
-            .toLocaleString()}`}
+          value={`₹${summary.revenue.toLocaleString()}`}
           icon="commissions"
           iconBg="bg-purple-100"
           iconColor="text-purple-600"
@@ -282,7 +246,7 @@ const PartnerPaymentsPage = () => {
 
           <input
             type="text"
-            placeholder="Search by Payment ID, Student or Referral Code..."
+            placeholder="Search..."
             value={search}
             onChange={(e) =>
               setSearch(e.target.value)
@@ -293,12 +257,7 @@ const PartnerPaymentsPage = () => {
         <CommonFilterDropdown
           placeholder="All Plans"
           value={planFilter || 'All Plans'}
-          options={[
-            'All Plans',
-            'Basic',
-            'Standard',
-            'Premium',
-          ]}
+          options={plans}
           onChange={(value) =>
             setPlanFilter(
               value === 'All Plans'
@@ -334,7 +293,6 @@ const PartnerPaymentsPage = () => {
               <th>Student</th>
               <th>Plan</th>
               <th>Amount</th>
-              <th>Referral Code</th>
               <th>Status</th>
               <th>Payment Date</th>
             </tr>
@@ -351,15 +309,13 @@ const PartnerPaymentsPage = () => {
                   <td>{payment.plan}</td>
 
                   <td>
-                    ₹{payment.amount.toLocaleString()}
-                  </td>
+₹{Number(payment.amount).toLocaleString()}                  </td>
 
-                  <td>{payment.referralCode}</td>
 
                   <td>
                     <span
                       className={`status-badge ${
-                        payment.status === 'Paid'
+                        payment.status === 'Success'
                           ? 'active'
                           : payment.status === 'Pending'
                           ? 'pending'
@@ -370,13 +326,14 @@ const PartnerPaymentsPage = () => {
                     </span>
                   </td>
 
-                  <td>{payment.paymentDate}</td>
-                </tr>
+<td>
+  {new Date(payment.paymentDate).toLocaleDateString()}
+</td>                </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="6"
                   className="empty-table"
                 >
                   No payments found

@@ -15,35 +15,30 @@ export const authService = {
     user: data.user || data.admin,
   };
 },
-sendPartnerOtp:
-  async ({
-    mobile,
-  }) => {
-    const { data } =
-      await axiosInstance.post(
-        '/partner/login',
-        { mobile }
-      );
+sendPartnerOtp: async ({ email }) => {
+  const { data } = await axiosInstance.post(
+    '/partner/login',
+    { email }
+  );
 
-    return data;
-  },
+  return data;
+},
 
-verifyPartnerOtp:
-  async ({
-    mobile,
-    otp,
-  }) => {
-    const { data } =
-      await axiosInstance.post(
-        '/partner/verify-otp',
-        {
-          mobile,
-          otp,
-        }
-      );
+verifyPartnerOtp: async ({ email, otp }) => {
+  const { data } = await axiosInstance.post(
+    '/partner/verify-otp',
+    {
+      email,
+      otp,
+    }
+  );
 
-    return data;
-  },
+  return {
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+    user: data.user || data.partner,
+  };
+},
   sendParentOtp: async ({ email }) => {
   const { data } = await axiosInstance.post('/parent/login', { email });
   return data;

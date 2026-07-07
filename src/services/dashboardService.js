@@ -41,7 +41,7 @@ export const dashboardService = {
         {
           id: 3,
           title:
-            'Institutes',
+            'Partners',
           value:
             stats.totalInstitutes ||
             0,

@@ -71,72 +71,78 @@ const StudentFilters = ({
 
   return (
     <div className="student-filters-container">
-      <div className="student-search-row">
-        <div className="search-box">
-          <HiOutlineSearch />
-          <input
-            type="text"
-            placeholder="Search students by name, email, phone, refcode..."
-            value={filters.search}
-            onChange={(e) =>
-              handleChange(
-                'search',
-                e.target.value
-              )
+      <div className="student-filters-row">
+        <div className="student-search-row">
+          <div className="search-box">
+            <HiOutlineSearch />
+            <input
+              type="text"
+              placeholder="Search students by name, email, phone, refcode..."
+              value={filters.search}
+              onChange={(e) =>
+                handleChange(
+                  'search',
+                  e.target.value
+                )
+              }
+            />
+          </div>
+        </div>
+
+        <div className="class-dropdown-wrapper">
+          <CommonFilterDropdown
+            placeholder="All Classes"
+            value={filters.class || 'All Classes'}
+            options={classes}
+            onChange={(value) =>
+              handleChange('class', value)
             }
           />
         </div>
       </div>
 
+      {/* 
       <div className="student-dropdowns-row">
-  <CommonFilterDropdown
-    placeholder="All Classes"
-    value={filters.class || 'All Classes'}
-    options={classes}
-    onChange={(value) =>
-      handleChange('class', value)
-    }
-  />
+        <CommonFilterDropdown
+          placeholder="All Boards"
+          value={filters.board || 'All Boards'}
+          options={boards}
+          onChange={(value) =>
+            handleChange('board', value)
+          }
+        />
 
-  <CommonFilterDropdown
-    placeholder="All Boards"
-    value={filters.board || 'All Boards'}
-    options={boards}
-    onChange={(value) =>
-      handleChange('board', value)
-    }
-  />
+        <CommonFilterDropdown
+          placeholder="All Colleges"
+          value={filters.college || 'All Colleges'}
+          options={colleges}
+          onChange={(value) =>
+            handleChange('college', value)
+          }
+        />
 
-  <CommonFilterDropdown
-    placeholder="All Colleges"
-    value={filters.college || 'All Colleges'}
-    options={colleges}
-    onChange={(value) =>
-      handleChange('college', value)
-    }
-  />
+        <CommonFilterDropdown
+          placeholder="All States"
+          value={filters.state || 'All States'}
+          options={[
+            'All States',
+            ...indianStates,
+          ]}
+          onChange={(value) =>
+            handleChange('state', value)
+          }
+        />
 
-  <CommonFilterDropdown
-    placeholder="All States"
-    value={filters.state || 'All States'}
-    options={[
-      'All States',
-      ...indianStates,
-    ]}
-    onChange={(value) =>
-      handleChange('state', value)
-    }
-  />
-
-  <CommonFilterDropdown
-    placeholder="All Status"
-    value={filters.status || 'All'}
-    options={statuses}
-    onChange={(value) =>
-      handleChange('status', value)
-    }
-  />
-</div>
+        <CommonFilterDropdown
+          placeholder="All Status"
+          value={filters.status || 'All'}
+          options={statuses}
+          onChange={(value) =>
+            handleChange('status', value)
+          }
+        />
+      </div>
+      */}
     </div>
   );
 };

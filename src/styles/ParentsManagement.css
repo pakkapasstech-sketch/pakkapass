@@ -167,7 +167,6 @@
 ========================= */
 
 .parents-table-wrapper {
-  background: #fff;
   border: 1px solid var(--color-border);
   border-radius: 16px;
   overflow-x: auto;
@@ -175,6 +174,7 @@
 }
 
 .parents-table {
+  background: white;
   width: 100%;
   border-collapse: collapse;
 }

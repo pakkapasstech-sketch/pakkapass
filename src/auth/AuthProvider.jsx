@@ -22,16 +22,7 @@ const getStoredUser = () => {
 
 const getTokenStorage = () =>
   localStorage.getItem(STORAGE_KEYS.rememberMe) === 'true' ? localStorage : sessionStorage;
-const DEMO_USERS = {
-  // parent: {
-  //   email: "parent@demo.com",
-  //   otp: "1234",
-  // },
-  partner: {
-    email: "partner@demo.com",
-    otp: "1234",
-  },
-};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(getStoredUser);
   const [loading, setLoading] = useState(true);
@@ -102,109 +93,17 @@ console.log('Normalized user:', normalized);
     return { ...data, user: userData };
   };
 
-//  const sendOtp = async ({
-//   email,
-//   mobile,
-//   role,
-// }) => {
-//   console.log(
-//     'SEND OTP:',
-//     {
-//       role,
-//       email,
-//       mobile,
-//     }
-//   );
 
-//   if (role === 'parent') {
-//     return authService.sendParentOtp({
-//       email,
-//     });
-//   }
-
-//   if (role === 'partner') {
-//     return authService.sendPartnerOtp({
-//       mobile,
-//     });
-//   }
-
-//   throw new Error(
-//     'Invalid role for OTP'
-//   );
-// };
-
-//   const verifyOtp = async ({
-//   email,
-//   mobile,
-//   otp,
-//   role,
-//   rememberMe = true,
-// }) => {
-//   let data;
-
-//   if (role === 'parent') {
-//     data =
-//       await authService.verifyParentOtp({
-//         email,
-//         otp,
-//       });
-//   } else if (
-//     role === 'partner'
-//   ) {
-//     data =
-//       await authService.verifyPartnerOtp(
-//         {
-//           mobile,
-//           otp,
-//         }
-//       );
-//   } else {
-//     throw new Error(
-//       'Invalid role for OTP'
-//     );
-//   }
-
-//   const userData = {
-//     ...data.user,
-//     role: normalizeRole(
-//       data.user.role
-//     ),
-//   };
-
-//   persistSession(
-//     {
-//       ...data,
-//       user: userData,
-//     },
-//     rememberMe
-//   );
-
-//   return {
-//     ...data,
-//     user: userData,
-//   };
-// };
 const sendOtp = async ({ email, role }) => {
-  const demo = DEMO_USERS[role];
-
-  if (demo && email === demo.email) {
-    console.log("Demo OTP:", demo.otp);
-
-    return {
-      success: true,
-      message: "OTP sent successfully",
-    };
-  }
-
-  if (role === "parent") {
+  if (role === 'parent') {
     return authService.sendParentOtp({ email });
   }
 
-  if (role === "partner") {
+  if (role === 'partner') {
     return authService.sendPartnerOtp({ email });
   }
 
-  throw new Error("Invalid role");
+  throw new Error('Invalid role');
 };
 const verifyOtp = async ({
   email,
@@ -212,38 +111,20 @@ const verifyOtp = async ({
   role,
   rememberMe = true,
 }) => {
-  const demo = DEMO_USERS[role];
-
-  if (demo && email === demo.email && otp === demo.otp) {
-    const data = {
-      accessToken: "demo-access-token",
-      refreshToken: "demo-refresh-token",
-      user: {
-        id: 1,
-        name: role === "parent" ? "Demo Parent" : "Demo Partner",
-        email,
-        role: normalizeRole(role),
-      },
-    };
-
-    persistSession(data, rememberMe);
-    return data;
-  }
-
   let data;
 
-  if (role === "parent") {
+  if (role === 'parent') {
     data = await authService.verifyParentOtp({
       email,
       otp,
     });
-  } else if (role === "partner") {
+  } else if (role === 'partner') {
     data = await authService.verifyPartnerOtp({
       email,
       otp,
     });
   } else {
-    throw new Error("Invalid role");
+    throw new Error('Invalid role');
   }
 
   const userData = {

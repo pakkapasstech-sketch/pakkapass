@@ -1,73 +1,84 @@
-import { HiOutlinePencil, HiOutlineTrash, HiArrowLeft,HiOutlineClipboardCopy } from 'react-icons/hi';
+import {
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiArrowLeft,
+  HiOutlineClipboardCopy,
+} from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 
 import '../../styles/partnerDetails.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  useParams,
-  useNavigate,
-} from
-'react-router-dom';
-
-import partnerService
-from '../../services/partner.service';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useLoading } from '../../contexts/LoadingContext';
+import partnerService from '../../services/partner.service';
 
 const PartnerDetailsPage = () => {
   const navigate = useNavigate();
-const { id } =
-  useParams();
-const copyReferralCode = async () => {
-  try {
-    await navigator.clipboard.writeText(partner.referralCode || '');
-    toast.success('Referral code copied');
-  } catch {
-    toast.error('Failed to copy referral code');
-  }
-};
-const [partner,
-  setPartner] =
-  useState(null);
-
-const [analytics,
-  setAnalytics] =
-  useState(null);useEffect(() => {
-  fetchPartner();
-}, [id]);
-
-const fetchPartner =
-  async () => {
+  const { setLoading } = useLoading();
+  const { id } = useParams();
+  const copyReferralCode = async () => {
     try {
-      const res =
-        await partnerService.getById(
-          id
-        );
+      await navigator.clipboard.writeText(partner.referralCode || '');
+      toast.success('Referral code copied');
+    } catch {
+      toast.error('Failed to copy referral code');
+    }
+  };
+  const [partner, setPartner] = useState(null);
+  const [loading, setPageLoading] = useState(true);
 
-      setPartner(
-        res.partner
-      );
+  const [analytics, setAnalytics] = useState(null);
+  useEffect(() => {
+    fetchPartner();
+  }, [id]);
+  useEffect(() => {
+    return () => setLoading(false);
+  }, [setLoading]);
+  const fetchPartner = async () => {
+    try {
+      setPageLoading(true);
+      setLoading(true);
 
-      setAnalytics(
-        res.analytics
-      );
+      const res = await partnerService.getById(id);
+
+      setPartner(res.partner);
+      setAnalytics(res.analytics);
     } catch (err) {
       console.log(err);
+    } finally {
+      setPageLoading(false);
+      setLoading(false);
     }
-  };if (!partner)
-  return null;
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${partner.organizationName || partner.contactPerson || 'this partner'}?`
+    );
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+      await partnerService.delete(id);
+      toast.success('Partner deleted successfully');
+      navigate('/partners');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete partner');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!partner) return null;
   return (
     <div className="partner-details-page">
       <button className="back-link" onClick={() => navigate(-1)}>
-          <HiArrowLeft />
-          <span>Back to partners</span>
-        </button>
+        <HiArrowLeft />
+        <span>Back to partners</span>
+      </button>
       <div className="details-header">
-        
-
         <div className="header-content">
           <h1>{partner.contactPerson}</h1>
 
@@ -75,14 +86,12 @@ const fetchPartner =
         </div>
 
         <div className="details-actions">
-          <button className="btn-primary" onClick={() => navigate(
-  `/partners/${partner.id}/edit`
-)}>
+          <button className="btn-primary" onClick={() => navigate(`/partners/${partner.id}/edit`)}>
             <HiOutlinePencil />
             Edit
           </button>
 
-          <button className="btn-danger">
+          <button className="btn-danger" onClick={handleDelete}>
             <HiOutlineTrash />
             Delete
           </button>
@@ -138,35 +147,32 @@ const fetchPartner =
           <h3>Referral Details</h3>
 
           <p>
-  <span>Code</span>
+            <span>Code</span>
 
-  <strong
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-    }}
-  >
-    {partner.referralCode}
+            <strong
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              {partner.referralCode}
 
-    <HiOutlineClipboardCopy
-      size={18}
-      style={{
-        cursor: 'pointer',
-        color: '#6653AF',
-      }}
-      title="Copy referral code"
-      onClick={copyReferralCode}
-    />
-  </strong>
-</p>
+              <HiOutlineClipboardCopy
+                size={18}
+                style={{
+                  cursor: 'pointer',
+                  color: '#6653AF',
+                }}
+                title="Copy referral code"
+                onClick={copyReferralCode}
+              />
+            </strong>
+          </p>
           <p>
             <span>Students</span>
 
-            <strong>{
-  analytics?.students
-    ?.totalStudents
-}</strong>
+            <strong>{analytics?.students?.totalStudents}</strong>
           </p>
 
           <p>
@@ -179,10 +185,7 @@ const fetchPartner =
         <div className="detail-card revenue-card">
           <h3>Revenue</h3>
 
-          <h1>₹
-{analytics?.revenue
-  ?.totalRevenue
-  ?.toLocaleString()}</h1>
+          <h1>₹{analytics?.revenue?.totalRevenue?.toLocaleString()}</h1>
         </div>
       </div>
     </div>

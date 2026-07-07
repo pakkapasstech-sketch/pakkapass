@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
-import { HiOutlineChevronLeft, HiOutlineChevronRight,HiOutlineEye } from 'react-icons/hi';
+import { HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlineEye } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/student-table.css';
 
-const StudentTable = ({ students = [], noCard = false, hideInstitution = false }) => {
+const StudentTable = ({
+  students = [],
+  noCard = false,
+  hideInstitution = false,
+  showView = true,
+}) => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +47,7 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
       <table className="student-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>S.No</th>
             <th>Student Name</th>
             <th>Class</th>
             <th>Board</th>
@@ -51,7 +56,7 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
             <th>Subscription Plan</th>
             <th>Status</th>
             <th>Registered On</th>
-            <th>view</th>
+            {showView !== false && <th>View</th>}
           </tr>
         </thead>
 
@@ -60,10 +65,14 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
             currentStudents.map((student, index) => (
               <tr
   key={`${student.id}-${startIndex + index}`}
-  className="clickable-row"
-  onClick={() => navigate(`/students/${student.id}`)}
+  className={showView ? "clickable-row" : ""}
+  onClick={() => {
+    if (showView) {
+      navigate(`/students/${student.id}`);
+    }
+  }}
 >
-                <td>{student.id || '—'}</td>
+                <td>{startIndex + index + 1}</td>
 
                 <td>
                   <div className="student-user">
@@ -86,13 +95,13 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
 
                 <td>{student.board}</td>
 
-                {!hideInstitution && <td>{student.institution}</td>}
+                {!hideInstitution && (
+                  <td className="institute-cell" title={student.institution}>
+                    {student.institution}
+                  </td>
+                )}
 
-                <td>
-                  {student.referralCode ||
-                    student.refCode ||
-                    "Null"}
-                </td>
+                <td>{student.referralCode || student.refCode || 'Null'}</td>
 
                 <td>
                   <span className="plan-badge">{student.plan}</span>
@@ -117,22 +126,23 @@ const StudentTable = ({ students = [], noCard = false, hideInstitution = false }
                     ? new Date(student.createdAt).toLocaleDateString()
                     : student.registeredOn || '—'}
                 </td>
-                
 
-<td>
-  <button
-    className="table-action-btn"
-    onClick={() => navigate(`/students/${student.id}`)}
-    title="View Student"
-  >
-    <HiOutlineEye />
-  </button>
-</td>
+                {showView !== false && (
+                  <td>
+                    <button
+                      className="table-action-btn"
+                      onClick={() => navigate(`/students/${student.id}`)}
+                      title="View Student"
+                    >
+                      <HiOutlineEye />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={hideInstitution ? "9" : "10"} className="empty-table">
+              <td colSpan={hideInstitution ? '9' : '10'} className="empty-table">
                 No students found
               </td>
             </tr>

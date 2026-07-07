@@ -158,11 +158,7 @@ const {
     >
       <HiOutlineBell className="navbar-icon" />
 
-      {unreadCount > 0 && (
-        <span className="navbar-notification-count">
-          {unreadCount}
-        </span>
-      )}
+      
     </button>
 
     {/* Profile */}

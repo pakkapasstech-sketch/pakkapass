@@ -191,61 +191,54 @@ const AddPartnerPage = ({ isEdit = false }) => {
         contactLastName: formData.lastName,
         dateOfBirth: formData.dob,
         gender: formData.gender,
-
         organizationName: formData.organizationName,
-
         institutionType: formData.institutionType,
-
         institutionRegistrationNumber: formData.registrationNumber,
-
         websiteUrl: formData.website,
-
         description: formData.description,
-
         mobile: formData.mobile,
-
         alternateMobile: formData.alternateMobile,
-
         email: formData.email,
-
         alternateEmail: formData.alternateEmail,
-
         addressLine1: formData.address1,
-
         city: formData.city,
-
         district: formData.district,
-
         state: formData.state,
-
         country: formData.country,
-
         pincode: formData.pincode,
-
         status: formData.status,
-
         discountType: formData.discountType === 'Percentage' ? 'Percentage Based' : 'Fixed Amount',
-
         discountValue: Number(formData.discountValue),
-
         couponExpiryDate: formData.couponExpiry,
-
         couponActive: formData.couponStatus,
       };
 
-      if (isEdit) {
-        await partnerService.update(id, payload);
+      const multipartData = new FormData();
+      Object.keys(payload).forEach((key) => {
+        const val = payload[key];
+        if (val !== undefined && val !== null) {
+          multipartData.append(key, val);
+        }
+      });
 
+      if (formData.profilePhoto) {
+        multipartData.append('image', formData.profilePhoto);
+      }
+      if (formData.logo) {
+        multipartData.append('logo', formData.logo);
+      }
+
+      if (isEdit) {
+        await partnerService.update(id, multipartData);
         toast.success('Partner updated successfully');
       } else {
-        await partnerService.create(payload);
-
+        await partnerService.create(multipartData);
         toast.success('Partner created successfully');
       }
 
       navigate('/partners');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create partner');
+      toast.error(err.response?.data?.message || 'Failed to save partner');
     }
   };
 

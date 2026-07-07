@@ -2,68 +2,55 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
 } from 'react';
+import { useAuth } from '../auth/AuthProvider';
+import notificationService from '../services/notificationsService';
 
-const NotificationContext =
-  createContext();
+const NotificationContext = createContext();
 
-const initialNotifications = [
-  {
-    id: 1,
-    title:
-      'Platform Maintenance',
-    message:
-      'Platform maintenance scheduled on Sunday at 2:00 AM.',
-    audience:
-      'All Students',
-    priority:
-      'warning',
-    date:
-      '16 Jul 2025',
-    read: false,
-  },
-  {
-    id: 2,
-    title:
-      'New Physics Videos',
-    message:
-      'New Physics videos have been uploaded for Class 10.',
-    audience:
-      'Class 10',
-    priority:
-      'info',
-    date:
-      '15 Jul 2025',
-    read: true,
-  },
-];
+export const NotificationProvider = ({ children }) => {
+  const [notifications, setNotifications] = useState([]);
+  const { isAuthenticated } = useAuth(); // Assuming useAuth is available or we can just fetch if there's a token
+  
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const { data } = await notificationService.getNotifications();
+        const mapped = data.map((item) => ({
+          ...item,
+          date: new Date(item.createdAt).toLocaleDateString(),
+          read: item.read || false,
+        }));
+        setNotifications(mapped);
+      } catch (err) {
+        console.error('Failed to fetch notifications in context:', err);
+      }
+    };
 
-export const NotificationProvider =
-  ({ children }) => {
-    const [
-      notifications,
-      setNotifications,
-    ] = useState(
-      initialNotifications
-    );
+    // We check if user is authenticated (or just try fetching)
+    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    if (token || isAuthenticated) {
+      fetchNotifications();
+    } else {
+      setNotifications([]);
+    }
+  }, [isAuthenticated]);
 
-    const unreadCount =
-      notifications.filter(
-        (n) => !n.read
-      ).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
-    return (
-      <NotificationContext.Provider
-        value={{
-          notifications,
-          setNotifications,
-          unreadCount,
-        }}
-      >
-        {children}
-      </NotificationContext.Provider>
-    );
-  };
+  return (
+    <NotificationContext.Provider
+      value={{
+        notifications,
+        setNotifications,
+        unreadCount,
+      }}
+    >
+      {children}
+    </NotificationContext.Provider>
+  );
+};
 
 export const useNotifications =
   () =>

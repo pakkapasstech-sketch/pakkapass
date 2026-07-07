@@ -1,5 +1,5 @@
 import { useState,useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import StudentFilters from './StudentFilters';
 import StudentStatsCards from './StudentStatsCards';
@@ -14,9 +14,10 @@ import { PERMISSIONS } from '../../auth/permissions';
 
 import '../../styles/student-management.css';
 import { useLoading } from '../../contexts/LoadingContext';
-import { HiOutlineDownload } from 'react-icons/hi';
+import { HiOutlineDownload, HiOutlineUpload } from 'react-icons/hi';
 import {  exportToExcel } from '../../utils/exportUtils';
 const StudentManagementPage = () => {
+  const navigate = useNavigate();
   const { setLoading } = useLoading();
   const [filters, setFilters] =
     useState({
@@ -61,7 +62,8 @@ const StudentManagementPage = () => {
     student.name,
     student.email,
     student.mobile,
-    student.studentId,
+    // student.id,                    
+    student.profile?.studentId,  
     student.referralCode,
     student.partner?.referralCode,
     student.profile?.partner?.referralCode,
@@ -85,23 +87,23 @@ const StudentManagementPage = () => {
 
         const classMatch =
   !filters.class ||
-  student.class?.trim().toLowerCase() ===
-  filters.class?.trim().toLowerCase();
+  student.profile?.grade?.name?.trim().toLowerCase() ===
+    filters.class.trim().toLowerCase();
 
 const boardMatch =
   !filters.board ||
-  student.board?.trim().toLowerCase() ===
-  filters.board?.trim().toLowerCase();
+  student.profile?.board?.name?.trim().toLowerCase() ===
+    filters.board.trim().toLowerCase();
 
-        const collegeMatch =
+const collegeMatch =
   !filters.college ||
-  student.institution?.trim().toLowerCase() ===
-  filters.college?.trim().toLowerCase();
+  student.profile?.institution?.trim().toLowerCase() ===
+    filters.college.trim().toLowerCase();
 
-        const stateMatch =
+const stateMatch =
   !filters.state ||
-  student.state?.trim().toLowerCase() ===
-  filters.state?.trim().toLowerCase();
+  student.profile?.state?.trim().toLowerCase() ===
+    filters.state.trim().toLowerCase();
 
         const statusMatch =
           !filters.status ||
@@ -185,6 +187,15 @@ const boardMatch =
             <HiOutlineDownload />
             CSV
           </button> */}
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            onClick={() => navigate('/students/import')}
+          >
+            <HiOutlineUpload />
+            Import
+          </button>
           <button
             type="button"
             className="secondary-btn flex items-center gap-2"
