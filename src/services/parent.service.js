@@ -11,6 +11,11 @@ const parentService = {
     return data;
   },
 
+  getTransactions: async () => {
+    const { data } = await axiosInstance.get('/parent/transactions');
+    return data;
+  },
+
   // Admin page
   getAll: async () => {
     const { data } = await axiosInstance.get('/admin/parents');

@@ -155,7 +155,7 @@ const fetchNotifications = async () => {
     const mapped = data.map((item) => ({
       ...item,
       date: new Date(item.createdAt).toLocaleDateString(),
-      read: item.read || false,
+      read: item.read || item.isRead || false,
     }));
 
     setNotifications(mapped);

@@ -58,7 +58,7 @@ const SupportCentrePage = () => {
     setCurrentPage(1);
   }, [search, statusFilter]);
 
-  const filteredTickets = tickets.filter((ticket) => {
+  const filteredTickets = (Array.isArray(tickets) ? tickets : []).filter((ticket) => {
     const searchTerm = search.toLowerCase().trim();
     const matchSearch =
       searchTerm === '' ||
@@ -119,11 +119,11 @@ const SupportCentrePage = () => {
       setActiveTicket((prev) => ({
         ...prev,
         status,
-        adminMessage: adminMessageInput,
+        adminNotes: adminMessageInput,
       }));
 
       setTickets((prev) =>
-        prev.map((ticket) => (ticket.id === activeTicket.id ? { ...ticket, status, adminMessage: adminMessageInput } : ticket))
+        prev.map((ticket) => (ticket.id === activeTicket.id ? { ...ticket, status, adminNotes: adminMessageInput } : ticket))
       );
     } catch (err) {
       console.error(err);
@@ -147,7 +147,8 @@ const SupportCentrePage = () => {
         ? await getSupportTickets() 
         : await getUserSupportTickets(user?.id, user?.role);
 
-      setTickets(data);
+      const ticketsArray = Array.isArray(data) ? data : (data?.data || data?.tickets || data?.supportTickets || []);
+      setTickets(ticketsArray);
     } catch (err) {
       console.log(err);
     } finally {
@@ -302,7 +303,7 @@ const SupportCentrePage = () => {
                         className="clickable-row"
                         onClick={() => { 
                           setActiveTicket(ticket); 
-                          setAdminMessageInput(ticket.adminMessage || ''); 
+                          setAdminMessageInput(ticket.adminNotes || ''); 
                           setAdminStatusInput(ticket.status || 'Pending');
                         }}
                       >
@@ -326,7 +327,7 @@ const SupportCentrePage = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveTicket(ticket);
-                              setAdminMessageInput(ticket.adminMessage || '');
+                              setAdminMessageInput(ticket.adminNotes || '');
                               setAdminStatusInput(ticket.status || 'Pending');
                             }}
                             title="View Ticket"
@@ -448,7 +449,7 @@ const SupportCentrePage = () => {
                 </div>
               </div>
 
-              {activeTicket.adminMessage && !isAdmin && (
+              {activeTicket.adminNotes && !isAdmin && (
                 <div className="ticket-detail-group" style={{ marginTop: '12px' }}>
                   <label className="ticket-detail-label">Resolution Message</label>
                   <div
@@ -463,7 +464,7 @@ const SupportCentrePage = () => {
                       border: '1px solid var(--color-border)',
                     }}
                   >
-                    {activeTicket.adminMessage}
+                    {activeTicket.adminNotes}
                   </div>
                 </div>
               )}

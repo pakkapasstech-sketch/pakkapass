@@ -9,6 +9,7 @@ import {
 
 import '../../styles/TransactionPage.css';
 import studentService from '../../services/student.service';
+import parentService from '../../services/parent.service';
 import { useLoading } from '../../contexts/LoadingContext';
 
 const TransactionPage = () => {
@@ -26,49 +27,36 @@ const TransactionPage = () => {
     const loadAllTransactions = async () => {
       try {
         setLoading(true);
-        const students = await studentService.getParentStudents();
-
-        if (students.length === 0) {
-          setSummary({ totalPaid: 0, totalTransactions: 0, successfulPayments: 0 });
-          setTransactions([]);
-          return;
-        }
-
-        const txPromises = students.map(async (student) => {
-          const data = await studentService.getTransactions(student.id);
+        const data = await parentService.getTransactions();
+        
+        let totalPaid = 0;
+        let totalTransactions = 0;
+        let successfulPayments = 0;
+        
+        const txns = data.transactions || [];
+        
+        const formattedTxns = txns.map(t => {
+          totalPaid += t.amount || 0;
+          totalTransactions += 1;
+          if (t.status === 'Success') successfulPayments += 1;
+          
           return {
-            studentName: student.name,
-            summary: data.summary,
-            transactions: data.transactions.map(t => ({
-              ...t,
-              studentName: student.name // Inject student name into each transaction
-            }))
+            id: t.razorpayPaymentId || t.id,
+            studentName: t.student?.name || 'Unknown',
+            date: t.createdAt,
+            plan: t.plan?.name || '-',
+            amount: t.amount || 0,
+            method: t.paymentMode || 'UPI',
+            status: t.status || 'Success',
           };
         });
-
-        const results = await Promise.all(txPromises);
-
-        let aggTotalPaid = 0;
-        let aggTotalTransactions = 0;
-        let aggSuccessfulPayments = 0;
-        let aggTransactions = [];
-
-        results.forEach(result => {
-          aggTotalPaid += result.summary.totalPaid || 0;
-          aggTotalTransactions += result.summary.totalTransactions || 0;
-          aggSuccessfulPayments += result.summary.successfulPayments || 0;
-          aggTransactions = [...aggTransactions, ...result.transactions];
-        });
-
-        // Optionally sort all transactions by date descending
-        aggTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
+        
         setSummary({
-          totalPaid: aggTotalPaid,
-          totalTransactions: aggTotalTransactions,
-          successfulPayments: aggSuccessfulPayments,
+          totalPaid,
+          totalTransactions,
+          successfulPayments,
         });
-        setTransactions(aggTransactions);
+        setTransactions(formattedTxns);
       } catch (err) {
         console.error(err);
       } finally {

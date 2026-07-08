@@ -5,15 +5,21 @@ export const getSupportTickets = async () => {
 };
 
 export const submitSupportTicket = async (payload, role) => {
-  if (role === 'PARTNER') {
+  if (role?.toUpperCase() === 'PARTNER') {
     return api.post("/partner/support-tickets", payload);
+  }
+  if (role?.toUpperCase() === 'PARENT') {
+    return api.post("/parent/support", payload);
   }
   return api.post("/student/support", payload);
 };
 
 export const getUserSupportTickets = async (studentId, role) => {
-  if (role === 'PARTNER') {
+  if (role?.toUpperCase() === 'PARTNER') {
     return api.get("/partner/support-tickets");
+  }
+  if (role?.toUpperCase() === 'PARENT') {
+    return api.get("/parent/support");
   }
   return api.get("/student/support");
 };

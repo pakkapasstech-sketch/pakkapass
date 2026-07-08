@@ -22,7 +22,7 @@ const logoInputRef = useRef(null);
 
   const loadPartner = async () => {
     try {
-      const data = await partnerService.getById(user.id);
+      const data = await partnerService.getDashboard();
 
 const partnerData = data.partner;
 
@@ -75,9 +75,9 @@ const handleLogo = (e) => {
     toast.success('Referral code copied');
   };
 
- const saveProfile = async () => {
+  const saveProfile = async () => {
   try {
-    const formData = new FormData();
+    const payload = {};
 
     const fields = [
       "contactFirstName",
@@ -104,7 +104,6 @@ const handleLogo = (e) => {
     fields.forEach((field) => {
       const value = partner[field];
 
-      // Skip invalid or empty dates
       if (
         field === "dateOfBirth" &&
         (!value || value === "Invalid date")
@@ -113,31 +112,15 @@ const handleLogo = (e) => {
       }
 
       if (value !== undefined && value !== null) {
-        formData.append(field, value);
+        payload[field] = value;
       }
     });
 
-    if (partner.image) {
-      formData.append("image", partner.image);
-    }
-
-    if (partner.logoFile) {
-      formData.append("logo", partner.logoFile);
-    }
-
-    // Debug
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
-    const response = await partnerService.update(
-      partner.id,
-      formData
-    );
+    const response = await partnerService.updateProfile(payload);
 
     setPartner(response.partner);
 
-    toast.success("Profile updated");
+    toast.success("Profile updated (Note: Images cannot be saved without backend support)");
     setEditing(false);
 
   } catch (err) {

@@ -38,13 +38,33 @@ getAnalytics: async (studentId) => {
 getSubscription: async (studentId) => {
   try {
     const { profile } = await studentService.getProfile(studentId);
+    
+    let startDate = null;
+    let expiryDate = null;
+    let daysLeft = 0;
+    let status = 'Active';
+    
+    if (profile?.plan) {
+      startDate = new Date(profile.updatedAt || profile.createdAt || new Date());
+      expiryDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      daysLeft = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 3600 * 24));
+      if (daysLeft < 0) {
+        daysLeft = 0;
+        status = 'Expired';
+      }
+    }
+
     return {
       currentPlan: profile?.plan ? {
         name: profile.plan.name,
         price: profile.plan.price,
         durationDays: profile.plan.durationDays,
         features: profile.plan.features || [],
-        status: 'Active',
+        status,
+        startDate: startDate?.toISOString(),
+        expiryDate: expiryDate?.toISOString(),
+        daysLeft,
       } : null,
       history: []
     };

@@ -5,10 +5,11 @@ const getBaseUrl = () => {
     const rawUser = localStorage.getItem('authUser') || sessionStorage.getItem('authUser');
     if (rawUser) {
       const user = JSON.parse(rawUser);
-      if (user?.role === 'ADMIN') return '/admin/notifications';
-      if (user?.role === 'PARENT') return '/parent/notifications';
-      if (user?.role === 'PARTNER') return '/partner/notifications';
-      if (user?.role === 'STUDENT' || user?.role === 'student') return `/student/${user.id}/notifications`;
+      const role = user?.role?.toUpperCase();
+      if (role === 'ADMIN') return '/admin/notifications';
+      if (role === 'PARENT') return '/parent/notifications';
+      if (role === 'PARTNER') return '/partner/notifications';
+      if (role === 'STUDENT') return `/student/${user.id}/notifications`;
     }
   } catch (err) {}
   return '/admin/notifications';
@@ -19,10 +20,11 @@ const getReadUrl = () => {
     const rawUser = localStorage.getItem('authUser') || sessionStorage.getItem('authUser');
     if (rawUser) {
       const user = JSON.parse(rawUser);
-      if (user?.role === 'ADMIN') return '/admin/notifications/read';
-      if (user?.role === 'PARTNER') return '/partner/notifications/read';
-      if (user?.role === 'PARENT') return '/parent/notifications/read';
-      if (user?.role === 'STUDENT' || user?.role === 'student') return `/student/${user.id}/notifications/read`;
+      const role = user?.role?.toUpperCase();
+      if (role === 'ADMIN') return '/admin/notifications/read';
+      if (role === 'PARTNER') return '/partner/notifications/read';
+      if (role === 'PARENT') return '/parent/notifications/mark-read';
+      if (role === 'STUDENT') return `/student/${user.id}/notifications/read`;
     }
   } catch (err) {}
   return '/admin/notifications/read';

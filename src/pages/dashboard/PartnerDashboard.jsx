@@ -46,9 +46,22 @@ const PartnerDashboard = () => {
 
   const analytics = dashboard?.analytics || {};
 
-  const recentRegistrations = dashboard?.recentRegistrations || [];
+  const recentRegistrations = (dashboard?.recentStudents || []).map(s => ({
+    id: s.id,
+    name: s.student?.name || 'Unknown',
+    class: s.grade?.name || 'N/A',
+    status: s.plan ? 'Active' : 'Inactive',
+    registeredOn: s.student?.createdAt,
+  }));
 
-  const recentPayments = dashboard?.recentPayments || [];
+  const recentPayments = (dashboard?.recentPayments || []).map(p => ({
+    id: p.id,
+    student: p.student?.name || 'Unknown',
+    plan: p.plan?.name || 'N/A',
+    amount: `₹${p.amount || 0}`,
+    status: p.status || 'Paid',
+    paymentDate: p.createdAt,
+  }));
   const statCards = [
     {
       id: 'total',
@@ -84,15 +97,15 @@ const PartnerDashboard = () => {
       icon: 'commissions',
     },
     {
-      id: 'commission',
-      title: 'Pending Commission',
-      formattedValue: `₹${(analytics?.revenue?.pendingCommission ?? 0).toLocaleString()}`,
-      trend: 4,
-      trendLabel: 'pending',
-      trendUp: false,
+      id: 'monthly_registrations',
+      title: 'Monthly Registrations',
+      formattedValue: String(analytics?.students?.monthlyRegistrations ?? 0),
+      trend: 0,
+      trendLabel: 'registrations',
+      trendUp: true,
       iconBg: 'bg-amber-100',
       iconColor: 'text-amber-600',
-      icon: 'commissions',
+      icon: 'students',
     },
   ];
   return (
@@ -136,27 +149,7 @@ const PartnerDashboard = () => {
         </div>
       </div>
 
-      <div className="partnerdashboard-summary">
-        <div className="partnerdashboard-summary-card">
-          <span>Total Commission Earned</span>
-          <h3>₹{(analytics?.revenue?.totalCommissionEarned ?? 0).toLocaleString()}</h3>
-        </div>
 
-        <div className="partnerdashboard-summary-card">
-          <span>Total Commission Paid</span>
-          <h3>₹{(analytics?.revenue?.totalCommissionPaid ?? 0).toLocaleString()}</h3>
-        </div>
-
-        <div className="partnerdashboard-summary-card">
-          <span>Monthly Registrations</span>
-          <h3>{analytics?.students?.monthlyRegistrations ?? 0}</h3>
-        </div>
-
-        <div className="partnerdashboard-summary-card">
-          <span>Monthly Revenue</span>
-          <h3>₹{(analytics?.revenue?.monthlyRevenue ?? 0).toLocaleString()}</h3>
-        </div>
-      </div>
       <div className="partnerdashboard-dashboard-section">
         {/* Recent Registrations */}
 
