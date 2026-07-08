@@ -334,7 +334,7 @@ const ManageHierarchyTree = ({ options, content, refresh }) => {
 
         return {
           ...node,
-          resourceCount: topicCounts[node.id] || 0,
+          resourceCount: node.type === 'topic' ? (topicCounts[node.id] || 0) : 0,
         };
       });
     };
