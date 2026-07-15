@@ -1,12 +1,12 @@
 import { HiArrowLeft } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
-import {
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
+import { useContentRaw } from '../../hooks/useContent';
 import ManageHierarchyTree from '../../components/content/ManageHierarchyTree';
 import Loader from '../../components/common/Loader';
+import { studentService } from '../../services/student.service';
 
 import './contentHierarchyPage.css';
 
@@ -16,49 +16,21 @@ const ContentHierarchyPage = () => {
     const queryClient =
   useQueryClient();
   const {
-  data: contentData = [],
+  data: contentData,
   isLoading: contentLoading,
-} = useQuery({
-  queryKey: ['content-hierarchy-raw'],
-  queryFn: async () => {
-    const { data } =
-      await axiosInstance.get(
-        '/admin/content'
-      );
-
-    return data.content;
-  },
-  staleTime: 0,
-  refetchOnMount: 'always',
-  refetchOnWindowFocus: true,
-});
+} = useContentRaw();
   const {
     data: options,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: [
-      'content-options',
-    ],
-    queryFn: async () => {
-      const { data } =
-        await axiosInstance.get(
-          '/admin/content/options'
-        );
-
-      return data;
-    },
-    staleTime: 0,
-  refetchOnMount: 'always',
-  refetchOnWindowFocus: true,
-  });
+    isLoading: optionsLoading,
+    isError: optionsError,
+  } = useStudentFilterOptions();
 
 
-  if (isLoading || contentLoading) {
+  if (optionsLoading || contentLoading) {
     return <Loader />;
   }
 
-  if (isError) {
+  if (optionsError) {
     return (
       <div className="content-hierarchy-page">
         Failed to load hierarchy
@@ -69,13 +41,13 @@ const ContentHierarchyPage = () => {
   return (
     <div className="content-hierarchy-page">
       <button
-        className="back-link"
+        className="back-btn"
         onClick={() =>
           navigate(-1)
         }
       >
         <HiArrowLeft />
-        Back to Content
+        <span>Back to Content</span>
       </button>
 
       <div className="hierarchy-header">
@@ -99,23 +71,17 @@ const ContentHierarchyPage = () => {
   options={options}
   content={contentData || []}
   refresh={async () => {
+    studentService.invalidateCache();
     await queryClient.invalidateQueries({
       queryKey: ['content'],
     });
     await queryClient.invalidateQueries({
-      queryKey: ['content-hierarchy-raw'],
+      queryKey: ['content'],
     });
 
     await queryClient.invalidateQueries({
-      queryKey: ['content-options'],
+      queryKey: ['student-filter-options'],
     });
-    await queryClient.refetchQueries({
-  queryKey: ['content-hierarchy-raw'],
-});
-
-await queryClient.refetchQueries({
-  queryKey: ['content-options'],
-});
   }}
 />
       </div>

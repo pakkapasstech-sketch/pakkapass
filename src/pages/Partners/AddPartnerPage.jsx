@@ -7,6 +7,7 @@ import { HiArrowLeft } from 'react-icons/hi';
 import '../../styles/addPartner.css';
 import toast from 'react-hot-toast';
 import partnerService from '../../services/partner.service';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
 
 const steps = ['Personal', 'Organization', 'Contact', 'Partnership', 'Discount', 'Referral'];
 
@@ -52,11 +53,14 @@ const initialState = {
   couponExpiry: '',
 
   couponStatus: true,
+
+  gradeIds: [],
 };
 
 const AddPartnerPage = ({ isEdit = false }) => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { data: filterOptions } = useStudentFilterOptions();
   const [activeStep, setActiveStep] = useState(0);
 
   const [formData, setFormData] = useState(initialState);
@@ -84,7 +88,9 @@ const AddPartnerPage = ({ isEdit = false }) => {
 
         profilePhoto: null,
 
-        logo: null,
+        existingProfilePhoto: partner.profilePhoto || null,
+
+        logo: partner.logo || null,
 
         organizationName: partner.organizationName || '',
 
@@ -129,6 +135,8 @@ const AddPartnerPage = ({ isEdit = false }) => {
         couponExpiry: partner.couponExpiryDate || null,
 
         couponStatus: partner.couponActive ?? true,
+
+        gradeIds: partner.gradeIds || [],
       });
     } catch (err) {
       toast.error('Failed to load partner');
@@ -211,27 +219,39 @@ const AddPartnerPage = ({ isEdit = false }) => {
         discountValue: Number(formData.discountValue),
         couponExpiryDate: formData.couponExpiry,
         couponActive: formData.couponStatus,
+        logo: formData.logo || null,
+        gradeIds: formData.gradeIds || [],
       };
 
-      const multipartData = new FormData();
-      Object.keys(payload).forEach((key) => {
-        const val = payload[key];
-        if (val !== undefined && val !== null) {
-          multipartData.append(key, val);
-        }
-      });
-
-      if (formData.profilePhoto) {
-        multipartData.append('image', formData.profilePhoto);
-      }
-      if (formData.logo) {
-        multipartData.append('logo', formData.logo);
-      }
-
       if (isEdit) {
-        await partnerService.update(id, multipartData);
+        // PUT /partner/:id has no upload middleware, send JSON
+        await partnerService.update(id, payload);
         toast.success('Partner updated successfully');
       } else {
+        // POST /partner has uploadImage middleware, send FormData
+        const multipartData = new FormData();
+        Object.keys(payload).forEach((key) => {
+          if (key === 'gradeIds') return;
+          const val = payload[key];
+          if (val !== undefined && val !== null) {
+            multipartData.append(key, val);
+          }
+        });
+
+        if (Array.isArray(payload.gradeIds)) {
+          payload.gradeIds.forEach((id) => {
+            multipartData.append('gradeIds', Number(id));
+          });
+        }
+
+        if (formData.profilePhoto) {
+          multipartData.append('profilePic', formData.profilePhoto);
+        }
+
+        if (formData.logoFile) {
+          multipartData.append('logo', formData.logoFile);
+        }
+
         await partnerService.create(multipartData);
         toast.success('Partner created successfully');
       }
@@ -278,7 +298,12 @@ const AddPartnerPage = ({ isEdit = false }) => {
         {activeStep === steps.length - 1 ? (
           <ReferralPreview formData={formData} />
         ) : (
-          <PartnerForm step={activeStep} formData={formData} updateField={updateField} />
+          <PartnerForm 
+            step={activeStep} 
+            formData={formData} 
+            updateField={updateField} 
+            grades={filterOptions?.grades || []}
+          />
         )}
 
         <div className="form-actions">

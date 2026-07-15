@@ -9,7 +9,9 @@ import {
 } from 'react-icons/hi';
 
 import '../../styles/student-details.css';
-import { useStudent } from '../../hooks/useStudents';
+import '../../styles/table.css';
+import '../../styles/student-table.css';
+import { useStudent, useStudentFilterOptions } from '../../hooks/useStudents';
 import { useLoading } from '../../contexts/LoadingContext';
 
 import ErrorState from '../../components/loaders/ErrorState';
@@ -27,6 +29,11 @@ const StudentDetailsPage = () => {
   const navigate = useNavigate();
   const { setLoading } = useLoading();
   const { data: student, isLoading, isError, refetch } = useStudent(id);
+  const { data: filterOptions } = useStudentFilterOptions();
+
+  const gradeName = filterOptions?.grades?.find(g => String(g.id) === String(student?.gradeId))?.name || student?.class || 'N/A';
+  const boardName = filterOptions?.boards?.find(b => String(b.id) === String(student?.boardId))?.name || student?.board || 'N/A';
+  const branchName = filterOptions?.branches?.find(br => String(br.id) === String(student?.branchId))?.name || student?.branch || 'N/A';
 
   const [activeTab, setActiveTab] =
     useState('Overview');
@@ -117,7 +124,7 @@ useEffect(() => {
           </p>
 
           <p className="student-class">
-            {student.class} • {student.board}
+            {gradeName} • {boardName}
           </p>
 
           <span
@@ -217,12 +224,17 @@ useEffect(() => {
 
           <div className="info-item">
             <span>Class</span>
-            <strong>{student.class}</strong>
+            <strong>{gradeName}</strong>
           </div>
 
           <div className="info-item">
             <span>Board</span>
-            <strong>{student.board}</strong>
+            <strong>{boardName}</strong>
+          </div>
+
+          <div className="info-item">
+            <span>Branch</span>
+            <strong>{branchName}</strong>
           </div>
 
           <div className="info-item">
@@ -374,7 +386,7 @@ useEffect(() => {
     <section className="student-section">
       <h3>Current Subscription</h3>
 
-      <div className="info-list" style={{ marginBottom: '2rem' }}>
+      <div className="info-list">
         <div className="info-item">
           <span>Current Plan</span>
           <strong>{student.plan} {student.isFreeTrial ? '(Free Trial)' : ''}</strong>
@@ -404,22 +416,6 @@ useEffect(() => {
           <strong>{student.daysLeft} Days</strong>
         </div>
       </div>
-
-      {student.subscriptionHistory?.length > 0 && (
-        <>
-          <h3 style={{ marginTop: '2rem', marginBottom: '1rem' }}>Past Subscriptions</h3>
-          <div className="info-list">
-            {student.subscriptionHistory.map((sub, index) => (
-              <div className="info-item" key={index}>
-                <span>{sub.plan}</span>
-                <strong>
-                  ₹{sub.amount} — {sub.status} — {new Date(sub.date).toLocaleDateString('en-IN')}
-                </strong>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </section>
   )}
 
@@ -428,15 +424,48 @@ useEffect(() => {
       <h3>Payment History</h3>
 
       {student.payments?.length > 0 ? (
-        <div className="info-list">
-          {student.payments.map((payment) => (
-            <div className="info-item" key={payment.id}>
-              <span>{payment.plan?.name || 'Plan'}</span>
-              <strong>
-                ₹{payment.amount} — {payment.paymentMode || 'UPI'} — {payment.status} — {new Date(payment.createdAt).toLocaleDateString('en-IN')}
-              </strong>
-            </div>
-          ))}
+        <div className="student-table-wrapper" style={{ marginTop: '1rem', overflowX: 'auto' }}>
+          <table className="student-table" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Amount Paid</th>
+                <th>Discount Taken</th>
+                <th>Payment Mode</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...student.payments]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map((payment) => {
+                  const discountTaken = payment.plan ? Math.max(0, payment.plan.price - payment.amount) : 0;
+                  return (
+                    <tr key={payment.id}>
+                      <td><strong>{payment.plan?.name || 'Plan'}</strong></td>
+                      <td>₹{Number(payment.amount).toFixed(2)}</td>
+                      <td>₹{Number(discountTaken).toFixed(2)}</td>
+                      <td>{payment.paymentMode || 'UPI'}</td>
+                      <td>
+                        <span
+                          className={`status-badge ${
+                            payment.status === 'Success'
+                              ? 'status-active'
+                              : payment.status === 'Pending'
+                              ? 'status-pending'
+                              : 'status-inactive'
+                          }`}
+                        >
+                          {payment.status}
+                        </span>
+                      </td>
+                      <td>{new Date(payment.createdAt).toLocaleDateString('en-IN')}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
         </div>
       ) : (
         <p>No payment records found.</p>

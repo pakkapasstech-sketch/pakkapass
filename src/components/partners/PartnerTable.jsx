@@ -6,11 +6,13 @@ import {
   HiOutlineEye,
 } from 'react-icons/hi';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+import '../../styles/student-table.css';
 
 
 const PartnerTable = ({
   partners = [],
   onStatusChange,
+  allPayments = [],
 }) => {
   const navigate = useNavigate();
 
@@ -105,11 +107,17 @@ const PartnerTable = ({
                 </td>
 
                 <td>
-                  ₹
-                  {(
-                    partner.analytics?.revenue
-                      ?.totalRevenue ?? 0
-                  ).toLocaleString()}
+                  {(() => {
+                    const partnerPayments = allPayments.filter(
+                      (p) =>
+                        p.partnerId === partner.id ||
+                        p.couponCode === partner.referralCode
+                    );
+                    const totalRevenue = partnerPayments
+                      .filter((p) => p.status === 'Success')
+                      .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+                    return `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                  })()}
                 </td>
 
                 <td
@@ -137,6 +145,8 @@ const PartnerTable = ({
     e.stopPropagation();
     navigate(`/partners/${partner.id}`);
   }}
+  aria-label={`View details for ${partner.contactPerson}`}
+  title="View Partner"
 >
   <HiOutlineEye />
 </button>
@@ -161,6 +171,7 @@ const PartnerTable = ({
               onClick={() =>
                 setCurrentPage((prev) => prev - 1)
               }
+              aria-label="Previous Page"
             >
               <HiOutlineChevronLeft />
             </button>
@@ -174,6 +185,8 @@ const PartnerTable = ({
                     ? 'active-page'
                     : ''
                 }
+                aria-label={`Page ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
               >
                 {page}
               </button>
@@ -184,6 +197,7 @@ const PartnerTable = ({
               onClick={() =>
                 setCurrentPage((prev) => prev + 1)
               }
+              aria-label="Next Page"
             >
               <HiOutlineChevronRight />
             </button>

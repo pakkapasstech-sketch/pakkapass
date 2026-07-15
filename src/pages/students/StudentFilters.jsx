@@ -63,7 +63,7 @@ const StudentFilters = ({
     [field]: value.startsWith('All') ? '' : value,
   };
 
-  console.log("Updated Filters:", updated);
+
 
   setFilters(updated);
   onFilterChange(updated);

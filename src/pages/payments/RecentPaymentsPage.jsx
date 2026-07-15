@@ -12,13 +12,41 @@ import StatisticCard from '../../components/cards/StatisticCard';
 import { useLoading } from '../../contexts/LoadingContext';
 import { useStudents, useStudentFilterOptions } from '../../hooks/useStudents';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
+import { useQuery } from '@tanstack/react-query';
+import { getPlans } from '../../services/SubscriptionServices';
+import { usePartners } from '../../hooks/usePartners';
 
 const RecentPaymentsPage = () => {
   const { setLoading } = useLoading();
   const { data: payments = [], isLoading, isError, refetch } = useRecentPayments();
   const { data: students = [] } = useStudents();
   const { data: filterOptions } = useStudentFilterOptions();
-  console.log(students[0]);
+  const { data: plansData = [] } = useQuery({ queryKey: ['plans'], queryFn: getPlans });
+  const { data: partnersData } = usePartners({ limit: 1000 });
+  const partners = partnersData?.partners || partnersData || [];
+
+  const partnerMap = useMemo(() => {
+    const map = {};
+    if (Array.isArray(partners)) {
+      partners.forEach((p) => {
+        if (p.id) {
+          map[String(p.id)] = p;
+        }
+      });
+    }
+    return map;
+  }, [partners]);
+
+  const planPriceMap = useMemo(() => {
+    const map = {};
+    plansData.forEach((p) => {
+      if (p.name) {
+        map[p.name.trim().toLowerCase()] = p.price;
+      }
+    });
+    return map;
+  }, [plansData]);
+
   const [search, setSearch] = useState('');
 
   const [selectedPlan, setSelectedPlan] = useState('All Plans');
@@ -40,6 +68,16 @@ const RecentPaymentsPage = () => {
         map[student.name.trim().toLowerCase()] = student.id;
       });
 
+    return map;
+  }, [students]);
+
+  const studentMap = useMemo(() => {
+    const map = {};
+    students.forEach((student) => {
+      if (student?.name) {
+        map[student.name.trim().toLowerCase()] = student;
+      }
+    });
     return map;
   }, [students]);
   const filteredPayments = useMemo(() => {
@@ -159,11 +197,32 @@ useEffect(() => {
             }}
             onClick={() => {
               const exportCols = [
-                { header: 'ID', accessor: (r) => r.id },
+                { header: 'Transaction ID', accessor: (r) => r.transactionId || '—' },
                 { header: 'Student', accessor: (r) => r.student },
                 { header: 'Plan', accessor: (r) => r.plan },
-                { header: 'Amount', accessor: (r) => `₹${r.amount}` },
-                { header: 'Referral Code', accessor: (r) => r.referralCode || 'Null' },
+                { header: 'Total Plan Amount', accessor: (r) => `₹${planPriceMap[r.plan?.trim().toLowerCase()] ?? r.amount}` },
+                { header: 'Actual Amount Paid', accessor: (r) => `₹${r.amount}` },
+                { header: 'Discount Value', accessor: (r) => {
+                  const planPrice = planPriceMap[r.plan?.trim().toLowerCase()];
+                  if (planPrice && planPrice > r.amount) {
+                    const sInfo = studentMap[r.student?.trim().toLowerCase()];
+                    const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                    if (partner) {
+                      return partner.discountType === 'Percentage Based' ? `${partner.discountValue}%` : `₹${partner.discountValue}`;
+                    }
+                    return `₹${planPrice - r.amount}`;
+                  }
+                  return '—';
+                }},
+                { header: 'Referral Code', accessor: (r) => {
+                  const planPrice = planPriceMap[r.plan?.trim().toLowerCase()];
+                  if (planPrice && planPrice > r.amount) {
+                    const sInfo = studentMap[r.student?.trim().toLowerCase()];
+                    const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                    return partner?.referralCode || 'Null';
+                  }
+                  return 'Null';
+                }},
                 { header: 'Status', accessor: (r) => r.status },
                 { header: 'Date', accessor: (r) => formatDate(r.date) },
               ];
@@ -240,7 +299,9 @@ useEffect(() => {
                 <th className="student-col-index">ID</th>
                 <th>Student</th>
                 <th>Plan</th>
-                <th>Amount</th>
+                <th>Total Plan Amount</th>
+                <th>Actual Amount Paid</th>
+                <th>Discount Value</th>
                 <th>Referral Code</th>
                 <th>Status</th>
                 <th>Date</th>
@@ -248,42 +309,69 @@ useEffect(() => {
             </thead>
             <tbody>
               {paginatedPayments.length > 0 ? (
-                paginatedPayments.map((payment, index) => (
-                  <tr key={payment.id || index} className="clickable-row" onClick={() => setSelectedPayment(payment)} style={{ cursor: 'pointer' }}>
-                    <td>{studentIdMap[payment.student?.trim().toLowerCase()] ?? '—'}</td>
-                    <td>
-                      <div className="student-user">
-                        <img
-                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(payment.student)}`}
-                          alt={payment.student}
-                          className="student-avatar"
-                        />
-                        <div>
-                          <div className="student-name">{payment.student}</div>
+                paginatedPayments.map((payment, index) => {
+                  const sInfo = studentMap[payment.student?.trim().toLowerCase()];
+                  const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
+                  const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                  const isDiscounted = planPrice ? (planPrice > payment.amount) : !!partner?.referralCode;
+                  const referralCode = isDiscounted ? (partner?.referralCode || 'Null') : 'Null';
+                  
+                  // Calculate discount label
+                  let discountLabel = '—';
+                  if (isDiscounted) {
+                    if (partner) {
+                      if (partner.discountType === 'Percentage Based') {
+                        discountLabel = `${Number(partner.discountValue).toFixed(2)}%`;
+                      } else {
+                        discountLabel = `₹${Number(partner.discountValue).toFixed(2)}`;
+                      }
+                    } else {
+                      discountLabel = `₹${Number(planPrice - payment.amount).toFixed(2)}`;
+                    }
+                  }
+
+                  return (
+                    <tr key={payment.id || index} className="clickable-row" onClick={() => setSelectedPayment(payment)} style={{ cursor: 'pointer' }}>
+                      <td>{studentIdMap[payment.student?.trim().toLowerCase()] ?? '—'}</td>
+                      <td>
+                        <div className="student-user">
+                          <img
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(payment.student)}`}
+                            alt=""
+                            aria-hidden="true"
+                            className="student-avatar"
+                            width="40"
+                            height="40"
+                          />
+                          <div>
+                            <div className="student-name">{payment.student}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="plan-badge">{payment.plan}</span>
-                    </td>
-                    <td>₹{payment.amount}</td>
-                    <td>{payment.referralCode || 'Null'}</td>
-                    <td>
-                      <span
-                        className={`status-badge ${
-                          payment.status === 'Success'
-                            ? 'status-active'
-                            : payment.status === 'Failed'
-                              ? 'status-inactive'
-                              : 'status-pending'
-                        }`}
-                      >
-                        {payment.status}
-                      </span>
-                    </td>
-                    <td>{formatDate(payment.date)}</td>
-                  </tr>
-                ))
+                      </td>
+                      <td>
+                        <span className="plan-badge">{payment.plan}</span>
+                      </td>
+                      <td>₹{Number(planPriceMap[payment.plan?.trim().toLowerCase()] ?? payment.amount).toFixed(2)}</td>
+                      <td>₹{Number(payment.amount).toFixed(2)}</td>
+                      <td>{discountLabel}</td>
+                      <td>{referralCode}</td>
+                      <td>
+                        <span
+                          className={`status-badge ${
+                            payment.status === 'Success'
+                              ? 'status-active'
+                              : payment.status === 'Failed'
+                                ? 'status-inactive'
+                                : 'status-pending'
+                          }`}
+                        >
+                          {payment.status}
+                        </span>
+                      </td>
+                      <td>{formatDate(payment.date)}</td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="8" className="empty-table">
@@ -306,6 +394,7 @@ useEffect(() => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => prev - 1)}
+                aria-label="Previous Page"
               >
                 <HiOutlineChevronLeft />
               </button>
@@ -315,6 +404,8 @@ useEffect(() => {
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={currentPage === page ? 'active-page' : ''}
+                  aria-label={`Page ${page}`}
+                  aria-current={currentPage === page ? 'page' : undefined}
                 >
                   {page}
                 </button>
@@ -323,6 +414,7 @@ useEffect(() => {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => prev + 1)}
+                aria-label="Next Page"
               >
                 <HiOutlineChevronRight />
               </button>
@@ -345,6 +437,7 @@ useEffect(() => {
                   type="button"
                   className="payment-modal-close"
                   onClick={() => setSelectedPayment(null)}
+                  aria-label="Close modal"
                 >
                   &times;
                 </button>
@@ -352,6 +445,10 @@ useEffect(() => {
 
               <div className="payment-modal-body">
                 <div className="detail-grid">
+                  <div className="detail-item">
+                    <label>Transaction ID</label>
+                    <span>{selectedPayment.transactionId || '—'}</span>
+                  </div>
                   <div className="detail-item">
                     <label>Student ID</label>
                     <span>{studentInfo?.id || '—'}</span>
@@ -383,13 +480,36 @@ useEffect(() => {
                     <span>{selectedPayment.plan}</span>
                   </div>
                   <div className="detail-item">
-                    <label>Amount Paid</label>
-                    <strong>₹{selectedPayment.amount}</strong>
+                    <label>Total Plan Amount</label>
+                    <span>₹{Number(planPriceMap[selectedPayment.plan?.trim().toLowerCase()] ?? selectedPayment.amount).toFixed(2)}</span>
                   </div>
                   <div className="detail-item">
-                    <label>Referral Code</label>
-                    <span>{selectedPayment.referralCode || 'Null'}</span>
+                    <label>Actual Amount Paid</label>
+                    <strong>₹{Number(selectedPayment.amount).toFixed(2)}</strong>
                   </div>
+                  {(() => {
+                    const planPrice = planPriceMap[selectedPayment.plan?.trim().toLowerCase()];
+                    const partner = studentInfo?.profile?.partnerId ? partnerMap[String(studentInfo.profile.partnerId)] : null;
+                    const isDiscounted = planPrice ? (planPrice > selectedPayment.amount) : !!partner?.referralCode;
+                    if (!isDiscounted || !partner?.referralCode) return null;
+                    return (
+                      <>
+                        <div className="detail-item">
+                          <label>Discount Value</label>
+                          <span>{(() => {
+                            if (partner) {
+                              return partner.discountType === 'Percentage Based' ? `${Number(partner.discountValue).toFixed(2)}%` : `₹${Number(partner.discountValue).toFixed(2)}`;
+                            }
+                            return `₹${Number(planPrice - selectedPayment.amount).toFixed(2)}`;
+                          })()}</span>
+                        </div>
+                        <div className="detail-item">
+                          <label>Referral Code</label>
+                          <span>{partner.referralCode}</span>
+                        </div>
+                      </>
+                    );
+                  })()}
                   <div className="detail-item">
                     <label>Payment Status</label>
                     <span className={`status-badge ${

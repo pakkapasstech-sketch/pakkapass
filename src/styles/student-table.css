@@ -55,6 +55,7 @@
   font-size: 13px;
   font-weight: 600;
   color: #64748b;
+  white-space: nowrap;
 }
 
 /* ==========================================
@@ -66,6 +67,7 @@
   border-top: 1px solid #f1f5f9;
   font-size: 14px;
   color: #334155;
+  white-space: nowrap;
 }
 
 .institute-cell {
@@ -98,12 +100,17 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .student-name {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text-primary);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  min-width: 100px;
 }
 
 /* ==========================================
@@ -114,7 +121,7 @@
   padding: 6px 12px;
   border-radius: 9999px;
   background: #eff6ff;
-  color: #2563eb;
+  color: #1e40af;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -239,13 +246,13 @@
   font-size: 13px;
 }
 
-.pagination-buttons {
+.pagination .pagination-buttons {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.pagination-buttons button {
+.pagination .pagination-buttons button {
   width: 34px;
   height: 34px;
 
@@ -270,7 +277,7 @@
   transition: all 0.2s ease;
 }
 
-.pagination-buttons button:hover:not(:disabled) {
+.pagination .pagination-buttons button:hover:not(:disabled) {
   background:
     rgba(99, 102, 241, 0.08);
 
@@ -278,7 +285,7 @@
     var(--color-primary);
 }
 
-.pagination-buttons button.active-page {
+.pagination .pagination-buttons button.active-page {
   background:
     var(--color-primary);
 
@@ -288,7 +295,7 @@
   color: #fff;
 }
 
-.pagination-buttons button:disabled {
+.pagination .pagination-buttons button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -341,7 +348,7 @@
     align-items: flex-start;
   }
 
-  .pagination-buttons {
+  .pagination .pagination-buttons {
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;

@@ -13,6 +13,25 @@
   background: var(--color-main-bg);;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px 0;
+  width: fit-content;
+  transition: transform 0.2s ease;
+}
+
+.back-link:hover {
+  transform: translateX(-4px);
+}
+
 /* ================= HEADER ================= */
 
 .details-header {

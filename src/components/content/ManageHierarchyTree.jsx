@@ -302,7 +302,7 @@ const ManageHierarchyTree = ({ options, content, refresh }) => {
       });
     });
 
-    console.log('TOPIC COUNTS', topicCounts);
+
 
     const addCounts = (nodes) => {
       return nodes.map((node) => {

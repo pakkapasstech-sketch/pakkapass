@@ -19,6 +19,24 @@
   flex-wrap: wrap;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: transform 0.2s ease;
+}
+
+.back-link:hover {
+  transform: translateX(-4px);
+}
+
 .page-badge {
   display: inline-flex;
   align-items: center;
@@ -190,6 +208,36 @@
   border-color: #4f46e5;
   box-shadow: 0 0 0 4px
     rgba(79, 70, 229, 0.1);
+}
+
+/* ================= DATE INPUTS ================= */
+
+.partner-form-group input[type="date"] {
+  position: relative;
+  font-family: inherit;
+  color: #111827;
+  padding-right: 52px; /* Leave space for premium icon button */
+  cursor: pointer;
+}
+
+.partner-form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 10px;
+  background-color: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  filter: invert(33%) sepia(85%) saturate(1142%) hue-rotate(224deg) brightness(93%) contrast(92%); /* Indigo #4f46e5 tint */
+}
+
+.partner-form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(79, 70, 229, 0.15);
+  border-color: rgba(79, 70, 229, 0.3);
+  transform: translateY(-50%) scale(1.05);
 }
 
 /* ================= FILE INPUTS ================= */

@@ -16,10 +16,12 @@ import {
 import '../../styles/student-table.css';
 import '../../styles/ParentsManagement.css';
 import partnerService from '../../services/partner.service';
+import { useLoading } from '../../contexts/LoadingContext';
 
 
 
 const PartnerPaymentsPage = () => {
+  const { setLoading } = useLoading();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [planFilter, setPlanFilter] = useState('');
@@ -42,17 +44,20 @@ const [summary, setSummary] = useState({
   useEffect(() => {
   const loadPayments = async () => {
     try {
+      setLoading(true);
       const data = await partnerService.getPayments();
 
       setPayments(data.payments || []);
       setSummary(data.summary || {});
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   loadPayments();
-}, []);
+}, [setLoading]);
   useEffect(() => {
     setCurrentPage(1);
   }, [search, statusFilter, planFilter]);

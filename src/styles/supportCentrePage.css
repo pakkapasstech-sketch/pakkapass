@@ -165,14 +165,20 @@
   font-weight: 600;
 }
 
-.ticket-status.open {
-  background: #fee2e2;
-  color: #dc2626;
+.ticket-status.open,
+.ticket-status.pending {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .ticket-status.resolved {
   background: #dcfce7;
-  color: #16a34a;
+  color: #166534;
+}
+
+.ticket-status.rejected {
+  background: #fee2e2;
+  color: #991b1b;
 }
 .ticket-detail-group .common-dropdown {
   width: 180px;

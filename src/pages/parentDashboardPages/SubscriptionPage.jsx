@@ -148,55 +148,6 @@ const SubscriptionPage = () => {
                 </div>
               </div>
 
-              <div className="subscription-card">
-                <h3>Subscription History</h3>
-                <table className="subscription-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Plan</th>
-                      <th>Purchased</th>
-                      <th>Expiry</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(subscription?.history || []).map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.plan}</td>
-                        <td>
-                          {new Date(item.purchasedOn).toLocaleDateString()}
-                        </td>
-                        <td>
-                          {new Date(item.expiryDate).toLocaleDateString()}
-                        </td>
-                        <td>₹{item.amount}</td>
-                        <td>
-                          <span
-                            className={`subscription-badge ${
-                              item.status === 'Success'
-                                ? 'active'
-                                : 'expired'
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                    {(!subscription?.history || subscription.history.length === 0) && (
-                      <tr>
-                        <td colSpan="6" style={{ textAlign: 'center', padding: '16px', color: '#888' }}>
-                          No subscription history found.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
             </div>
           );
         })

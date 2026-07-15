@@ -2,6 +2,7 @@ import StatisticCard from '../cards/StatisticCard';
 
 const PartnerStats = ({
   partners,
+  allPayments = [],
 }) => {
   const total =
     partners.length;
@@ -22,15 +23,17 @@ const PartnerStats = ({
     0
   );
 
-const revenue =
-  partners.reduce(
-    (sum, p) =>
-      sum +
-      (Number(
-        p.analytics?.revenue?.totalRevenue
-      ) || 0),
-    0
-  );
+  const revenue = partners.reduce((sum, partner) => {
+    const partnerPayments = allPayments.filter(
+      (p) =>
+        p.partnerId === partner.id ||
+        p.couponCode === partner.referralCode
+    );
+    const totalRevenue = partnerPayments
+      .filter((p) => p.status === 'Success')
+      .reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+    return sum + totalRevenue;
+  }, 0);
 
   const cards = [
     {

@@ -41,11 +41,12 @@ const TransactionPage = () => {
           if (t.status === 'Success') successfulPayments += 1;
           
           return {
-            id: t.razorpayPaymentId || t.id,
+            id: t.transactionId || t.id,
             studentName: t.student?.name || 'Unknown',
             date: t.createdAt,
             plan: t.plan?.name || '-',
             amount: t.amount || 0,
+            discountAmount: t.discountAmount || 0,
             method: t.paymentMode || 'UPI',
             status: t.status || 'Success',
           };
@@ -69,14 +70,11 @@ const TransactionPage = () => {
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      const value = search.toLowerCase();
-
+      const query = search.toLowerCase();
       return (
-        String(t.id).toLowerCase().includes(value) ||
-        t.studentName?.toLowerCase().includes(value) ||
-        t.plan?.toLowerCase().includes(value) ||
-        t.method?.toLowerCase().includes(value) ||
-        t.status?.toLowerCase().includes(value)
+        t.studentName.toLowerCase().includes(query) ||
+        t.id.toLowerCase().includes(query) ||
+        t.plan.toLowerCase().includes(query)
       );
     });
   }, [transactions, search]);
@@ -86,25 +84,22 @@ const TransactionPage = () => {
       <div className="transaction-header">
         <div>
           <h2>Transactions</h2>
-          <p>View all payment history for your children.</p>
+          <p>View your billing and payment history.</p>
         </div>
       </div>
 
       <div className="transaction-stats">
         <div className="transaction-stat-card">
-          <HiOutlineCurrencyRupee />
-          <span>Total Paid</span>
-          <h3>₹{summary.totalPaid}</h3>
+          <span className="stat-label">Total Spent</span>
+          <h3 className="stat-value">₹{summary.totalPaid.toLocaleString()}</h3>
         </div>
 
         <div className="transaction-stat-card">
-          <HiOutlineReceiptTax />
           <span>Total Transactions</span>
           <h3>{summary.totalTransactions}</h3>
         </div>
 
         <div className="transaction-stat-card">
-          <HiOutlineCheckCircle />
           <span>Successful Payments</span>
           <h3>{summary.successfulPayments}</h3>
         </div>
@@ -113,7 +108,7 @@ const TransactionPage = () => {
       <div className="transaction-table-card">
         <div className="transaction-toolbar">
           <div className="transaction-search">
-            <HiOutlineSearch />
+            <HiOutlineSearch className="txn-search-icon" />
             <input
               type="text"
               value={search}
@@ -131,7 +126,8 @@ const TransactionPage = () => {
                 <th>Transaction ID</th>
                 <th>Date</th>
                 <th>Plan</th>
-                <th>Amount</th>
+                <th>Discount Amount</th>
+                <th>Paid Amount</th>
                 <th>Payment Method</th>
                 <th>Status</th>
               </tr>
@@ -148,7 +144,8 @@ const TransactionPage = () => {
                     {new Date(transaction.date).toLocaleDateString()}
                   </td>
                   <td>{transaction.plan}</td>
-                  <td>₹{transaction.amount}</td>
+                  <td>₹{(transaction.discountAmount || 0).toLocaleString()}</td>
+                  <td>₹{(transaction.amount || 0).toLocaleString()}</td>
                   <td>{transaction.method}</td>
                   <td>
                     <span
@@ -165,7 +162,7 @@ const TransactionPage = () => {
               ))}
               {filteredTransactions.length === 0 && (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '16px', color: '#888' }}>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '16px', color: '#888' }}>
                     No transactions found.
                   </td>
                 </tr>

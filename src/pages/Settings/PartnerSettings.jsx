@@ -13,7 +13,7 @@ const PartnerSettings = () => {
 
   const [partner, setPartner] = useState(null);
 
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const profileInputRef = useRef(null);
 const logoInputRef = useRef(null);
   useEffect(() => {
@@ -60,9 +60,7 @@ const handleProfilePhoto = (e) => {
 
 const handleLogo = (e) => {
   const file = e.target.files[0];
-
   if (!file) return;
-
   setPartner((prev) => ({
     ...prev,
     logoFile: file,
@@ -77,7 +75,7 @@ const handleLogo = (e) => {
 
   const saveProfile = async () => {
   try {
-    const payload = {};
+    const formData = new FormData();
 
     const fields = [
       "contactFirstName",
@@ -112,15 +110,36 @@ const handleLogo = (e) => {
       }
 
       if (value !== undefined && value !== null) {
-        payload[field] = value;
+        formData.append(field, value);
       }
     });
 
-    const response = await partnerService.updateProfile(payload);
+    // Logo is a URL string or file upload
+    if (partner.logoFile) {
+      formData.append('logo', partner.logoFile);
+    } else if (typeof partner.logo === 'string' && partner.logo) {
+      formData.append('logo', partner.logo);
+    }
+
+    // Profile photo file
+    if (partner.image) {
+      formData.append('profilePic', partner.image);
+    }
+
+    const response = await partnerService.updateProfile(formData);
 
     setPartner(response.partner);
 
-    toast.success("Profile updated (Note: Images cannot be saved without backend support)");
+    // Update AuthProvider user state to refresh avatar immediately
+    if (updateUser && response.partner?.profilePhoto) {
+      updateUser({
+        ...user,
+        profilePic: response.partner.profilePhoto,
+        name: response.partner.contactPerson || user.name,
+      });
+    }
+
+    toast.success("Profile updated successfully");
     setEditing(false);
 
   } catch (err) {
@@ -164,36 +183,51 @@ const handleLogo = (e) => {
 
 </div>
 
-          <div className="logo-section">
-
-  <label>Organization Logo</label>
-
-  <img
-    src={partner.logo || "/default-logo.png"}
-    alt=""
-    className="organization-logo"
-  />
-
-  {editing && (
-    <>
-      <button
-        className="change-logo-btn"
-        onClick={() => logoInputRef.current.click()}
-      >
-        Change Logo
-      </button>
-
-      <input
-        ref={logoInputRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={handleLogo}
-      />
-    </>
-  )}
-
-</div>
+          <div className="logo-section" style={{ position: 'relative' }}>
+            <label>Organization Logo</label>
+            <div className="logo-display-wrapper" style={{ position: 'relative', width: 'fit-content' }}>
+              <img
+                src={partner.logo || "/default-logo.png"}
+                alt=""
+                className="organization-logo"
+                onError={(e) => { e.target.src = '/default-logo.png'; }}
+              />
+              {editing && (
+                <>
+                  <button
+                    className="photo-edit-btn"
+                    onClick={() => logoInputRef.current.click()}
+                    style={{
+                      position: 'absolute',
+                      bottom: '0',
+                      right: '0',
+                      background: 'var(--color-primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      padding: '6px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '28px',
+                      height: '28px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    <HiOutlinePencil style={{ width: '14px', height: '14px' }} />
+                  </button>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleLogo}
+                  />
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         <div>

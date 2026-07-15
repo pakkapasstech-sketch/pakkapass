@@ -18,16 +18,27 @@ import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 import axiosInstance from '../../api/axiosInstance';
 import toast from 'react-hot-toast';
 import { useNotifications } from '../../contexts/NotificationContext';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { usePartners } from '../../hooks/usePartners';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const NotificationsPage = () => {
+  const { setLoading } = useLoading();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const { notifications, setNotifications } = useNotifications();
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [notificationToDelete, setNotificationToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [partners, setPartners] = useState([]);
-  const [options, setOptions] = useState({ grades: [], boards: [], branches: [] });
+  const queryClient = useQueryClient();
+  const { data: optionsData } = useStudentFilterOptions();
+  const options = optionsData || { grades: [], boards: [], branches: [] };
+  const { data: partnersData } = usePartners({ limit: 1000 }, { enabled: isAdmin });
+  const partners = partnersData?.partners || [];
+
   const [form, setForm] = useState({
     title: '',
     message: '',
@@ -66,9 +77,9 @@ const NotificationsPage = () => {
       branchId: form.branchId ? parseInt(form.branchId) : null,
     };
     
-    console.log('Sending Form Payload:', payload);
+
     await notificationService.createNotification(payload);
-    await fetchNotifications();
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
     setForm({
       title: '',
@@ -117,9 +128,7 @@ const handleSelectNotification = async (notification) => {
   }
 };
 
-  const { user } = useAuth();
 
-const isAdmin = user?.role === 'ADMIN';
   const deleteNotification = async (id) => {
   try {
     await notificationService.deleteNotification(id);
@@ -131,39 +140,28 @@ const isAdmin = user?.role === 'ADMIN';
     console.error(err);
   }
 };
-    useEffect(() => {
-  fetchNotifications();
-  if (isAdmin) {
-    axiosInstance.get('/partner?limit=1000')
-      .then((res) => {
-        setPartners(res.data?.partners || []);
-      })
-      .catch((err) => console.error('Failed to load partners:', err));
+  const { data: notificationsData, isSuccess, isLoading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => {
+      const { data } = await notificationService.getNotifications();
+      return data.map((item) => ({
+        ...item,
+        date: new Date(item.createdAt).toLocaleDateString(),
+        read: item.read || item.isRead || false,
+      }));
+    }
+  });
 
-    axiosInstance.get('/admin/content/options')
-      .then((res) => {
-        setOptions(res.data || { grades: [], boards: [], branches: [] });
-      })
-      .catch((err) => console.error('Failed to load options:', err));
-  }
-}, [isAdmin]);
+  useEffect(() => {
+    if (isSuccess && notificationsData) {
+      setNotifications(notificationsData);
+    }
+  }, [isSuccess, notificationsData, setNotifications]);
 
-const fetchNotifications = async () => {
-  try {
-    const { data } = await notificationService.getNotifications();
-
-    const mapped = data.map((item) => ({
-      ...item,
-      date: new Date(item.createdAt).toLocaleDateString(),
-      read: item.read || item.isRead || false,
-    }));
-
-    setNotifications(mapped);
-  } catch (err) {
-    console.error(err);
-  }
-};
-
+  useEffect(() => {
+    setLoading(isLoading);
+    return () => setLoading(false);
+  }, [isLoading, setLoading]);
   const filteredBoards = form.gradeId
     ? (options.boards || []).filter((b) => !b.gradeId || Number(b.gradeId) === Number(form.gradeId))
     : (options.boards || []);
@@ -210,7 +208,7 @@ const fetchNotifications = async () => {
         </div>
 
         <div className="notification-actions">
-          <button className="notification-btn">
+          <button className="notification-btn" aria-label="Notifications">
             <HiOutlineBell />
 
             {unreadCount >
@@ -363,6 +361,7 @@ const fetchNotifications = async () => {
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((prev) => prev - 1)}
+                  aria-label="Previous Page"
                 >
                   <HiOutlineChevronLeft />
                 </button>
@@ -372,6 +371,8 @@ const fetchNotifications = async () => {
                     key={page}
                     onClick={() => setCurrentPage(page)}
                     className={currentPage === page ? 'active-page' : ''}
+                    aria-label={`Page ${page}`}
+                    aria-current={currentPage === page ? 'page' : undefined}
                   >
                     {page}
                   </button>
@@ -380,6 +381,7 @@ const fetchNotifications = async () => {
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((prev) => prev + 1)}
+                  aria-label="Next Page"
                 >
                   <HiOutlineChevronRight />
                 </button>
@@ -809,6 +811,7 @@ const fetchNotifications = async () => {
         <button
           className="notification-modal-close"
           onClick={() => setNotificationToDelete(null)}
+          aria-label="Close modal"
         >
           <HiOutlineX />
         </button>

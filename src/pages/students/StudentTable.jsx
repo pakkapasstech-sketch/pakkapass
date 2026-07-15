@@ -2,14 +2,19 @@ import { useState, useEffect } from 'react';
 import { HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlineEye } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/student-table.css';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
 
 const StudentTable = ({
   students = [],
   noCard = false,
   hideInstitution = false,
+  hideBranch = false,
   showView = true,
+  partnerMap = {},
 }) => {
   const navigate = useNavigate();
+  const { data: optionsData } = useStudentFilterOptions();
+  const branches = optionsData?.branches || [];
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -51,6 +56,7 @@ const StudentTable = ({
             <th>Student Name</th>
             <th>Class</th>
             <th>Board</th>
+            {!hideBranch && <th>Branch</th>}
             {!hideInstitution && <th>Institution</th>}
             <th>REFCODE</th>
             <th>Subscription Plan</th>
@@ -62,46 +68,57 @@ const StudentTable = ({
 
         <tbody>
           {currentStudents.length > 0 ? (
-            currentStudents.map((student, index) => (
-              <tr
-  key={`${student.id}-${startIndex + index}`}
-  className={showView ? "clickable-row" : ""}
-  onClick={() => {
-    if (showView) {
-      navigate(`/students/${student.id}`);
-    }
-  }}
->
-                <td>{startIndex + index + 1}</td>
+            currentStudents.map((student, index) => {
+              const partnerVal = student.profile?.partnerId ? partnerMap[String(student.profile.partnerId)] : null;
+              const partnerCode = typeof partnerVal === 'object' && partnerVal !== null ? partnerVal?.referralCode : partnerVal;
+              return (
+                <tr
+                  key={`${student.id}-${startIndex + index}`}
+                  className={showView ? "clickable-row" : ""}
+                  onClick={() => {
+                    if (showView) {
+                      navigate(`/students/${student.id}`);
+                    }
+                  }}
+                >
+                  <td>{startIndex + index + 1}</td>
 
-                <td>
-                  <div className="student-user">
-                    <img
-                      src={
-                        student.photo ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`
-                      }
-                      alt={student.name}
-                      className="student-avatar"
-                    />
+                  <td>
+                    <div className="student-user">
+                        <img
+                          src={
+                            student.photo ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`
+                          }
+                          alt={`${student.name}'s profile`}
+                          className="student-avatar"
+                          width="40"
+                          height="40"
+                        />
 
-                    <div>
-                      <div className="student-name">{student.name}</div>
+                      <div>
+                        <div className="student-name">{student.name}</div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-
-                <td>{student.class}</td>
-
-                <td>{student.board}</td>
-
-                {!hideInstitution && (
-                  <td className="institute-cell" title={student.institution}>
-                    {student.institution}
                   </td>
-                )}
 
-                <td>{student.referralCode || student.refCode || 'Null'}</td>
+                  <td>{student.class}</td>
+
+                  <td>{student.board}</td>
+
+                  {!hideBranch && (
+                    <td>
+                      {branches.find(b => String(b.id) === String(student.profile?.branchId || student.branchId))?.name || student.branch || 'N/A'}
+                    </td>
+                  )}
+
+                  {!hideInstitution && (
+                    <td className="institute-cell" title={student.institution}>
+                      {student.institution}
+                    </td>
+                  )}
+
+                  <td>{student.referralCode || partnerCode || student.refCode || 'Null'}</td>
 
                 <td>
                   <span className="plan-badge">{student.plan}</span>
@@ -122,9 +139,15 @@ const StudentTable = ({
                 </td>
 
                 <td>
-                  {student.createdAt
-                    ? new Date(student.createdAt).toLocaleDateString()
-                    : student.registeredOn || '—'}
+                  {(() => {
+                    const dateVal = student.createdAt || student.registeredOn;
+                    if (!dateVal) return '—';
+                    const parsedDate = new Date(dateVal);
+                    if (!isNaN(parsedDate.getTime())) {
+                      return parsedDate.toLocaleDateString();
+                    }
+                    return dateVal;
+                  })()}
                 </td>
 
                 {showView !== false && (
@@ -133,16 +156,18 @@ const StudentTable = ({
                       className="table-action-btn"
                       onClick={() => navigate(`/students/${student.id}`)}
                       title="View Student"
+                      aria-label={`View details for ${student.name}`}
                     >
                       <HiOutlineEye />
                     </button>
                   </td>
                 )}
               </tr>
-            ))
+            );
+          })
           ) : (
             <tr>
-              <td colSpan={hideInstitution ? '9' : '10'} className="empty-table">
+              <td colSpan={(hideInstitution ? 9 : 10) + (showView !== false ? 1 : 0) + 1 - (hideBranch ? 1 : 0)} className="empty-table">
                 No students found
               </td>
             </tr>
@@ -168,7 +193,7 @@ const StudentTable = ({
           </p>
 
           <div className="pagination-buttons">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => prev - 1)}>
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => prev - 1)} aria-label="Previous Page">
               <HiOutlineChevronLeft />
             </button>
 
@@ -177,6 +202,8 @@ const StudentTable = ({
                 key={page}
                 onClick={() => setCurrentPage(page)}
                 className={currentPage === page ? 'active-page' : ''}
+                aria-label={`Page ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
               >
                 {page}
               </button>
@@ -185,6 +212,7 @@ const StudentTable = ({
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((prev) => prev + 1)}
+              aria-label="Next Page"
             >
               <HiOutlineChevronRight />
             </button>

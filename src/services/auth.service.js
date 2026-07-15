@@ -2,7 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 
 export const authService = {
   loginAdmin: async ({ email, password }) => {
-  console.log('Sending:', { email, password });
+
 
   const { data } = await axiosInstance.post(
     '/admin/login',

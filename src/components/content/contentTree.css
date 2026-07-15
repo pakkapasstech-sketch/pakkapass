@@ -378,3 +378,18 @@
 [data-theme='dark'] .content-tree::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.45);
 }
+
+/* ==========================================
+   EMPTY STATE PLACEHOLDER
+   ========================================== */
+
+.tree-empty {
+  padding: 24px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.dark .tree-empty,
+[data-theme='dark'] .tree-empty {
+  color: var(--color-text-muted);
+}

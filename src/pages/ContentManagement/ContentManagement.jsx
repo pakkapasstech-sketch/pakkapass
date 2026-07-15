@@ -9,11 +9,11 @@ import UploadContentModal from '../../components/content/UploadContentModal';
 //import LoadingSkeleton from '../../components/loaders/LoadingSkeleton';
 import ErrorState from '../../components/loaders/ErrorState';
 import { useContent } from '../../hooks/useContent';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
 import { contentService } from '../../services/content.service';
 import { buildHierarchy } from '../../utils/buildHierarchy';
+import { studentService } from '../../services/student.service';
 import './contentManagement.css';
-import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '../../api/axiosInstance';
 import { HiCloudArrowUp } from 'react-icons/hi2';
 import { useLoading } from '../../contexts/LoadingContext';
 const ContentManagement = () => {
@@ -43,31 +43,47 @@ const ContentManagement = () => {
   // Fetch content from GET /admin/content instead of hardcoded mock data
   const { data: content = [], isLoading, isError, refetch } = useContent();
 
-  const {
-    data: options = {
+  const { data: optionsData } = useStudentFilterOptions();
+  const options = optionsData || {
       grades: [],
       boards: [],
       branches: [],
       subjects: [],
-    },
-  } = useQuery({
-    queryKey: ['content-options'],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get('/admin/content/options');
-
-      return data;
-    },
-  });
+    };
   const hierarchy = useMemo(() => buildHierarchy(content), [content]); // useEffect(() => {
   //   if (selectedFilters.contentType) {
   //     setActiveTab(selectedFilters.contentType);
   //   }
   // }, [selectedFilters.contentType]);
+  // Sync dropdown to tabs
   useEffect(() => {
-    if (selectedFilters.contentType && selectedFilters.contentType !== 'paper') {
-      setActiveTab(selectedFilters.contentType);
+    if (selectedFilters.contentType) {
+      if (selectedFilters.contentType !== 'paper' && selectedFilters.contentType !== activeTab) {
+        setActiveTab(selectedFilters.contentType);
+      }
+    } else if (activeTab !== 'all') {
+      setActiveTab('all');
     }
   }, [selectedFilters.contentType]);
+
+  // Sync tabs to dropdown
+  useEffect(() => {
+    if (activeTab === 'all') {
+      if (selectedFilters.contentType !== '') {
+        setSelectedFilters((prev) => ({
+          ...prev,
+          contentType: '',
+        }));
+      }
+    } else {
+      if (selectedFilters.contentType !== activeTab) {
+        setSelectedFilters((prev) => ({
+          ...prev,
+          contentType: activeTab,
+        }));
+      }
+    }
+  }, [activeTab]);
 
   const handleUpload = async (uploadData) => {
     try {
@@ -112,12 +128,17 @@ const ContentManagement = () => {
           options={options}
           //disableContentFilter={isQuestionPaperLevel}
           onEntityAdded={async () => {
+            studentService.invalidateCache();
             await queryClient.invalidateQueries({
               queryKey: ['content'],
             });
 
             await queryClient.invalidateQueries({
               queryKey: ['content-options'],
+            });
+
+            await queryClient.invalidateQueries({
+              queryKey: ['student-filter-options'],
             });
           }}
         />

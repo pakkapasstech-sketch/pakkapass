@@ -50,7 +50,7 @@
 
 .navbar-logo{
     width:260px;
-    height:72px;
+    height:60px;
 
     display:flex;
     align-items:center;
@@ -605,7 +605,7 @@
 
 .navbar-logo{
     width:260px;
-    height:72px;
+    height: 60px;
 
     display:flex;
     align-items:center;
@@ -615,11 +615,12 @@
 
     flex-shrink:0;
 
-    border-right:1px solid var(--color-border);
+    /* border-right:1px solid var(--color-border); */
 }
 
 .navbar-logo-image{
     width:170px;
+    padding-bottom:7px;
     height:auto;
     object-fit:contain;
 }

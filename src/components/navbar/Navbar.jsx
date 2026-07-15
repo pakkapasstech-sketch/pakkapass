@@ -20,9 +20,10 @@ import Avatar from '../common/Avatar';
 //import 'react-date-range/dist/styles.css';
 //import 'react-date-range/dist/theme/default.css';
 import { useNavigate } from 'react-router-dom';
-import { useNotifications } from '../../contexts/NotificationContext';
+
 import '../../styles/navbar.css';
 import SidebarLogo from "../../assets/sidebarlogo.svg"
+import partnerService from '../../services/partner.service';
 
 const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) => {
   const { toggleMobileSidebar, toggleSidebar, isCollapsed,isMobileOpen } = useSidebar();
@@ -36,14 +37,22 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
 
   return () => clearInterval(timer);
 }, []);
-const {
-  unreadCount,
-} =
-  useNotifications();
+
   const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const [partnerLogo, setPartnerLogo] = useState(null);
+
+  useEffect(() => {
+    if (user?.role?.toLowerCase() === 'partner') {
+      partnerService.getDashboard().then((data) => {
+        if (data?.partner?.logo) {
+          setPartnerLogo(data.partner.logo);
+        }
+      }).catch(() => {});
+    }
+  }, [user?.role]);
   // const [showCalendar, setShowCalendar] = useState(false);
 
   // const [dateRange, setDateRange] = useState([
@@ -64,6 +73,7 @@ const {
   <button
     onClick={toggleMobileSidebar}
     className="navbar-icon-btn navbar-mobile-btn"
+    aria-label="Toggle mobile menu"
   >
     {isMobileOpen ? (
       <HiOutlineChevronLeft className="navbar-icon" />
@@ -72,16 +82,31 @@ const {
     )}
   </button>
 
-  <img
-    src={SidebarLogo}
-    alt="PakkaPass"
-    className="navbar-logo-image"
-  />
+  <div className="navbar-brand-logos" style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
+    {partnerLogo && (
+      <img
+        src={partnerLogo}
+        alt="Partner"
+        style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'contain', border: '1px solid var(--color-border)' }}
+      />
+    )}
+
+    <img
+      src={SidebarLogo}
+      alt="PakkaPass"
+      className="navbar-logo-image"
+      fetchPriority="high"
+      loading="eager"
+      width="140"
+      height="36"
+    />
+  </div>
 
   {/* Desktop Sidebar Toggle */}
   <button
     className="navbar-sidebar-toggle"
     onClick={toggleSidebar}
+    aria-label="Toggle sidebar"
   >
     {isCollapsed ? (
       <HiOutlineChevronRight />
@@ -132,6 +157,7 @@ const {
     <button
       onClick={toggleTheme}
       className="navbar-icon-btn"
+      aria-label="Toggle theme"
     >
       {isDark ? (
         <HiOutlineSun className="navbar-icon" />
@@ -155,6 +181,7 @@ const {
     <button
       className="navbar-icon-btn"
       onClick={() => navigate('/notifications')}
+      aria-label="Notifications"
     >
       <HiOutlineBell className="navbar-icon" />
 
@@ -213,6 +240,7 @@ const {
             <Link
               to="/settings"
               className="navbar-dropdown-link"
+              onClick={() => setProfileOpen(false)}
             >
               Settings
             </Link>

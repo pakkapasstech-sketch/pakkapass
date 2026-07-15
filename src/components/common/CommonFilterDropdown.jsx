@@ -116,7 +116,7 @@ const CommonFilterDropdown = ({
                       value === item ? 'selected' : ''
                     }`}
                     onClick={() => {
-                      console.log("Selected:", item);
+
                       onChange(item);
                       setOpen(false);
                       setSearch('');

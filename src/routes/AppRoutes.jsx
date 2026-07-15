@@ -1,38 +1,41 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import ProtectedRoute from '../auth/ProtectedRoute';
 import { PERMISSIONS } from '../auth/permissions';
 import { ROLES } from '../auth/roles';
-import LoginPage from '../pages/auth/LoginPage';
-import ContactAdminPage from '../pages/auth/ContactAdminPage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
-import UnauthorizedPage from '../pages/shared/UnauthorizedPage';
-import StudentManagementPage from '../pages/students/StudentManagementPage';
-import StudentDetailsPage from '../pages/students/StudentDetailsPage';
-import ImportStudentsPage from '../pages/students/ImportStudentsPage';
-import ReferralManagementPage from '../pages/referral/ReferralManagementPage';
-import SubscriptionManagementPage from '../pages/subscription/SubscriptionManagementPage';
-import ContentManagement from '../pages/ContentManagement/ContentManagement';
-import ParentsManagement from '../pages/parents/ParentsManagement';
-import SupportCentrePage from '../pages/SupportCentrePage/SupportCentrePage';
-import NotificationsPage from '../pages/Notifications/NotificationsPage';
-import PartnersPage from '../pages/Partners/PartnersPage';
-import SettingsPage from '../pages/Settings/SettingsPage';
+import GlobalLoader from '../components/loaders/GlobalLoader';
 
-import ParentDetailsPage from '../pages/parents/ParentDetailsPage';
-import AddPartnerPage from '../pages/Partners/AddPartnerPage';
-import PartnerDetailsPage from '../pages/Partners/PartnerDetailsPage';
-import EditPartnerPage from '../pages/Partners/EditPartnerPage';
-import PlanDetailsPage from '../pages/subscription/PlanDetailsPage';
-import CreateEditPlanPage from '../pages/subscription/CreateEditPlanPage';
-import ContentHierarchyPage from '../pages/ContentManagement/ContentHierarchyPage';
-import RecentPaymentsPage from '../pages/payments/RecentPaymentsPage';
-import StudentsData from '../pages/parentDashboardPages/studentsData';
-import SubscriptionPage from '../pages/parentDashboardPages/SubscriptionPage';
-import TransactionPage from '../pages/parentDashboardPages/TransactionPage';
-import PartnerStudentsPage from '../pages/PartnerDashboardPages/PartnerStudentsPage';
-import PartnerPaymentsPage from '../pages/PartnerDashboardPages/PartnerPaymentsPage';
+const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
+const ContactAdminPage = lazy(() => import('../pages/auth/ContactAdminPage'));
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
+const UnauthorizedPage = lazy(() => import('../pages/shared/UnauthorizedPage'));
+const StudentManagementPage = lazy(() => import('../pages/students/StudentManagementPage'));
+const StudentDetailsPage = lazy(() => import('../pages/students/StudentDetailsPage'));
+const ImportStudentsPage = lazy(() => import('../pages/students/ImportStudentsPage'));
+const ReferralManagementPage = lazy(() => import('../pages/referral/ReferralManagementPage'));
+const SubscriptionManagementPage = lazy(() => import('../pages/subscription/SubscriptionManagementPage'));
+const ContentManagement = lazy(() => import('../pages/ContentManagement/ContentManagement'));
+const ParentsManagement = lazy(() => import('../pages/parents/ParentsManagement'));
+const SupportCentrePage = lazy(() => import('../pages/SupportCentrePage/SupportCentrePage'));
+const NotificationsPage = lazy(() => import('../pages/Notifications/NotificationsPage'));
+const PartnersPage = lazy(() => import('../pages/Partners/PartnersPage'));
+const SettingsPage = lazy(() => import('../pages/Settings/SettingsPage'));
+const ParentDetailsPage = lazy(() => import('../pages/parents/ParentDetailsPage'));
+const AddPartnerPage = lazy(() => import('../pages/Partners/AddPartnerPage'));
+const PartnerDetailsPage = lazy(() => import('../pages/Partners/PartnerDetailsPage'));
+const EditPartnerPage = lazy(() => import('../pages/Partners/EditPartnerPage'));
+const PlanDetailsPage = lazy(() => import('../pages/subscription/PlanDetailsPage'));
+const CreateEditPlanPage = lazy(() => import('../pages/subscription/CreateEditPlanPage'));
+const ContentHierarchyPage = lazy(() => import('../pages/ContentManagement/ContentHierarchyPage'));
+const RecentPaymentsPage = lazy(() => import('../pages/payments/RecentPaymentsPage'));
+const StudentsData = lazy(() => import('../pages/parentDashboardPages/studentsData'));
+const SubscriptionPage = lazy(() => import('../pages/parentDashboardPages/SubscriptionPage'));
+const TransactionPage = lazy(() => import('../pages/parentDashboardPages/TransactionPage'));
+const PartnerStudentsPage = lazy(() => import('../pages/PartnerDashboardPages/PartnerStudentsPage'));
+const PartnerPaymentsPage = lazy(() => import('../pages/PartnerDashboardPages/PartnerPaymentsPage'));
 const AppRoutes = () => (
+  <Suspense fallback={<GlobalLoader />}>
   <Routes>
     <Route path="/login" element={<LoginPage />} />
 
@@ -144,6 +147,7 @@ const AppRoutes = () => (
 
     <Route path="*" element={<Navigate to="/dashboard" replace />} />
   </Routes>
+  </Suspense>
 );
 
 export default AppRoutes;

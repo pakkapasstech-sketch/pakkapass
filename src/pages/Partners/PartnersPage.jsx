@@ -6,10 +6,13 @@ import PartnerStats from '../../components/partners/PartnerStats';
 import PartnerFilters from '../../components/partners/PartnerFilters';
 import PartnerTable from '../../components/partners/PartnerTable';
 import partnerService from '../../services/partner.service';
+import paymentService from '../../services/payment.service';
 
 import '../../styles/partners.css';
 import { useLoading } from '../../contexts/LoadingContext';
 import { exportToExcel } from '../../utils/exportUtils';
+import { usePartners, useUpdatePartnerStatus } from '../../hooks/usePartners';
+
 const PartnersPage = () => {
   const navigate = useNavigate();
   const { loading, setLoading } = useLoading();
@@ -18,26 +21,61 @@ const PartnersPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [statusFilter, setStatusFilter] = useState('');
+  const [allPayments, setAllPayments] = useState([]);
 
-  const [partners, setPartners] = useState([]);
+  useEffect(() => {
+    const loadPayments = async () => {
+      try {
+        const payments = await paymentService.getAll();
+        setAllPayments(payments || []);
+      } catch (err) {
+        console.error('Failed to load all payments:', err);
+      }
+    };
+    loadPayments();
+  }, []);
 
-
+  const { data: partnersData, isLoading } = usePartners({ status: statusFilter, limit: 1000 });
+  const partners = partnersData?.partners || partnersData || [];
+  const { mutate: updateStatus } = useUpdatePartnerStatus();
 
   const filteredPartners = partners
     .filter((partner) => {
       const searchTerm = search.trim().toLowerCase();
+
+      // Calculate revenue so we can search it
+      const partnerPayments = allPayments.filter(
+        (p) =>
+          p.partnerId === partner.id ||
+          p.couponCode === partner.referralCode
+      );
+      const totalRevenue = partnerPayments
+        .filter((p) => p.status === 'Success')
+        .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const formattedRevenue = `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      const studentsCount = String(partner.analytics?.students?.totalStudents ?? 0);
 
       const matchesSearch =
         searchTerm === '' ||
         String(partner.id || '')
           .toLowerCase()
           .includes(searchTerm) ||
+        String(partner.partnerId || '')
+          .toLowerCase()
+          .includes(searchTerm) ||
         (partner.name || '').toLowerCase().includes(searchTerm) ||
+        (partner.contactPerson || '').toLowerCase().includes(searchTerm) ||
+        (partner.contactFirstName || '').toLowerCase().includes(searchTerm) ||
+        (partner.contactLastName || '').toLowerCase().includes(searchTerm) ||
         (partner.email || '').toLowerCase().includes(searchTerm) ||
         (partner.mobile || partner.phone || '').toLowerCase().includes(searchTerm) ||
         (partner.organizationName || '').toLowerCase().includes(searchTerm) ||
+        (partner.institutionType || '').toLowerCase().includes(searchTerm) ||
         (partner.referralCode || '').toLowerCase().includes(searchTerm) ||
-        (partner.status || '').toLowerCase().includes(searchTerm);
+        (partner.status || '').toLowerCase().includes(searchTerm) ||
+        studentsCount.includes(searchTerm) ||
+        formattedRevenue.toLowerCase().includes(searchTerm);
 
       const matchesStatus = statusFilter === '' || partner.status === statusFilter;
 
@@ -53,39 +91,13 @@ const PartnersPage = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const fetchPartners = async () => {
-  try {
-    setLoading(true);
+  useEffect(() => {
+    setLoading(isLoading);
+    return () => setLoading(false);
+  }, [isLoading, setLoading]);
 
-    const res = await partnerService.getAll({
-      status: statusFilter,
-      limit: 1000,
-    });
-
-    setPartners(res.partners || []);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-};
   const handleStatusChange = async (id, status) => {
-    try {
-      await partnerService.updateStatus(id, status);
-
-      setPartners((prev) =>
-        prev.map((partner) =>
-          partner.id === id
-            ? {
-                ...partner,
-                status,
-              }
-            : partner
-        )
-      );
-    } catch (err) {
-      console.error(err);
-    }
+    updateStatus({ id, status });
   };
   const handleExport = () => {
     const columns = [
@@ -125,10 +137,6 @@ const PartnersPage = () => {
 
     exportToExcel(filteredPartners, columns, 'partners.xlsx');
   };
-  useEffect(() => {
-    fetchPartners();
-  }, [debouncedSearch, statusFilter]);
-
 
 
   return (
@@ -155,7 +163,7 @@ const PartnersPage = () => {
         </div>
       </div>
 
-      <PartnerStats partners={partners} />
+      <PartnerStats partners={partners} allPayments={allPayments} />
 
       <PartnerFilters
         search={search}
@@ -166,7 +174,7 @@ const PartnersPage = () => {
 
      
 
-      <PartnerTable partners={filteredPartners} onStatusChange={handleStatusChange} />
+      <PartnerTable partners={filteredPartners} onStatusChange={handleStatusChange} allPayments={allPayments} />
     </div>
   );
 };

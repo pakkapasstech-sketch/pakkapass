@@ -1,6 +1,25 @@
 import axiosInstance from '../api/axiosInstance';
+import parentService from './parent.service';
+
+let optionsPromise = null;
+let optionsCache = null;
+let optionsCacheTime = 0;
+const CACHE_DURATION = 15000; // 15 seconds cache duration
+
+const profilePromises = {};
+const profileCaches = {};
+const profileCacheTimes = {};
+
+const analyticsPromises = {};
+const analyticsCaches = {};
+const analyticsCacheTimes = {};
 
 export const studentService = {
+  invalidateCache: () => {
+    optionsCache = null;
+    optionsCacheTime = 0;
+  },
+
   getAll: async () => {
     const { data } = await axiosInstance.get('/admin/students');
     return data.students || [];
@@ -12,29 +31,77 @@ export const studentService = {
   },
 
   getParentStudents: async () => {
-    const { data } = await axiosInstance.get('/parent/students');
+    const data = await parentService.getStudents();
     return data.students || [];
   },
+
   getFilterOptions: async () => {
-  const { data } = await axiosInstance.get(
-    '/admin/content/options'
-  );
+    const now = Date.now();
+    if (optionsCache && (now - optionsCacheTime < CACHE_DURATION)) {
+      return optionsCache;
+    }
+    if (optionsPromise) {
+      return optionsPromise;
+    }
+    optionsPromise = axiosInstance.get('/admin/content/options')
+      .then(res => {
+        optionsCache = res.data;
+        optionsCacheTime = Date.now();
+        optionsPromise = null;
+        return res.data;
+      })
+      .catch(err => {
+        optionsPromise = null;
+        throw err;
+      });
+    return optionsPromise;
+  },
 
-  return data;
-},
-getProfile: async (studentId) => {
-  const { data } = await axiosInstance.get(
-    `/student/profile/${studentId}`
-  );
-  return data;
-},
+  getProfile: async (studentId) => {
+    const now = Date.now();
+    if (profileCaches[studentId] && (now - profileCacheTimes[studentId] < CACHE_DURATION)) {
+      return profileCaches[studentId];
+    }
+    if (profilePromises[studentId]) {
+      return profilePromises[studentId];
+    }
+    profilePromises[studentId] = axiosInstance.get(`/student/profile/${studentId}`)
+      .then(res => {
+        profileCaches[studentId] = res.data;
+        profileCacheTimes[studentId] = Date.now();
+        profilePromises[studentId] = null;
+        return res.data;
+      })
+      .catch(err => {
+        profilePromises[studentId] = null;
+        throw err;
+      });
+    return profilePromises[studentId];
+  },
 
-getAnalytics: async (studentId) => {
-  const { data } = await axiosInstance.get(
-    `/student/${studentId}/analytics`
-  );
-  return data;
-},
+  getAnalytics: async (studentId) => {
+    const now = Date.now();
+    if (analyticsCaches[studentId] && (now - analyticsCacheTimes[studentId] < CACHE_DURATION)) {
+      return analyticsCaches[studentId];
+    }
+    if (analyticsPromises[studentId]) {
+      return analyticsPromises[studentId];
+    }
+    analyticsPromises[studentId] = axiosInstance.get(`/student/${studentId}/analytics`)
+      .then(res => {
+        analyticsCaches[studentId] = res.data;
+        analyticsCacheTimes[studentId] = Date.now();
+        analyticsPromises[studentId] = null;
+        return res.data;
+      })
+      .catch(err => {
+        analyticsPromises[studentId] = null;
+        throw err;
+      });
+    return analyticsPromises[studentId];
+  },
+
+
 getSubscription: async (studentId) => {
   try {
     const { profile } = await studentService.getProfile(studentId);

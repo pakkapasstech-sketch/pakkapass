@@ -9,6 +9,7 @@ import {
   mockSubscriptionGrowth,
 } from '../mocks/mockData';
 import { studentService } from '../services/student.service';
+import { useStudents } from './useStudents';
 
 export const useAdminDashboard = () =>
   useQuery({
@@ -59,6 +60,9 @@ const mapDashboardStudent = (s) => ({
   name: s.name || 'Unknown',
   email: s.email || '',
   mobile: s.mobile || '',
+  profile: s.profile || null,
+  referralCode: s.referralCode || null,
+  refCode: s.refCode || null,
 
   class:
     s.profile?.grade?.name ||
@@ -66,6 +70,11 @@ const mapDashboardStudent = (s) => ({
 
   board:
     s.profile?.board?.name ||
+    'N/A',
+
+  branch:
+    s.profile?.branch?.name ||
+    s.branch ||
     'N/A',
 
   institution:
@@ -94,42 +103,19 @@ const mapDashboardStudent = (s) => ({
       .slice(0, 2)
       .toUpperCase(),
 });
-export const useRecentRegistrations = () =>
-  useQuery({
-    queryKey:
-      QUERY_KEYS.dashboard
-        .registrations,
+export const useRecentRegistrations = () => {
+  const { data: students, isLoading, isError } = useStudents();
+  
+  const mappedData = (students || [])
+    .slice(0, 5)
+    .map(mapDashboardStudent);
 
-    queryFn: async () => {
-      try {
-        const students =
-          await studentService.getAll();
-
-        if (
-          !students?.length
-        ) {
-          return [];
-        }
-
-        return students
-  .sort(
-    (a, b) =>
-      new Date(
-        b.createdAt
-      ) -
-      new Date(
-        a.createdAt
-      )
-  )
-  .slice(0, 5)
-  .map(
-    mapDashboardStudent
-  );
-      } catch {
-        return [];
-      }
-    },
-  });
+  return {
+    data: mappedData,
+    isLoading,
+    isError
+  };
+};
 export const useRecentPayments = () =>
   useQuery({
     queryKey: QUERY_KEYS.dashboard.payments,

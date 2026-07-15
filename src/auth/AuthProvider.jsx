@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/auth.service';
 import { normalizeRole } from './roles';
 
@@ -55,24 +55,30 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   }, []);
 
+  const initialized = React.useRef(false);
+
   const initAuth = useCallback(async () => {
+    if (initialized.current) return;
+    
     const storage = getTokenStorage();
     const token = storage.getItem(STORAGE_KEYS.accessToken) || localStorage.getItem(STORAGE_KEYS.accessToken);
     if (!token) {
       setLoading(false);
       return;
     }
+    
+    initialized.current = true;
     try {
       const { user: userData } = await authService.getMe();
 
-console.log('Backend user:', userData);
+
 
 const normalized = {
   ...userData,
   role: normalizeRole(userData.role),
 };
 
-console.log('Normalized user:', normalized);
+
       setUser(normalized);
       setIsAuthenticated(true);
     } catch {

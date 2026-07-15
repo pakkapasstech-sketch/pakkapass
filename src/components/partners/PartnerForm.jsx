@@ -1,5 +1,5 @@
 import CommonFilterDropdown from '../common/CommonFilterDropdown'; 
-const PartnerForm = ({ step, formData, updateField }) => {
+const PartnerForm = ({ step, formData, updateField, grades = [] }) => {
   
   switch (step) {
     case 0:
@@ -8,7 +8,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
           <h2>Personal Information</h2>
 
           <div className="partner-grid">
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>First Name *</label>
 
               <input
@@ -18,7 +18,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Last Name *</label>
 
               <input
@@ -28,17 +28,20 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Date of Birth</label>
 
               <input
                 type="date"
                 value={formData.dob}
                 onChange={(e) => updateField('dob', e.target.value)}
+                onClick={(e) => {
+                  try { e.target.showPicker(); } catch {}
+                }}
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Gender</label>
 
               <CommonFilterDropdown
@@ -61,8 +64,26 @@ const PartnerForm = ({ step, formData, updateField }) => {
 />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Profile Photo</label>
+
+              {formData.profilePhoto ? (
+                <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <img
+                    src={URL.createObjectURL(formData.profilePhoto)}
+                    alt="Profile Photo Preview"
+                    style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                  />
+                  <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Selected: {formData.profilePhoto.name}</span>
+                </div>
+              ) : formData.existingProfilePhoto ? (
+                <img
+                  src={formData.existingProfilePhoto}
+                  alt="Profile Photo"
+                  style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)', marginBottom: '8px' }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : null}
 
               <input
                 type="file"
@@ -71,14 +92,50 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Logo</label>
+              
+              {formData.logoFile ? (
+                <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <img
+                    src={URL.createObjectURL(formData.logoFile)}
+                    alt="Logo Preview"
+                    style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'contain', border: '1px solid var(--color-border)' }}
+                  />
+                  <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Selected: {formData.logoFile.name}</span>
+                </div>
+              ) : formData.logo && typeof formData.logo === 'string' ? (
+                <img
+                  src={formData.logo}
+                  alt="Logo preview"
+                  style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'contain', border: '1px solid var(--color-border)', marginBottom: '8px' }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : null}
 
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => updateField('logo', e.target.files[0])}
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    updateField('logoFile', file);
+                    if (file) updateField('logo', '');
+                  }}
+                />
+                
+                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textAlign: 'center', margin: '2px 0' }}>— OR —</span>
+
+                <input
+                  type="url"
+                  value={typeof formData.logo === 'string' ? formData.logo : ''}
+                  onChange={(e) => {
+                    updateField('logo', e.target.value);
+                    if (e.target.value) updateField('logoFile', null);
+                  }}
+                  placeholder="Enter logo image URL"
+                />
+              </div>
             </div>
           </div>
         </>
@@ -90,7 +147,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
           <h2>Organization Information</h2>
 
           <div className="partner-grid">
-            <div className="form-group full-width">
+            <div className="partner-form-group full-width">
               <label>Organization Name *</label>
 
               <input
@@ -99,7 +156,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Institution Type*</label>
 
               <CommonFilterDropdown
@@ -127,7 +184,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
 />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Registration Number</label>
 
               <input
@@ -136,7 +193,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group full-width">
+            <div className="partner-form-group full-width">
               <label>Website</label>
 
               <input
@@ -145,7 +202,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group full-width">
+            <div className="partner-form-group full-width">
               <label>Description</label>
 
               <textarea
@@ -164,7 +221,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
           <h2>Contact & Address</h2>
 
           <div className="partner-grid">
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Mobile *</label>
 
               <input
@@ -181,7 +238,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Email *</label>
 
               <input
@@ -192,7 +249,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Alternate Mobile</label>
 
               <input
@@ -208,7 +265,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Alternate Email</label>
 
               <input
@@ -219,7 +276,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group full-width">
+            <div className="partner-form-group full-width">
               <label>Address*</label>
 
               <input
@@ -228,12 +285,12 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>City*</label>
 
               <input value={formData.city} onChange={(e) => updateField('city', e.target.value)} />
             </div>
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>District*</label>
 
               <input
@@ -244,7 +301,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>State*</label>
 
               <input
@@ -253,7 +310,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Country*</label>
 
               <input
@@ -262,7 +319,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Pincode*</label>
 
               <input
@@ -292,7 +349,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               <h3>{formData.joiningDate}</h3>
             </div>
 
-            <div className="form-group full-width">
+            <div className="partner-form-group full-width">
               <label>Status</label>
 
               <div className="status-options">
@@ -318,7 +375,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
           <h2>Student Discount</h2>
 
           <div className="partner-grid">
-            <div className="form-group">
+            <div className="partner-form-group">
               <label>Discount Type</label>
 
               <CommonFilterDropdown
@@ -337,7 +394,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
 />
             </div>
 
-            <div className="form-group">
+             <div className="partner-form-group">
               <label>Discount Value</label>
 
               <input
@@ -346,7 +403,9 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div>
 
-            {/* <div className="form-group">
+
+
+            {/* <div className="partner-form-group">
               <label>Maximum Discount</label>
 
               <input
@@ -355,7 +414,7 @@ const PartnerForm = ({ step, formData, updateField }) => {
               />
             </div> */}
 
-            {/* <div className="form-group">
+            {/* <div className="partner-form-group">
               <label>Usage Limit</label>
 
               <input

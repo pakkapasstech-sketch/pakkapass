@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { partnerService } from '../services/partner.service';
 import toast from 'react-hot-toast';
 
-export const usePartners = (params = {}) =>
+export const usePartners = (params = {}, options = {}) =>
   useQuery({
     queryKey: ['partners', params],
     queryFn: async () => {
@@ -12,6 +12,7 @@ export const usePartners = (params = {}) =>
       }
       return data;
     },
+    ...options,
   });
 
 export const usePartner = (id) =>

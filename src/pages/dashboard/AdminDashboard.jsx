@@ -11,6 +11,9 @@ import ErrorState from '../../components/loaders/ErrorState';
 import Modal from '../../components/modals/Modal';
 import { getPlans } from '../../services/SubscriptionServices';
 import { useQuery } from '@tanstack/react-query';
+import { useStudents } from '../../hooks/useStudents';
+import { usePartners } from '../../hooks/usePartners';
+import { useMemo } from 'react';
 import {
   useAdminDashboard,
   useRecentRegistrations,
@@ -31,6 +34,45 @@ const AdminDashboard = () => {
     queryKey: ['plans'],
     queryFn: getPlans,
   });
+
+  const { data: students = [] } = useStudents();
+  const { data: partnersData } = usePartners({ limit: 1000 });
+  const partners = partnersData?.partners || partnersData || [];
+
+  const studentMap = useMemo(() => {
+    const map = {};
+    students.forEach((student) => {
+      if (student?.name) {
+        map[student.name.trim().toLowerCase()] = student;
+      }
+    });
+    return map;
+  }, [students]);
+
+  const partnerMap = useMemo(() => {
+    const map = {};
+    if (Array.isArray(partners)) {
+      partners.forEach((p) => {
+        if (p.id) {
+          map[String(p.id)] = p;
+        }
+      });
+    }
+    return map;
+  }, [partners]);
+
+  const planPriceMap = useMemo(() => {
+    const map = {};
+    if (Array.isArray(plans)) {
+      plans.forEach((plan) => {
+        if (plan.name) {
+          map[plan.name.trim().toLowerCase()] = plan.price;
+        }
+      });
+    }
+    return map;
+  }, [plans]);
+
   const totalPlans = plans.length;
   const cards =
     stats.data?.cards?.map((card) =>
@@ -86,7 +128,7 @@ const AdminDashboard = () => {
 
       <div className="dashboard-table-grid">
         {/* Recent Registrations Table using StudentTable */}
-        <div className="data-table-container" style={{ minHeight: 'unset' }}>
+        <div className="data-table-container" style={{ minHeight: '420px' }}>
           <div className="data-table-header">
             <h3 className="data-table-title">Recent Registrations</h3>
             <div className="data-table-toolbar">
@@ -144,11 +186,11 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
-          <StudentTable students={registrations.data || []} noCard={true} hideInstitution={true} />
+          <StudentTable students={registrations.data || []} noCard={true} hideInstitution={true} hideBranch={true} partnerMap={partnerMap} />
         </div>
 
         {/* Recent Payments Custom Table styled like StudentTable */}
-        <div className="data-table-container" style={{ minHeight: 'unset' }}>
+        <div className="data-table-container" style={{ minHeight: '420px' }}>
           <div className="data-table-header">
             <h3 className="data-table-title">Recent Payments</h3>
             <div className="data-table-toolbar">
@@ -207,46 +249,57 @@ const AdminDashboard = () => {
               </thead>
               <tbody>
                 {payments.data && payments.data.length > 0 ? (
-                  payments.data.slice(0, 5).map((payment, index) => (
-                    <tr
-                      key={payment.id || index}
-                      className="clickable-row"
-                      onClick={() => navigate(`/payments`)}
-                    >
-                      <td>{index + 1}</td>
-                      <td>
-                        <div className="student-user">
-                          <img
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(payment.student)}`}
-                            alt={payment.student}
-                            className="student-avatar"
-                          />
-                          <div>
-                            <div className="student-name">{payment.student}</div>
+                  payments.data.slice(0, 5).map((payment, index) => {
+                    const sInfo = studentMap[payment.student?.trim().toLowerCase()];
+                    const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
+                    const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                    const isDiscounted = planPrice ? (planPrice > payment.amount) : !!partner?.referralCode;
+                    const referralCode = isDiscounted ? (partner?.referralCode || 'Null') : 'Null';
+
+                    return (
+                      <tr
+                        key={payment.id || index}
+                        className="clickable-row"
+                        onClick={() => navigate(`/payments`)}
+                      >
+                        <td>{index + 1}</td>
+                        <td>
+                          <div className="student-user">
+                            <img
+                              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(payment.student)}`}
+                              alt=""
+                              aria-hidden="true"
+                              className="student-avatar"
+                              width="40"
+                              height="40"
+                            />
+                            <div>
+                              <div className="student-name">{payment.student}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="plan-badge">{payment.plan}</span>
-                      </td>
-                      <td>₹{payment.amount}</td>
-                      <td>{payment.referralCode || 'Null'}</td>
-                      <td>
-                        <span
-                          className={`status-badge ${
-                            payment.status === 'Success'
-                              ? 'status-active'
-                              : payment.status === 'Failed'
-                                ? 'status-inactive'
-                                : 'status-pending'
-                          }`}
-                        >
-                          {payment.status}
-                        </span>
-                      </td>
-                      <td>{formatDate(payment.date)}</td>
-                    </tr>
-                  ))
+                        </td>
+                        <td>
+                          <span className="plan-badge">{payment.plan}</span>
+                        </td>
+                        <td>₹{Number(payment.amount).toFixed(2)}</td>
+                        <td>{referralCode}</td>
+                        <td>
+                          <span
+                            className={`status-badge ${
+                              payment.status === 'Success'
+                                ? 'status-active'
+                                : payment.status === 'Failed'
+                                  ? 'status-inactive'
+                                  : 'status-pending'
+                            }`}
+                          >
+                            {payment.status}
+                          </span>
+                        </td>
+                        <td>{formatDate(payment.date)}</td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan="7" className="empty-table">

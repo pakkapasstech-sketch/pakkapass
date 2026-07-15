@@ -8,10 +8,13 @@ import '../../styles/PartnerDashboard.css';
 import { toast } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import partnerService from '../../services/partner.service';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const PartnerDashboard = () => {
-  const isLoading = false;
+  const { setLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(true);
   const [dashboard, setDashboard] = useState(null);
+  const [options, setOptions] = useState({});
   const copyMessage = async () => {
     try {
       await navigator.clipboard.writeText(partner.referralMessage);
@@ -32,36 +35,58 @@ const PartnerDashboard = () => {
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const data = await partnerService.getDashboard();
+        setLoading(true);
+        setIsLoading(true);
+        const [data, optionsData] = await Promise.all([
+          partnerService.getDashboard(),
+          partnerService.getOptions().catch(err => {
+            console.error("Failed to load options:", err);
+            return { grades: [], boards: [], branches: [] };
+          })
+        ]);
 
         setDashboard(data);
+        setOptions(optionsData || {});
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     loadDashboard();
-  }, []);
+  }, [setLoading]);
   const partner = dashboard?.partner || {};
 
   const analytics = dashboard?.analytics || {};
 
-  const recentRegistrations = (dashboard?.recentStudents || []).map(s => ({
-    id: s.id,
-    name: s.student?.name || 'Unknown',
-    class: s.grade?.name || 'N/A',
-    status: s.plan ? 'Active' : 'Inactive',
-    registeredOn: s.student?.createdAt,
-  }));
+  const recentRegistrations = (dashboard?.recentStudents || []).map(s => {
+    const gradeName = (options.grades || []).find(g => String(g.id) === String(s.gradeId))?.name || 'N/A';
+    const boardName = (options.boards || []).find(b => String(b.id) === String(s.boardId))?.name || 'N/A';
+    const branchName = (options.branches || []).find(br => String(br.id) === String(s.branchId))?.name || 'N/A';
+    
+    return {
+      id: s.id,
+      name: s.student?.name || 'Unknown',
+      class: gradeName,
+      board: boardName,
+      branch: branchName,
+      status: s.plan ? 'Active' : 'Inactive',
+      registeredOn: s.student?.createdAt,
+    };
+  });
 
-  const recentPayments = (dashboard?.recentPayments || []).map(p => ({
-    id: p.id,
-    student: p.student?.name || 'Unknown',
-    plan: p.plan?.name || 'N/A',
-    amount: `₹${p.amount || 0}`,
-    status: p.status || 'Paid',
-    paymentDate: p.createdAt,
-  }));
+  const recentPayments = (dashboard?.recentPayments || [])
+    .filter(p => p.partnerId && String(p.partnerId) === String(partner.id) && (Number(p.discountAmount) > 0 || p.couponCode === partner.referralCode))
+    .map(p => ({
+      id: p.id,
+      student: p.student?.name || 'Unknown',
+      plan: p.plan?.name || 'N/A',
+      amount: `₹${p.amount || 0}`,
+      status: p.status || 'Paid',
+      paymentDate: p.createdAt,
+    }));
   const statCards = [
     {
       id: 'total',
@@ -88,7 +113,18 @@ const PartnerDashboard = () => {
     {
       id: 'revenue',
       title: 'Total Revenue',
-      formattedValue: `₹${(analytics?.revenue?.totalRevenue ?? 0).toLocaleString()}`,
+      formattedValue: (() => {
+        const totalAmountPaid = (dashboard?.recentPayments || [])
+          .filter(
+            (p) =>
+              p.partnerId &&
+              String(p.partnerId) === String(partner.id) &&
+              (Number(p.discountAmount) > 0 || p.couponCode === partner.referralCode)
+          )
+          .filter((p) => p.status === 'Success' || p.status === 'Paid')
+          .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+        return `₹${totalAmountPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      })(),
       trend: 18,
       trendLabel: 'generated',
       trendUp: true,
@@ -111,11 +147,21 @@ const PartnerDashboard = () => {
   return (
     <div className="partnerdashboard-page">
       <div className="partnerdashboard-header">
-        <div>
-          <h2>{partner.organizationName}</h2>
-          <p>
-            Referral Code <strong>{partner.referralCode}</strong>
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {partner.logo && (
+            <img
+              src={partner.logo}
+              alt={partner.organizationName}
+              style={{ width: '52px', height: '52px', borderRadius: '12px', objectFit: 'contain', border: '1px solid var(--color-border)', background: 'var(--color-surface)', padding: '4px' }}
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          )}
+          <div>
+            <h2>{partner.organizationName}</h2>
+            <p>
+              Referral Code <strong>{partner.referralCode}</strong>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -169,6 +215,8 @@ const PartnerDashboard = () => {
                   <th>S.No</th>
                   <th>Student</th>
                   <th>Class</th>
+                  <th>Board</th>
+                  <th>Branch</th>
 
                   <th>Status</th>
                   <th>Registered On</th>
@@ -182,7 +230,11 @@ const PartnerDashboard = () => {
 
                     <td>{student.name}</td>
 
-                    <td>Class {student.class}</td>
+                    <td>{student.class}</td>
+
+                    <td>{student.board}</td>
+
+                    <td>{student.branch}</td>
 
                     <td>
                       <span

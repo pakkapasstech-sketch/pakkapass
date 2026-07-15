@@ -1,6 +1,6 @@
 import axiosInstance from '../api/axiosInstance';
 
-const mapContentFromApi = (
+export const mapContentFromApi = (
   chapters = []
 ) => {
   const items = [];
@@ -15,11 +15,7 @@ const mapContentFromApi = (
             topic.assets || []
           ).forEach(
             (asset) => {
-              console.log(
-  'CHAPTER',
-  chapter.name,
-  chapter.contentType
-);
+
               items.push({
                 id:
                   asset.id,
@@ -103,10 +99,8 @@ export const contentService = {
       '/admin/content'
     );
 
-  return mapContentFromApi(
-    data.content || []
-  );
-},
+    return data.content || [];
+  },
 
   upload: async ({
   filters,
@@ -161,11 +155,7 @@ export const contentService = {
     : 'notesUrl';
     formData.append(fieldName, file);
 
-    console.log('UPLOADING', {
-      contentType,
-      fieldName,
-      filters,
-    });
+
 
     const { data } = await axiosInstance.post('/admin/content', formData, {
       headers: {

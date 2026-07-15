@@ -20,6 +20,7 @@ import { useAuth } from '../../auth/AuthProvider';
 import { getSupportTickets, submitSupportTicket, updateSupportTicketStatus, getUserSupportTickets } from '../../services/supportService';
 import { useLoading } from '../../contexts/LoadingContext';
 import toast from 'react-hot-toast';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const faqs = [
   {
@@ -37,16 +38,28 @@ const faqs = [
 ];
 
 const SupportCentrePage = () => {
-  const [tickets, setTickets] = useState([]);
-  // const [loading, setLoading] = useState(false);
   const [activeTicket, setActiveTicket] = useState(null);
   const [message, setMessage] = useState('');
   const [adminMessageInput, setAdminMessageInput] = useState('');
   const [adminStatusInput, setAdminStatusInput] = useState('Pending');
   const { user } = useAuth();
   const { setLoading } = useLoading();
+  const queryClient = useQueryClient();
 
   const isAdmin = user?.role === 'ADMIN';
+
+  const { data: rawTicketsData, isLoading: ticketsLoading } = useQuery({
+    queryKey: ['support-tickets', isAdmin, user?.id],
+    queryFn: async () => {
+      const { data } = isAdmin 
+        ? await getSupportTickets() 
+        : await getUserSupportTickets(user?.id, user?.role);
+      return Array.isArray(data) ? data : (data?.data || data?.tickets || data?.supportTickets || []);
+    },
+    enabled: isAdmin || !!user?.id,
+  });
+
+  const tickets = rawTicketsData || [];
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -102,7 +115,7 @@ const SupportCentrePage = () => {
       }, user?.role);
       toast.success('Support ticket submitted successfully');
       setMessage('');
-      fetchTickets();
+      queryClient.invalidateQueries({ queryKey: ['support-tickets'] });
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || 'Failed to submit ticket');
@@ -122,9 +135,7 @@ const SupportCentrePage = () => {
         adminNotes: adminMessageInput,
       }));
 
-      setTickets((prev) =>
-        prev.map((ticket) => (ticket.id === activeTicket.id ? { ...ticket, status, adminNotes: adminMessageInput } : ticket))
-      );
+      queryClient.invalidateQueries({ queryKey: ['support-tickets'] });
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || 'Failed to update ticket status');
@@ -133,29 +144,9 @@ const SupportCentrePage = () => {
     }
   };
   useEffect(() => {
-    if (user || isAdmin) {
-      fetchTickets();
-    }
-  }, [isAdmin, user]);
-
-  const fetchTickets = async () => {
-    try {
-      if (!isAdmin && !user?.id) return;
-      setLoading(true);
-
-      const { data } = isAdmin 
-        ? await getSupportTickets() 
-        : await getUserSupportTickets(user?.id, user?.role);
-
-      const ticketsArray = Array.isArray(data) ? data : (data?.data || data?.tickets || data?.supportTickets || []);
-      setTickets(ticketsArray);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
- 
+    setLoading(ticketsLoading);
+    return () => setLoading(false);
+  }, [ticketsLoading, setLoading]);
   return (
     <div className="support-page">
       {/* Header */}
@@ -310,8 +301,10 @@ const SupportCentrePage = () => {
                         <td style={{ fontWeight: '500' }}>{ticket.id}</td>
                         <td style={{ fontWeight: '600', color: 'var(--color-text-primary)' }}>{ticket.student?.name || ticket.name}</td>
                         <td style={{ color: 'var(--color-text-secondary)' }}>{ticket.student?.email || ticket.email}</td>
-                          <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--color-text-secondary)' }}>
-                            {ticket.message}
+                          <td style={{ maxWidth: '300px', color: 'var(--color-text-secondary)' }}>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {ticket.message}
+                            </div>
                           </td>
                         <td>
                           <span className={`ticket-status ${ticket.status.toLowerCase()}`}>
@@ -331,6 +324,7 @@ const SupportCentrePage = () => {
                               setAdminStatusInput(ticket.status || 'Pending');
                             }}
                             title="View Ticket"
+                            aria-label={`View Ticket ${ticket.id}`}
                           >
                             <HiOutlineEye size={18} />
                           </button>
@@ -360,6 +354,7 @@ const SupportCentrePage = () => {
                   <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((prev) => prev - 1)}
+                    aria-label="Previous Page"
                   >
                     <HiOutlineChevronLeft />
                   </button>
@@ -369,6 +364,8 @@ const SupportCentrePage = () => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={currentPage === page ? 'active-page' : ''}
+                      aria-label={`Page ${page}`}
+                      aria-current={currentPage === page ? 'page' : undefined}
                     >
                       {page}
                     </button>
@@ -377,6 +374,7 @@ const SupportCentrePage = () => {
                   <button
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((prev) => prev + 1)}
+                    aria-label="Next Page"
                   >
                     <HiOutlineChevronRight />
                   </button>
@@ -393,7 +391,7 @@ const SupportCentrePage = () => {
           <div className="modal-container modal-md" style={{ maxHeight: '78vh', display: 'flex', flexDirection: 'column' }}>
             <div className="modal-header">
               <h3 className="modal-title">Ticket Detail - {activeTicket.id}</h3>
-              <button className="modal-close-btn" onClick={() => setActiveTicket(null)}>
+              <button className="modal-close-btn" onClick={() => setActiveTicket(null)} aria-label="Close modal">
                 <HiOutlineX className="modal-close-icon" />
               </button>
             </div>

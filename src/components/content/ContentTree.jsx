@@ -493,9 +493,9 @@ const ContentTree = ({
   return (
     <div className="content-tree">
       <div className="tree-header">
-        <h3 className="tree-title">
+        <h2 className="tree-title">
           Content Hierarchy
-        </h3>
+        </h2>
 
         <button
           className="manage-hierarchy-btn"

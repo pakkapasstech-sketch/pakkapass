@@ -10,46 +10,30 @@ import {
 } from 'react-icons/hi';
 import { exportToExcel } from '../../utils/exportUtils';
 import '../../styles/subscriptionManagement.css';
+import { useQuery } from '@tanstack/react-query';
 import { getPlans } from '../../services/SubscriptionServices';
 import { useLoading } from '../../contexts/LoadingContext';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 import '../../styles/student-table.css';
-import studentService from '../../services/student.service';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
 
 const SubscriptionManagementPage = () => {
   const navigate = useNavigate();
   const { setLoading: setGlobalLoading } = useLoading();
-  const [plans, setPlans] = useState([]);
-  const [options, setOptions] = useState({
-    grades: [],
-    boards: [],
-    branches: [],
-  });
+  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedBoard, setSelectedBoard] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  
+  const { data: plansData, isLoading: plansLoading } = useQuery({ queryKey: ['plans'], queryFn: getPlans });
+  const plans = plansData || [];
+  const { data: optionsData } = useStudentFilterOptions();
+  const options = optionsData || { grades: [], boards: [], branches: [] };
+  const loading = plansLoading;
 
   const plansPerPage = 5;
-  useEffect(() => {
-    loadPlans();
-    loadOptions();
-  }, []);
-  const loadOptions = async () => {
-    try {
-      const data = await studentService.getFilterOptions();
 
-      setOptions({
-        grades: data.grades || [],
-        boards: data.boards || [],
-        branches: data.branches || [],
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
   const getGradeNames = (ids = []) =>
     options.grades.filter((g) => ids.includes(g.id)).map((g) => g.name);
 
@@ -58,22 +42,6 @@ const SubscriptionManagementPage = () => {
 
   const getBranchNames = (ids = []) =>
     options.branches.filter((b) => ids.includes(b.id)).map((b) => b.name);
-  const loadPlans = async () => {
-    try {
-      setLoading(true);
-
-      const data = await getPlans();
-
-      console.log('Plans API Response:', data);
-
-      setPlans(data || []);
-    } catch (err) {
-      console.error('Failed to load plans:', err);
-      setPlans([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredPlans = useMemo(() => {
     return plans.filter((plan) => {
@@ -309,8 +277,11 @@ const SubscriptionManagementPage = () => {
                       <div className="student-user">
                         <img
                           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(plan.name)}`}
-                          alt={plan.name}
+                          alt=""
+                          aria-hidden="true"
                           className="student-avatar"
+                          width="40"
+                          height="40"
                         />
 
                         <div>
@@ -343,6 +314,7 @@ const SubscriptionManagementPage = () => {
                         className="table-action-btn"
                         onClick={() => navigate(`/subscriptions/plans/${plan.id}`)}
                         title="View Plan"
+                        aria-label={`View details for ${plan.name}`}
                       >
                         <HiOutlineEye />
                       </button>
@@ -371,6 +343,7 @@ const SubscriptionManagementPage = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => prev - 1)}
+                aria-label="Previous Page"
               >
                 <HiOutlineChevronLeft />
               </button>
@@ -380,6 +353,8 @@ const SubscriptionManagementPage = () => {
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={currentPage === page ? 'active-page' : ''}
+                  aria-label={`Page ${page}`}
+                  aria-current={currentPage === page ? 'page' : undefined}
                 >
                   {page}
                 </button>
@@ -388,6 +363,7 @@ const SubscriptionManagementPage = () => {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => prev + 1)}
+                aria-label="Next Page"
               >
                 <HiOutlineChevronRight />
               </button>

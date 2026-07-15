@@ -11,6 +11,8 @@ import ErrorState from '../../components/loaders/ErrorState';
 import { useStudents } from '../../hooks/useStudents';
 import { usePermissions } from '../../auth/usePermissions';
 import { PERMISSIONS } from '../../auth/permissions';
+import { usePartners } from '../../hooks/usePartners';
+import { useMemo } from 'react';
 
 import '../../styles/student-management.css';
 import { useLoading } from '../../contexts/LoadingContext';
@@ -38,6 +40,21 @@ const StudentManagementPage = () => {
     isError,
     refetch,
   } = useStudents();
+
+  const { data: partnersData } = usePartners({ limit: 1000 });
+  const partners = partnersData?.partners || partnersData || [];
+
+  const partnerMap = useMemo(() => {
+    const map = {};
+    if (Array.isArray(partners)) {
+      partners.forEach((p) => {
+        if (p.id) {
+          map[String(p.id)] = p.referralCode;
+        }
+      });
+    }
+    return map;
+  }, [partners]);
 
   const {
     hasPermission,
@@ -67,6 +84,7 @@ const StudentManagementPage = () => {
     student.referralCode,
     student.partner?.referralCode,
     student.profile?.partner?.referralCode,
+    student.profile?.partnerId && partnerMap[String(student.profile.partnerId)],
     student.institution,
     student.class,
     student.board,
@@ -207,7 +225,7 @@ const stateMatch =
                 { header: 'Class', accessor: (r) => r.class },
                 { header: 'Board', accessor: (r) => r.board },
                 { header: 'Institution', accessor: (r) => r.institution },
-                { header: 'REFCODE', accessor: (r) => r.referralCode || r.refCode || 'Null' },
+                { header: 'REFCODE', accessor: (r) => r.referralCode || (r.profile?.partnerId && partnerMap[String(r.profile.partnerId)]) || r.refCode || 'Null' },
                 { header: 'Subscription Plan', accessor: (r) => r.plan },
                 { header: 'Status', accessor: (r) => r.status },
                 { header: 'Registered On', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : r.registeredOn || '—' },
@@ -238,6 +256,7 @@ const stateMatch =
         students={
           displayStudents
         }
+        partnerMap={partnerMap}
         canCreate={hasPermission(
           PERMISSIONS.STUDENT_CREATE
         )}

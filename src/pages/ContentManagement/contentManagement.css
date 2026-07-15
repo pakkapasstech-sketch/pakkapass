@@ -90,22 +90,22 @@
 
 .content-type-badge.video {
   background: #fee2e2;
-  color: #dc2626;
+  color: #991b1b;
 }
 
 .content-type-badge.notes {
   background: #fef3c7;
-  color: #d97706;
+  color: #92400e;
 }
 
 .content-type-badge.pdf {
   background: #dbeafe;
-  color: #2563eb;
+  color: #1e40af;
 }
 
 .content-type-badge.paper {
   background: #ede9fe;
-  color: #7c3aed;
+  color: #5b21b6;
 }
 
 .content-table-toolbar {

@@ -24,20 +24,13 @@ const ContentTable = ({
   const [page, setPage] =
     useState(1);
     const [editingItem, setEditingItem] = useState(null);
-// console.log(content);
-// console.log('CONTENT', content);
-// console.log('FILTERS', filters);
-// console.log('ACTIVE TAB', activeTab);
-// console.log(content[0].grade);
-// console.log(filters.class);
-// console.log('CONTENT', content);
-// console.log('FILTERS', filters);
+
  const filteredContent = useMemo(() => {
 
   
 
   return content.filter((item) => {
-    //console.log('ITEM', item);
+
 
 
     
@@ -45,7 +38,7 @@ const ContentTable = ({
   item.title
     ?.toLowerCase()
     .includes(search.toLowerCase());
-console.log('ITEM', item);
+
 const matchClass =
   !filters.class ||
   (item.grade?.name || item.grade) === filters.class;
@@ -79,15 +72,7 @@ const matchType =
   activeTab === 'all'
     ? true
     : item.type === activeTab;
-// console.log({
-//   matchClass,
-//   matchBoard,
-//   matchCourse,
-//   matchSubject,
-//   matchChapter,
-//   matchSection,
-//   matchType,
-// });
+
 
 
 return (
@@ -280,6 +265,7 @@ const handleEdit = (item) => {
                     <td>
                       <div className="table-actions">
                         <button
+                          aria-label={`View ${item.title}`}
                           onClick={() =>
                             handleView(
                               item
@@ -290,6 +276,7 @@ const handleEdit = (item) => {
                         </button>
 
                         <button
+                          aria-label={`Edit ${item.title}`}
                           onClick={() =>
                             handleEdit(
                               item
@@ -300,6 +287,7 @@ const handleEdit = (item) => {
                         </button>
 
                         <button
+                          aria-label={`Delete ${item.title}`}
                           onClick={() =>
                             handleDelete(
                               item.id

@@ -79,13 +79,17 @@ const ParentDetailsPage = () => {
         <h3>Linked Students</h3>
 
         <div className="parentdashboard-list">
-          {parent.studentNames?.length ? (
-            parent.studentNames.map((student, index) => (
+          {parent.studentList?.length ? (
+            parent.studentList.map((student, index) => (
               <div
-                key={index}
+                key={student.id || index}
                 className="parentdashboard-list-item"
+                style={{ cursor: 'pointer', transition: 'background-color 0.2s' }}
+                onClick={() => navigate(`/students/${student.id}`)}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-main-bg)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}
               >
-                <strong>{student}</strong>
+                <strong style={{ color: 'var(--color-primary)' }}>{student.name}</strong>
               </div>
             ))
           ) : (

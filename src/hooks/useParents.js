@@ -18,6 +18,10 @@ export const useParents = () =>
           phone: p.mobile || '-',
           students: p.childrenProfiles?.length || 0,
           studentNames: p.childrenProfiles?.map((cp) => cp.student?.name).filter(Boolean) || [],
+          studentList: p.childrenProfiles?.map((cp) => ({
+            id: cp.student?.id,
+            name: cp.student?.name
+          })).filter((s) => s.id && s.name) || [],
           status: p.childrenProfiles?.length > 0 ? 'Active' : 'Inactive',
         }));
       } catch {

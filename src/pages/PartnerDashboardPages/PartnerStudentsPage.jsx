@@ -11,8 +11,10 @@ import '../../styles/student-management.css';
 import '../../styles/ParentsManagement.css';
 import { useEffect } from 'react';
 import partnerService from '../../services/partner.service';
+import { useLoading } from '../../contexts/LoadingContext';
 
 export default function PartnerStudentsPage() {
+  const { setLoading } = useLoading();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -21,20 +23,19 @@ export default function PartnerStudentsPage() {
   useEffect(() => {
     const loadStudents = async () => {
       try {
-        const [studentsData, dashboardData] = await Promise.all([
-  partnerService.getStudents(),
-  partnerService.getDashboard(),
-]);
-
-setStudents(studentsData.students || []);
-setPartner(dashboardData.partner || {});
+        setLoading(true);
+        const studentsData = await partnerService.getStudents();
+        setStudents(studentsData.students || []);
+        setPartner(studentsData.partner || {});
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadStudents();
-  }, []);
+  }, [setLoading]);
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {

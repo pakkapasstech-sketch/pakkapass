@@ -176,8 +176,9 @@ const getVisiblePages = () => {
       </div>
 
       {/* Table */}
-      <div className="parents-table-wrapper">
-        <table className="parents-table">
+      <div className="student-table-card">
+        <div className="parents-table-wrapper" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
+          <table className="parents-table">
           <thead>
             <tr>
               <th>S.No</th>
@@ -225,6 +226,7 @@ const getVisiblePages = () => {
     className="table-action-btn"
     onClick={() => navigate(`/parents/${p.id}`)}
     title="View Parent"
+    aria-label={`View details for ${p.name}`}
   >
     <HiOutlineEye />
   </button>
@@ -240,43 +242,49 @@ const getVisiblePages = () => {
             )}
           </tbody>
         </table>
-        {totalParentsFiltered > 0 && (
-  <div className="pagination">
-    <p>
-      Showing {startIndex + 1} to{' '}
-      {Math.min(endIndex, totalParentsFiltered)} of{' '}
-      {totalParentsFiltered} parents
-    </p>
+      </div>
 
-    <div className="pagination-buttons">
-      <button
-        disabled={currentPage === 1}
-        onClick={() => setCurrentPage((prev) => prev - 1)}
-      >
-        <HiOutlineChevronLeft />
-      </button>
+      {totalParentsFiltered > 0 && (
+        <div className="pagination">
+          <p>
+            Showing {startIndex + 1} to{' '}
+            {Math.min(endIndex, totalParentsFiltered)} of{' '}
+            {totalParentsFiltered} parents
+          </p>
 
-      {getVisiblePages().map((page) => (
-        <button
-          key={page}
-          onClick={() => setCurrentPage(page)}
-          className={
-            currentPage === page ? 'active-page' : ''
-          }
-        >
-          {page}
-        </button>
-      ))}
+          <div className="pagination-buttons">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              aria-label="Previous Page"
+            >
+              <HiOutlineChevronLeft />
+            </button>
 
-      <button
-        disabled={currentPage === totalPages}
-        onClick={() => setCurrentPage((prev) => prev + 1)}
-      >
-        <HiOutlineChevronRight />
-      </button>
-    </div>
-  </div>
-)}
+            {getVisiblePages().map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={
+                  currentPage === page ? 'active-page' : ''
+                }
+                aria-label={`Page ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              aria-label="Next Page"
+            >
+              <HiOutlineChevronRight />
+            </button>
+          </div>
+        </div>
+      )}
       </div>
       
     </div>

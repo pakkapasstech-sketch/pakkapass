@@ -7,6 +7,7 @@ import { getPlanById, createPlan, updatePlan } from '../../services/Subscription
 import { contentService } from '../../services/content.service';
 import api from '../../api/axiosInstance';
 import toast from 'react-hot-toast';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 
 const initialForm = {
   name: '',
@@ -379,16 +380,15 @@ const CreateEditPlanPage = () => {
           )}
         </div>
 
-        {/* Status */}
-
         <div className="form-card">
           <h3>Status</h3>
 
-          <select value={formData.status} onChange={(e) => updateField('status', e.target.value)}>
-            <option value="Active">Active</option>
-
-            <option value="Inactive">Inactive</option>
-          </select>
+          <CommonFilterDropdown
+            placeholder="Select Status"
+            value={formData.status}
+            options={['Active', 'Inactive']}
+            onChange={(value) => updateField('status', value)}
+          />
         </div>
 
         {/* Actions */}

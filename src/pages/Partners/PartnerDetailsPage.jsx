@@ -3,16 +3,22 @@ import {
   HiOutlineTrash,
   HiArrowLeft,
   HiOutlineClipboardCopy,
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight,
 } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 
 import '../../styles/partnerDetails.css';
+import '../../styles/table.css';
+import '../../styles/student-table.css';
 
 import { useEffect, useState } from 'react';
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLoading } from '../../contexts/LoadingContext';
 import partnerService from '../../services/partner.service';
+import { usePartner } from '../../hooks/usePartners';
+import paymentService from '../../services/payment.service';
 
 const PartnerDetailsPage = () => {
   const navigate = useNavigate();
@@ -26,31 +32,59 @@ const PartnerDetailsPage = () => {
       toast.error('Failed to copy referral code');
     }
   };
-  const [partner, setPartner] = useState(null);
-  const [loading, setPageLoading] = useState(true);
+  const { data: res, isLoading: pageLoading } = usePartner(id);
+  const partner = res?.partner;
+  const analytics = res?.analytics;
+  const referredStudents = res?.referredStudents || [];
+  const [payments, setPayments] = useState([]);
 
-  const [analytics, setAnalytics] = useState(null);
   useEffect(() => {
-    fetchPartner();
-  }, [id]);
-  useEffect(() => {
-    return () => setLoading(false);
-  }, [setLoading]);
-  const fetchPartner = async () => {
-    try {
-      setPageLoading(true);
-      setLoading(true);
-
-      const res = await partnerService.getById(id);
-
-      setPartner(res.partner);
-      setAnalytics(res.analytics);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setPageLoading(false);
-      setLoading(false);
+    const loadPayments = async () => {
+      try {
+        const allPayments = await paymentService.getAll();
+        const partnerPayments = allPayments.filter(
+          (p) =>
+            p.partnerId === Number(id) ||
+            (partner && p.couponCode === partner.referralCode)
+        );
+        setPayments(partnerPayments);
+      } catch (err) {
+        console.error('Failed to load payments for partner:', err);
+      }
+    };
+    if (partner) {
+      loadPayments();
     }
+  }, [partner, id]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 5;
+
+  useEffect(() => {
+    setLoading(pageLoading);
+    return () => setLoading(false);
+  }, [pageLoading, setLoading]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [referredStudents]);
+
+  const totalStudents = referredStudents.length;
+  const totalPages = Math.ceil(totalStudents / studentsPerPage) || 1;
+  const startIndex = (currentPage - 1) * studentsPerPage;
+  const endIndex = startIndex + studentsPerPage;
+  const currentStudents = referredStudents.slice(startIndex, endIndex);
+
+  const getVisiblePages = () => {
+    const start = Math.max(currentPage - 2, 1);
+    const end = Math.min(currentPage + 2, totalPages);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  const calculateActualRevenue = () => {
+    return payments
+      .filter((p) => p.status === 'Success')
+      .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   };
 
   const handleDelete = async () => {
@@ -176,17 +210,123 @@ const PartnerDetailsPage = () => {
           </p>
 
           <p>
-            <span>Commission</span>
+            <span>Revenue</span>
 
-            <strong>{partner.commission}</strong>
+            <strong>₹{calculateActualRevenue().toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
           </p>
         </div>
+      </div>
 
-        <div className="detail-card revenue-card">
-          <h3>Revenue</h3>
+      {/* Referred Students Table */}
+      <div className="parentdashboard-card" style={{ marginTop: '24px', padding: '24px', background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '20px' }}>
+        <h3>Referred Students ({referredStudents.length})</h3>
+        {referredStudents.length > 0 ? (
+          <>
+            <div className="student-table-wrapper" style={{ marginTop: '1rem', overflowX: 'auto' }}>
+              <table className="student-table" style={{ width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Current Plan</th>
+                    <th>Registered On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentStudents.map((rs, index) => (
+                    <tr 
+                      key={rs.id} 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigate(`/students/${rs.student?.id}`)}
+                    >
+                      <td>{startIndex + index + 1}</td>
+                      <td><strong style={{ color: 'var(--color-primary)' }}>{rs.student?.name || 'Unknown'}</strong></td>
+                      <td>{rs.student?.email || '-'}</td>
+                      <td>{rs.student?.mobile || '-'}</td>
+                      <td>{rs.plan?.name || 'Free Trial'}</td>
+                      <td>
+                        {rs.student?.createdAt 
+                          ? new Date(rs.student.createdAt).toLocaleDateString('en-IN')
+                          : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <h1>₹{analytics?.revenue?.totalRevenue?.toLocaleString()}</h1>
-        </div>
+            {totalStudents > 0 && (
+              <div className="pagination" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
+                  Showing {startIndex + 1} to {Math.min(endIndex, totalStudents)} of {totalStudents} students
+                </p>
+
+                <div className="pagination-buttons" style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    aria-label="Previous Page"
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--color-border)',
+                      background: 'var(--color-card)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      opacity: currentPage === 1 ? 0.5 : 1
+                    }}
+                  >
+                    <HiOutlineChevronLeft />
+                  </button>
+
+                  {getVisiblePages().map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={currentPage === page ? 'active-page' : ''}
+                      aria-label={`Page ${page}`}
+                      aria-current={currentPage === page ? 'page' : undefined}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--color-border)',
+                        background: currentPage === page ? 'var(--color-primary)' : 'var(--color-card)',
+                        color: currentPage === page ? '#ffffff' : 'var(--color-text)',
+                        fontWeight: '600',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    aria-label="Next Page"
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--color-border)',
+                      background: 'var(--color-card)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      opacity: currentPage === totalPages ? 0.5 : 1
+                    }}
+                  >
+                    <HiOutlineChevronRight />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <p style={{ color: 'var(--color-text-secondary)', marginTop: '12px' }}>No students have registered using this partner's referral code yet.</p>
+        )}
       </div>
     </div>
   );

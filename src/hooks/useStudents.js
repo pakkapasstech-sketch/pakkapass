@@ -92,6 +92,7 @@ export const useStudentFilterOptions = () =>
     queryKey: ['student-filter-options'],
     queryFn: () =>
       studentService.getFilterOptions(),
+    staleTime: 5 * 60 * 1000, // 5 minutes cache duration
   });
 // Maps GET /admin/student/:id response to the shape StudentDetailsPage expects
 const mapStudentDetail = (data) => {
@@ -152,6 +153,9 @@ const mapStudentDetail = (data) => {
     class: profile?.grade?.name || 'N/A',
     board: profile?.board?.name || 'N/A',
     branch: profile?.branch?.name || 'N/A',
+    gradeId: profile?.gradeId,
+    boardId: profile?.boardId,
+    branchId: profile?.branchId,
     state: profile?.state ||'N/A',
     institution: profile?.institution || 'Not Available',
     institute: profile?.institution || 'Not Available',
