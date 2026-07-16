@@ -31,5 +31,4 @@ const ProtectedRoute = ({ permission, permissions = [], roles = [], redirectTo =
   return <Outlet />;
 };
 
-
 export default ProtectedRoute;
