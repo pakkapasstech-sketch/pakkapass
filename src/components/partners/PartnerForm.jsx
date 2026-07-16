@@ -123,18 +123,6 @@ const PartnerForm = ({ step, formData, updateField, grades = [] }) => {
                     if (file) updateField('logo', '');
                   }}
                 />
-                
-                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textAlign: 'center', margin: '2px 0' }}>— OR —</span>
-
-                <input
-                  type="url"
-                  value={typeof formData.logo === 'string' ? formData.logo : ''}
-                  onChange={(e) => {
-                    updateField('logo', e.target.value);
-                    if (e.target.value) updateField('logoFile', null);
-                  }}
-                  placeholder="Enter logo image URL"
-                />
               </div>
             </div>
           </div>
