@@ -30,6 +30,11 @@ export const studentService = {
     return data;
   },
 
+  importStudents: async (payload) => {
+    const { data } = await axiosInstance.post('/admin/import-students', payload);
+    return data;
+  },
+
   getParentStudents: async () => {
     const data = await parentService.getStudents();
     return data.students || [];

@@ -9,7 +9,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'https://api.fivopayunion.in',
+        target: 'https://api.pakkapass.in',
         changeOrigin: true,
       }
     }

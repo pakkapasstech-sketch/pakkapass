@@ -4,6 +4,7 @@ import { HiOutlineUpload, HiOutlineArrowLeft, HiOutlineX, HiOutlineDownload } fr
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import Pagination from '../../components/tables/Pagination';
+import studentService from '../../services/student.service';
 import '../../styles/import-students.css';
 import '../../styles/table.css';
 import '../../styles/student-table.css';
@@ -18,6 +19,12 @@ const ImportStudentsPage = () => {
   const [previewHeaders, setPreviewHeaders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [step, setStep] = useState(1);
+  const [planDetails, setPlanDetails] = useState({
+    name: '',
+    durationDays: 365,
+    price: 0
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0];
@@ -86,13 +93,61 @@ const ImportStudentsPage = () => {
       return;
     }
 
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
+
+    if (!planDetails.name || !planDetails.durationDays) {
+      toast.error('Please provide valid plan details.');
+      return;
+    }
+
     setIsUploading(true);
-    // Simulate upload delay
-    setTimeout(() => {
-      setIsUploading(false);
-      toast.success('Students imported successfully! (Simulation)');
+    
+    // Convert previewData (array of arrays) into an array of objects
+    const headerMapping = {
+      'Name': 'name',
+      'Email': 'email',
+      'Mobile': 'mobile',
+      'Phone': 'mobile',
+      'Phone Number': 'mobile',
+      'Class': 'class',
+      'Grade': 'class',
+      'Board': 'board',
+      'Branch': 'branch',
+      'Institution': 'institution',
+      'Institute': 'institution',
+      'State': 'state',
+      'District': 'district',
+      'City': 'city',
+      'Parent Name': 'parentName',
+      'Parent Email': 'parentEmail',
+      'Parent Mobile': 'parentMobile'
+    };
+
+    const studentsData = previewData.map(row => {
+      const studentObj = {};
+      previewHeaders.forEach((header, index) => {
+        const mappedHeader = headerMapping[header] || header.toLowerCase().replace(/\s+(.)/g, match => match[1].toUpperCase());
+        studentObj[mappedHeader] = row[index];
+      });
+      return studentObj;
+    });
+
+    try {
+      await studentService.importStudents({
+        studentsData,
+        planDetails
+      });
+      toast.success('Students imported and plan created successfully!');
       navigate('/students');
-    }, 1500);
+    } catch (error) {
+      console.error("Import error:", error);
+      toast.error(error.response?.data?.message || 'Failed to import students.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDownloadTemplate = () => {
@@ -182,7 +237,7 @@ const ImportStudentsPage = () => {
         )}
       </div>
 
-      {previewData.length > 0 && (
+      {step === 1 && previewData.length > 0 && (
         <div className="import-preview-section" style={{ marginTop: '24px', border: '1px solid var(--color-border)', borderRadius: '8px', background: 'var(--color-surface)', width: '100%' }}>
           <h3 style={{ padding: '16px', borderBottom: '1px solid var(--color-border)', fontSize: '16px', fontWeight: '600' }}>
             Data Preview ({previewData.length} records found)
@@ -222,20 +277,65 @@ const ImportStudentsPage = () => {
         </div>
       )}
 
+      {step === 2 && (
+        <div className="import-preview-section" style={{ marginTop: '24px', border: '1px solid var(--color-border)', borderRadius: '8px', background: 'var(--color-surface)', width: '100%', padding: '24px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>Step 2: Create Subscription Plan</h3>
+          <p style={{ marginBottom: '24px', color: 'var(--color-text-secondary)' }}>
+            Provide plan details for this imported batch. All {previewData.length} students will be subscribed to this plan.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '400px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>Plan Name</label>
+              <input 
+                type="text" 
+                value={planDetails.name}
+                onChange={(e) => setPlanDetails(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g. Batch 2026 Yearly Plan"
+                style={{ padding: '10px 12px', border: '1px solid var(--color-border)', borderRadius: '6px' }}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>Duration (Days)</label>
+              <input 
+                type="number" 
+                value={planDetails.durationDays}
+                onChange={(e) => setPlanDetails(prev => ({ ...prev, durationDays: parseInt(e.target.value) || 0 }))}
+                style={{ padding: '10px 12px', border: '1px solid var(--color-border)', borderRadius: '6px' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>Price (Optional)</label>
+              <input 
+                type="number" 
+                value={planDetails.price}
+                onChange={(e) => setPlanDetails(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                style={{ padding: '10px 12px', border: '1px solid var(--color-border)', borderRadius: '6px' }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="import-actions" style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px', width: '100%' }}>
         <button 
           className="import-cancel-btn"
-          onClick={() => navigate('/students')}
+          onClick={() => {
+            if (step === 2) setStep(1);
+            else navigate('/students');
+          }}
           disabled={isUploading}
         >
-          Cancel
+          {step === 2 ? 'Back' : 'Cancel'}
         </button>
         <button 
           className="import-submit-btn"
           onClick={handleImport}
-          disabled={!selectedFile || isUploading}
+          disabled={!selectedFile || isUploading || (step === 2 && !planDetails.name)}
         >
-          {isUploading ? 'Importing...' : 'Import Students'}
+          {isUploading ? 'Processing...' : (step === 1 ? 'Next: Create Plan' : 'Submit Import')}
         </button>
       </div>
     </div>
