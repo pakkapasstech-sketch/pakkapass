@@ -8,7 +8,7 @@ import StudentTable from './StudentTable';
 
 import ErrorState from '../../components/loaders/ErrorState';
 
-import { useStudents } from '../../hooks/useStudents';
+import { useStudents, useInactiveStudents } from '../../hooks/useStudents';
 import { usePermissions } from '../../auth/usePermissions';
 import { PERMISSIONS } from '../../auth/permissions';
 import { usePartners } from '../../hooks/usePartners';
@@ -34,12 +34,26 @@ const StudentManagementPage = () => {
   const location =
     useLocation();
 
+  const [showInactive, setShowInactive] = useState(false);
+
   const {
-    data: students = [],
-    isLoading,
-    isError,
-    refetch,
+    data: activeStudents = [],
+    isLoading: activeLoading,
+    isError: activeError,
+    refetch: refetchActive,
   } = useStudents();
+
+  const {
+    data: inactiveStudents = [],
+    isLoading: inactiveLoading,
+    isError: inactiveError,
+    refetch: refetchInactive,
+  } = useInactiveStudents(showInactive);
+
+  const students = showInactive ? inactiveStudents : activeStudents;
+  const isLoading = showInactive ? inactiveLoading : activeLoading;
+  const isError = showInactive ? inactiveError : activeError;
+  const refetch = showInactive ? refetchInactive : refetchActive;
 
   const { data: partnersData } = usePartners({ limit: 1000 });
   const partners = partnersData?.partners || partnersData || [];
@@ -176,10 +190,10 @@ const stateMatch =
       <div className="page-header flex justify-between items-start flex-wrap gap-6">
         <div>
           <h1 className="page-title">
-            Student Management
+            {showInactive ? 'Inactive Students (> 1 Week)' : 'Student Management'}
           </h1>
           <p className="page-subtitle">
-            Search students, manage records, and view their details.
+            {showInactive ? 'Viewing students who have been inactive for more than a week.' : 'Search students, manage records, and view their details.'}
           </p>
         </div>
         <div className="header-actions flex gap-4">
@@ -213,6 +227,24 @@ const stateMatch =
           >
             <HiOutlineUpload />
             Import
+          </button>
+          <button
+            type="button"
+            className="secondary-btn flex items-center gap-2"
+            style={{ 
+              height: '44px', 
+              padding: '0 16px', 
+              borderRadius: '12px', 
+              border: showInactive ? '1px solid #ef4444' : '1px solid var(--color-border)', 
+              background: showInactive ? 'rgba(239, 68, 68, 0.1)' : 'var(--color-card)', 
+              color: showInactive ? '#ef4444' : 'var(--color-text-primary)', 
+              fontWeight: '600', 
+              fontSize: '14px', 
+              cursor: 'pointer' 
+            }}
+            onClick={() => setShowInactive(!showInactive)}
+          >
+            {showInactive ? 'All Students' : 'Inactive Students'}
           </button>
           <button
             type="button"

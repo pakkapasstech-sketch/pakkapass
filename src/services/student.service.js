@@ -171,6 +171,11 @@ getTransactions: async (studentId) => {
   }
 },
 
+getInactiveStudents: async () => {
+  const { data } = await axiosInstance.get('/admin/inactive-students');
+  return data.inactiveStudents || [];
+},
+
 getActivities: async (studentId) => {
   const { data } = await axiosInstance.get(`/student/${studentId}/activities`);
   return data;

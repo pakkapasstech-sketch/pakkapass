@@ -197,4 +197,15 @@ export const useStudentActivities = (studentId) =>
     enabled: !!studentId,
   });
 
+export const useInactiveStudents = (enabled = true) =>
+  useQuery({
+    queryKey: ['inactive-students'],
+    queryFn: async () => {
+      const data = await studentService.getInactiveStudents();
+      const mappedData = data.map(mapStudent);
+      return mappedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    },
+    enabled,
+  });
+
 export default useStudents;
