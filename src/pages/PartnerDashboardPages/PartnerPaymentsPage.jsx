@@ -290,63 +290,65 @@ const [summary, setSummary] = useState({
           }
         />
       </div>
-            <div className="parents-table-wrapper">
-        <table className="parents-table">
-          <thead>
-            <tr>
-              <th>Payment ID</th>
-              <th>Student</th>
-              <th>Plan</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Payment Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {currentPayments.length > 0 ? (
-              currentPayments.map((payment) => (
-                <tr key={payment.id}>
-                  <td>{payment.id}</td>
-
-                  <td>{payment.student}</td>
-
-                  <td>{payment.plan}</td>
-
-                  <td>
-₹{Number(payment.amount).toLocaleString()}                  </td>
-
-
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        payment.status === 'Success'
-                          ? 'active'
-                          : payment.status === 'Pending'
-                          ? 'pending'
-                          : 'inactive'
-                      }`}
-                    >
-                      {payment.status}
-                    </span>
-                  </td>
-
-<td>
-  {new Date(payment.paymentDate).toLocaleDateString()}
-</td>                </tr>
-              ))
-            ) : (
+            <div className="student-table-card">
+        <div className="student-table-wrapper">
+          <table className="parents-table">
+            <thead>
               <tr>
-                <td
-                  colSpan="6"
-                  className="empty-table"
-                >
-                  No payments found
-                </td>
+                <th>Payment ID</th>
+                <th>Student</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Payment Date</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {currentPayments.length > 0 ? (
+                currentPayments.map((payment) => (
+                  <tr key={payment.id}>
+                    <td>{payment.id}</td>
+
+                    <td>{payment.student}</td>
+
+                    <td>{payment.plan}</td>
+
+                    <td>
+  ₹{Number(payment.amount).toLocaleString()}                  </td>
+
+
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          payment.status === 'Success'
+                            ? 'active'
+                            : payment.status === 'Pending'
+                            ? 'pending'
+                            : 'inactive'
+                        }`}
+                      >
+                        {payment.status}
+                      </span>
+                    </td>
+
+  <td>
+    {new Date(payment.paymentDate).toLocaleDateString()}
+  </td>                </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="empty-table"
+                  >
+                    No payments found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {totalPayments > 0 && (
           <div className="pagination">

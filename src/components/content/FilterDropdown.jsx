@@ -70,9 +70,9 @@ const FilterDropdown = ({
           setOpen(!open)
         }
       >
-        <span>
-  {value || label}
-</span>
+        <span title={value || label}>
+          {value || label}
+        </span>
 
         <HiOutlineChevronDown />
       </button>
@@ -99,6 +99,7 @@ const FilterDropdown = ({
                 <button
                   key={item}
                   className="filter-option"
+                  title={item}
                   onClick={() => {
                     onSelect(
                       item

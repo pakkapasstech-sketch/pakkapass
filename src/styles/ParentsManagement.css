@@ -174,7 +174,7 @@
 }
 
 .parents-table {
-  background: white;
+  background: var(--color-card);
   width: 100%;
   border-collapse: collapse;
 }
@@ -558,6 +558,11 @@
   border-color: var(--color-border);
 }
 
+.dark .parents-table,
+[data-theme='dark'] .parents-table {
+  background: var(--color-card);
+}
+
 .dark .parents-table th,
 [data-theme='dark'] .parents-table th {
   background: var(--color-surface);
@@ -568,6 +573,17 @@
 [data-theme='dark'] .parents-table td {
   color: var(--color-text-primary);
   border-top-color: var(--color-border);
+}
+
+.dark .table-action-btn,
+[data-theme='dark'] .table-action-btn {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.dark .table-action-btn svg,
+[data-theme='dark'] .table-action-btn svg {
+  color: var(--color-text-primary);
 }
 
 .dark .parent-row:hover,

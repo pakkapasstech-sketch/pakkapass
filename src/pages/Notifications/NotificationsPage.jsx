@@ -804,32 +804,31 @@ const handleSelectNotification = async (notification) => {
 )}
 
 {notificationToDelete && (
-  <div className="notification-modal-overlay">
-    <div className="notification-modal">
-      <div className="notification-modal-header">
-        <h3 className="notification-modal-title">Delete Notification</h3>
+  <div className="delete-confirmation-overlay">
+    <div className="delete-confirmation-modal">
+      <div className="delete-confirmation-header">
+        <h3 className="delete-confirmation-title">Delete Notification</h3>
         <button
-          className="notification-modal-close"
+          className="delete-confirmation-close"
           onClick={() => setNotificationToDelete(null)}
           aria-label="Close modal"
         >
           <HiOutlineX />
         </button>
       </div>
-      <div className="notification-modal-body">
-        <p style={{ marginTop: '16px' }}>Are you sure you want to delete this notification?</p>
-        <p style={{ fontWeight: '600', marginTop: '8px' }}>{notificationToDelete.title}</p>
+      <div className="delete-confirmation-body">
+        <p>Are you sure you want to delete this notification?</p>
+        <p className="delete-confirmation-target">{notificationToDelete.title}</p>
       </div>
-      <div className="modal-actions" style={{ marginTop: '32px' }}>
+      <div className="delete-confirmation-actions">
         <button
-          className="notification-cancel-btn"
+          className="delete-confirmation-cancel"
           onClick={() => setNotificationToDelete(null)}
         >
           Cancel
         </button>
         <button
-          className="notification-submit-btn"
-          style={{ background: '#dc2626' }}
+          className="delete-confirmation-submit"
           onClick={() => {
             deleteNotification(notificationToDelete.id);
             setNotificationToDelete(null);

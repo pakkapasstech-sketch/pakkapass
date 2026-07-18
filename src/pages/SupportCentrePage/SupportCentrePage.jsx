@@ -301,11 +301,11 @@ const SupportCentrePage = () => {
                         <td style={{ fontWeight: '500' }}>{ticket.id}</td>
                         <td style={{ fontWeight: '600', color: 'var(--color-text-primary)' }}>{ticket.student?.name || ticket.name}</td>
                         <td style={{ color: 'var(--color-text-secondary)' }}>{ticket.student?.email || ticket.email}</td>
-                          <td style={{ maxWidth: '300px', color: 'var(--color-text-secondary)' }}>
-                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {ticket.message}
-                            </div>
-                          </td>
+                           <td style={{ maxWidth: '300px', color: 'var(--color-text-secondary)' }}>
+                             <div title={ticket.message} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                               {ticket.message && ticket.message.length > 50 ? `${ticket.message.slice(0, 50)}...` : ticket.message}
+                             </div>
+                           </td>
                         <td>
                           <span className={`ticket-status ${ticket.status.toLowerCase()}`}>
                             {ticket.status}

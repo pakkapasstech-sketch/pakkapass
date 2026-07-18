@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import partnerService from '../../services/partner.service';
+import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 //import StatisticCard from '../../components/cards/StatisticCard';
 
 import '../../styles/PartnerProfile.css';
@@ -291,17 +292,18 @@ const handleLogo = (e) => {
 
             <div>
               <label>Gender</label>
-              <select
-                name="gender"
+              <CommonFilterDropdown
+                placeholder="Select Gender"
                 value={partner.gender || ''}
-                onChange={handleChange}
+                options={['Male', 'Female', 'Other']}
+                onChange={(val) => {
+                  setPartner((prev) => ({
+                    ...prev,
+                    gender: val,
+                  }));
+                }}
                 disabled={!editing}
-              >
-                <option value="">Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
+              />
             </div>
 
             <div>

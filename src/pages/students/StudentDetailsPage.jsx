@@ -6,12 +6,18 @@ import {
   HiOutlineMail,
   HiOutlineOfficeBuilding,
   HiOutlineLocationMarker,
+  HiOutlineLogin,
+  HiOutlineUser,
+  HiOutlineBookOpen,
+  HiOutlineCheckCircle,
+  HiOutlineCreditCard,
+  HiOutlineClock,
 } from 'react-icons/hi';
 
 import '../../styles/student-details.css';
 import '../../styles/table.css';
 import '../../styles/student-table.css';
-import { useStudent, useStudentFilterOptions } from '../../hooks/useStudents';
+import useStudents, { useStudent, useStudentFilterOptions, useStudentActivities } from '../../hooks/useStudents';
 import { useLoading } from '../../contexts/LoadingContext';
 
 import ErrorState from '../../components/loaders/ErrorState';
@@ -30,10 +36,67 @@ const StudentDetailsPage = () => {
   const { setLoading } = useLoading();
   const { data: student, isLoading, isError, refetch } = useStudent(id);
   const { data: filterOptions } = useStudentFilterOptions();
+  const { data: activities = [] } = useStudentActivities(id);
+  const { data: allStudents } = useStudents();
+  const currentStudentFromAll = allStudents?.find(s => String(s.id) === String(id));
+  const deviceModel = currentStudentFromAll?.deviceModel || 'N/A';
+  const ipAddress = currentStudentFromAll?.ipAddress || 'N/A';
 
   const gradeName = filterOptions?.grades?.find(g => String(g.id) === String(student?.gradeId))?.name || student?.class || 'N/A';
   const boardName = filterOptions?.boards?.find(b => String(b.id) === String(student?.boardId))?.name || student?.board || 'N/A';
   const branchName = filterOptions?.branches?.find(br => String(br.id) === String(student?.branchId))?.name || student?.branch || 'N/A';
+
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'LOGIN':
+        return <HiOutlineLogin />;
+      case 'CREATE_PROFILE':
+      case 'PROFILE_UPDATED':
+        return <HiOutlineUser />;
+      case 'STUDY_SESSION':
+        return <HiOutlineBookOpen />;
+      case 'TOPIC_COMPLETED':
+        return <HiOutlineCheckCircle />;
+      case 'PLAN_SELECTED':
+      case 'TRIAL_STARTED':
+      case 'PAYMENT_SUCCESS':
+        return <HiOutlineCreditCard />;
+      default:
+        return <HiOutlineClock />;
+    }
+  };
+
+  const getActivityLabel = (type) => {
+    switch (type) {
+      case 'LOGIN':
+        return 'Login';
+      case 'CREATE_PROFILE':
+        return 'Profile Created';
+      case 'PROFILE_UPDATED':
+        return 'Profile Updated';
+      case 'STUDY_SESSION':
+        return 'Study Session';
+      case 'TOPIC_COMPLETED':
+        return 'Topic Completed';
+      case 'PLAN_SELECTED':
+        return 'Plan Selected';
+      case 'TRIAL_STARTED':
+        return 'Free Trial Started';
+      case 'PAYMENT_SUCCESS':
+        return 'Subscription Purchased';
+      default:
+        return type?.replace('_', ' ') || '';
+    }
+  };
+
+  const formatActivityDescription = (description) => {
+    if (!description) return '';
+    let formatted = description.replace(/^[Yy]ou\s+/, '');
+    if (formatted.length > 0) {
+      formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    }
+    return formatted;
+  };
 
   const [activeTab, setActiveTab] =
     useState('Overview');
@@ -251,6 +314,16 @@ useEffect(() => {
             <span>Subscription</span>
             <strong>{student.plan}</strong>
           </div>
+
+          <div className="info-item">
+            <span>Device Model</span>
+            <strong>{deviceModel}</strong>
+          </div>
+
+          <div className="info-item">
+            <span>IP Address</span>
+            <strong>{ipAddress}</strong>
+          </div>
         </div>
 
         {/* <div className="last-login">
@@ -266,6 +339,11 @@ useEffect(() => {
           <div className="activity-item">
             <span>Total Study Hours</span>
             <strong>{student.totalHours}h</strong>
+          </div>
+
+          <div className="activity-item">
+            <span>Today's Study Hours</span>
+            <strong>{student.todayHours}h</strong>
           </div>
 
           <div className="activity-item">
@@ -350,6 +428,11 @@ useEffect(() => {
           <span>Total Study Hours</span>
           <strong>{student.totalHours}h</strong>
         </div>
+
+        <div className="activity-item">
+          <span>Today's Study Hours</span>
+          <strong>{student.todayHours}h</strong>
+        </div>
       </div>
 
       <h3 className="usage-title">
@@ -378,6 +461,46 @@ useEffect(() => {
         ))
       ) : (
         <p>No study activity recorded yet.</p>
+      )}
+
+      <h3 className="usage-title" style={{ marginTop: '32px' }}>
+        Detailed Activity Log
+      </h3>
+
+      {activities.length > 0 ? (
+        <div className="activity-timeline-wrapper">
+          <div className="activity-timeline">
+            {activities.map((activity) => (
+              <div 
+                key={activity.id} 
+                className={`timeline-event ${activity.actionType?.toLowerCase()}`}
+              >
+                <div className="timeline-icon-wrapper">
+                  {getActivityIcon(activity.actionType)}
+                </div>
+                <div className="timeline-content">
+                  <div className="timeline-header">
+                    <span className="timeline-type">
+                      {getActivityLabel(activity.actionType)}
+                    </span>
+                    <span className="timeline-time">
+                      {new Date(activity.createdAt).toLocaleString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                  <p className="timeline-desc">{formatActivityDescription(activity.description)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p>No detailed activity logged yet.</p>
       )}
     </section>
   )}

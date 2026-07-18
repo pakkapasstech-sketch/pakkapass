@@ -5,9 +5,10 @@ import '../../styles/student-filters.css';
 import { useStudents, useStudentFilterOptions } from '../../hooks/useStudents';
 import CommonFilterDropdown from '../../components/common/CommonFilterDropdown';
 const statuses = [
-  'All',
+  'All Status',
   'Active',
   'Inactive',
+  'Trial',
 ];
 
 const StudentFilters = ({
@@ -99,6 +100,17 @@ const StudentFilters = ({
             }
           />
         </div>
+
+        <div className="status-dropdown-wrapper">
+          <CommonFilterDropdown
+            placeholder="All Status"
+            value={filters.status || 'All Status'}
+            options={statuses}
+            onChange={(value) =>
+              handleChange('status', value)
+            }
+          />
+        </div>
       </div>
 
       {/* 
@@ -130,15 +142,6 @@ const StudentFilters = ({
           ]}
           onChange={(value) =>
             handleChange('state', value)
-          }
-        />
-
-        <CommonFilterDropdown
-          placeholder="All Status"
-          value={filters.status || 'All'}
-          options={statuses}
-          onChange={(value) =>
-            handleChange('status', value)
           }
         />
       </div>

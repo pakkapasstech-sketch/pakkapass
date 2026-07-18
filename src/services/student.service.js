@@ -170,6 +170,11 @@ getTransactions: async (studentId) => {
     return { summary: { totalPaid: 0, totalTransactions: 0, successfulPayments: 0 }, transactions: [] };
   }
 },
+
+getActivities: async (studentId) => {
+  const { data } = await axiosInstance.get(`/student/${studentId}/activities`);
+  return data;
+},
 };
 
 export default studentService;

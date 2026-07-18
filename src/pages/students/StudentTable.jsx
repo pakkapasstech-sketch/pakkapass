@@ -131,7 +131,9 @@ const StudentTable = ({
                         ? 'status-active'
                         : student.status === 'Inactive'
                           ? 'status-inactive'
-                          : 'status-pending'
+                          : student.status === 'Trial'
+                            ? 'status-trial'
+                            : 'status-pending'
                     }`}
                   >
                     {student.status}

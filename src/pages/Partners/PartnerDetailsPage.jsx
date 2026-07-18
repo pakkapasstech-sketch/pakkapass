@@ -232,6 +232,7 @@ const PartnerDetailsPage = () => {
                     <th>Mobile</th>
                     <th>Current Plan</th>
                     <th>Registered On</th>
+                    <th>Expiry Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,6 +250,11 @@ const PartnerDetailsPage = () => {
                       <td>
                         {rs.student?.createdAt 
                           ? new Date(rs.student.createdAt).toLocaleDateString('en-IN')
+                          : '-'}
+                      </td>
+                      <td>
+                        {rs.planExpiryDate 
+                          ? new Date(rs.planExpiryDate).toLocaleDateString('en-IN')
                           : '-'}
                       </td>
                     </tr>

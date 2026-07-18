@@ -84,6 +84,12 @@ const RecentPaymentsPage = () => {
     return payments.filter((payment) => {
       const searchTerm = search.trim().toLowerCase();
 
+      const sInfo = studentMap[payment.student?.trim().toLowerCase()];
+      const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
+      const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+      const isDiscounted = planPrice ? (Number(planPrice) > Number(payment.amount)) : !!partner?.referralCode;
+      const resolvedReferralCode = isDiscounted ? (partner?.referralCode || 'Null') : 'Null';
+
       const matchesSearch =
         searchTerm === '' ||
         String(studentIdMap[payment.student?.trim().toLowerCase()] || '')
@@ -94,7 +100,7 @@ const RecentPaymentsPage = () => {
         String(payment.amount || '')
           .toLowerCase()
           .includes(searchTerm) ||
-        (payment.referralCode || 'null').toLowerCase().includes(searchTerm) ||
+        resolvedReferralCode.toLowerCase().includes(searchTerm) ||
         (payment.status || '').toLowerCase().includes(searchTerm) ||
         (payment.date ? formatDate(payment.date).toLowerCase() : '').includes(searchTerm);
 
@@ -104,10 +110,21 @@ const RecentPaymentsPage = () => {
 
       return matchesSearch && matchesPlan && matchesStatus;
     });
-  }, [payments, search, selectedPlan, selectedStatus]);
+  }, [payments, search, selectedPlan, selectedStatus, studentIdMap, studentMap, planPriceMap, partnerMap]);
   const totalRevenue = payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
-
-  const totalPayments = payments.length;
+  const totalDiscount = useMemo(() => {
+    return payments.reduce((sum, payment) => {
+      const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
+      if (planPrice) {
+        const pPrice = Number(planPrice);
+        const pAmount = Number(payment.amount);
+        if (pPrice > pAmount) {
+          return sum + (pPrice - pAmount);
+        }
+      }
+      return sum;
+    }, 0);
+  }, [payments, planPriceMap]);
 
   const successfulPayments = payments.filter((payment) => payment.status === 'Success').length;
 
@@ -204,19 +221,19 @@ useEffect(() => {
                 { header: 'Actual Amount Paid', accessor: (r) => `₹${r.amount}` },
                 { header: 'Discount Value', accessor: (r) => {
                   const planPrice = planPriceMap[r.plan?.trim().toLowerCase()];
-                  if (planPrice && planPrice > r.amount) {
+                  if (planPrice && Number(planPrice) > Number(r.amount)) {
                     const sInfo = studentMap[r.student?.trim().toLowerCase()];
                     const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
                     if (partner) {
                       return partner.discountType === 'Percentage Based' ? `${partner.discountValue}%` : `₹${partner.discountValue}`;
                     }
-                    return `₹${planPrice - r.amount}`;
+                    return `₹${Number(planPrice) - Number(r.amount)}`;
                   }
                   return '—';
                 }},
                 { header: 'Referral Code', accessor: (r) => {
                   const planPrice = planPriceMap[r.plan?.trim().toLowerCase()];
-                  if (planPrice && planPrice > r.amount) {
+                  if (planPrice && Number(planPrice) > Number(r.amount)) {
                     const sInfo = studentMap[r.student?.trim().toLowerCase()];
                     const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
                     return partner?.referralCode || 'Null';
@@ -234,7 +251,7 @@ useEffect(() => {
           </button>
         </div>
       </div>
-      <div className="dashboard-stats-grid">
+      <div className="dashboard-stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <StatisticCard
           title="Total Revenue"
           value={`₹${totalRevenue.toLocaleString('en-IN')}`}
@@ -244,8 +261,8 @@ useEffect(() => {
         />
 
         <StatisticCard
-          title="Total Payments"
-          value={totalPayments}
+          title="Total Amount Discounted"
+          value={`₹${totalDiscount.toLocaleString('en-IN')}`}
           icon="subscriptions"
           iconBg="bg-blue-100"
           iconColor="text-blue-600"
@@ -257,14 +274,6 @@ useEffect(() => {
           icon="success"
           iconBg="bg-emerald-100"
           iconColor="text-emerald-600"
-        />
-
-        <StatisticCard
-          title="Pending Payments"
-          value={pendingPayments}
-          icon="clock"
-          iconBg="bg-yellow-100"
-          iconColor="text-yellow-600"
         />
       </div>
       <div className="payments-filters">
@@ -313,7 +322,7 @@ useEffect(() => {
                   const sInfo = studentMap[payment.student?.trim().toLowerCase()];
                   const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
                   const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
-                  const isDiscounted = planPrice ? (planPrice > payment.amount) : !!partner?.referralCode;
+                  const isDiscounted = planPrice ? (Number(planPrice) > Number(payment.amount)) : !!partner?.referralCode;
                   const referralCode = isDiscounted ? (partner?.referralCode || 'Null') : 'Null';
                   
                   // Calculate discount label
@@ -326,7 +335,7 @@ useEffect(() => {
                         discountLabel = `₹${Number(partner.discountValue).toFixed(2)}`;
                       }
                     } else {
-                      discountLabel = `₹${Number(planPrice - payment.amount).toFixed(2)}`;
+                      discountLabel = `₹${Number(Number(planPrice) - Number(payment.amount)).toFixed(2)}`;
                     }
                   }
 
@@ -490,7 +499,7 @@ useEffect(() => {
                   {(() => {
                     const planPrice = planPriceMap[selectedPayment.plan?.trim().toLowerCase()];
                     const partner = studentInfo?.profile?.partnerId ? partnerMap[String(studentInfo.profile.partnerId)] : null;
-                    const isDiscounted = planPrice ? (planPrice > selectedPayment.amount) : !!partner?.referralCode;
+                    const isDiscounted = planPrice ? (Number(planPrice) > Number(selectedPayment.amount)) : !!partner?.referralCode;
                     if (!isDiscounted || !partner?.referralCode) return null;
                     return (
                       <>

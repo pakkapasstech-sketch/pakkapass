@@ -33,6 +33,8 @@ const mapStudent = (s) => {
     photo: s.profilePic,
     createdAt: s.createdAt,
     profile: s.profile,
+    deviceModel: s.deviceModel || 'N/A',
+    ipAddress: s.ipAddress || 'N/A',
   };
 };
 export const useStudents = () => {
@@ -181,10 +183,18 @@ const mapStudentDetail = (data) => {
         })
       : subscriptionHistory,
     totalHours: analytics?.totalHours ? parseFloat(analytics.totalHours).toFixed(1) : '0',
+    todayHours: analytics?.todayHours ? parseFloat(analytics.todayHours).toFixed(1) : '0.0',
     subjectWiseUsage: analytics?.subjectsProgress 
       ? analytics.subjectsProgress.map(s => ({ subject: s.name, percentage: s.progress }))
       : (analytics?.subjectWiseUsage || []),
   };
 };
+
+export const useStudentActivities = (studentId) =>
+  useQuery({
+    queryKey: ['student-activities', studentId],
+    queryFn: () => studentService.getActivities(studentId),
+    enabled: !!studentId,
+  });
 
 export default useStudents;

@@ -15,6 +15,7 @@ const LogoutConfirmModal = ({
     isOpen={isOpen}
     onClose={onClose}
     title=""
+    size="sm"
   >
     <div className="logout-modal-content">
       <div className="logout-icon">

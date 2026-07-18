@@ -125,6 +125,14 @@
 
 @media (max-width: 500px) {
   .logout-modal-actions {
-    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .logout-cancel-btn,
+  .logout-confirm-btn {
+    height: 44px;
+    font-size: 14px;
+    border-radius: 12px;
   }
 }
