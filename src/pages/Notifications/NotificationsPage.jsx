@@ -141,7 +141,7 @@ const handleSelectNotification = async (notification) => {
   }
 };
   const { data: notificationsData, isSuccess, isLoading } = useQuery({
-    queryKey: ['notifications'],
+    queryKey: ['notifications', user?.role, user?.id],
     queryFn: async () => {
       const { data } = await notificationService.getNotifications();
       const role = user?.role?.toUpperCase();
