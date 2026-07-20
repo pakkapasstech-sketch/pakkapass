@@ -216,7 +216,27 @@ const getAddTitle = () =>
           label="Class"
           value={filters.class}
           options={classOptions}
-          onSelect={(v) => update('class', v)}
+          onSelect={(v) => {
+            const grade = options?.grades?.find((g) => g.name === v);
+            setFilters((prev) => ({
+              ...prev,
+              class: v,
+              classId: grade?.id || '',
+              board: '',
+              boardId: '',
+              course: '',
+              courseId: '',
+              subject: '',
+              subjectId: '',
+              selectedContentType: '',
+              selectedContentTypeId: '',
+              chapter: '',
+              chapterId: '',
+              section: '',
+              sectionId: '',
+              contentType: '',
+            }));
+          }}
           onAdd={() => setModal('Add Class')}
         />
 
@@ -227,7 +247,27 @@ const getAddTitle = () =>
           value={filters.board}
           disabled={!filters.class}
           options={boardOptions}
-          onSelect={(v) => update('board', v)}
+          onSelect={(v) => {
+            const board = options?.boards?.find(
+              (b) => b.name === v && (b.gradeId === selectedGradeObj?.id || !b.gradeId)
+            );
+            setFilters((prev) => ({
+              ...prev,
+              board: v,
+              boardId: board?.id || '',
+              course: '',
+              courseId: '',
+              subject: '',
+              subjectId: '',
+              selectedContentType: '',
+              selectedContentTypeId: '',
+              chapter: '',
+              chapterId: '',
+              section: '',
+              sectionId: '',
+              contentType: '',
+            }));
+          }}
           onAdd={() => setModal('Add Board')}
         />
 
@@ -239,7 +279,25 @@ const getAddTitle = () =>
             value={filters.course}
             disabled={!filters.board}
             options={courseOptions}
-            onSelect={(v) => update('course', v)}
+            onSelect={(v) => {
+              const branch = options?.branches?.find(
+                (br) => br.name === v && (br.gradeId === selectedGradeObj?.id || !br.gradeId)
+              );
+              setFilters((prev) => ({
+                ...prev,
+                course: v,
+                courseId: branch?.id || '',
+                subject: '',
+                subjectId: '',
+                selectedContentType: '',
+                selectedContentTypeId: '',
+                chapter: '',
+                chapterId: '',
+                section: '',
+                sectionId: '',
+                contentType: '',
+              }));
+            }}
             onAdd={() => setModal('Add Course')}
           />
         )}
@@ -251,7 +309,27 @@ const getAddTitle = () =>
           value={filters.subject}
           disabled={showCourse ? !filters.course : !filters.board}
           options={subjectOptions}
-          onSelect={(v) => update('subject', v)}
+          onSelect={(v) => {
+            const subject = options?.subjects?.find(
+              (s) =>
+                s.name === v &&
+                s.grade?.name === filters.class &&
+                s.board?.name === filters.board &&
+                (!showCourse || s.branch?.name === filters.course)
+            );
+            setFilters((prev) => ({
+              ...prev,
+              subject: v,
+              subjectId: subject?.id || '',
+              selectedContentType: '',
+              selectedContentTypeId: '',
+              chapter: '',
+              chapterId: '',
+              section: '',
+              sectionId: '',
+              contentType: '',
+            }));
+          }}
           onAdd={() => setModal('Add Subject')}
         />
 <FilterDropdown
@@ -277,6 +355,7 @@ const getAddTitle = () =>
       chapter: '',
       chapterId: '',
       section: '',
+      sectionId: '',
       contentType: '',
     }));
   }}
@@ -310,6 +389,7 @@ disabled={
       chapter: v,
       chapterId: chapter?.id || '',
       section: '',
+      sectionId: '',
       contentType: '',
     }));
   }}
@@ -323,7 +403,17 @@ disabled={
           value={filters.section}
           disabled={!filters.chapter}
           options={sectionOptions}
-          onSelect={(v) => update('section', v)}
+          onSelect={(v) => {
+            const topic = options?.topics?.find(
+              (t) => t.name === v && Number(t.chapterId) === Number(selectedChapterObj?.id)
+            );
+            setFilters((prev) => ({
+              ...prev,
+              section: v,
+              sectionId: topic?.id || '',
+              contentType: '',
+            }));
+          }}
           onAdd={() => setModal('Add Section')}
         />
 

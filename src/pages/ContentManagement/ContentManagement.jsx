@@ -22,9 +22,13 @@ const ContentManagement = () => {
 
   const [selectedFilters, setSelectedFilters] = useState({
     class: '',
+    classId: '',
     board: '',
+    boardId: '',
     course: '',
+    courseId: '',
     subject: '',
+    subjectId: '',
 
     selectedContentType: '',
     selectedContentTypeId: '',
@@ -33,6 +37,7 @@ const ContentManagement = () => {
     chapterId: '',
 
     section: '',
+    sectionId: '',
 
     contentType: '',
   });

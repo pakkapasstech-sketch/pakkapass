@@ -151,7 +151,7 @@ const ImportStudentsPage = () => {
   };
 
   const handleDownloadTemplate = () => {
-    const headers = ['Name', 'Email', 'Mobile', 'Class', 'Board', 'Institution', 'Parent Name', 'Parent Email', 'Parent Mobile'];
+    const headers = ['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile','Parent Email', 'Institute', 'State', 'District', 'City'];
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
