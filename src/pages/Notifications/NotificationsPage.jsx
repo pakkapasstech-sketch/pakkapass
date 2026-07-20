@@ -144,7 +144,22 @@ const handleSelectNotification = async (notification) => {
     queryKey: ['notifications'],
     queryFn: async () => {
       const { data } = await notificationService.getNotifications();
-      return data.map((item) => ({
+      const role = user?.role?.toUpperCase();
+      const filteredData = (data || []).filter((item) => {
+        if (role === 'ADMIN') return true;
+        if (item.audience === undefined) return true;
+        if (role === 'PARTNER' || role === 'INSTITUTE') {
+          return item.audience === 'All Partners' || Number(item.partnerId) === Number(user?.partnerProfile?.id);
+        }
+        if (role === 'PARENT') {
+          return item.audience === 'All Parents';
+        }
+        if (role === 'STUDENT') {
+          return item.audience === 'All Students' || item.audience === 'Specific Students' || item.audience?.startsWith('Class');
+        }
+        return false;
+      });
+      return filteredData.map((item) => ({
         ...item,
         date: new Date(item.createdAt).toLocaleDateString(),
         read: item.read || item.isRead || false,

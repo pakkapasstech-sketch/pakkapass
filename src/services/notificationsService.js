@@ -8,11 +8,11 @@ const getBaseUrl = () => {
       const role = user?.role?.toUpperCase();
       if (role === 'ADMIN') return '/admin/notifications';
       if (role === 'PARENT') return '/parent/notifications';
-      if (role === 'PARTNER') return '/partner/notifications';
+      if (role === 'PARTNER' || role === 'INSTITUTE') return '/partner/notifications';
       if (role === 'STUDENT') return `/student/${user.id}/notifications`;
     }
   } catch (err) {}
-  return '/admin/notifications';
+  return '/unauthorized-notifications-path';
 };
 
 const getReadUrl = () => {
@@ -22,12 +22,12 @@ const getReadUrl = () => {
       const user = JSON.parse(rawUser);
       const role = user?.role?.toUpperCase();
       if (role === 'ADMIN') return '/admin/notifications/read';
-      if (role === 'PARTNER') return '/partner/notifications/read';
+      if (role === 'PARTNER' || role === 'INSTITUTE') return '/partner/notifications/read';
       if (role === 'PARENT') return '/parent/notifications/mark-read';
       if (role === 'STUDENT') return `/student/${user.id}/notifications/read`;
     }
   } catch (err) {}
-  return '/admin/notifications/read';
+  return '/unauthorized-notifications-read-path';
 };
 
 const notificationService = {
