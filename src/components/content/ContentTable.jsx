@@ -9,7 +9,31 @@ import { useQueryClient } from '@tanstack/react-query';
 import { contentService } from '../../services/content.service';
 import { formatFileSize } from '../../utils/formatters';
 import './contentTable.css';
-import EntityModal from './EntityModal';'./EntityModal';
+import EntityModal from './EntityModal';
+
+const FileSizeCell = ({ fileSize, fileUrl }) => {
+  const [size, setSize] = useState(fileSize);
+
+  useEffect(() => {
+    if ((fileSize === '0' || fileSize === 0 || !fileSize) && fileUrl) {
+      fetch(fileUrl, { method: 'HEAD' })
+        .then((res) => {
+          const length = res.headers.get('content-length');
+          if (length) {
+            setSize(length);
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to fetch file size from S3:', err);
+        });
+    } else {
+      setSize(fileSize);
+    }
+  }, [fileSize, fileUrl]);
+
+  return <>{formatFileSize(size)}</>;
+};
+
 const PAGE_SIZE = 5;
 
 const ContentTable = ({
@@ -257,9 +281,7 @@ const handleEdit = (item) => {
                     </td>
 
                     <td>
-                      {
-                        formatFileSize(item.fileSize)
-                      }
+                      <FileSizeCell fileSize={item.fileSize} fileUrl={item.fileUrl} />
                     </td>
 
                     <td>
