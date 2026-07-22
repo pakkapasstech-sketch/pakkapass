@@ -5,16 +5,32 @@ import { ROLES } from '../auth/roles';
 
 const mapStudent = (s) => {
   const now = new Date();
-  let status = 'Trial';
+  let status = '-';
+  let planName = '-';
+  let isFreeTrial = false;
 
-  if (s.profile?.plan) {
-    const planStart = new Date(s.profile.updatedAt || s.createdAt);
-    const planEnd = new Date(planStart.getTime() + (s.profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-    status = now > planEnd ? 'Inactive' : 'Active';
-  } else {
-    const trialStart = s.profile?.freeTrialStartDate ? new Date(s.profile.freeTrialStartDate) : new Date(s.createdAt);
+  const hasFreeTrial = Boolean(s.profile?.freeTrialStartDate);
+  const hasPlan = Boolean(s.profile?.plan || s.profile?.currentPlanId);
+
+  if (hasFreeTrial) {
+    const trialStart = new Date(s.profile.freeTrialStartDate);
     const trialEnd = new Date(trialStart.getTime() + 14 * 24 * 60 * 60 * 1000);
     status = now > trialEnd ? 'Inactive' : 'Trial';
+    planName = 'Free Trial';
+    isFreeTrial = true;
+  } else if (hasPlan) {
+    if (s.profile?.plan) {
+      const planStart = new Date(s.profile.updatedAt || s.createdAt);
+      const planEnd = new Date(planStart.getTime() + (s.profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+      status = now > planEnd ? 'Inactive' : 'Active';
+      planName = s.profile.plan.name;
+    } else {
+      status = 'Active';
+      planName = 'Subscribed';
+    }
+  } else {
+    status = '-';
+    planName = '-';
   }
 
   return {
@@ -29,7 +45,8 @@ const mapStudent = (s) => {
     institution: s.profile?.institution || 'Not Available',
     state: s.profile?.state || 'Not Available',
     status,
-    plan: s.profile?.plan?.name || 'Free Trial',
+    plan: planName,
+    isFreeTrial,
     photo: s.profilePic,
     createdAt: s.createdAt,
     profile: s.profile,
@@ -37,6 +54,7 @@ const mapStudent = (s) => {
     ipAddress: s.ipAddress || 'N/A',
   };
 };
+
 export const useStudents = () => {
   const { user } = useAuth();
   const isParent = user?.role === ROLES.PARENT;
@@ -44,13 +62,19 @@ export const useStudents = () => {
   return useQuery({
     queryKey: ['students', user?.role],
     queryFn: async () => {
-  const data = isParent
-    ? await studentService.getParentStudents()
-    : await studentService.getAll();
+      let data = [];
+      if (isParent) {
+        data = await studentService.getParentStudents();
+      } else {
+        data = await studentService.getAll();
+      }
 
-  const mappedData = data.map(mapStudent);
-  return mappedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-},
+      if (Array.isArray(data)) {
+        return data.map(mapStudent);
+      }
+
+      return [];
+    },
   });
 };
 
@@ -58,85 +82,71 @@ export const useStudent = (id) =>
   useQuery({
     queryKey: ['student', id],
     queryFn: async () => {
-      try {
-        const data = await studentService.getById(id);
-        try {
-          const analyticsData = await studentService.getAnalytics(id);
-          if (analyticsData) {
-            data.analytics = { ...data.analytics, ...analyticsData };
-          }
-        } catch (analyticsErr) {
-          console.error("Failed to fetch dedicated analytics:", analyticsErr);
-        }
-        return data;
-      } catch {
-        const student = student.find(
-          (s) => String(s.id) === String(id)
-        );
-
-        return {
-          student,
-          profile: {},
-          analytics: {
-            totalHours: 12,
-            subjectWiseUsage: [],
-          },
-          payments: [],
-          subscriptionHistory: [],
-        };
-      }
+      const data = await studentService.getById(id);
+      return mapStudentDetail(data);
     },
     enabled: !!id,
-    select: (data) => mapStudentDetail(data),
   });
+
 export const useStudentFilterOptions = () =>
   useQuery({
     queryKey: ['student-filter-options'],
-    queryFn: () =>
-      studentService.getFilterOptions(),
-    staleTime: 5 * 60 * 1000, // 5 minutes cache duration
+    queryFn: () => studentService.getFilterOptions(),
   });
+
 // Maps GET /admin/student/:id response to the shape StudentDetailsPage expects
 const mapStudentDetail = (data) => {
   const { student, profile, analytics, payments = [], subscriptionHistory = [] } = data;
   const initials = (student?.name || 'U').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
 
   const now = new Date();
-  let status = 'Trial';
+  let status = '-';
   let startDate = null;
   let endDate = null;
   let isFreeTrial = false;
+  let planName = '-';
 
-  if (payments && payments.length > 0) {
-    const latestPayment = payments
-      .filter((p) => p.status === 'Success')
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+  const hasFreeTrial = Boolean(profile?.freeTrialStartDate);
+  const hasPlan = Boolean(profile?.plan || profile?.currentPlanId);
 
-    if (latestPayment && profile?.plan) {
-      startDate = new Date(latestPayment.createdAt);
-      endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-      status = now > endDate ? 'Inactive' : 'Active';
+  if (hasFreeTrial) {
+    startDate = new Date(profile.freeTrialStartDate);
+    endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    status = now > endDate ? 'Inactive' : 'Trial';
+    planName = 'Free Trial';
+    isFreeTrial = true;
+  } else if (hasPlan) {
+    if (payments && payments.length > 0) {
+      const latestPayment = payments
+        .filter((p) => p.status === 'Success')
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+      if (latestPayment && profile?.plan) {
+        startDate = new Date(latestPayment.createdAt);
+        endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+        status = now > endDate ? 'Inactive' : 'Active';
+        planName = profile.plan.name;
+      } else if (profile?.plan) {
+        startDate = new Date(profile.updatedAt || student?.createdAt);
+        endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+        status = now > endDate ? 'Inactive' : 'Active';
+        planName = profile.plan.name;
+      } else {
+        status = 'Active';
+        planName = 'Subscribed';
+      }
     } else if (profile?.plan) {
       startDate = new Date(profile.updatedAt || student?.createdAt);
       endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
       status = now > endDate ? 'Inactive' : 'Active';
+      planName = profile.plan.name;
     } else {
-      startDate = profile?.freeTrialStartDate ? new Date(profile.freeTrialStartDate) : new Date(student?.createdAt);
-      endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
-      status = now > endDate ? 'Inactive' : 'Trial';
-      isFreeTrial = true;
+      status = 'Active';
+      planName = 'Subscribed';
     }
   } else {
-    if (profile?.plan) {
-      startDate = new Date(profile.updatedAt || student?.createdAt);
-      endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-      status = now > endDate ? 'Inactive' : 'Active';
-    } else {
-      startDate = profile?.freeTrialStartDate ? new Date(profile.freeTrialStartDate) : new Date(student?.createdAt);
-      endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
-      status = now > endDate ? 'Inactive' : 'Trial';
-      isFreeTrial = true;
-    }
+    status = '-';
+    planName = '-';
   }
 
   let daysLeft = 0;
@@ -162,7 +172,7 @@ const mapStudentDetail = (data) => {
     institution: profile?.institution || 'Not Available',
     institute: profile?.institution || 'Not Available',
     status,
-    plan: profile?.plan?.name || 'Free Trial',
+    plan: planName,
     startDate: startDate ? startDate.toISOString() : null,
     endDate: endDate ? endDate.toISOString() : null,
     daysLeft: daysLeft > 0 ? daysLeft : 0,
@@ -183,7 +193,11 @@ const mapStudentDetail = (data) => {
         })
       : subscriptionHistory,
     totalHours: analytics?.totalHours ? parseFloat(analytics.totalHours).toFixed(1) : '0',
-    todayHours: analytics?.todayHours ? parseFloat(analytics.todayHours).toFixed(1) : '0.0',
+    totalMinutes: analytics?.totalMinutes || 0,
+    todayHours: analytics?.todayHours ? parseFloat(analytics.todayHours).toFixed(1) : '0',
+    todayMinutes: analytics?.todayMinutes || 0,
+    deviceModel: student?.deviceModel || 'N/A',
+    ipAddress: student?.ipAddress || 'N/A',
     subjectWiseUsage: analytics?.subjectsProgress 
       ? analytics.subjectsProgress.map(s => ({ subject: s.name, percentage: s.progress }))
       : (analytics?.subjectWiseUsage || []),

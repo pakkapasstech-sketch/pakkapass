@@ -83,14 +83,15 @@ const mapDashboardStudent = (s) => ({
   state:
     'Not Available',
 
-  status:
-    s.profile?.plan
-      ? 'Active'
-      : 'Trial',
+  status: s.profile?.freeTrialStartDate
+    ? 'Trial'
+    : (s.profile?.plan || s.profile?.currentPlanId)
+    ? 'Active'
+    : '-',
 
-  plan:
-    s.profile?.plan?.name ||
-    'Free Trial',
+  plan: s.profile?.freeTrialStartDate
+    ? 'Free Trial'
+    : (s.profile?.plan?.name || (s.profile?.currentPlanId ? 'Subscribed' : '-')),
 
   createdAt:
     s.createdAt,

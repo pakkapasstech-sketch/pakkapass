@@ -249,7 +249,7 @@ const PartnerDetailsPage = () => {
                       <td><strong style={{ color: 'var(--color-primary)' }}>{rs.student?.name || 'Unknown'}</strong></td>
                       <td>{rs.student?.email || '-'}</td>
                       <td>{rs.student?.mobile || '-'}</td>
-                      <td>{rs.plan?.name || 'Free Trial'}</td>
+                      <td>{rs.plan?.name || (rs.freeTrialStartDate ? 'Free Trial' : '-')}</td>
                       <td>
                         {rs.student?.createdAt 
                           ? new Date(rs.student.createdAt).toLocaleDateString('en-IN')

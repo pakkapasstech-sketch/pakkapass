@@ -512,7 +512,7 @@ useEffect(() => {
       <div className="info-list">
         <div className="info-item">
           <span>Current Plan</span>
-          <strong>{student.plan} {student.isFreeTrial ? '(Free Trial)' : ''}</strong>
+          <strong>{student.plan === 'Free Trial' ? 'Free Trial' : `${student.plan} ${student.isFreeTrial ? '(Free Trial)' : ''}`.trim()}</strong>
         </div>
 
         <div className="info-item">
