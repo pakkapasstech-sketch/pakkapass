@@ -59,32 +59,24 @@ const RecentPaymentsPage = () => {
     () => ['All Plans', ...new Set(payments.map((p) => p.plan).filter(Boolean))],
     [payments]
   );
-  const studentIdMap = useMemo(() => {
-    const map = {};
 
-    students
-      .filter((student) => student?.name)
-      .forEach((student) => {
-        map[student.name.trim().toLowerCase()] = student.id;
-      });
+  const getStudentForPayment = (payment) => {
+    if (payment?.studentId) {
+      const found = students.find((s) => Number(s.id) === Number(payment.studentId));
+      if (found) return found;
+    }
+    if (payment?.student) {
+      return students.find((s) => s.name?.trim().toLowerCase() === payment.student.trim().toLowerCase());
+    }
+    return null;
+  };
 
-    return map;
-  }, [students]);
-
-  const studentMap = useMemo(() => {
-    const map = {};
-    students.forEach((student) => {
-      if (student?.name) {
-        map[student.name.trim().toLowerCase()] = student;
-      }
-    });
-    return map;
-  }, [students]);
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
       const searchTerm = search.trim().toLowerCase();
 
-      const sInfo = studentMap[payment.student?.trim().toLowerCase()];
+      const sInfo = getStudentForPayment(payment);
+      const studentIdVal = payment.studentId || sInfo?.id || '';
       const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
       const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
       const isDiscounted = planPrice ? (Number(planPrice) > Number(payment.amount)) : !!partner?.referralCode;
@@ -92,7 +84,7 @@ const RecentPaymentsPage = () => {
 
       const matchesSearch =
         searchTerm === '' ||
-        String(studentIdMap[payment.student?.trim().toLowerCase()] || '')
+        String(studentIdVal)
           .toLowerCase()
           .includes(searchTerm) ||
         (payment.student || '').toLowerCase().includes(searchTerm) ||
@@ -110,7 +102,7 @@ const RecentPaymentsPage = () => {
 
       return matchesSearch && matchesPlan && matchesStatus;
     });
-  }, [payments, search, selectedPlan, selectedStatus, studentIdMap, studentMap, planPriceMap, partnerMap]);
+  }, [payments, search, selectedPlan, selectedStatus, students, planPriceMap, partnerMap]);
   const totalRevenue = payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
   const totalDiscount = useMemo(() => {
     return payments.reduce((sum, payment) => {
@@ -319,7 +311,8 @@ useEffect(() => {
             <tbody>
               {paginatedPayments.length > 0 ? (
                 paginatedPayments.map((payment, index) => {
-                  const sInfo = studentMap[payment.student?.trim().toLowerCase()];
+                  const sInfo = getStudentForPayment(payment);
+                  const displayStudentId = payment.studentId || sInfo?.id || '—';
                   const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
                   const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
                   const isDiscounted = planPrice ? (Number(planPrice) > Number(payment.amount)) : !!partner?.referralCode;
@@ -341,7 +334,7 @@ useEffect(() => {
 
                   return (
                     <tr key={payment.id || index} className="clickable-row" onClick={() => setSelectedPayment(payment)} style={{ cursor: 'pointer' }}>
-                      <td>{studentIdMap[payment.student?.trim().toLowerCase()] ?? '—'}</td>
+                      <td>{displayStudentId}</td>
                       <td>
                         <div className="student-user">
                           <img
@@ -434,9 +427,8 @@ useEffect(() => {
 
       {/* Payment Details Modal */}
       {selectedPayment && (() => {
-        const studentInfo = students.find(
-          (s) => s.name?.trim().toLowerCase() === selectedPayment.student?.trim().toLowerCase()
-        );
+        const studentInfo = getStudentForPayment(selectedPayment);
+        const modalStudentId = selectedPayment.studentId || studentInfo?.id || '—';
         return (
           <div className="payment-modal-overlay" onClick={() => setSelectedPayment(null)}>
             <div className="payment-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -460,7 +452,7 @@ useEffect(() => {
                   </div>
                   <div className="detail-item">
                     <label>Student ID</label>
-                    <span>{studentInfo?.id || '—'}</span>
+                    <span>{modalStudentId}</span>
                   </div>
                   <div className="detail-item">
                     <label>Student Name</label>

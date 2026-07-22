@@ -250,7 +250,7 @@ const AdminDashboard = () => {
               <tbody>
                 {payments.data && payments.data.length > 0 ? (
                   payments.data.slice(0, 5).map((payment, index) => {
-                    const sInfo = studentMap[payment.student?.trim().toLowerCase()];
+                    const sInfo = (payment.studentId && students.find(s => Number(s.id) === Number(payment.studentId))) || studentMap[payment.student?.trim().toLowerCase()];
                     const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
                     const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
                     const isDiscounted = planPrice ? (planPrice > payment.amount) : !!partner?.referralCode;
