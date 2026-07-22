@@ -9,25 +9,28 @@ const mapStudent = (s) => {
   let planName = '-';
   let isFreeTrial = false;
 
-  const hasFreeTrial = Boolean(s.profile?.freeTrialStartDate);
   const hasPlan = Boolean(s.profile?.plan || s.profile?.currentPlanId);
+  const hasFreeTrial = Boolean(s.profile?.freeTrialStartDate);
 
-  if (hasFreeTrial) {
+  if (hasPlan) {
+    let planEnd = null;
+    if (s.profile?.planExpiryDate) {
+      planEnd = new Date(s.profile.planExpiryDate);
+    } else if (s.profile?.plan?.durationDays) {
+      const planStart = new Date(s.profile.updatedAt || s.createdAt);
+      planEnd = new Date(planStart.getTime() + (s.profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+    }
+
+    const isExpired = planEnd ? now > planEnd : false;
+    status = isExpired ? 'Inactive' : 'Active';
+    planName = s.profile?.plan?.name || 'Subscribed';
+    isFreeTrial = false;
+  } else if (hasFreeTrial) {
     const trialStart = new Date(s.profile.freeTrialStartDate);
     const trialEnd = new Date(trialStart.getTime() + 14 * 24 * 60 * 60 * 1000);
     status = now > trialEnd ? 'Inactive' : 'Trial';
     planName = 'Free Trial';
     isFreeTrial = true;
-  } else if (hasPlan) {
-    if (s.profile?.plan) {
-      const planStart = new Date(s.profile.updatedAt || s.createdAt);
-      const planEnd = new Date(planStart.getTime() + (s.profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-      status = now > planEnd ? 'Inactive' : 'Active';
-      planName = s.profile.plan.name;
-    } else {
-      status = 'Active';
-      planName = 'Subscribed';
-    }
   } else {
     status = '-';
     planName = '-';
@@ -106,44 +109,42 @@ const mapStudentDetail = (data) => {
   let isFreeTrial = false;
   let planName = '-';
 
-  const hasFreeTrial = Boolean(profile?.freeTrialStartDate);
   const hasPlan = Boolean(profile?.plan || profile?.currentPlanId);
+  const hasFreeTrial = Boolean(profile?.freeTrialStartDate);
 
-  if (hasFreeTrial) {
+  if (hasPlan) {
+    let latestPayment = null;
+    if (payments && payments.length > 0) {
+      latestPayment = payments
+        .filter((p) => p.status === 'Success')
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+    }
+
+    if (latestPayment) {
+      startDate = new Date(latestPayment.createdAt);
+    } else {
+      startDate = new Date(profile?.updatedAt || student?.createdAt || new Date());
+    }
+
+    if (profile?.planExpiryDate) {
+      endDate = new Date(profile.planExpiryDate);
+    } else if (profile?.plan?.durationDays) {
+      endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+    }
+
+    if (endDate) {
+      status = now > endDate ? 'Inactive' : 'Active';
+    } else {
+      status = 'Active';
+    }
+    planName = profile?.plan?.name || 'Subscribed';
+    isFreeTrial = false;
+  } else if (hasFreeTrial) {
     startDate = new Date(profile.freeTrialStartDate);
     endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
     status = now > endDate ? 'Inactive' : 'Trial';
     planName = 'Free Trial';
     isFreeTrial = true;
-  } else if (hasPlan) {
-    if (payments && payments.length > 0) {
-      const latestPayment = payments
-        .filter((p) => p.status === 'Success')
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
-
-      if (latestPayment && profile?.plan) {
-        startDate = new Date(latestPayment.createdAt);
-        endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-        status = now > endDate ? 'Inactive' : 'Active';
-        planName = profile.plan.name;
-      } else if (profile?.plan) {
-        startDate = new Date(profile.updatedAt || student?.createdAt);
-        endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-        status = now > endDate ? 'Inactive' : 'Active';
-        planName = profile.plan.name;
-      } else {
-        status = 'Active';
-        planName = 'Subscribed';
-      }
-    } else if (profile?.plan) {
-      startDate = new Date(profile.updatedAt || student?.createdAt);
-      endDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
-      status = now > endDate ? 'Inactive' : 'Active';
-      planName = profile.plan.name;
-    } else {
-      status = 'Active';
-      planName = 'Subscribed';
-    }
   } else {
     status = '-';
     planName = '-';

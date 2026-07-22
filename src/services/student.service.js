@@ -115,24 +115,31 @@ getSubscription: async (studentId) => {
     let expiryDate = null;
     let daysLeft = 0;
     let status = 'Active';
+    const hasPlan = Boolean(profile?.plan || profile?.currentPlanId);
     
-    if (profile?.plan) {
+    if (hasPlan) {
       startDate = new Date(profile.updatedAt || profile.createdAt || new Date());
-      expiryDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+      if (profile.planExpiryDate) {
+        expiryDate = new Date(profile.planExpiryDate);
+      } else if (profile.plan?.durationDays) {
+        expiryDate = new Date(startDate.getTime() + (profile.plan.durationDays || 0) * 24 * 60 * 60 * 1000);
+      }
       const now = new Date();
-      daysLeft = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 3600 * 24));
-      if (daysLeft < 0) {
-        daysLeft = 0;
-        status = 'Expired';
+      if (expiryDate) {
+        daysLeft = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 3600 * 24));
+        if (daysLeft < 0) {
+          daysLeft = 0;
+          status = 'Expired';
+        }
       }
     }
 
     return {
-      currentPlan: profile?.plan ? {
-        name: profile.plan.name,
-        price: profile.plan.price,
-        durationDays: profile.plan.durationDays,
-        features: profile.plan.features || [],
+      currentPlan: hasPlan ? {
+        name: profile.plan?.name || 'Subscribed',
+        price: profile.plan?.price || 0,
+        durationDays: profile.plan?.durationDays || 0,
+        features: profile.plan?.features || [],
         status,
         startDate: startDate?.toISOString(),
         expiryDate: expiryDate?.toISOString(),
