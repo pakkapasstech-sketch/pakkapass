@@ -86,6 +86,14 @@ export const useStudent = (id) =>
     queryKey: ['student', id],
     queryFn: async () => {
       const data = await studentService.getById(id);
+      try {
+        const analyticsData = await studentService.getAnalytics(id);
+        if (analyticsData) {
+          data.analytics = { ...data.analytics, ...analyticsData };
+        }
+      } catch (analyticsErr) {
+        console.error('Failed to fetch dedicated analytics:', analyticsErr);
+      }
       return mapStudentDetail(data);
     },
     enabled: !!id,
@@ -199,9 +207,13 @@ const mapStudentDetail = (data) => {
     todayMinutes: analytics?.todayMinutes || 0,
     deviceModel: student?.deviceModel || 'N/A',
     ipAddress: student?.ipAddress || 'N/A',
-    subjectWiseUsage: analytics?.subjectsProgress 
+    subjectWiseUsage: analytics?.subjectsProgress && analytics.subjectsProgress.length > 0
       ? analytics.subjectsProgress.map(s => ({ subject: s.name, percentage: s.progress }))
-      : (analytics?.subjectWiseUsage || []),
+      : Array.isArray(analytics?.subjectWiseUsage)
+      ? analytics.subjectWiseUsage
+          .filter(s => s.subject && s.subject !== 'Unknown')
+          .map(s => ({ subject: s.subject, percentage: s.percentage ?? Math.round(((parseFloat(s.hours) || 0) * 60)), hours: s.hours }))
+      : [],
   };
 };
 
