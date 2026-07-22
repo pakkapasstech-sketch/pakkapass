@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   HiArrowLeft,
   HiOutlinePencil,
@@ -15,6 +16,7 @@ import { useLoading } from '../../contexts/LoadingContext';
 
 const PlanDetailsPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { planId } = useParams();
   const { setLoading } = useLoading();
 
@@ -77,6 +79,7 @@ const PlanDetailsPage = () => {
 
     try {
       await deletePlan(planId);
+      await queryClient.invalidateQueries({ queryKey: ['plans'] });
       navigate('/subscriptions/plans');
     } catch (err) {
       console.error('Delete failed:', err);

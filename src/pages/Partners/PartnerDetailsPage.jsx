@@ -15,6 +15,7 @@ import '../../styles/student-table.css';
 import { useEffect, useState } from 'react';
 
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLoading } from '../../contexts/LoadingContext';
 import partnerService from '../../services/partner.service';
 import { usePartner } from '../../hooks/usePartners';
@@ -22,6 +23,7 @@ import paymentService from '../../services/payment.service';
 
 const PartnerDetailsPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { setLoading } = useLoading();
   const { id } = useParams();
   const copyReferralCode = async () => {
@@ -96,6 +98,7 @@ const PartnerDetailsPage = () => {
     try {
       setLoading(true);
       await partnerService.delete(id);
+      await queryClient.invalidateQueries({ queryKey: ['partners'] });
       toast.success('Partner deleted successfully');
       navigate('/partners');
     } catch (err) {

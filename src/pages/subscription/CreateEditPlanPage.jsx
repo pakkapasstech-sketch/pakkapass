@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { HiArrowLeft, HiOutlinePlus } from 'react-icons/hi';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import '../../styles/createEditPlan.css';
 import { getPlanById, createPlan, updatePlan } from '../../services/SubscriptionServices';
 import { contentService } from '../../services/content.service';
@@ -23,6 +23,7 @@ const initialForm = {
 
 const CreateEditPlanPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { planId } = useParams();
   const isEdit = Boolean(planId);
 
@@ -141,9 +142,11 @@ const CreateEditPlanPage = () => {
 
       if (isEdit) {
         await updatePlan(planId, payload);
+        await queryClient.invalidateQueries({ queryKey: ['plans'] });
         toast.success('Plan updated successfully');
       } else {
         await createPlan(payload);
+        await queryClient.invalidateQueries({ queryKey: ['plans'] });
         toast.success('Plan created successfully');
       }
 

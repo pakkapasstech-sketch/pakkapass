@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import PartnerStepper from '../../components/partners/PartnerStepper';
 import PartnerForm from '../../components/partners/PartnerForm';
 import ReferralPreview from '../../components/partners/ReferralPreview';
@@ -60,6 +61,7 @@ const initialState = {
 const AddPartnerPage = ({ isEdit = false }) => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const { data: filterOptions } = useStudentFilterOptions();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -226,6 +228,7 @@ const AddPartnerPage = ({ isEdit = false }) => {
       if (isEdit) {
         // PUT /partner/:id has no upload middleware, send JSON
         await partnerService.update(id, payload);
+        await queryClient.invalidateQueries({ queryKey: ['partners'] });
         toast.success('Partner updated successfully');
       } else {
         // POST /partner has uploadImage middleware, send FormData
@@ -253,6 +256,7 @@ const AddPartnerPage = ({ isEdit = false }) => {
         }
 
         await partnerService.create(multipartData);
+        await queryClient.invalidateQueries({ queryKey: ['partners'] });
         toast.success('Partner created successfully');
       }
 

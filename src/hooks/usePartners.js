@@ -12,6 +12,7 @@ export const usePartners = (params = {}, options = {}) =>
       }
       return data;
     },
+    refetchOnMount: 'always',
     ...options,
   });
 

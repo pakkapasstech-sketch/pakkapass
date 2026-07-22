@@ -26,7 +26,11 @@ const SubscriptionManagementPage = () => {
   const [selectedBoard, setSelectedBoard] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
   
-  const { data: plansData, isLoading: plansLoading } = useQuery({ queryKey: ['plans'], queryFn: getPlans });
+  const { data: plansData, isLoading: plansLoading } = useQuery({ 
+    queryKey: ['plans'], 
+    queryFn: getPlans,
+    refetchOnMount: 'always',
+  });
   const plans = plansData || [];
   const { data: optionsData } = useStudentFilterOptions();
   const options = optionsData || { grades: [], boards: [], branches: [] };
