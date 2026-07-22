@@ -153,20 +153,9 @@ const stateMatch =
       }
     );
 
-  const displayStudents =
-    sortRecent
-      ? [
-          ...filteredStudents,
-        ].sort(
-          (a, b) =>
-            new Date(
-              b.createdAt
-            ) -
-            new Date(
-              a.createdAt
-            )
-        )
-      : filteredStudents;
+  const displayStudents = [...filteredStudents].sort(
+    (a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id)
+  );
 
   useEffect(() => {
   setLoading(isLoading);

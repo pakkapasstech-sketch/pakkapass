@@ -70,7 +70,7 @@ export const useStudents = () => {
       }
 
       if (Array.isArray(data)) {
-        return data.map(mapStudent);
+        return data.map(mapStudent).sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
       }
 
       return [];
@@ -217,7 +217,7 @@ export const useInactiveStudents = (enabled = true) =>
     queryFn: async () => {
       const data = await studentService.getInactiveStudents();
       const mappedData = data.map(mapStudent);
-      return mappedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return mappedData.sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
     },
     enabled,
   });
