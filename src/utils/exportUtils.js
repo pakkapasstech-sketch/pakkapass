@@ -1,9 +1,11 @@
 import XLSX from 'xlsx-js-style';
 
+const xlsxLib = XLSX.default || XLSX;
+
 const applyStylesToWorksheet = (worksheet, hasSummary, summaryLength) => {
   if (!worksheet || !worksheet['!ref']) return;
 
-  const range = XLSX.utils.decode_range(worksheet['!ref']);
+  const range = xlsxLib.utils.decode_range(worksheet['!ref']);
   const cols = [];
 
   for (let C = range.s.c; C <= range.e.c; ++C) {
@@ -18,7 +20,7 @@ const applyStylesToWorksheet = (worksheet, hasSummary, summaryLength) => {
 
   for (let R = range.s.r; R <= range.e.r; ++R) {
     for (let C = range.s.c; C <= range.e.c; ++C) {
-      const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+      const cellAddress = xlsxLib.utils.encode_cell({ r: R, c: C });
       let cell = worksheet[cellAddress];
 
       if (!cell) {
@@ -133,7 +135,7 @@ export const exportToCSV = (
       wsData.push(rowValues);
     });
 
-    worksheet = XLSX.utils.aoa_to_sheet(wsData);
+    worksheet = xlsxLib.utils.aoa_to_sheet(wsData);
   } else {
     const rows = data.map((row, index) => {
       const obj = {};
@@ -147,10 +149,10 @@ export const exportToCSV = (
       return obj;
     });
 
-    worksheet = XLSX.utils.json_to_sheet(rows);
+    worksheet = xlsxLib.utils.json_to_sheet(rows);
   }
 
-  const csv = XLSX.utils.sheet_to_csv(worksheet);
+  const csv = xlsxLib.utils.sheet_to_csv(worksheet);
 
   const blob = new Blob([csv], {
     type: 'text/csv;charset=utf-8;',
@@ -200,7 +202,7 @@ export const exportToExcel = (
       wsData.push(rowValues);
     });
 
-    worksheet = XLSX.utils.aoa_to_sheet(wsData);
+    worksheet = xlsxLib.utils.aoa_to_sheet(wsData);
   } else {
     const rows = data.map((row, index) => {
       const obj = {};
@@ -214,16 +216,16 @@ export const exportToExcel = (
       return obj;
     });
 
-    worksheet = XLSX.utils.json_to_sheet(rows);
+    worksheet = xlsxLib.utils.json_to_sheet(rows);
   }
 
   applyStylesToWorksheet(worksheet, hasSummary, summaryLength);
 
-  const workbook = XLSX.utils.book_new();
+  const workbook = xlsxLib.utils.book_new();
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  xlsxLib.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
-  XLSX.writeFile(
+  xlsxLib.writeFile(
     workbook,
     filename.endsWith('.xlsx') ? filename : `${filename}.xlsx`
   );
