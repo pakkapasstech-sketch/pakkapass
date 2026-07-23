@@ -140,6 +140,12 @@ const PartnerDetailsPage = () => {
           <h3>Partner Information</h3>
 
           <p>
+            <span>Organization Name</span>
+
+            <strong>{partner.organizationName || '—'}</strong>
+          </p>
+
+          <p>
             <span>Institution</span>
 
             <strong>{partner.institutionType}</strong>
