@@ -3,45 +3,60 @@ import * as XLSX from 'xlsx';
 export const exportToCSV = (
   data,
   columns,
-  filename = 'export.csv'
+  filename = 'export.csv',
+  summaryData = null
 ) => {
-  const rows = data.map((row) => {
-    const obj = {};
+  let worksheet;
 
-    columns.forEach((col) => {
-      const value =
-        typeof col.accessor === 'function'
-          ? col.accessor(row)
-          : (row[col.key] ?? '');
+  if (summaryData && Array.isArray(summaryData) && summaryData.length > 0) {
+    const wsData = [];
 
-      obj[col.header] =
-        value == null ? '' : value;
+    wsData.push(['Summary Metric', 'Value']);
+    summaryData.forEach((item) => {
+      wsData.push([item.label, item.value]);
+    });
+    wsData.push([]); // Empty row separator
+
+    const headers = columns.map((col) => col.header);
+    wsData.push(headers);
+
+    data.forEach((row) => {
+      const rowValues = columns.map((col) => {
+        const value =
+          typeof col.accessor === 'function'
+            ? col.accessor(row)
+            : (row[col.key] ?? '');
+        return value == null ? '' : value;
+      });
+      wsData.push(rowValues);
     });
 
-    return obj;
-  });
+    worksheet = XLSX.utils.aoa_to_sheet(wsData);
+  } else {
+    const rows = data.map((row) => {
+      const obj = {};
+      columns.forEach((col) => {
+        const value =
+          typeof col.accessor === 'function'
+            ? col.accessor(row)
+            : (row[col.key] ?? '');
+        obj[col.header] = value == null ? '' : value;
+      });
+      return obj;
+    });
 
-  const worksheet =
-    XLSX.utils.json_to_sheet(rows);
+    worksheet = XLSX.utils.json_to_sheet(rows);
+  }
 
-  const csv =
-    XLSX.utils.sheet_to_csv(worksheet);
+  const csv = XLSX.utils.sheet_to_csv(worksheet);
 
   const blob = new Blob([csv], {
     type: 'text/csv;charset=utf-8;',
   });
 
-  const link =
-    document.createElement('a');
-
-  link.href =
-    URL.createObjectURL(blob);
-
-  link.download = filename.endsWith(
-    '.csv'
-  )
-    ? filename
-    : `${filename}.csv`;
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename.endsWith('.csv') ? filename : `${filename}.csv`;
 
   document.body.appendChild(link);
   link.click();
@@ -53,40 +68,57 @@ export const exportToCSV = (
 export const exportToExcel = (
   data,
   columns,
-  filename = 'export.xlsx'
+  filename = 'export.xlsx',
+  summaryData = null
 ) => {
-  const rows = data.map((row) => {
-    const obj = {};
+  let worksheet;
 
-    columns.forEach((col) => {
-      const value =
-        typeof col.accessor === 'function'
-          ? col.accessor(row)
-          : (row[col.key] ?? '');
+  if (summaryData && Array.isArray(summaryData) && summaryData.length > 0) {
+    const wsData = [];
 
-      obj[col.header] =
-        value == null ? '' : value;
+    wsData.push(['Summary Metric', 'Value']);
+    summaryData.forEach((item) => {
+      wsData.push([item.label, item.value]);
+    });
+    wsData.push([]); // Empty row separator
+
+    const headers = columns.map((col) => col.header);
+    wsData.push(headers);
+
+    data.forEach((row) => {
+      const rowValues = columns.map((col) => {
+        const value =
+          typeof col.accessor === 'function'
+            ? col.accessor(row)
+            : (row[col.key] ?? '');
+        return value == null ? '' : value;
+      });
+      wsData.push(rowValues);
     });
 
-    return obj;
-  });
+    worksheet = XLSX.utils.aoa_to_sheet(wsData);
+  } else {
+    const rows = data.map((row) => {
+      const obj = {};
+      columns.forEach((col) => {
+        const value =
+          typeof col.accessor === 'function'
+            ? col.accessor(row)
+            : (row[col.key] ?? '');
+        obj[col.header] = value == null ? '' : value;
+      });
+      return obj;
+    });
 
-  const worksheet =
-    XLSX.utils.json_to_sheet(rows);
+    worksheet = XLSX.utils.json_to_sheet(rows);
+  }
 
-  const workbook =
-    XLSX.utils.book_new();
+  const workbook = XLSX.utils.book_new();
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    'Sheet1'
-  );
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
   XLSX.writeFile(
     workbook,
-    filename.endsWith('.xlsx')
-      ? filename
-      : `${filename}.xlsx`
+    filename.endsWith('.xlsx') ? filename : `${filename}.xlsx`
   );
 };

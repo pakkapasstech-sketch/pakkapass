@@ -213,9 +213,10 @@ useEffect(() => {
                 { header: 'Actual Amount Paid', accessor: (r) => `₹${r.amount}` },
                 { header: 'Discount Value', accessor: (r) => {
                   const planPrice = planPriceMap[r.plan?.trim().toLowerCase()];
-                  if (planPrice && Number(planPrice) > Number(r.amount)) {
-                    const sInfo = studentMap[r.student?.trim().toLowerCase()];
-                    const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                  const sInfo = getStudentForPayment(r);
+                  const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                  const isDiscounted = planPrice ? (Number(planPrice) > Number(r.amount)) : !!partner?.referralCode;
+                  if (isDiscounted) {
                     if (partner) {
                       return partner.discountType === 'Percentage Based' ? `${partner.discountValue}%` : `₹${partner.discountValue}`;
                     }
@@ -225,17 +226,22 @@ useEffect(() => {
                 }},
                 { header: 'Referral Code', accessor: (r) => {
                   const planPrice = planPriceMap[r.plan?.trim().toLowerCase()];
-                  if (planPrice && Number(planPrice) > Number(r.amount)) {
-                    const sInfo = studentMap[r.student?.trim().toLowerCase()];
-                    const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
-                    return partner?.referralCode || 'Null';
-                  }
-                  return 'Null';
+                  const sInfo = getStudentForPayment(r);
+                  const partner = sInfo?.profile?.partnerId ? partnerMap[String(sInfo.profile.partnerId)] : null;
+                  const isDiscounted = planPrice ? (Number(planPrice) > Number(r.amount)) : !!partner?.referralCode;
+                  return isDiscounted ? (partner?.referralCode || 'Null') : 'Null';
                 }},
                 { header: 'Status', accessor: (r) => r.status },
                 { header: 'Date', accessor: (r) => formatDate(r.date) },
               ];
-              exportToExcel(filteredPayments, exportCols, 'payments.xlsx');
+
+              const summaryData = [
+                { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}` },
+                { label: 'Total Amount Discounted', value: `₹${totalDiscount.toLocaleString('en-IN')}` },
+                { label: 'Successful Payments', value: successfulPayments },
+              ];
+
+              exportToExcel(filteredPayments, exportCols, 'payments.xlsx', summaryData);
             }}
           >
             <HiOutlineDownload />
