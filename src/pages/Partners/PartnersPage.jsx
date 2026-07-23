@@ -100,42 +100,89 @@ const PartnersPage = () => {
     updateStatus({ id, status });
   };
   const handleExport = () => {
+    const totalPartnersCount = filteredPartners.length;
+    const activePartnersCount = filteredPartners.filter((p) => p.status === 'Active').length;
+    const totalReferralsCount = filteredPartners.reduce(
+      (sum, p) => sum + (Number(p.analytics?.students?.totalStudents) || 0),
+      0
+    );
+    const totalRevenueGenerated = filteredPartners.reduce((sum, partner) => {
+      const partnerPayments = allPayments.filter(
+        (p) =>
+          p.partnerId === partner.id ||
+          p.couponCode === partner.referralCode
+      );
+      const rev = partnerPayments
+        .filter((p) => p.status === 'Success')
+        .reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+      return sum + rev;
+    }, 0);
+
+    const summaryData = [
+      { label: 'Total Partners', value: totalPartnersCount },
+      { label: 'Active Partners', value: activePartnersCount },
+      { label: 'Total Referrals', value: totalReferralsCount },
+      { label: 'Revenue Generated', value: `₹${totalRevenueGenerated.toLocaleString('en-IN')}` },
+    ];
+
     const columns = [
       {
-        header: 'Partner ID',
-        accessor: (row) => row.id,
+        header: 'S.No',
+        accessor: (_, index) => index + 1,
       },
       {
         header: 'Name',
-        accessor: (row) => row.name,
+        accessor: (row) => row.contactPerson || row.name || '—',
+      },
+      {
+        header: 'Partner ID',
+        accessor: (row) => row.partnerId || row.id || '—',
+      },
+      {
+        header: 'Institution',
+        accessor: (row) => row.institutionType || row.organizationName || '—',
       },
       {
         header: 'Email',
-        accessor: (row) => row.email,
+        accessor: (row) => row.email || '—',
       },
       {
         header: 'Mobile',
-        accessor: (row) => row.mobile || row.phone,
+        accessor: (row) => row.mobile || row.phone || '—',
       },
       {
-        header: 'Organization',
-        accessor: (row) => row.organizationName,
+        header: 'REFCODE',
+        accessor: (row) => row.referralCode || '—',
       },
       {
-        header: 'Referral Code',
-        accessor: (row) => row.referralCode,
+        header: 'Students',
+        accessor: (row) => row.analytics?.students?.totalStudents ?? 0,
+      },
+      {
+        header: 'Revenue',
+        accessor: (row) => {
+          const partnerPayments = allPayments.filter(
+            (p) =>
+              p.partnerId === row.id ||
+              p.couponCode === row.referralCode
+          );
+          const totalRevenue = partnerPayments
+            .filter((p) => p.status === 'Success')
+            .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+          return `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        },
       },
       {
         header: 'Status',
-        accessor: (row) => row.status,
+        accessor: (row) => row.status || '—',
       },
       {
         header: 'Created On',
-        accessor: (row) => (row.createdAt ? new Date(row.createdAt).toLocaleDateString() : ''),
+        accessor: (row) => (row.createdAt ? new Date(row.createdAt).toLocaleDateString() : '—'),
       },
     ];
 
-    exportToExcel(filteredPartners, columns, 'partners.xlsx');
+    exportToExcel(filteredPartners, columns, 'partners.xlsx', summaryData);
   };
 
 

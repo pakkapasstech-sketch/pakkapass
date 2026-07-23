@@ -20,11 +20,11 @@ export const exportToCSV = (
     const headers = columns.map((col) => col.header);
     wsData.push(headers);
 
-    data.forEach((row) => {
+    data.forEach((row, index) => {
       const rowValues = columns.map((col) => {
         const value =
           typeof col.accessor === 'function'
-            ? col.accessor(row)
+            ? col.accessor(row, index)
             : (row[col.key] ?? '');
         return value == null ? '' : value;
       });
@@ -33,12 +33,12 @@ export const exportToCSV = (
 
     worksheet = XLSX.utils.aoa_to_sheet(wsData);
   } else {
-    const rows = data.map((row) => {
+    const rows = data.map((row, index) => {
       const obj = {};
       columns.forEach((col) => {
         const value =
           typeof col.accessor === 'function'
-            ? col.accessor(row)
+            ? col.accessor(row, index)
             : (row[col.key] ?? '');
         obj[col.header] = value == null ? '' : value;
       });
@@ -85,11 +85,11 @@ export const exportToExcel = (
     const headers = columns.map((col) => col.header);
     wsData.push(headers);
 
-    data.forEach((row) => {
+    data.forEach((row, index) => {
       const rowValues = columns.map((col) => {
         const value =
           typeof col.accessor === 'function'
-            ? col.accessor(row)
+            ? col.accessor(row, index)
             : (row[col.key] ?? '');
         return value == null ? '' : value;
       });
@@ -98,12 +98,12 @@ export const exportToExcel = (
 
     worksheet = XLSX.utils.aoa_to_sheet(wsData);
   } else {
-    const rows = data.map((row) => {
+    const rows = data.map((row, index) => {
       const obj = {};
       columns.forEach((col) => {
         const value =
           typeof col.accessor === 'function'
-            ? col.accessor(row)
+            ? col.accessor(row, index)
             : (row[col.key] ?? '');
         obj[col.header] = value == null ? '' : value;
       });
