@@ -1,4 +1,4 @@
-import { useState ,useEffect} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 //import { DateRange } from 'react-date-range';
@@ -17,6 +17,7 @@ import { useSidebar } from '../../contexts/SidebarContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import Avatar from '../common/Avatar';
+import LogoutConfirmModal, { useLogoutConfirm } from '../modals/LogoutConfirmModal';
 //import 'react-date-range/dist/styles.css';
 //import 'react-date-range/dist/theme/default.css';
 import { useNavigate } from 'react-router-dom';
@@ -38,10 +39,22 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
   return () => clearInterval(timer);
 }, []);
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { open, loading, showLogoutConfirm, hideLogoutConfirm, confirmLogout } = useLogoutConfirm();
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [partnerLogo, setPartnerLogo] = useState(null);
 
   useEffect(() => {
@@ -190,7 +203,7 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
 
     {/* Profile */}
 
-    <div className="navbar-profile">
+    <div className="navbar-profile" ref={profileRef}>
 
       <button
         onClick={() =>
@@ -245,6 +258,17 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
               Settings
             </Link>
 
+            <button
+              onClick={() => {
+                setProfileOpen(false);
+                showLogoutConfirm();
+              }}
+              className="navbar-dropdown-link"
+              style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', color: '#dc2626' }}
+            >
+              Logout
+            </button>
+
           </motion.div>
 
         )}
@@ -254,6 +278,13 @@ const Navbar = ({ title = 'Dashboard Overview', subtitle, breadcrumbs = [] }) =>
     </div>
 
   </div>
+
+  <LogoutConfirmModal
+    isOpen={open}
+    loading={loading}
+    onClose={hideLogoutConfirm}
+    onConfirm={() => confirmLogout(logout, navigate)}
+  />
 </header>
   );
 };

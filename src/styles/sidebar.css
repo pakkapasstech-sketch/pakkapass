@@ -247,7 +247,7 @@
 }
 
 .sidebar-submenu-link-active {
-  background: rgba(79, 70, 229, 0.35);
+  background: var(--sidebar-active-bg) !important;
   color: #ffffff;
 }
 

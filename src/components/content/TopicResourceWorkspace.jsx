@@ -350,7 +350,7 @@ const TopicResourceWorkspace = ({
             gap: '6px',
             padding: '8px 14px',
             borderRadius: '10px',
-            border: '1px solid var(--color-border, #e5e7eb)',
+            border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
             background: 'var(--color-card, #ffffff)',
             color: 'var(--color-text-primary, #111827)',
             fontWeight: '600',
@@ -362,10 +362,7 @@ const TopicResourceWorkspace = ({
           Back to Topics
         </button>
         <div>
-          <span style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)' }}>
-            {getString(grade?.name || grade)} &bull; {getString(board?.name || board)} &bull; {getString(branch?.name || branch)} &bull; {getString(subject?.name || subject)} &bull; {contentType} &bull; {getString(chapter?.name || chapter)}
-          </span>
-          <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '2px 0 0 0', color: 'var(--color-text-primary, #111827)' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '0', color: 'var(--color-text-primary, #111827)' }}>
             Topic: {getString(topic?.name || topic)}
           </h2>
         </div>
@@ -380,7 +377,7 @@ const TopicResourceWorkspace = ({
             background: 'var(--color-card, #ffffff)',
             borderRadius: '16px',
             padding: '20px',
-            border: '1px solid var(--color-border, #e5e7eb)',
+            border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
           }}
         >
@@ -408,7 +405,7 @@ const TopicResourceWorkspace = ({
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '13px',
                   background: 'var(--color-bg, #f9fafb)',
                 }}
@@ -426,7 +423,7 @@ const TopicResourceWorkspace = ({
               style={{
                 border: '2px dashed rgba(102, 83, 175, 0.35)',
                 borderRadius: '12px',
-                padding: '20px',
+                padding: '12px',
                 textAlign: 'center',
                 background: 'rgba(102, 83, 175, 0.03)',
                 cursor: 'pointer',
@@ -479,7 +476,7 @@ const TopicResourceWorkspace = ({
             background: 'var(--color-card, #ffffff)',
             borderRadius: '16px',
             padding: '20px',
-            border: '1px solid var(--color-border, #e5e7eb)',
+            border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
           }}
         >
@@ -526,7 +523,7 @@ const TopicResourceWorkspace = ({
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '13px',
                   background: 'var(--color-bg, #f9fafb)',
                 }}
@@ -538,7 +535,7 @@ const TopicResourceWorkspace = ({
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
                   Video URL / YouTube Link <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border, #d1d5db)', borderRadius: '8px', padding: '0 12px', background: 'var(--color-bg, #f9fafb)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border, var(--color-border, #e5e7eb))', borderRadius: '8px', padding: '0 12px', background: 'var(--color-bg, #f9fafb)' }}>
                   <HiOutlineLink style={{ color: 'var(--color-primary, #6653AF)' }} />
                   <input
                     type="url"
@@ -568,7 +565,7 @@ const TopicResourceWorkspace = ({
                 style={{
                   border: '2px dashed rgba(102, 83, 175, 0.35)',
                   borderRadius: '12px',
-                  padding: '20px',
+                  padding: '12px',
                   textAlign: 'center',
                   background: 'rgba(102, 83, 175, 0.03)',
                   cursor: 'pointer',
@@ -618,7 +615,7 @@ const TopicResourceWorkspace = ({
       </div>
 
       {/* Added Content Manager Section (Drag & Drop Reorderable Row List Format) */}
-      <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', padding: '24px', border: '1px solid var(--color-border, #e5e7eb)' }}>
+      <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', padding: '24px', border: '1px solid var(--color-border, var(--color-border, #e5e7eb))' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
           <div>
             <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>
@@ -687,160 +684,170 @@ const TopicResourceWorkspace = ({
 
         {/* Drag & Drop Reorderable Resources List */}
         {filteredContent.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {filteredContent.map((item, index) => {
-              const isVid = isVideoType(item.type);
-              const realIndex = orderedItems.findIndex((o) => o.id === item.id);
-              const isBeingDragged = draggedIndex === realIndex;
+          <div style={{ overflowX: 'auto', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', border: '1px solid var(--color-border, #e2e8f0)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--color-card, #ffffff)', minWidth: '800px' }}>
+              <thead>
+                <tr style={{ background: 'var(--color-bg, #f8fafc)', borderBottom: '1px solid var(--color-border, #e2e8f0)' }}>
+                  <th style={{ width: '50px', padding: '16px 20px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: '#475569' }}></th>
+                  <th style={{ width: '60px', padding: '16px 10px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Order</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resource Name</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Size</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredContent.map((item, index) => {
+                  const isVid = isVideoType(item.type);
+                  const realIndex = orderedItems.findIndex((o) => o.id === item.id);
+                  const isBeingDragged = draggedIndex === realIndex;
 
-              return (
-                <div
-                  key={item.id || index}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, realIndex)}
-                  onDragOver={(e) => handleDragOver(e, realIndex)}
-                  onDrop={(e) => handleDrop(e, realIndex)}
-                  onDragEnd={handleDragEnd}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '16px',
-                    padding: '14px 18px',
-                    borderRadius: '12px',
-                    border: isBeingDragged
-                      ? '2px dashed var(--color-primary, #6653AF)'
-                      : '1px solid var(--color-border, #e5e7eb)',
-                    background: isBeingDragged ? 'rgba(102, 83, 175, 0.05)' : 'var(--color-card, #ffffff)',
-                    boxShadow: isBeingDragged ? '0 8px 16px rgba(102, 83, 175, 0.15)' : '0 2px 4px rgba(0,0,0,0.02)',
-                    opacity: isBeingDragged ? 0.6 : 1,
-                    cursor: 'grab',
-                    transition: 'border 0.2s ease, background 0.2s ease, opacity 0.2s ease',
-                  }}
-                >
-                  {/* Left Drag Handle & Info */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, overflow: 'hidden' }}>
-                    
-                    {/* Drag Handle Icon */}
-                    <div style={{ cursor: 'grab', color: '#9ca3af', display: 'flex', alignItems: 'center' }} title="Drag to reorder row">
-                      <HiOutlineSelector size={20} />
-                    </div>
-
-                    {/* Row Index Badge */}
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-text-secondary, #9ca3af)', minWidth: '24px' }}>
-                      #{index + 1}
-                    </span>
-
-                    {/* Resource Icon */}
-                    <div
+                  return (
+                    <tr
+                      key={item.id || index}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, realIndex)}
+                      onDragOver={(e) => handleDragOver(e, realIndex)}
+                      onDrop={(e) => handleDrop(e, realIndex)}
+                      onDragEnd={handleDragEnd}
                       style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '10px',
-                        background: 'rgba(102, 83, 175, 0.1)',
-                        color: 'var(--color-primary, #6653AF)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
+                        borderBottom: '1px solid var(--color-border, #e2e8f0)',
+                        background: isBeingDragged ? 'rgba(102, 83, 175, 0.05)' : 'transparent',
+                        opacity: isBeingDragged ? 0.6 : 1,
+                        cursor: 'grab',
+                        transition: 'background 0.2s ease, opacity 0.2s ease',
                       }}
                     >
-                      {isVid ? <HiOutlineVideoCamera size={20} /> : <HiOutlineDocumentText size={20} />}
-                    </div>
+                      {/* Drag Handle Icon */}
+                      <td style={{ padding: '16px 20px', textAlign: 'center', color: 'var(--color-text-muted, #9ca3af)', width: '50px' }}>
+                        <div style={{ cursor: 'grab', display: 'inline-flex', alignItems: 'center' }} title="Drag to reorder row">
+                          <HiOutlineSelector size={20} />
+                        </div>
+                      </td>
 
-                    {/* Title & Description */}
-                    <div style={{ overflow: 'hidden', flex: 1 }}>
-                      <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {item.title || item.name || item.fileName || item.description || 'Uploaded Content'}
-                      </h4>
-                      <p style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)', margin: '2px 0 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {isVid ? 'Video Resource' : 'Notes Document'} &bull; {item.uploadedOn || 'Recently'} {item.description ? `— ${item.description}` : ''}
-                      </p>
-                    </div>
-                  </div>
+                      {/* Row Index Badge */}
+                      <td style={{ padding: '16px 10px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-muted, #9ca3af)', width: '60px' }}>
+                        #{index + 1}
+                      </td>
 
-                  {/* Right File Size & Action Buttons */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-                    <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-primary, #6653AF)', background: 'rgba(102, 83, 175, 0.08)', padding: '4px 10px', borderRadius: '6px' }}>
-                      {formatFileSize(item.fileSize) || (item.fileUrl?.includes('http') ? 'URL Link' : 'File')}
-                    </span>
+                      {/* Title & Description */}
+                      <td style={{ padding: '16px 20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                          <div
+                            style={{
+                              width: '38px',
+                              height: '38px',
+                              borderRadius: '10px',
+                              background: 'rgba(102, 83, 175, 0.1)',
+                              color: 'var(--color-primary, #6653AF)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {isVid ? <HiOutlineVideoCamera size={20} /> : <HiOutlineDocumentText size={20} />}
+                          </div>
+                          <div style={{ overflow: 'hidden', flex: 1 }}>
+                            <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {item.title || item.name || item.fileName || item.description || 'Uploaded Content'}
+                            </h4>
+                            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)', margin: '4px 0 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {item.uploadedOn || 'Recently'} {item.description ? `— ${item.description}` : ''}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
 
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      {/* View / Open Resource */}
-                      {item.fileUrl && (
-                        <a
-                          href={item.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{
-                            padding: '8px',
-                            borderRadius: '8px',
-                            border: '1px solid var(--color-border, #e5e7eb)',
-                            background: '#ffffff',
-                            color: 'var(--color-primary, #6653AF)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title="View / Open resource"
-                        >
-                          <HiOutlineEye size={16} />
-                        </a>
-                      )}
+                      {/* Type Badge */}
+                      <td style={{ padding: '16px 20px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '600', color: isVid ? '#ef4444' : '#10b981', background: isVid ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', padding: '4px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          {isVid ? 'Video' : 'Notes'}
+                        </span>
+                      </td>
 
-                      {/* Edit Resource */}
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEditModal(item)}
-                        style={{
-                          padding: '8px',
-                          borderRadius: '8px',
-                          border: '1px solid var(--color-border, #e5e7eb)',
-                          background: '#ffffff',
-                          color: 'var(--color-primary, #6653AF)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                        title="Edit resource details"
-                      >
-                        <HiOutlinePencil size={16} />
-                      </button>
+                      {/* File Size */}
+                      <td style={{ padding: '16px 20px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-primary, #6653AF)', background: 'rgba(102, 83, 175, 0.08)', padding: '4px 10px', borderRadius: '6px' }}>
+                          {formatFileSize(item.fileSize) || (item.fileUrl?.includes('http') ? 'URL Link' : 'File')}
+                        </span>
+                      </td>
 
-                      {/* Delete Resource */}
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          if (window.confirm(`Are you sure you want to delete "${item.title || item.name}"?`)) {
-                            try {
-                              await onDeleteAsset(item.id);
-                              toast.success('Resource deleted');
-                            } catch {
-                              toast.error('Failed to delete resource');
-                            }
-                          }
-                        }}
-                        style={{
-                          padding: '8px',
-                          borderRadius: '8px',
-                          border: '1px solid #fecaca',
-                          background: '#fef2f2',
-                          color: '#ef4444',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                        title="Delete resource"
-                      >
-                        <HiOutlineTrash size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                      {/* Actions */}
+                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '8px' }}>
+                          {item.fileUrl && (
+                            <a
+                              href={item.fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                padding: '6px',
+                                borderRadius: '4px',
+                                border: 'none',
+                                background: 'transparent',
+                                color: 'var(--color-primary, #6653AF)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                              title="View / Open resource"
+                            >
+                              <HiOutlineEye size={18} />
+                            </a>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal(item)}
+                            style={{
+                              padding: '6px',
+                              borderRadius: '4px',
+                              border: 'none',
+                              background: 'transparent',
+                              color: 'var(--color-primary, #6653AF)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                            title="Edit resource details"
+                          >
+                            <HiOutlinePencil size={18} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (window.confirm(`Are you sure you want to delete "${item.title || item.name}"?`)) {
+                                try {
+                                  await onDeleteAsset(item.id);
+                                  toast.success('Resource deleted');
+                                } catch {
+                                  toast.error('Failed to delete resource');
+                                }
+                              }
+                            }}
+                            style={{
+                              padding: '6px',
+                              borderRadius: '4px',
+                              border: 'none',
+                              background: 'transparent',
+                              color: '#ef4444',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                            title="Delete resource"
+                          >
+                            <HiOutlineTrash size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--color-text-secondary, #6b7280)' }}>
@@ -861,7 +868,7 @@ const TopicResourceWorkspace = ({
               <button
                 type="button"
                 onClick={() => setEditingResource(null)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -880,7 +887,7 @@ const TopicResourceWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     fontSize: '13px',
                   }}
                   required
@@ -899,7 +906,7 @@ const TopicResourceWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     fontSize: '13px',
                     resize: 'vertical',
                   }}
@@ -918,7 +925,7 @@ const TopicResourceWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     fontSize: '13px',
                   }}
                 />
@@ -931,7 +938,7 @@ const TopicResourceWorkspace = ({
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',

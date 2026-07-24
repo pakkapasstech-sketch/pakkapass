@@ -153,7 +153,10 @@ const Sidebar = () => {
                   <NavLink
                     to={item.path}
                     title={shouldCollapse ? item.title : undefined}
-                    onClick={isMobile ? closeMobileSidebar : undefined}
+                    onClick={() => {
+                      setIsContentExpanded(false);
+                      if (isMobile) closeMobileSidebar();
+                    }}
                     className={`sidebar-nav-item ${
                       isActive(item.path) ? 'sidebar-nav-item-active' : ''
                     }`}

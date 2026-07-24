@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   HiOutlineFolder,
   HiOutlineBookOpen,
@@ -9,6 +9,7 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlineX,
+  HiOutlineSelector,
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import entityService from '../../services/entity.service';
@@ -53,6 +54,7 @@ const ChapterTopicCardWorkspace = ({
   refetchOptions,
 }) => {
   const [internalSelectedChapter, setInternalSelectedChapter] = useState(null);
+  const displayContentType = getString(contentType?.name || contentType) || 'Chapter';
 
   const selectedChapter = propSelectedChapter !== undefined ? propSelectedChapter : internalSelectedChapter;
   const setSelectedChapter = (val) => {
@@ -246,6 +248,60 @@ const ChapterTopicCardWorkspace = ({
 
     return Array.from(topicsSet);
   }, [selectedChapter, options.topics, contentChaptersMap, customTopics, editedTopicNames, deletedTopics]);
+
+  const [orderedChapters, setOrderedChapters] = useState([]);
+  const [draggedChapterIndex, setDraggedChapterIndex] = useState(null);
+
+  const [orderedTopics, setOrderedTopics] = useState([]);
+  const [draggedTopicIndex, setDraggedTopicIndex] = useState(null);
+
+  useEffect(() => {
+    setOrderedChapters(allChaptersList);
+  }, [allChaptersList]);
+
+  useEffect(() => {
+    setOrderedTopics(allTopicNames);
+  }, [allTopicNames]);
+
+  const handleDragStartChapter = (e, index) => {
+    setDraggedChapterIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  const handleDragOverChapter = (e, index) => {
+    e.preventDefault();
+  };
+  const handleDropChapter = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedChapterIndex === null || draggedChapterIndex === dropIndex) return;
+    setOrderedChapters((prev) => {
+      const copy = [...prev];
+      const [draggedItem] = copy.splice(draggedChapterIndex, 1);
+      copy.splice(dropIndex, 0, draggedItem);
+      return copy;
+    });
+    setDraggedChapterIndex(null);
+  };
+  const handleDragEndChapter = () => setDraggedChapterIndex(null);
+
+  const handleDragStartTopic = (e, index) => {
+    setDraggedTopicIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  const handleDragOverTopic = (e, index) => {
+    e.preventDefault();
+  };
+  const handleDropTopic = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedTopicIndex === null || draggedTopicIndex === dropIndex) return;
+    setOrderedTopics((prev) => {
+      const copy = [...prev];
+      const [draggedItem] = copy.splice(draggedTopicIndex, 1);
+      copy.splice(dropIndex, 0, draggedItem);
+      return copy;
+    });
+    setDraggedTopicIndex(null);
+  };
+  const handleDragEndTopic = () => setDraggedTopicIndex(null);
 
   const handleAddChapter = async (e) => {
     e.preventDefault();
@@ -464,7 +520,7 @@ const ChapterTopicCardWorkspace = ({
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '10px',
-                border: '1px solid var(--color-border, #e5e7eb)',
+                border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                 background: 'var(--color-card, #ffffff)',
                 color: 'var(--color-text-primary, #111827)',
                 fontWeight: '600',
@@ -476,10 +532,7 @@ const ChapterTopicCardWorkspace = ({
               Back to Chapters
             </button>
             <div>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)' }}>
-                {getString(subject?.name || subject)} &bull; {contentType}
-              </span>
-              <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '2px 0 0 0', color: 'var(--color-text-primary, #111827)' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '0', color: 'var(--color-text-primary, #111827)' }}>
                 Chapter: {chName}
               </h2>
             </div>
@@ -510,138 +563,134 @@ const ChapterTopicCardWorkspace = ({
 
         {/* Topics Cards Grid */}
         {allTopicNames.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-            {allTopicNames.map((topName) => {
-              const topicItems = contentChaptersMap[chName]?.[topName] || [];
-              const notesCount = topicItems.filter((i) => i.type === 'notes' || i.type === 'pdf' || i.type === 'document').length;
-              const videosCount = topicItems.filter((i) => i.type === 'video' || i.type === 'url' || i.type === 'link').length;
+          <div style={{ overflowX: 'auto', background: 'var(--color-card, #ffffff)', borderRadius: '8px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border, #e5e7eb)' }}>
+                <tr>
+                  <th style={{ width: '40px', padding: '14px 10px', textAlign: 'center' }}></th>
+                  <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>S.No</th>
+                  <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>Topic Name</th>
+                  <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>Resources</th>
+                  <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px', textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderedTopics.map((topName, idx) => {
+                  const topicItems = contentChaptersMap[chName]?.[topName] || [];
+                  const notesCount = topicItems.filter((i) => i.type === 'notes' || i.type === 'pdf' || i.type === 'document').length;
+                  const videosCount = topicItems.filter((i) => i.type === 'video' || i.type === 'url' || i.type === 'link').length;
+                  const isBeingDragged = draggedTopicIndex === idx;
 
-              return (
-                <div
-                  key={topName}
-                  onClick={() => onSelectTopic(selectedChapter, { name: topName })}
-                  style={{
-                    background: 'var(--color-card, #ffffff)',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    border: '1px solid var(--color-border, #e5e7eb)',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(0, 0, 0, 0.1)';
-                    e.currentTarget.style.borderColor = 'var(--color-primary, #6653AF)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
-                    e.currentTarget.style.borderColor = 'var(--color-border, #e5e7eb)';
-                  }}
-                >
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, overflow: 'hidden' }}>
-                        <div
-                          style={{
-                            width: '42px',
-                            height: '42px',
-                            borderRadius: '12px',
-                            background: 'rgba(102, 83, 175, 0.1)',
-                            color: 'var(--color-primary, #6653AF)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                          }}
-                        >
-                          <HiOutlineBookOpen size={22} />
+                  return (
+                    <tr
+                      key={topName}
+                      draggable
+                      onDragStart={(e) => handleDragStartTopic(e, idx)}
+                      onDragOver={(e) => handleDragOverTopic(e, idx)}
+                      onDrop={(e) => handleDropTopic(e, idx)}
+                      onDragEnd={handleDragEndTopic}
+                      onClick={() => onSelectTopic(selectedChapter, { name: topName })}
+                      style={{ 
+                        borderBottom: '1px solid var(--color-border, #e5e7eb)', 
+                        cursor: isBeingDragged ? 'grab' : 'pointer', 
+                        transition: 'background 0.2s, opacity 0.2s',
+                        background: isBeingDragged ? 'rgba(102, 83, 175, 0.05)' : 'transparent',
+                        opacity: isBeingDragged ? 0.6 : 1
+                      }}
+                      onMouseEnter={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = '#f1f5f9')}
+                      onMouseLeave={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      <td style={{ padding: '16px 10px', textAlign: 'center', color: 'var(--color-text-muted, #9ca3af)' }}>
+                        <div style={{ cursor: 'grab', display: 'inline-flex', alignItems: 'center' }} title="Drag to reorder topic" onClick={(e) => e.stopPropagation()}>
+                          <HiOutlineSelector size={20} />
                         </div>
-                        <div style={{ overflow: 'hidden' }}>
-                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Topic Card
+                      </td>
+                      <td style={{ padding: '16px 20px', fontSize: '14px', color: '#334155' }}>
+                        {idx + 1}
+                      </td>
+                      <td style={{ padding: '16px 20px', fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>
+                        {topName}
+                      </td>
+                      <td style={{ padding: '16px 20px', fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)' }}>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <HiOutlineDocumentText size={15} style={{ color: '#4f46e5' }} /> {notesCount} Notes
                           </span>
-                          <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {topName}
-                          </h3>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <HiOutlineVideoCamera size={15} style={{ color: '#ec4899' }} /> {videosCount} Videos
+                          </span>
                         </div>
-                      </div>
-
-                      {/* Edit & Delete Action Buttons */}
-                      <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenEditTopicModal(topName);
-                          }}
-                          style={{
-                            padding: '6px',
-                            borderRadius: '6px',
-                            border: '1px solid var(--color-border, #e5e7eb)',
-                            background: '#ffffff',
-                            color: 'var(--color-primary, #6653AF)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title="Edit Topic Name"
-                        >
-                          <HiOutlinePencil size={15} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteTopic(topName);
-                          }}
-                          style={{
-                            padding: '6px',
-                            borderRadius: '6px',
-                            border: '1px solid #fecaca',
-                            background: '#fef2f2',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title="Delete Topic"
-                        >
-                          <HiOutlineTrash size={15} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid var(--color-border, #f1f5f9)' }}>
-                    <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <HiOutlineDocumentText size={15} style={{ color: '#4f46e5' }} /> {notesCount} Notes
-                      </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <HiOutlineVideoCamera size={15} style={{ color: '#ec4899' }} /> {videosCount} Videos
-                      </span>
-                    </div>
-
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary, #6653AF)' }}>
-                      Open &rarr;
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+                      </td>
+                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenEditTopicModal(topName);
+                            }}
+                            style={{
+                              background: 'transparent',
+                              color: 'var(--color-primary, #6653AF)',
+                              border: 'none',
+                              padding: '6px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                            }}
+                            title="Edit Topic"
+                          >
+                            <HiOutlinePencil size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteTopic(topName);
+                            }}
+                            style={{
+                              background: 'transparent',
+                              color: '#ef4444',
+                              border: 'none',
+                              padding: '6px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                            }}
+                            title="Delete Topic"
+                          >
+                            <HiOutlineTrash size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectTopic(selectedChapter, { name: topName });
+                            }}
+                            style={{
+                              background: 'var(--color-primary, #6653AF)',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '6px 14px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '13px',
+                              fontWeight: '600',
+                            }}
+                          >
+                            Open
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div
             onClick={() => setShowCreateTopicModal(true)}
             style={{
-              border: '2px dashed var(--color-border, #d1d5db)',
+              border: '2px dashed var(--color-border, var(--color-border, #e5e7eb))',
               borderRadius: '16px',
               padding: '50px 20px',
               textAlign: 'center',
@@ -652,7 +701,7 @@ const ChapterTopicCardWorkspace = ({
             <HiOutlinePlus size={40} style={{ color: 'var(--color-primary, #6653AF)', marginBottom: '10px' }} />
             <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0' }}>No Topics Created Yet</h3>
             <p style={{ fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>
-              Click here to create a topic under chapter "{chName}".
+              Click here to create a topic under {displayContentType} "{chName}".
             </p>
           </div>
         )}
@@ -666,13 +715,13 @@ const ChapterTopicCardWorkspace = ({
                 <button
                   type="button"
                   onClick={() => setShowCreateTopicModal(false)}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
                 >
                   <HiOutlineX size={20} />
                 </button>
               </div>
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 20px 0' }}>
-                Add a new topic card under Chapter: {chName}
+                Add a new topic under {displayContentType}: {chName}
               </p>
 
               <form onSubmit={handleAddTopic}>
@@ -688,7 +737,7 @@ const ChapterTopicCardWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '10px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     fontSize: '14px',
                     marginBottom: '20px',
                   }}
@@ -702,7 +751,7 @@ const ChapterTopicCardWorkspace = ({
                     style={{
                       padding: '8px 16px',
                       borderRadius: '8px',
-                      border: '1px solid var(--color-border, #d1d5db)',
+                      border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                       background: 'transparent',
                       fontWeight: '600',
                       fontSize: '13px',
@@ -740,12 +789,12 @@ const ChapterTopicCardWorkspace = ({
             <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>
-                  Edit {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name
+                  Edit {editModalItem.type === 'topic' ? 'Topic' : displayContentType} Name
                 </h3>
                 <button
                   type="button"
                   onClick={() => setEditModalItem(null)}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
                 >
                   <HiOutlineX size={20} />
                 </button>
@@ -753,7 +802,7 @@ const ChapterTopicCardWorkspace = ({
 
               <form onSubmit={handleSaveEditItem}>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
-                  {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name <span style={{ color: '#ef4444' }}>*</span>
+                  {editModalItem.type === 'topic' ? 'Topic' : displayContentType} Name <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -763,7 +812,7 @@ const ChapterTopicCardWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '10px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     fontSize: '14px',
                     marginBottom: '20px',
                   }}
@@ -777,7 +826,7 @@ const ChapterTopicCardWorkspace = ({
                     style={{
                       padding: '8px 16px',
                       borderRadius: '8px',
-                      border: '1px solid var(--color-border, #d1d5db)',
+                      border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                       background: 'transparent',
                       fontWeight: '600',
                       fontSize: '13px',
@@ -828,7 +877,7 @@ const ChapterTopicCardWorkspace = ({
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '10px',
-                border: '1px solid var(--color-border, #e5e7eb)',
+                border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                 background: 'var(--color-card, #ffffff)',
                 color: 'var(--color-text-primary, #111827)',
                 fontWeight: '600',
@@ -846,7 +895,7 @@ const ChapterTopicCardWorkspace = ({
               {getString(subject?.name || subject)} &bull; {contentType}
             </span>
             <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '2px 0 0 0', color: 'var(--color-text-primary, #111827)' }}>
-              Chapters ({allChaptersList.length})
+              {displayContentType}s ({allChaptersList.length})
             </h2>
           </div>
         </div>
@@ -870,155 +919,150 @@ const ChapterTopicCardWorkspace = ({
           }}
         >
           <HiOutlinePlus size={18} />
-          Create Chapter
+          Create {displayContentType}
         </button>
       </div>
 
       {/* Chapters Grid */}
       {allChaptersList.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-          {allChaptersList.map((ch) => {
-            const chName = ch.name;
-            const rawChName = ch.rawName || chName;
+        <div style={{ overflowX: 'auto', background: 'var(--color-card, #ffffff)', borderRadius: '8px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border, #e5e7eb)' }}>
+              <tr>
+                <th style={{ width: '40px', padding: '14px 10px', textAlign: 'center' }}></th>
+                <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>S.No</th>
+                <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>{displayContentType} Name</th>
+                <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>Topics Count</th>
+                <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderedChapters.map((ch, idx) => {
+                const chName = ch.name;
+                const rawChName = ch.rawName || chName;
 
-            const apiTopicNames = Object.keys(contentChaptersMap[chName] || contentChaptersMap[rawChName] || {});
-            const dbTopicNames = (options?.topics || [])
-              .filter((t) => {
-                // Only match by chapter ID if chapter has a DB ID
-                if (ch.id && !String(ch.id).startsWith('custom_') && !String(ch.id).startsWith('ch_content_')) {
-                  return String(t.chapterId) === String(ch.id);
-                }
-                return false;
-              })
-              .map((t) => t.name);
-            const customTopicNames = customTopics[chName] || customTopics[rawChName] || [];
+                const apiTopicNames = Object.keys(contentChaptersMap[chName] || contentChaptersMap[rawChName] || {});
+                const dbTopicNames = (options?.topics || [])
+                  .filter((t) => {
+                    if (ch.id && !String(ch.id).startsWith('custom_') && !String(ch.id).startsWith('ch_content_')) {
+                      return String(t.chapterId) === String(ch.id);
+                    }
+                    return false;
+                  })
+                  .map((t) => t.name);
+                const customTopicNames = customTopics[chName] || customTopics[rawChName] || [];
 
-            const totalTopicsCount = new Set(
-              [...apiTopicNames, ...dbTopicNames, ...customTopicNames]
-                .map((t) => getString(editedTopicNames[t] || t)?.trim().toLowerCase())
-                .filter((t) => Boolean(t) && !deletedTopics.has(t))
-            ).size;
+                const totalTopicsCount = new Set(
+                  [...apiTopicNames, ...dbTopicNames, ...customTopicNames]
+                    .map((t) => getString(editedTopicNames[t] || t)?.trim().toLowerCase())
+                    .filter((t) => Boolean(t) && !deletedTopics.has(t))
+                ).size;
 
-            return (
-              <div
-                key={ch.id || chName}
-                onClick={() => setSelectedChapter(ch)}
-                style={{
-                  background: 'var(--color-card, #ffffff)',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  border: '1px solid var(--color-border, #e5e7eb)',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(0, 0, 0, 0.1)';
-                  e.currentTarget.style.borderColor = 'var(--color-primary, #6653AF)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
-                  e.currentTarget.style.borderColor = 'var(--color-border, #e5e7eb)';
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, overflow: 'hidden' }}>
-                      <div
-                        style={{
-                          width: '46px',
-                          height: '46px',
-                          borderRadius: '12px',
-                          background: 'rgba(102, 83, 175, 0.12)',
-                          color: 'var(--color-primary, #6653AF)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <HiOutlineFolder size={24} />
+                const isBeingDragged = draggedChapterIndex === idx;
+
+                return (
+                  <tr
+                    key={ch.id || chName}
+                    draggable
+                    onDragStart={(e) => handleDragStartChapter(e, idx)}
+                    onDragOver={(e) => handleDragOverChapter(e, idx)}
+                    onDrop={(e) => handleDropChapter(e, idx)}
+                    onDragEnd={handleDragEndChapter}
+                    onClick={() => setSelectedChapter(ch)}
+                    style={{ 
+                      borderBottom: '1px solid var(--color-border, #e5e7eb)', 
+                      cursor: isBeingDragged ? 'grab' : 'pointer', 
+                      transition: 'background 0.2s, opacity 0.2s',
+                      background: isBeingDragged ? 'rgba(102, 83, 175, 0.05)' : 'transparent',
+                      opacity: isBeingDragged ? 0.6 : 1
+                    }}
+                    onMouseEnter={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = '#f1f5f9')}
+                    onMouseLeave={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <td style={{ padding: '16px 10px', textAlign: 'center', color: 'var(--color-text-muted, #9ca3af)' }}>
+                      <div style={{ cursor: 'grab', display: 'inline-flex', alignItems: 'center' }} title="Drag to reorder chapter" onClick={(e) => e.stopPropagation()}>
+                        <HiOutlineSelector size={20} />
                       </div>
-                      <div style={{ overflow: 'hidden' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          Chapter Card
-                        </span>
-                        <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {chName}
-                        </h3>
+                    </td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#334155' }}>
+                      {idx + 1}
+                    </td>
+                    <td style={{ padding: '16px 20px', fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>
+                      {chName}
+                    </td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)' }}>
+                      {totalTopicsCount} {totalTopicsCount === 1 ? 'Topic' : 'Topics'}
+                    </td>
+                    <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditChapterModal(rawChName);
+                          }}
+                          style={{
+                            background: 'transparent',
+                            color: 'var(--color-primary, #6653AF)',
+                            border: 'none',
+                            padding: '6px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                          }}
+                          title="Edit Chapter"
+                        >
+                          <HiOutlinePencil size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteChapter(rawChName);
+                          }}
+                          style={{
+                            background: 'transparent',
+                            color: '#ef4444',
+                            border: 'none',
+                            padding: '6px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                          }}
+                          title="Delete Chapter"
+                        >
+                          <HiOutlineTrash size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedChapter(ch);
+                          }}
+                          style={{
+                            background: 'var(--color-primary, #6653AF)',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '6px 14px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                          }}
+                        >
+                          View Topics
+                        </button>
                       </div>
-                    </div>
-
-                    {/* Edit & Delete Action Buttons for Chapter */}
-                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenEditChapterModal(rawChName);
-                        }}
-                        style={{
-                          padding: '6px',
-                          borderRadius: '6px',
-                          border: '1px solid var(--color-border, #e5e7eb)',
-                          background: '#ffffff',
-                          color: 'var(--color-primary, #6653AF)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                        title="Edit Chapter Name"
-                      >
-                        <HiOutlinePencil size={15} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteChapter(rawChName);
-                        }}
-                        style={{
-                          padding: '6px',
-                          borderRadius: '6px',
-                          border: '1px solid #fecaca',
-                          background: '#fef2f2',
-                          color: '#ef4444',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                        title="Delete Chapter"
-                      >
-                        <HiOutlineTrash size={15} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px', borderTop: '1px solid var(--color-border, #f1f5f9)' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)' }}>
-                    {totalTopicsCount} {totalTopicsCount === 1 ? 'Topic' : 'Topics'}
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-primary, #6653AF)' }}>
-                    View Topics &rarr;
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       ) : (
         <div
           onClick={() => setShowCreateChapterModal(true)}
           style={{
-            border: '2px dashed var(--color-border, #d1d5db)',
+            border: '2px dashed var(--color-border, var(--color-border, #e5e7eb))',
             borderRadius: '16px',
             padding: '50px 20px',
             textAlign: 'center',
@@ -1027,9 +1071,9 @@ const ChapterTopicCardWorkspace = ({
           }}
         >
           <HiOutlinePlus size={40} style={{ color: 'var(--color-primary, #6653AF)', marginBottom: '10px' }} />
-          <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0' }}>No Chapters Created Yet</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0' }}>No {displayContentType}s Created Yet</h3>
           <p style={{ fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>
-            Click here to create a chapter under "{contentType}" for {subject.name}.
+            Click here to create a {displayContentType.toLowerCase()} under "{contentType}" for {subject.name}.
           </p>
         </div>
       )}
@@ -1039,22 +1083,22 @@ const ChapterTopicCardWorkspace = ({
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
           <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>Create Chapter Card</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>Create {displayContentType}</h3>
               <button
                 type="button"
                 onClick={() => setShowCreateChapterModal(false)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
             </div>
             <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 20px 0' }}>
-              Add a chapter card under {contentType} for {subject.name}
+              Add a {displayContentType.toLowerCase()} under {contentType} for {subject.name}
             </p>
 
             <form onSubmit={handleAddChapter}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
-                Chapter Name <span style={{ color: '#ef4444' }}>*</span>
+                {displayContentType} Name <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1065,7 +1109,7 @@ const ChapterTopicCardWorkspace = ({
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -1079,7 +1123,7 @@ const ChapterTopicCardWorkspace = ({
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',
@@ -1103,7 +1147,7 @@ const ChapterTopicCardWorkspace = ({
                     opacity: isCreatingChapter ? 0.7 : 1,
                   }}
                 >
-                  {isCreatingChapter ? 'Creating...' : 'Create Chapter'}
+                  {isCreatingChapter ? 'Creating...' : `Create ${displayContentType}`}
                 </button>
               </div>
             </form>
@@ -1117,12 +1161,12 @@ const ChapterTopicCardWorkspace = ({
           <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>
-                Edit {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name
+                Edit {editModalItem.type === 'topic' ? 'Topic' : displayContentType} Name
               </h3>
               <button
                 type="button"
                 onClick={() => setEditModalItem(null)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -1130,7 +1174,7 @@ const ChapterTopicCardWorkspace = ({
 
             <form onSubmit={handleSaveEditItem}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
-                {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name <span style={{ color: '#ef4444' }}>*</span>
+                {editModalItem.type === 'topic' ? 'Topic' : displayContentType} Name <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1140,7 +1184,7 @@ const ChapterTopicCardWorkspace = ({
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -1154,7 +1198,7 @@ const ChapterTopicCardWorkspace = ({
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',

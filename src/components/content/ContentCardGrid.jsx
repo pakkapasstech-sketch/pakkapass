@@ -9,6 +9,8 @@ import {
   HiOutlineTrash,
   HiOutlineArrowLeft,
 } from 'react-icons/hi';
+import medicalImg from '../../assets/course_medical.jpg';
+import managementImg from '../../assets/course_management.jpg';
 
 const ContentCardGrid = ({
   title,
@@ -19,6 +21,7 @@ const ContentCardGrid = ({
   onAdd,
   onEdit,
   onDelete,
+  hasBranches = true,
   type = 'board', // 'board' | 'branch' | 'subject'
 }) => {
   const getIcon = (index) => {
@@ -46,7 +49,7 @@ const ContentCardGrid = ({
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '10px',
-                border: '1px solid var(--color-border, #e5e7eb)',
+                border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                 background: 'var(--color-card, #ffffff)',
                 color: 'var(--color-text-primary, #111827)',
                 fontWeight: '600',
@@ -99,140 +102,128 @@ const ContentCardGrid = ({
       {items.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
           {items.map((item, idx) => {
-            const Icon = getIcon(idx);
             const itemName = item.displayName || item.name || item.title || item;
-
+            const bannerImage = idx % 2 === 0 ? medicalImg : managementImg;
+            
             return (
               <div
                 key={item.id || itemName}
-                onClick={() => onSelect(item)}
                 style={{
                   background: 'var(--color-card, #ffffff)',
-                  borderRadius: '20px',
-                  padding: '24px',
-                  border: '1px solid var(--color-border, #e5e7eb)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                  cursor: 'pointer',
-                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  borderRadius: '4px',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                  overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  minHeight: '170px',
-                  position: 'relative',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-6px)';
-                  e.currentTarget.style.boxShadow = '0 12px 24px -6px rgba(102, 83, 175, 0.15)';
-                  e.currentTarget.style.borderColor = 'var(--color-primary, #6653AF)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)';
-                  e.currentTarget.style.borderColor = 'var(--color-border, #e5e7eb)';
+                  transition: 'all 0.2s',
                 }}
               >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <div
-                      style={{
-                        width: '50px',
-                        height: '50px',
-                        borderRadius: '14px',
-                        background: 'rgba(102, 83, 175, 0.1)',
-                        color: 'var(--color-primary, #6653AF)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Icon size={26} />
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {onEdit && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(item);
-                          }}
-                          style={{
-                            padding: '6px',
-                            borderRadius: '8px',
-                            border: '1px solid var(--color-border, #e5e7eb)',
-                            background: 'var(--color-card, #ffffff)',
-                            color: 'var(--color-primary, #6653AF)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title={`Edit ${type} name`}
-                        >
-                          <HiOutlinePencil size={15} />
-                        </button>
-                      )}
-
-                      {onDelete && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(item);
-                          }}
-                          style={{
-                            padding: '6px',
-                            borderRadius: '8px',
-                            border: '1px solid #fecaca',
-                            background: '#fef2f2',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title={`Delete ${type}`}
-                        >
-                          <HiOutlineTrash size={15} />
-                        </button>
-                      )}
-
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          textTransform: 'uppercase',
-                          padding: '4px 10px',
-                          borderRadius: '999px',
-                          background: 'rgba(102, 83, 175, 0.1)',
-                          color: 'var(--color-primary, #6653AF)',
-                          letterSpacing: '0.5px',
-                        }}
-                      >
-                        {type}
-                      </span>
-                    </div>
+                <div style={{ position: 'relative', height: '160px', width: '100%', background: 'var(--color-border-light, #f3f4f6)' }}>
+                  <img src={bannerImage} alt="Course Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', bottom: '0', right: '0', background: '#f59e0b', color: '#fff', padding: '6px 12px', fontSize: '13px', fontWeight: 'bold' }}>
+                    {type.toUpperCase()}
                   </div>
-
-                  <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0', color: 'var(--color-text-primary, #111827)' }}>
-                    {itemName}
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>
-                    Click to view {type === 'board' ? 'Branches' : type === 'branch' ? 'Subjects' : 'Chapters & Content'}
-                  </p>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid var(--color-border, #f1f5f9)' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-primary, #6653AF)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    Select {type} &rarr;
-                  </span>
+                <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <h3 
+                    style={{ 
+                      fontSize: '18px', 
+                      fontWeight: '700', 
+                      margin: '0 0 12px 0', 
+                      color: 'var(--color-primary, #6653AF)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                    title={itemName}
+                  >
+                    {itemName}
+                  </h3>
+                  
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 6px 0' }}>
+                    Course ID : {type.toUpperCase().substring(0,3)}ID{item.id || Math.floor(Math.random() * 1000) + 1000}
+                  </p>
+                  
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 20px 0' }}>
+                    Created On : {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : '03/18/2026'}
+                  </p>
+
+                  <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {onEdit && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(item);
+                        }}
+                        style={{
+                          background: 'transparent',
+                          color: 'var(--color-primary, #6653AF)',
+                          border: 'none',
+                          padding: '6px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title={`Edit ${type}`}
+                      >
+                        <HiOutlinePencil size={16} />
+                      </button>
+                    )}
+
+                    {onDelete && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(item);
+                        }}
+                        style={{
+                          background: 'transparent',
+                          color: '#ef4444',
+                          border: 'none',
+                          padding: '6px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title={`Delete ${type}`}
+                      >
+                        <HiOutlineTrash size={16} />
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => onSelect(item)}
+                      style={{
+                        background: 'var(--color-primary, #6653AF)',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '6px 14px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        marginLeft: 'auto'
+                      }}
+                    >
+                      {type === 'board' ? (hasBranches ? 'View branches' : 'View subjects') : type === 'branch' ? 'View subjects' : 'View content'}
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--color-card, #ffffff)', borderRadius: '20px', border: '1px dashed var(--color-border, #d1d5db)' }}>
+        <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--color-card, #ffffff)', borderRadius: '20px', border: '1px dashed var(--color-border, var(--color-border, #e5e7eb))' }}>
           <p style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-text-primary, #111827)', margin: '0 0 12px 0' }}>
             No {type}s available
           </p>

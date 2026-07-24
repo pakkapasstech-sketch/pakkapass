@@ -15,6 +15,7 @@ const initialForm = {
   price: '',
   duration: '',
   status: 'Active',
+  isPublic: true,
   classes: [],
   boards: [],
   branches: [],
@@ -72,6 +73,7 @@ const CreateEditPlanPage = () => {
           price: selectedPlan.price || '',
           duration: selectedPlan.durationDays || '',
           status: selectedPlan.status || 'Active',
+          isPublic: selectedPlan.isPublic ?? true,
           classes: selectedPlan.gradeIds || [],
           boards: selectedPlan.boardIds || [],
           branches: selectedPlan.branchIds || [],
@@ -138,6 +140,7 @@ const CreateEditPlanPage = () => {
         branchIds: formData.branches.filter(id => filteredBranches.some(b => b.id === id)),
         features: formData.features,
         status: formData.status,
+        isPublic: formData.isPublic,
       };
 
       if (isEdit) {
@@ -392,6 +395,35 @@ const CreateEditPlanPage = () => {
             options={['Active', 'Inactive']}
             onChange={(value) => updateField('status', value)}
           />
+        </div>
+
+        <div className="form-card">
+          <h3>Visibility</h3>
+
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <label style={{ margin: 0, minWidth: '100px' }}>Plan Visibility</label>
+            
+            <div className="options" style={{ margin: 0 }}>
+              <button
+                type="button"
+                className={`option ${formData.isPublic ? 'selected' : ''}`}
+                onClick={() => updateField('isPublic', true)}
+              >
+                Public
+              </button>
+              <button
+                type="button"
+                className={`option ${!formData.isPublic ? 'selected' : ''}`}
+                onClick={() => updateField('isPublic', false)}
+              >
+                Private
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.9em', color: 'var(--color-text-secondary)', margin: 0 }}>
+              {formData.isPublic ? '(Visible to all students)' : '(Only visible when explicitly assigned)'}
+            </p>
+          </div>
         </div>
 
         {/* Actions */}

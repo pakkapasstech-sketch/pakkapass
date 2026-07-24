@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlineDownload } from 'react-icons/hi';
+import { HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlineDownload, HiOutlineCalendar, HiOutlineX } from 'react-icons/hi';
 import { exportToExcel } from '../../utils/exportUtils';
 //import StatusBadge from '../../components/tables/StatusBadge';
 import ErrorState from '../../components/loaders/ErrorState';
@@ -55,6 +55,10 @@ const RecentPaymentsPage = () => {
 
   const [selectedPayment, setSelectedPayment] = useState(null);
 
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   const plans = useMemo(
     () => ['All Plans', ...new Set(payments.map((p) => p.plan).filter(Boolean))],
     [payments]
@@ -70,6 +74,21 @@ const RecentPaymentsPage = () => {
     }
     return null;
   };
+
+  const studentPaymentCountMap = useMemo(() => {
+    const map = {};
+    payments.forEach((payment) => {
+      let studentIdVal = payment.studentId;
+      if (!studentIdVal && payment.student) {
+        const found = students.find((s) => s.name?.trim().toLowerCase() === payment.student.trim().toLowerCase());
+        studentIdVal = found?.id || payment.student;
+      }
+      if (studentIdVal) {
+        map[studentIdVal] = (map[studentIdVal] || 0) + 1;
+      }
+    });
+    return map;
+  }, [payments, students]);
 
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
@@ -100,12 +119,23 @@ const RecentPaymentsPage = () => {
 
       const matchesStatus = selectedStatus === 'All Status' || payment.status === selectedStatus;
 
-      return matchesSearch && matchesPlan && matchesStatus;
+      let matchesDate = true;
+      const paymentDate = payment.date ? new Date(payment.date) : null;
+      if (startDate) {
+        matchesDate = matchesDate && paymentDate && paymentDate >= new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        matchesDate = matchesDate && paymentDate && paymentDate <= end;
+      }
+
+      return matchesSearch && matchesPlan && matchesStatus && matchesDate;
     });
-  }, [payments, search, selectedPlan, selectedStatus, students, planPriceMap, partnerMap]);
-  const totalRevenue = payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+  }, [payments, search, selectedPlan, selectedStatus, startDate, endDate, students, planPriceMap, partnerMap]);
+  const totalRevenue = filteredPayments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
   const totalDiscount = useMemo(() => {
-    return payments.reduce((sum, payment) => {
+    return filteredPayments.reduce((sum, payment) => {
       const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
       if (planPrice) {
         const pPrice = Number(planPrice);
@@ -116,17 +146,17 @@ const RecentPaymentsPage = () => {
       }
       return sum;
     }, 0);
-  }, [payments, planPriceMap]);
+  }, [filteredPayments, planPriceMap]);
 
-  const successfulPayments = payments.filter((payment) => payment.status === 'Success').length;
+  const successfulPayments = filteredPayments.filter((payment) => payment.status === 'Success').length;
 
-  const pendingPayments = payments.filter((payment) => payment.status === 'Pending').length;
+  const pendingPayments = filteredPayments.filter((payment) => payment.status === 'Pending').length;
   const [currentPage, setCurrentPage] = useState(1);
   const paymentsPerPage = 5;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, selectedPlan, selectedStatus]);
+  }, [search, selectedPlan, selectedStatus, startDate, endDate]);
 
   const totalFiltered = filteredPayments.length;
   const totalPages = Math.ceil(totalFiltered / paymentsPerPage) || 1;
@@ -231,6 +261,11 @@ useEffect(() => {
                   const isDiscounted = planPrice ? (Number(planPrice) > Number(r.amount)) : !!partner?.referralCode;
                   return isDiscounted ? (partner?.referralCode || 'Null') : 'Null';
                 }},
+                { header: 'Total Payments Made', accessor: (r) => {
+                  const sInfo = getStudentForPayment(r);
+                  const studentIdVal = r.studentId || sInfo?.id || r.student;
+                  return studentPaymentCountMap[studentIdVal] || 1;
+                }},
                 { header: 'Status', accessor: (r) => r.status },
                 { header: 'Date', accessor: (r) => formatDate(r.date) },
               ];
@@ -251,8 +286,16 @@ useEffect(() => {
       </div>
       <div className="dashboard-stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <StatisticCard
-          title="Total Revenue"
-          value={`₹${totalRevenue.toLocaleString('en-IN')}`}
+          title="Online + Offline = Total Revenue"
+          value={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <span>₹{totalRevenue.toLocaleString('en-IN')}</span>
+              <span style={{ fontWeight: 400, opacity: 0.5 }}>+</span>
+              <span>₹0</span>
+              <span style={{ fontWeight: 400, opacity: 0.5 }}>=</span>
+              <span>₹{totalRevenue.toLocaleString('en-IN')}</span>
+            </div>
+          }
           icon="commissions"
           iconBg="bg-green-100"
           iconColor="text-green-600"
@@ -296,7 +339,92 @@ useEffect(() => {
           options={['All Status', 'Success', 'Pending', 'Failed']}
           onChange={setSelectedStatus}
         />
+
+        <button
+          type="button"
+          onClick={() => setIsDateModalOpen(true)}
+          style={{
+            height: '52px',
+            width: '220px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 16px',
+            borderRadius: '14px',
+            border: '1px solid var(--color-border)',
+            background: 'var(--color-card)',
+            color: 'var(--color-text-primary)',
+            fontSize: '14px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            flexShrink: 0
+          }}
+        >
+          <span style={{ flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {startDate || endDate ? 'Date Filter Applied' : 'Filter by Date'}
+          </span>
+          <HiOutlineCalendar size={18} />
+        </button>
       </div>
+
+      {isDateModalOpen && (
+        <div className="payment-modal-overlay" onClick={() => setIsDateModalOpen(false)} style={{ zIndex: 1000 }}>
+          <div className="payment-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <div className="payment-modal-header">
+              <h2>Select Date Range</h2>
+              <button
+                type="button"
+                className="payment-modal-close"
+                onClick={() => setIsDateModalOpen(false)}
+                aria-label="Close modal"
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '20px' }}
+              >
+                <HiOutlineX />
+              </button>
+            </div>
+            <div className="payment-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: '500', color: 'var(--color-text-primary)' }}>Start Date</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: '500', color: 'var(--color-text-primary)' }}>End Date</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)' }}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStartDate('');
+                    setEndDate('');
+                    setIsDateModalOpen(false);
+                  }}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontWeight: '600' }}
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsDateModalOpen(false)}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'var(--color-primary, #6653AF)', color: '#fff', cursor: 'pointer', fontWeight: '600' }}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="student-table-card">
         <div className="student-table-wrapper">
@@ -310,6 +438,7 @@ useEffect(() => {
                 <th>Actual Amount Paid</th>
                 <th>Discount Value</th>
                 <th>Referral Code</th>
+                <th>Total Payments Made</th>
                 <th>Status</th>
                 <th>Date</th>
               </tr>
@@ -363,6 +492,7 @@ useEffect(() => {
                       <td>₹{Number(payment.amount).toFixed(2)}</td>
                       <td>{discountLabel}</td>
                       <td>{referralCode}</td>
+                      <td style={{ textAlign: 'center', fontWeight: '600' }}>{studentPaymentCountMap[displayStudentId] || 1}</td>
                       <td>
                         <span
                           className={`status-badge ${
@@ -463,6 +593,10 @@ useEffect(() => {
                   <div className="detail-item">
                     <label>Student Name</label>
                     <span>{selectedPayment.student}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Total Payments Made</label>
+                    <span>{studentPaymentCountMap[modalStudentId || selectedPayment.student] || 1}</span>
                   </div>
                   <div className="detail-item">
                     <label>Class</label>

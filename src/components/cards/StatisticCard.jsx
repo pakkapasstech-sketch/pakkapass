@@ -8,7 +8,7 @@ const StatisticCard = ({
   iconBg,
   iconColor,
   icon,
-
+  subtext
 }) => {
 
 
@@ -38,6 +38,11 @@ const StatisticCard = ({
             ? value.toLocaleString('en-IN')
             : value)}
       </p>
+      {subtext && (
+        <div style={{ width: '100%', fontSize: '13px' }}>
+          {subtext}
+        </div>
+      )}
     </motion.div>
   );
 };

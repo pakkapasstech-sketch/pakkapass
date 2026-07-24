@@ -5,8 +5,10 @@ import {
   HiOutlineClipboardCopy,
   HiOutlineChevronLeft,
   HiOutlineChevronRight,
+  HiOutlineDownload,
 } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
+import * as XLSX from 'xlsx-js-style';
 
 import '../../styles/partnerDetails.css';
 import '../../styles/table.css';
@@ -89,6 +91,103 @@ const PartnerDetailsPage = () => {
       .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   };
 
+  const handleExportExcel = () => {
+    if (!partner) return;
+    
+    const wsData = [];
+    
+    // 1. Partner Details
+    wsData.push(["PARTNER DETAILS"]);
+    wsData.push(["Organization Name", partner.organizationName || 'N/A']);
+    wsData.push(["Institution", partner.institutionType || 'N/A']);
+    wsData.push(["Contact Person", partner.contactPerson || 'N/A']);
+    wsData.push(["Email", partner.email || 'N/A']);
+    wsData.push(["Mobile", partner.mobile || 'N/A']);
+    wsData.push(["Referral Code", partner.referralCode || 'N/A']);
+    wsData.push(["Total Students", analytics?.students?.totalStudents || 0]);
+    wsData.push(["Total Revenue", calculateActualRevenue() || 0]);
+    
+    // 2. White Line
+    wsData.push([]);
+    
+    // 3. Students
+    wsData.push(["STUDENTS UNDER PARTNER"]);
+    if (referredStudents && referredStudents.length > 0) {
+      wsData.push(["S.No", "Name", "Email", "Mobile", "Current Plan", "Registered On", "Expiry Date"]);
+      referredStudents.forEach((rs, index) => {
+        const studentName = rs.student?.name || "N/A";
+        const email = rs.student?.email || "N/A";
+        const mobile = rs.student?.mobile || "N/A";
+        const currentPlan = rs.plan?.name || (rs.currentPlanId ? 'Subscribed' : (rs.freeTrialStartDate ? 'Free Trial' : 'None'));
+        const registeredOn = rs.student?.createdAt ? new Date(rs.student.createdAt).toLocaleDateString('en-IN') : "N/A";
+        const expiryDate = rs.planExpiryDate ? new Date(rs.planExpiryDate).toLocaleDateString('en-IN') : "N/A";
+
+        wsData.push([
+          index + 1,
+          studentName,
+          email,
+          mobile,
+          currentPlan,
+          registeredOn,
+          expiryDate
+        ]);
+      });
+    } else {
+      wsData.push(["No students referred yet."]);
+    }
+    
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Apply bold styling to headers
+    const headerRow1 = 0; // PARTNER DETAILS
+    const studentHeaderTitleRow = 10; // STUDENTS UNDER PARTNER
+    const studentHeaderRow = 11; // S.No, Name, etc.
+    
+    const boldStyle = { font: { bold: true, color: { rgb: "000000" } } };
+
+    // Partner Details Title
+    if (ws[XLSX.utils.encode_cell({ r: headerRow1, c: 0 })]) {
+      ws[XLSX.utils.encode_cell({ r: headerRow1, c: 0 })].s = boldStyle;
+    }
+    // Partner Details labels
+    for (let r = 1; r <= 8; r++) {
+      if (ws[XLSX.utils.encode_cell({ r, c: 0 })]) {
+        ws[XLSX.utils.encode_cell({ r, c: 0 })].s = boldStyle;
+      }
+    }
+
+    // Students Title
+    if (ws[XLSX.utils.encode_cell({ r: studentHeaderTitleRow, c: 0 })]) {
+      ws[XLSX.utils.encode_cell({ r: studentHeaderTitleRow, c: 0 })].s = boldStyle;
+    }
+    
+    // Students headers
+    if (referredStudents && referredStudents.length > 0) {
+      for (let c = 0; c <= 6; c++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: studentHeaderRow, c });
+        if (ws[cellAddress]) {
+          ws[cellAddress].s = boldStyle;
+        }
+      }
+    }
+    
+    // Optional styling for columns width
+    ws['!cols'] = [
+      { wch: 20 }, // A
+      { wch: 30 }, // B
+      { wch: 30 }, // C
+      { wch: 15 }, // D
+      { wch: 20 }, // E
+      { wch: 15 }, // F
+      { wch: 15 }  // G
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Partner Details");
+    
+    XLSX.writeFile(wb, `Partner_${partner.organizationName || partner.contactPerson}_Details.xlsx`);
+  };
+
   const handleDelete = async () => {
     const confirmed = window.confirm(
       `Are you sure you want to delete ${partner.organizationName || partner.contactPerson || 'this partner'}?`
@@ -123,6 +222,11 @@ const PartnerDetailsPage = () => {
         </div>
 
         <div className="details-actions">
+          <button className="btn-secondary" onClick={handleExportExcel} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--color-border)', background: '#fff', color: '#374151', cursor: 'pointer', fontWeight: '500' }}>
+            <HiOutlineDownload size={18} />
+            Export
+          </button>
+          
           <button className="btn-primary" onClick={() => navigate(`/partners/${partner.id}/edit`)}>
             <HiOutlinePencil />
             Edit

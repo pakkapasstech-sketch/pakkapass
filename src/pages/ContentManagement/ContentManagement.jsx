@@ -733,8 +733,35 @@ const ContentManagement = () => {
             {selectedSubject && (
               <>
                 <HiOutlineChevronRight size={14} />
-                <span style={{ fontWeight: '700', color: 'var(--color-primary, #6653AF)' }}>
+                <span
+                  onClick={() => {
+                    setSelectedChapter(null);
+                    setActiveTopicWorkspace(null);
+                  }}
+                  style={{ cursor: selectedChapter ? 'pointer' : 'default', fontWeight: selectedChapter ? '400' : '700', color: selectedChapter ? 'inherit' : 'var(--color-primary, #6653AF)' }}
+                >
                   Subject: {selectedSubject.name}
+                </span>
+              </>
+            )}
+
+            {selectedChapter && (
+              <>
+                <HiOutlineChevronRight size={14} />
+                <span
+                  onClick={() => setActiveTopicWorkspace(null)}
+                  style={{ cursor: activeTopicWorkspace ? 'pointer' : 'default', fontWeight: activeTopicWorkspace ? '400' : '700', color: activeTopicWorkspace ? 'inherit' : 'var(--color-primary, #6653AF)' }}
+                >
+                  Chapter: {selectedChapter.name}
+                </span>
+              </>
+            )}
+
+            {activeTopicWorkspace && (
+              <>
+                <HiOutlineChevronRight size={14} />
+                <span style={{ fontWeight: '700', color: 'var(--color-primary, #6653AF)' }}>
+                  Topic: {typeof activeTopicWorkspace.topic === 'object' ? activeTopicWorkspace.topic.name : activeTopicWorkspace.topic}
                 </span>
               </>
             )}
@@ -749,6 +776,7 @@ const ContentManagement = () => {
           subtitle={`Click on a board card to view ${hasBranchesForGrade ? 'branches' : 'subjects'}`}
           items={availableBoards}
           type="board"
+          hasBranches={hasBranchesForGrade}
           onSelect={handleBoardSelect}
           onAdd={() => setShowAddBoardModal(true)}
           onEdit={(board) => handleOpenEditModal('board', board)}
@@ -795,7 +823,7 @@ const ContentManagement = () => {
         <div className="subject-workspace">
           
           {/* Content Type Tabs */}
-          <div className="content-type-tabs" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', borderBottom: '2px solid var(--color-border, #e5e7eb)', paddingBottom: '8px', overflowX: 'auto' }}>
+          <div className="content-type-tabs" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', borderBottom: '2px solid var(--color-border, var(--color-border, #e5e7eb))', paddingBottom: '8px', overflowX: 'auto' }}>
             {allContentTypes.map((typeTab) => (
               <button
                 key={typeTab}
@@ -900,7 +928,7 @@ const ContentManagement = () => {
                   setShowAddBoardModal(false);
                   setNewBoardName('');
                 }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -922,7 +950,7 @@ const ContentManagement = () => {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -939,7 +967,7 @@ const ContentManagement = () => {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',
@@ -981,7 +1009,7 @@ const ContentManagement = () => {
                   setShowAddBranchModal(false);
                   setNewBranchName('');
                 }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -1003,7 +1031,7 @@ const ContentManagement = () => {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -1020,7 +1048,7 @@ const ContentManagement = () => {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',
@@ -1062,7 +1090,7 @@ const ContentManagement = () => {
                   setShowAddContentTypeModal(false);
                   setNewContentTypeName('');
                 }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -1084,7 +1112,7 @@ const ContentManagement = () => {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -1101,7 +1129,7 @@ const ContentManagement = () => {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',
@@ -1143,7 +1171,7 @@ const ContentManagement = () => {
                   setShowAddSubjectModal(false);
                   setNewSubjectName('');
                 }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -1165,7 +1193,7 @@ const ContentManagement = () => {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -1182,7 +1210,7 @@ const ContentManagement = () => {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',
@@ -1226,7 +1254,7 @@ const ContentManagement = () => {
                   setEditItemModal(null);
                   setEditNameInput('');
                 }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-text-secondary, #6b7280)' }}
               >
                 <HiOutlineX size={20} />
               </button>
@@ -1244,7 +1272,7 @@ const ContentManagement = () => {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  border: '1px solid var(--color-border, #d1d5db)',
+                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                   fontSize: '14px',
                   marginBottom: '20px',
                 }}
@@ -1261,7 +1289,7 @@ const ContentManagement = () => {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, #d1d5db)',
+                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
                     background: 'transparent',
                     fontWeight: '600',
                     fontSize: '13px',
