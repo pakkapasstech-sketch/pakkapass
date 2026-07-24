@@ -6,12 +6,31 @@ import {
   HiOutlineArrowLeft,
   HiOutlineDocumentText,
   HiOutlineVideoCamera,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineX,
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import entityService from '../../services/entity.service';
+
+const parseNumericId = (val) => {
+  if (val === null || val === undefined) return undefined;
+  const num = Number(val);
+  return !isNaN(num) && Number.isInteger(num) && num > 0 ? num : undefined;
+};
+
+const getString = (val) => {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && val.name && typeof val.name === 'string') return val.name;
+  if (typeof val === 'object' && val.title && typeof val.title === 'string') return val.title;
+  return String(val);
+};
 
 const normalizeContentType = (typeStr) => {
-  if (!typeStr) return 'CHAPTER';
-  const s = String(typeStr).trim().toUpperCase();
+  const str = getString(typeStr);
+  if (!str) return 'CHAPTER';
+  const s = str.trim().toUpperCase();
   if (s.includes('CHAPTER') || s === 'CHAPTERS') return 'CHAPTER';
   if (s.includes('MIND') || s.includes('MAP')) return 'MIND_MAP';
   if (s.includes('PYQ') || s.includes('QUESTION')) return 'PYQ';
@@ -27,187 +46,414 @@ const ChapterTopicCardWorkspace = ({
   contentType,
   contentItems = [],
   options = {},
+  selectedChapter: propSelectedChapter,
+  onSelectChapter: propOnSelectChapter,
   onSelectTopic,
+  onBackToSubjects,
+  refetchOptions,
 }) => {
-  const [selectedChapter, setSelectedChapter] = useState(null);
+  const [internalSelectedChapter, setInternalSelectedChapter] = useState(null);
+
+  const selectedChapter = propSelectedChapter !== undefined ? propSelectedChapter : internalSelectedChapter;
+  const setSelectedChapter = (val) => {
+    if (propOnSelectChapter) {
+      propOnSelectChapter(val);
+    }
+    setInternalSelectedChapter(val);
+  };
 
   // Custom created chapters & topics state for inline creation
   const [customChapters, setCustomChapters] = useState([]);
   const [customTopics, setCustomTopics] = useState({}); // { [chapterName]: ['Topic 1', 'Topic 2'] }
 
+  // Edited & deleted state for Chapter and Topic cards
+  const [editedChapterNames, setEditedChapterNames] = useState({}); // { [oldName]: newName }
+  const [deletedChapters, setDeletedChapters] = useState(new Set()); // Set of deleted chapter names
+
+  const [editedTopicNames, setEditedTopicNames] = useState({}); // { [oldName]: newName }
+  const [deletedTopics, setDeletedTopics] = useState(new Set()); // Set of deleted topic names
+
   // Modal / Form state for Creating Chapter
   const [showCreateChapterModal, setShowCreateChapterModal] = useState(false);
   const [newChapterName, setNewChapterName] = useState('');
+  const [isCreatingChapter, setIsCreatingChapter] = useState(false);
 
   // Modal / Form state for Creating Topic
   const [showCreateTopicModal, setShowCreateTopicModal] = useState(false);
   const [newTopicName, setNewTopicName] = useState('');
+  const [isCreatingTopic, setIsCreatingTopic] = useState(false);
+
+  // Modal state for Editing Chapter / Topic
+  const [editModalItem, setEditModalItem] = useState(null); // { type: 'chapter' | 'topic', name: string }
+  const [editNameInput, setEditNameInput] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   // 1. Filter existing Chapters from DB options (options.chapters)
   const dbChapters = useMemo(() => {
     const targetType = normalizeContentType(contentType);
-    const targetGrade = grade?.name?.trim().toLowerCase();
-    const targetBoard = board?.name?.trim().toLowerCase();
-    const targetSubject = subject?.name?.trim().toLowerCase();
-    const targetBranch = branch?.name?.trim().toLowerCase();
+    const targetGrade = getString(grade?.name || grade).trim().toLowerCase();
+    const targetBoard = getString(board?.name || board).trim().toLowerCase();
+    const targetSubject = getString(subject?.name || subject).trim().toLowerCase();
+    const targetBranch = getString(branch?.name || branch).trim().toLowerCase();
 
     return (options?.chapters || []).filter((ch) => {
-      const chGrade = (ch.grade?.name || ch.gradeName || '').trim().toLowerCase();
-      const chBoard = (ch.board?.name || ch.boardName || '').trim().toLowerCase();
-      const chSubject = (ch.subject?.name || ch.subjectName || '').trim().toLowerCase();
-      const chBranch = (ch.branch?.name || ch.branchName || '').trim().toLowerCase();
-      const chType = normalizeContentType(ch.contentType?.name || ch.hierarchyType);
+      const chGrade = getString(ch.grade?.name || ch.gradeName || ch.grade).trim().toLowerCase();
+      const chBoard = getString(ch.board?.name || ch.boardName || ch.board).trim().toLowerCase();
+      const chBranch = getString(ch.branch?.name || ch.branchName || ch.branch || ch.course?.name || ch.course).trim().toLowerCase();
+      const chSubject = getString(ch.subject?.name || ch.subjectName || ch.subject).trim().toLowerCase();
+      const chType = normalizeContentType(ch.contentType?.name || ch.contentType || ch.hierarchyType);
 
-      const matchGrade = !chGrade || !targetGrade || chGrade === targetGrade || String(ch.gradeId) === String(grade?.id);
-      const matchBoard = !chBoard || !targetBoard || chBoard === targetBoard || String(ch.boardId) === String(board?.id);
-      const matchSubject = !chSubject || !targetSubject || chSubject === targetSubject || String(ch.subjectId) === String(subject?.id);
-      const matchBranch = !chBranch || !targetBranch || targetBranch === 'general' || chBranch === targetBranch || String(ch.branchId) === String(branch?.id);
-      const matchType = !chType || chType === targetType;
+      const matchesGrade = !targetGrade || chGrade === targetGrade;
+      const matchesBoard = !targetBoard || chBoard === targetBoard;
+      const matchesBranch = !targetBranch || targetBranch === 'general' || chBranch === targetBranch;
+      const matchesSubject = !targetSubject || chSubject === targetSubject;
+      const matchesType = !targetType || chType === targetType;
 
-      return matchGrade && matchBoard && matchSubject && matchBranch && matchType;
+      return matchesGrade && matchesBoard && matchesBranch && matchesSubject && matchesType;
     });
-  }, [options.chapters, grade, board, subject, branch, contentType]);
+  }, [options.chapters, grade, board, branch, subject, contentType]);
 
-  // 2. Filter content assets from API (contentItems)
-  const activeContentItems = useMemo(() => {
-    const targetType = normalizeContentType(contentType);
-    const targetGrade = grade?.name?.trim().toLowerCase();
-    const targetBoard = board?.name?.trim().toLowerCase();
-    const targetSubject = subject?.name?.trim().toLowerCase();
-    const targetBranch = branch?.name?.trim().toLowerCase();
-
-    return contentItems.filter((item) => {
-      const itemGrade = (item.grade?.name || item.grade || '').trim().toLowerCase();
-      const itemBoard = (item.board?.name || item.board || '').trim().toLowerCase();
-      const itemBranch = (item.course?.name || item.course || '').trim().toLowerCase();
-      const itemSubject = (item.subject?.name || item.subject || '').trim().toLowerCase();
-      const itemType = normalizeContentType(item.hierarchyType);
-
-      const matchGrade = !itemGrade || !targetGrade || itemGrade === targetGrade || String(item.grade?.id) === String(grade?.id);
-      const matchBoard = !itemBoard || !targetBoard || itemBoard === targetBoard || String(item.board?.id) === String(board?.id);
-      const matchSubject = !itemSubject || !targetSubject || itemSubject === targetSubject;
-      const matchBranch = !itemBranch || !targetBranch || targetBranch === 'general' || itemBranch === targetBranch;
-      const matchType = !itemType || itemType === targetType;
-
-      return matchGrade && matchBoard && matchBranch && matchSubject && matchType;
-    });
-  }, [contentItems, grade, board, branch, subject, contentType]);
-
-  // Map content assets to chapter -> topics map
+  // 2. Map existing uploaded content items into chapters -> topics map
   const contentChaptersMap = useMemo(() => {
+    const targetGrade = getString(grade?.name || grade).trim().toLowerCase();
+    const targetBoard = getString(board?.name || board).trim().toLowerCase();
+    const targetBranch = getString(branch?.name || branch).trim().toLowerCase();
+    const targetSubject = getString(subject?.name || subject).trim().toLowerCase();
+    const targetType = normalizeContentType(contentType);
+
     const map = {};
-    activeContentItems.forEach((item) => {
-      const chName = item.chapter || 'General Chapter';
-      if (!map[chName]) {
-        map[chName] = {};
+
+    contentItems.forEach((item) => {
+      const itemGrade = getString(item.grade?.name || item.grade).trim().toLowerCase();
+      const itemBoard = getString(item.board?.name || item.board).trim().toLowerCase();
+      const itemBranch = getString(item.course?.name || item.course || item.branch?.name || item.branch).trim().toLowerCase();
+      const itemSubject = getString(item.subject?.name || item.subject).trim().toLowerCase();
+      const itemType = normalizeContentType(item.hierarchyType);
+      const chName = getString(item.chapter);
+      const topName = getString(item.section);
+
+      const matchesGrade = !itemGrade || !targetGrade || itemGrade === targetGrade;
+      const matchesBoard = !itemBoard || !targetBoard || itemBoard === targetBoard;
+      const matchesBranch = !itemBranch || !targetBranch || targetBranch === 'general' || itemBranch === targetBranch;
+      const matchesSubject = !itemSubject || !targetSubject || itemSubject === targetSubject;
+      const matchesType = !itemType || itemType === targetType;
+
+      if (matchesGrade && matchesBoard && matchesBranch && matchesSubject && matchesType && chName) {
+        const displayChName = editedChapterNames[chName] || chName;
+        const displayTopName = editedTopicNames[topName] || topName;
+
+        if (!map[displayChName]) {
+          map[displayChName] = {};
+        }
+        if (topName) {
+          if (!map[displayChName][displayTopName]) {
+            map[displayChName][displayTopName] = [];
+          }
+          map[displayChName][displayTopName].push(item);
+        }
       }
-      const topName = item.section || 'General Topic';
-      if (!map[chName][topName]) {
-        map[chName][topName] = [];
-      }
-      map[chName][topName].push(item);
     });
+
     return map;
-  }, [activeContentItems]);
+  }, [contentItems, grade, board, branch, subject, contentType, editedChapterNames, editedTopicNames]);
 
-  // Combine all chapter names from DB options + content assets + custom created
+  // 3. Combine all chapters (DB + uploaded content + custom created) filtering out deleted chapters
   const allChaptersList = useMemo(() => {
-    const chapterMap = new Map();
+    const namesSet = new Set();
+    const list = [];
 
-    // From DB options
+    // Add chapters from DB options
     dbChapters.forEach((ch) => {
-      if (ch.name) {
-        chapterMap.set(ch.name.trim(), ch);
+      const rawName = getString(ch.name || ch.title);
+      const displayName = editedChapterNames[rawName] || rawName;
+      if (displayName && !deletedChapters.has(rawName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
+        namesSet.add(displayName.toLowerCase());
+        list.push({ ...ch, name: displayName, rawName });
       }
     });
 
-    // From content assets
+    // Add chapters from uploaded content map
     Object.keys(contentChaptersMap).forEach((chName) => {
-      if (!chapterMap.has(chName.trim())) {
-        chapterMap.set(chName.trim(), { name: chName.trim(), id: chName });
+      const displayName = editedChapterNames[chName] || chName;
+      if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
+        namesSet.add(displayName.toLowerCase());
+        list.push({ id: `ch_content_${chName}`, name: displayName, rawName: chName });
       }
     });
 
-    // From custom created
+    // Add custom created chapters
     customChapters.forEach((chName) => {
-      if (!chapterMap.has(chName.trim())) {
-        chapterMap.set(chName.trim(), { name: chName.trim(), id: chName });
+      const displayName = editedChapterNames[chName] || chName;
+      if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
+        namesSet.add(displayName.toLowerCase());
+        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName });
       }
     });
 
-    return Array.from(chapterMap.values());
-  }, [dbChapters, contentChaptersMap, customChapters]);
+    return list;
+  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters]);
 
-  const handleAddChapter = (e) => {
+  // 4. Combine all topics for the selected chapter filtering out deleted topics
+  const allTopicNames = useMemo(() => {
+    if (!selectedChapter) return [];
+    const rawChName = selectedChapter.rawName || selectedChapter.name;
+    const chName = selectedChapter.name;
+
+    const topicsSet = new Set();
+
+    const targetGrade = getString(grade?.name || grade).trim().toLowerCase();
+    const targetBoard = getString(board?.name || board).trim().toLowerCase();
+    const targetBranch = getString(branch?.name || branch).trim().toLowerCase();
+    const targetSubject = getString(subject?.name || subject).trim().toLowerCase();
+    const targetType = normalizeContentType(contentType);
+
+    // From DB options topics matching this chapter ID
+    (options?.topics || []).forEach((t) => {
+      // If the selected chapter is a newly created custom chapter, it has no DB topics.
+      if (String(selectedChapter.id).startsWith('custom_') || String(selectedChapter.id).startsWith('ch_content_')) {
+        return;
+      }
+
+      // Match strictly by DB chapter ID
+      const matchId = selectedChapter.id && String(t.chapterId) === String(selectedChapter.id);
+      
+      if (matchId) {
+        const rawTopName = getString(t.name);
+        const displayTopName = editedTopicNames[rawTopName] || rawTopName;
+        if (displayTopName && !deletedTopics.has(rawTopName) && !deletedTopics.has(displayTopName)) {
+          topicsSet.add(displayTopName);
+        }
+      }
+    });
+
+    // From content map
+    const contentTopicsMap = contentChaptersMap[chName] || contentChaptersMap[rawChName] || {};
+    Object.keys(contentTopicsMap).forEach((topName) => {
+      const displayTopName = editedTopicNames[topName] || topName;
+      if (displayTopName && !deletedTopics.has(topName) && !deletedTopics.has(displayTopName)) {
+        topicsSet.add(displayTopName);
+      }
+    });
+
+    // From custom topics created for this chapter
+    const customList = customTopics[chName] || customTopics[rawChName] || [];
+    customList.forEach((topName) => {
+      const displayTopName = editedTopicNames[topName] || topName;
+      if (displayTopName && !deletedTopics.has(topName) && !deletedTopics.has(displayTopName)) {
+        topicsSet.add(displayTopName);
+      }
+    });
+
+    return Array.from(topicsSet);
+  }, [selectedChapter, options.topics, contentChaptersMap, customTopics, editedTopicNames, deletedTopics]);
+
+  const handleAddChapter = async (e) => {
     e.preventDefault();
     if (!newChapterName.trim()) {
       toast.error('Please enter a chapter name');
       return;
     }
-    const exists = allChaptersList.some((c) => c.name.toLowerCase() === newChapterName.trim().toLowerCase());
-    if (exists) {
+    const name = newChapterName.trim();
+    if (allChaptersList.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
       toast.error('Chapter with this name already exists');
       return;
     }
-    setCustomChapters([...customChapters, newChapterName.trim()]);
-    toast.success(`Chapter "${newChapterName.trim()}" created!`);
+
+    // INSTANT UI update
+    setCustomChapters((prev) => [...prev, name]);
+    toast.success(`Chapter "${name}" created!`);
     setNewChapterName('');
     setShowCreateChapterModal(false);
+
+    try {
+      setIsCreatingChapter(true);
+      const dbSub = (options?.subjects || []).find((s) => getString(s.name).trim().toLowerCase() === getString(subject?.name || subject).trim().toLowerCase());
+      const subIdNum = parseNumericId(subject?.id) || parseNumericId(dbSub?.id);
+      const matchCt = (options?.contentTypes || []).find((ct) => getString(ct.name).trim().toLowerCase() === String(contentType).trim().toLowerCase());
+
+      const chapterPayload = {
+        name,
+        gradeName: getString(grade?.name || grade),
+        boardName: getString(board?.name || board),
+        branchName: getString(branch?.name || branch),
+        subjectName: getString(subject?.name || subject),
+        contentTypeName: contentType,
+      };
+
+      if (subIdNum) chapterPayload.subjectId = subIdNum;
+      if (parseNumericId(board?.id)) chapterPayload.boardId = parseNumericId(board.id);
+      if (parseNumericId(grade?.id)) chapterPayload.gradeId = parseNumericId(grade.id);
+      if (parseNumericId(branch?.id)) chapterPayload.branchId = parseNumericId(branch.id);
+      if (matchCt?.id) chapterPayload.contentTypeId = matchCt.id;
+
+      await entityService.addChapter(chapterPayload);
+      if (refetchOptions) await refetchOptions();
+    } catch (err) {
+      console.error('Failed to add chapter to DB:', err);
+    } finally {
+      setIsCreatingChapter(false);
+    }
   };
 
-  const handleAddTopic = (e) => {
+  const handleAddTopic = async (e) => {
     e.preventDefault();
     if (!newTopicName.trim()) {
       toast.error('Please enter a topic name');
       return;
     }
-    const chName = typeof selectedChapter === 'object' ? selectedChapter.name : selectedChapter;
-    const existingTopics = customTopics[chName] || [];
-    if (existingTopics.some((t) => t.toLowerCase() === newTopicName.trim().toLowerCase())) {
+    if (!selectedChapter) return;
+
+    const chName = selectedChapter.name;
+    const topName = newTopicName.trim();
+
+    if (allTopicNames.some((t) => t.toLowerCase() === topName.toLowerCase())) {
       toast.error('Topic with this name already exists in this chapter');
       return;
     }
 
-    setCustomTopics({
-      ...customTopics,
-      [chName]: [...existingTopics, newTopicName.trim()],
-    });
-
-    toast.success(`Topic "${newTopicName.trim()}" created!`);
+    // INSTANT UI update
+    setCustomTopics((prev) => ({
+      ...prev,
+      [chName]: [...(prev[chName] || []), topName],
+    }));
+    toast.success(`Topic "${topName}" created under ${chName}!`);
     setNewTopicName('');
     setShowCreateTopicModal(false);
+
+    try {
+      setIsCreatingTopic(true);
+      const dbCh = (options?.chapters || []).find((c) => getString(c.name || c.title).trim().toLowerCase() === chName.trim().toLowerCase());
+      const chapterIdNum = parseNumericId(selectedChapter?.id) || parseNumericId(dbCh?.id);
+
+      const topicPayload = {
+        name: topName,
+        chapterName: chName,
+        subjectName: getString(subject?.name || subject),
+        boardName: getString(board?.name || board),
+        gradeName: getString(grade?.name || grade),
+        branchName: getString(branch?.name || branch),
+      };
+
+      if (chapterIdNum) {
+        topicPayload.chapterId = chapterIdNum;
+      }
+
+      await entityService.addTopic(topicPayload);
+      if (refetchOptions) await refetchOptions();
+    } catch (err) {
+      console.error('Failed to add topic to DB:', err);
+    } finally {
+      setIsCreatingTopic(false);
+    }
   };
 
-  // LEVEL 2: Topic View for Selected Chapter
-  if (selectedChapter) {
-    const chName = typeof selectedChapter === 'object' ? selectedChapter.name : selectedChapter;
-    const selectedChObj = typeof selectedChapter === 'object' ? selectedChapter : allChaptersList.find((c) => c.name === chName);
+  // Chapter & Topic Action Handlers (Edit & Delete)
+  const handleOpenEditTopicModal = (topicName) => {
+    setEditModalItem({ type: 'topic', name: topicName });
+    setEditNameInput(topicName);
+  };
 
-    // Topics from DB options matching selected chapter ID or name
-    const dbTopicsList = (options?.topics || [])
-      .filter((t) => {
-        if (selectedChObj?.id) {
-          return String(t.chapterId) === String(selectedChObj.id);
+  const handleOpenEditChapterModal = (chapterName) => {
+    setEditModalItem({ type: 'chapter', name: chapterName });
+    setEditNameInput(chapterName);
+  };
+
+  const handleSaveEditItem = async (e) => {
+    e.preventDefault();
+    if (!editNameInput.trim()) {
+      toast.error('Name cannot be empty');
+      return;
+    }
+
+    const trimmed = editNameInput.trim();
+    const { type, name } = editModalItem;
+
+    // INSTANT UI update
+    if (type === 'topic') {
+      setEditedTopicNames((prev) => ({ ...prev, [name]: trimmed }));
+      toast.success(`Topic renamed to "${trimmed}"`);
+    } else if (type === 'chapter') {
+      setEditedChapterNames((prev) => ({ ...prev, [name]: trimmed }));
+      toast.success(`Chapter renamed to "${trimmed}"`);
+    }
+
+    setEditModalItem(null);
+    setEditNameInput('');
+
+    try {
+      setIsSavingEdit(true);
+
+      if (type === 'topic') {
+        const topicObj = (options.topics || []).find((t) => getString(t.name).trim().toLowerCase() === name.trim().toLowerCase());
+        const topicIdNum = parseNumericId(topicObj?.id);
+        if (topicIdNum) {
+          await entityService.updateTopic(topicIdNum, { name: trimmed });
         }
-        return t.chapterName === chName;
-      })
-      .map((t) => t.name);
+        if (refetchOptions) await refetchOptions();
+      } else if (type === 'chapter') {
+        const chapterObj = (options.chapters || []).find((c) => getString(c.name).trim().toLowerCase() === name.trim().toLowerCase());
+        const chapterIdNum = parseNumericId(chapterObj?.id);
+        if (chapterIdNum) {
+          await entityService.updateChapter(chapterIdNum, { name: trimmed });
+        }
+        if (refetchOptions) await refetchOptions();
+      }
+    } catch (err) {
+      console.error(`Failed to update ${type} in DB:`, err);
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
 
-    // Topics from content assets
-    const contentTopicNames = Object.keys(contentChaptersMap[chName] || {});
+  const handleDeleteTopic = async (topicName) => {
+    if (window.confirm(`Are you sure you want to delete topic "${topicName}"?`)) {
+      // INSTANT UI update
+      setDeletedTopics((prev) => new Set([...prev, topicName]));
+      toast.success(`Topic "${topicName}" deleted!`);
 
-    // Topics from custom created
-    const customTopicNames = customTopics[chName] || [];
+      try {
+        const topicObj = (options.topics || []).find((t) => getString(t.name).trim().toLowerCase() === topicName.trim().toLowerCase());
+        const topicIdNum = parseNumericId(topicObj?.id);
+        if (topicIdNum) {
+          await entityService.deleteTopic(topicIdNum);
+        }
+        if (refetchOptions) await refetchOptions();
+      } catch (err) {
+        console.error('Failed to delete topic from DB:', err);
+      }
+    }
+  };
 
-    // All combined topic names
-    const allTopicNames = Array.from(
-      new Set([...dbTopicsList, ...contentTopicNames, ...customTopicNames].map((t) => t?.trim()).filter(Boolean))
-    );
+  const handleDeleteChapter = async (chapterName) => {
+    if (window.confirm(`Are you sure you want to delete chapter "${chapterName}"?`)) {
+      // INSTANT UI update
+      setDeletedChapters((prev) => new Set([...prev, chapterName]));
+      if (selectedChapter && (selectedChapter.name === chapterName || selectedChapter.rawName === chapterName)) {
+        setSelectedChapter(null);
+      }
+      toast.success(`Chapter "${chapterName}" deleted!`);
+
+      try {
+        const chapterObj = (options.chapters || []).find((c) => getString(c.name).trim().toLowerCase() === chapterName.trim().toLowerCase());
+        const chapterIdNum = parseNumericId(chapterObj?.id);
+        if (chapterIdNum) {
+          await entityService.deleteChapter(chapterIdNum);
+        }
+        if (refetchOptions) await refetchOptions();
+      } catch (err) {
+        console.error('Failed to delete chapter from DB:', err);
+      }
+    }
+  };
+
+  // Render Level 2: Topics View for Selected Chapter
+  if (selectedChapter) {
+    const chName = selectedChapter.name;
 
     return (
       <div className="topics-level-view">
-        {/* Top Header & Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
+        {/* Top Bar with Back Button */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
               type="button"
@@ -231,7 +477,7 @@ const ChapterTopicCardWorkspace = ({
             </button>
             <div>
               <span style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)' }}>
-                {subject.name} &bull; {contentType}
+                {getString(subject?.name || subject)} &bull; {contentType}
               </span>
               <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '2px 0 0 0', color: 'var(--color-text-primary, #111827)' }}>
                 Chapter: {chName}
@@ -264,7 +510,7 @@ const ChapterTopicCardWorkspace = ({
 
         {/* Topics Cards Grid */}
         {allTopicNames.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {allTopicNames.map((topName) => {
               const topicItems = contentChaptersMap[chName]?.[topName] || [];
               const notesCount = topicItems.filter((i) => i.type === 'notes' || i.type === 'pdf' || i.type === 'document').length;
@@ -298,28 +544,77 @@ const ChapterTopicCardWorkspace = ({
                   }}
                 >
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <div
-                        style={{
-                          width: '42px',
-                          height: '42px',
-                          borderRadius: '12px',
-                          background: 'rgba(102, 83, 175, 0.1)',
-                          color: 'var(--color-primary, #6653AF)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <HiOutlineBookOpen size={22} />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, overflow: 'hidden' }}>
+                        <div
+                          style={{
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: '12px',
+                            background: 'rgba(102, 83, 175, 0.1)',
+                            color: 'var(--color-primary, #6653AF)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <HiOutlineBookOpen size={22} />
+                        </div>
+                        <div style={{ overflow: 'hidden' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Topic Card
+                          </span>
+                          <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {topName}
+                          </h3>
+                        </div>
                       </div>
-                      <div>
-                        <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          Topic Card
-                        </span>
-                        <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)' }}>
-                          {topName}
-                        </h3>
+
+                      {/* Edit & Delete Action Buttons */}
+                      <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditTopicModal(topName);
+                          }}
+                          style={{
+                            padding: '6px',
+                            borderRadius: '6px',
+                            border: '1px solid var(--color-border, #e5e7eb)',
+                            background: '#ffffff',
+                            color: 'var(--color-primary, #6653AF)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          title="Edit Topic Name"
+                        >
+                          <HiOutlinePencil size={15} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteTopic(topName);
+                          }}
+                          style={{
+                            padding: '6px',
+                            borderRadius: '6px',
+                            border: '1px solid #fecaca',
+                            background: '#fef2f2',
+                            color: '#ef4444',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          title="Delete Topic"
+                        >
+                          <HiOutlineTrash size={15} />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -348,16 +643,16 @@ const ChapterTopicCardWorkspace = ({
             style={{
               border: '2px dashed var(--color-border, #d1d5db)',
               borderRadius: '16px',
-              padding: '40px 20px',
+              padding: '50px 20px',
               textAlign: 'center',
               cursor: 'pointer',
               background: 'var(--color-card, #ffffff)',
             }}
           >
-            <HiOutlinePlus size={36} style={{ color: 'var(--color-primary, #6653AF)', marginBottom: '8px' }} />
-            <h3 style={{ fontSize: '16px', fontWeight: '700', margin: '0 0 4px 0' }}>No topics created yet in "{chName}"</h3>
-            <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>
-              Click here to create a topic card to upload notes and videos.
+            <HiOutlinePlus size={40} style={{ color: 'var(--color-primary, #6653AF)', marginBottom: '10px' }} />
+            <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0' }}>No Topics Created Yet</h3>
+            <p style={{ fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>
+              Click here to create a topic under chapter "{chName}".
             </p>
           </div>
         )}
@@ -366,9 +661,18 @@ const ChapterTopicCardWorkspace = ({
         {showCreateTopicModal && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
             <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 4px 0' }}>Create New Topic Card</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>Create Topic Card</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateTopicModal(false)}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                >
+                  <HiOutlineX size={20} />
+                </button>
+              </div>
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 20px 0' }}>
-                Add a topic card under chapter "{chName}"
+                Add a new topic card under Chapter: {chName}
               </p>
 
               <form onSubmit={handleAddTopic}>
@@ -377,7 +681,7 @@ const ChapterTopicCardWorkspace = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Electromagnetic Waves Basics"
+                  placeholder="e.g. Electric Lines of Force"
                   value={newTopicName}
                   onChange={(e) => setNewTopicName(e.target.value)}
                   style={{
@@ -394,10 +698,7 @@ const ChapterTopicCardWorkspace = ({
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowCreateTopicModal(false);
-                      setNewTopicName('');
-                    }}
+                    onClick={() => setShowCreateTopicModal(false)}
                     style={{
                       padding: '8px 16px',
                       borderRadius: '8px',
@@ -412,6 +713,7 @@ const ChapterTopicCardWorkspace = ({
                   </button>
                   <button
                     type="submit"
+                    disabled={isCreatingTopic}
                     style={{
                       padding: '8px 18px',
                       borderRadius: '8px',
@@ -420,10 +722,86 @@ const ChapterTopicCardWorkspace = ({
                       color: '#ffffff',
                       fontWeight: '600',
                       fontSize: '13px',
+                      cursor: isCreatingTopic ? 'not-allowed' : 'pointer',
+                      opacity: isCreatingTopic ? 0.7 : 1,
+                    }}
+                  >
+                    {isCreatingTopic ? 'Creating...' : 'Create Topic'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Editing Chapter / Topic */}
+        {editModalItem && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+            <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>
+                  Edit {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setEditModalItem(null)}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                >
+                  <HiOutlineX size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveEditItem}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                  {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editNameInput}
+                  onChange={(e) => setEditNameInput(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--color-border, #d1d5db)',
+                    fontSize: '14px',
+                    marginBottom: '20px',
+                  }}
+                  autoFocus
+                />
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setEditModalItem(null)}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--color-border, #d1d5db)',
+                      background: 'transparent',
+                      fontWeight: '600',
+                      fontSize: '13px',
                       cursor: 'pointer',
                     }}
                   >
-                    Create Topic
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingEdit}
+                    style={{
+                      padding: '8px 18px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: 'var(--color-primary, #6653AF)',
+                      color: '#ffffff',
+                      fontWeight: '600',
+                      fontSize: '13px',
+                      cursor: isSavingEdit ? 'not-allowed' : 'pointer',
+                      opacity: isSavingEdit ? 0.7 : 1,
+                    }}
+                  >
+                    {isSavingEdit ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </form>
@@ -434,18 +812,43 @@ const ChapterTopicCardWorkspace = ({
     );
   }
 
-  // LEVEL 1: Chapters Cards View (No chapter selected)
+  // Render Level 1: Chapters View
   return (
     <div className="chapters-level-view">
       {/* Top Header & Navigation */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
-        <div>
-          <span style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)' }}>
-            {subject.name} &bull; {contentType}
-          </span>
-          <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '2px 0 0 0', color: 'var(--color-text-primary, #111827)' }}>
-            Chapters ({allChaptersList.length})
-          </h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {onBackToSubjects && (
+            <button
+              type="button"
+              onClick={onBackToSubjects}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                border: '1px solid var(--color-border, #e5e7eb)',
+                background: 'var(--color-card, #ffffff)',
+                color: 'var(--color-text-primary, #111827)',
+                fontWeight: '600',
+                fontSize: '13px',
+                cursor: 'pointer',
+              }}
+            >
+              <HiOutlineArrowLeft />
+              Back to Subjects
+            </button>
+          )}
+
+          <div>
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)' }}>
+              {getString(subject?.name || subject)} &bull; {contentType}
+            </span>
+            <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '2px 0 0 0', color: 'var(--color-text-primary, #111827)' }}>
+              Chapters ({allChaptersList.length})
+            </h2>
+          </div>
         </div>
 
         <button
@@ -476,10 +879,25 @@ const ChapterTopicCardWorkspace = ({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {allChaptersList.map((ch) => {
             const chName = ch.name;
-            const apiTopicsCount = Object.keys(contentChaptersMap[chName] || {}).length;
-            const dbTopicsCount = (options?.topics || []).filter((t) => String(t.chapterId) === String(ch.id) || t.chapterName === chName).length;
-            const customTopicsCount = (customTopics[chName] || []).length;
-            const totalTopicsCount = new Set([apiTopicsCount, dbTopicsCount, customTopicsCount]).size || (apiTopicsCount + dbTopicsCount + customTopicsCount);
+            const rawChName = ch.rawName || chName;
+
+            const apiTopicNames = Object.keys(contentChaptersMap[chName] || contentChaptersMap[rawChName] || {});
+            const dbTopicNames = (options?.topics || [])
+              .filter((t) => {
+                // Only match by chapter ID if chapter has a DB ID
+                if (ch.id && !String(ch.id).startsWith('custom_') && !String(ch.id).startsWith('ch_content_')) {
+                  return String(t.chapterId) === String(ch.id);
+                }
+                return false;
+              })
+              .map((t) => t.name);
+            const customTopicNames = customTopics[chName] || customTopics[rawChName] || [];
+
+            const totalTopicsCount = new Set(
+              [...apiTopicNames, ...dbTopicNames, ...customTopicNames]
+                .map((t) => getString(editedTopicNames[t] || t)?.trim().toLowerCase())
+                .filter((t) => Boolean(t) && !deletedTopics.has(t))
+            ).size;
 
             return (
               <div
@@ -509,28 +927,77 @@ const ChapterTopicCardWorkspace = ({
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-                    <div
-                      style={{
-                        width: '46px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        background: 'rgba(102, 83, 175, 0.12)',
-                        color: 'var(--color-primary, #6653AF)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <HiOutlineFolder size={24} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, overflow: 'hidden' }}>
+                      <div
+                        style={{
+                          width: '46px',
+                          height: '46px',
+                          borderRadius: '12px',
+                          background: 'rgba(102, 83, 175, 0.12)',
+                          color: 'var(--color-primary, #6653AF)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <HiOutlineFolder size={24} />
+                      </div>
+                      <div style={{ overflow: 'hidden' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Chapter Card
+                        </span>
+                        <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {chName}
+                        </h3>
+                      </div>
                     </div>
-                    <div>
-                      <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary, #6b7280)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Chapter Card
-                      </span>
-                      <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)' }}>
-                        {chName}
-                      </h3>
+
+                    {/* Edit & Delete Action Buttons for Chapter */}
+                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEditChapterModal(rawChName);
+                        }}
+                        style={{
+                          padding: '6px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--color-border, #e5e7eb)',
+                          background: '#ffffff',
+                          color: 'var(--color-primary, #6653AF)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                        title="Edit Chapter Name"
+                      >
+                        <HiOutlinePencil size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteChapter(rawChName);
+                        }}
+                        style={{
+                          padding: '6px',
+                          borderRadius: '6px',
+                          border: '1px solid #fecaca',
+                          background: '#fef2f2',
+                          color: '#ef4444',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                        title="Delete Chapter"
+                      >
+                        <HiOutlineTrash size={15} />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -571,7 +1038,16 @@ const ChapterTopicCardWorkspace = ({
       {showCreateChapterModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
           <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 4px 0' }}>Create Chapter Card</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>Create Chapter Card</h3>
+              <button
+                type="button"
+                onClick={() => setShowCreateChapterModal(false)}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+              >
+                <HiOutlineX size={20} />
+              </button>
+            </div>
             <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 20px 0' }}>
               Add a chapter card under {contentType} for {subject.name}
             </p>
@@ -599,10 +1075,7 @@ const ChapterTopicCardWorkspace = ({
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowCreateChapterModal(false);
-                    setNewChapterName('');
-                  }}
+                  onClick={() => setShowCreateChapterModal(false)}
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
@@ -617,6 +1090,7 @@ const ChapterTopicCardWorkspace = ({
                 </button>
                 <button
                   type="submit"
+                  disabled={isCreatingChapter}
                   style={{
                     padding: '8px 18px',
                     borderRadius: '8px',
@@ -625,10 +1099,86 @@ const ChapterTopicCardWorkspace = ({
                     color: '#ffffff',
                     fontWeight: '600',
                     fontSize: '13px',
+                    cursor: isCreatingChapter ? 'not-allowed' : 'pointer',
+                    opacity: isCreatingChapter ? 0.7 : 1,
+                  }}
+                >
+                  {isCreatingChapter ? 'Creating...' : 'Create Chapter'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Editing Chapter / Topic */}
+      {editModalItem && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>
+                Edit {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditModalItem(null)}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+              >
+                <HiOutlineX size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditItem}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                {editModalItem.type === 'topic' ? 'Topic' : 'Chapter'} Name <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={editNameInput}
+                onChange={(e) => setEditNameInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--color-border, #d1d5db)',
+                  fontSize: '14px',
+                  marginBottom: '20px',
+                }}
+                autoFocus
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditModalItem(null)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--color-border, #d1d5db)',
+                    background: 'transparent',
+                    fontWeight: '600',
+                    fontSize: '13px',
                     cursor: 'pointer',
                   }}
                 >
-                  Create Chapter
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'var(--color-primary, #6653AF)',
+                    color: '#ffffff',
+                    fontWeight: '600',
+                    fontSize: '13px',
+                    cursor: isSavingEdit ? 'not-allowed' : 'pointer',
+                    opacity: isSavingEdit ? 0.7 : 1,
+                  }}
+                >
+                  {isSavingEdit ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>

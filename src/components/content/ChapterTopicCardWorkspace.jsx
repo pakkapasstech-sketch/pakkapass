@@ -883,7 +883,13 @@ const ChapterTopicCardWorkspace = ({
 
             const apiTopicNames = Object.keys(contentChaptersMap[chName] || contentChaptersMap[rawChName] || {});
             const dbTopicNames = (options?.topics || [])
-              .filter((t) => String(t.chapterId) === String(ch.id) || getString(t.chapterName || t.chapter).trim().toLowerCase() === chName.trim().toLowerCase())
+              .filter((t) => {
+                // Only match by chapter ID if chapter has a DB ID
+                if (ch.id && !String(ch.id).startsWith('custom_') && !String(ch.id).startsWith('ch_content_')) {
+                  return String(t.chapterId) === String(ch.id);
+                }
+                return false;
+              })
               .map((t) => t.name);
             const customTopicNames = customTopics[chName] || customTopics[rawChName] || [];
 
