@@ -1,14 +1,14 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import StudentFilters from './StudentFilters';
 import StudentStatsCards from './StudentStatsCards';
 import StudentTable from './StudentTable';
-
+import StudentExportModal from '../../components/students/StudentExportModal';
 
 import ErrorState from '../../components/loaders/ErrorState';
 
-import { useStudents, useInactiveStudents } from '../../hooks/useStudents';
+import { useStudents, useInactiveStudents, useStudentFilterOptions } from '../../hooks/useStudents';
 import { usePermissions } from '../../auth/usePermissions';
 import { PERMISSIONS } from '../../auth/permissions';
 import { usePartners } from '../../hooks/usePartners';
@@ -17,10 +17,12 @@ import { useMemo } from 'react';
 import '../../styles/student-management.css';
 import { useLoading } from '../../contexts/LoadingContext';
 import { HiOutlineDownload, HiOutlineUpload } from 'react-icons/hi';
-import {  exportToExcel } from '../../utils/exportUtils';
+import { exportToExcel } from '../../utils/exportUtils';
 const StudentManagementPage = () => {
   const navigate = useNavigate();
   const { setLoading } = useLoading();
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const { data: filterOptions } = useStudentFilterOptions();
   const [filters, setFilters] =
     useState({
       search: '',
@@ -239,20 +241,7 @@ const stateMatch =
             type="button"
             className="secondary-btn flex items-center gap-2"
             style={{ height: '44px', padding: '0 16px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-card)', color: 'var(--color-text-primary)', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
-            onClick={() => {
-              const exportCols = [
-                { header: 'ID', accessor: (r) => r.id },
-                { header: 'Student Name', accessor: (r) => r.name },
-                { header: 'Class', accessor: (r) => r.class },
-                { header: 'Board', accessor: (r) => r.board },
-                { header: 'Institution', accessor: (r) => r.institution },
-                { header: 'REFCODE', accessor: (r) => r.referralCode || (r.profile?.partnerId && partnerMap[String(r.profile.partnerId)]) || r.refCode || 'Null' },
-                { header: 'Subscription Plan', accessor: (r) => r.plan },
-                { header: 'Status', accessor: (r) => r.status },
-                { header: 'Registered On', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : r.registeredOn || '—' },
-              ];
-              exportToExcel(displayStudents, exportCols, 'students.xlsx');
-            }}
+            onClick={() => setIsExportModalOpen(true)}
           >
             <HiOutlineDownload />
             Export
@@ -287,6 +276,14 @@ const stateMatch =
         canDelete={hasPermission(
           PERMISSIONS.STUDENT_DELETE
         )}
+      />
+
+      <StudentExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        students={displayStudents}
+        partnerMap={partnerMap}
+        filterOptions={filterOptions}
       />
     </div>
   );

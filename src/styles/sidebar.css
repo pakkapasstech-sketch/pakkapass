@@ -231,10 +231,10 @@
 
   border-radius: 10px;
 
-  color: var(--sidebar-text-muted);
+  color: #ffffff;
+  font-weight: 600;
 
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
 
   transition:
     background var(--transition-fast),

@@ -2,15 +2,17 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineUpload, HiOutlineArrowLeft, HiOutlineX, HiOutlineDownload } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 import Pagination from '../../components/tables/Pagination';
 import studentService from '../../services/student.service';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
 import '../../styles/import-students.css';
 import '../../styles/table.css';
 import '../../styles/student-table.css';
 
 const ImportStudentsPage = () => {
   const navigate = useNavigate();
+  const { data: optionsData } = useStudentFilterOptions();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -151,15 +153,71 @@ const ImportStudentsPage = () => {
   };
 
   const handleDownloadTemplate = () => {
-    const headers = ['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile','Parent Email', 'Institute', 'State', 'District', 'City'];
-    const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "student_import_template.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City']];
+    const ws1 = XLSX.utils.aoa_to_sheet(headers);
+
+    // Style headers for Student Data
+    for (let c = 0; c < headers[0].length; c++) {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c });
+      if (!ws1[cellRef]) continue;
+      ws1[cellRef].s = {
+        font: { bold: true },
+        alignment: { horizontal: "center", vertical: "center" }
+      };
+    }
+    ws1['!cols'] = Array(headers[0].length).fill({ wch: 20 });
+
+    const gradesList = [...new Set((optionsData?.grades || []).map(g => g.name || g.gradeName || g.grade || g).filter(Boolean))];
+    const boardsList = [...new Set((optionsData?.boards || []).map(b => b.name || b.boardName || b.board || b).filter(Boolean))];
+    const branchesList = [...new Set((optionsData?.branches || optionsData?.courses || []).map(b => b.name || b.branchName || b.courseName || b.branch || b).filter(Boolean))];
+
+    const gradesString = gradesList.join(', ');
+    const boardsString = boardsList.join(', ');
+    const branchesString = branchesList.join(', ');
+
+    const instructionsData = [
+      ['Category', 'Details / Available Options'],
+      ['Available Grades', gradesString],
+      ['Available Boards', boardsString],
+      ['Available Branches', branchesString],
+      ['Note for 11th Grade', 'For 11th, it is equivalent to +1 or Intermediate 1st Year'],
+      ['Note for 12th Grade', 'For 12th, it is equivalent to +2 or Intermediate 2nd Year'],
+      ['Note for 10th Grade and Below', 'Leave the branch column blank']
+    ];
+    const ws2 = XLSX.utils.aoa_to_sheet(instructionsData);
+
+    // Style headers for Instructions
+    for (let c = 0; c < instructionsData[0].length; c++) {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c });
+      if (!ws2[cellRef]) continue;
+      ws2[cellRef].s = {
+        font: { bold: true },
+        alignment: { horizontal: "center", vertical: "center" }
+      };
+    }
+
+    // Set column widths for Instructions
+    ws2['!cols'] = [
+      { wch: 30 }, // Category
+      { wch: 100 }  // Details
+    ];
+
+    // Style data cells for Instructions
+    for (let r = 1; r < instructionsData.length; r++) {
+      for (let c = 0; c < instructionsData[r].length; c++) {
+        const cellRef = XLSX.utils.encode_cell({ r, c });
+        if (!ws2[cellRef]) continue;
+        ws2[cellRef].s = {
+          alignment: { vertical: "center", wrapText: true }
+        };
+      }
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws1, "Student Data");
+    XLSX.utils.book_append_sheet(wb, ws2, "Instructions");
+
+    XLSX.writeFile(wb, "student_import_template.xlsx");
   };
 
   return (

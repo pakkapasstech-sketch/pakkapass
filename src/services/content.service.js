@@ -21,7 +21,7 @@ export const mapContentFromApi = (
                   asset.id,
 
                 title:
-                  asset.title,
+                  asset.title || asset.notesTitle || asset.videoTitle || asset.name || asset.titleName || asset.assetName || asset.fileName || asset.originalName || 'Uploaded Content',
 
                 description:
                   asset.description,
@@ -30,10 +30,10 @@ export const mapContentFromApi = (
                   asset.assetType,
 
                 fileUrl:
-                  asset.fileUrl,
+                  asset.fileUrl || asset.videoUrl || asset.notesUrl || asset.url,
 
                 fileName:
-                  asset.fileUrl
+                  (asset.fileUrl || asset.videoUrl || asset.notesUrl || asset.url)
                     ?.split(
                       '/'
                     )
@@ -125,12 +125,8 @@ export const contentService = {
     formData.append('subjectName', filters.subject || '');
     if (filters.subjectId) formData.append('subjectId', filters.subjectId);
 
-    if (filters.selectedContentTypeId) {
-      formData.append(
-        'contentTypeId',
-        filters.selectedContentTypeId
-      );
-    }
+    const contentTypeId = filters.contentTypeId || filters.selectedContentTypeId || 1;
+    formData.append('contentTypeId', contentTypeId);
     
     formData.append('chapterName', filters.chapter || '');
     if (filters.chapterId) formData.append('chapterId', filters.chapterId);
@@ -157,14 +153,27 @@ export const contentService = {
 
 
 
-    const { data } = await axiosInstance.post('/admin/content', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      timeout: 600000, // 10 minutes
-    });
+    try {
+      const { data } = await axiosInstance.post('/admin/content', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 600000, // 10 minutes
+      });
 
-    return data;
+      return data;
+    } catch (err) {
+      if (err.response?.status === 404) {
+        const { data } = await axiosInstance.post('/admin/content-asset', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 600000,
+        });
+        return data;
+      }
+      throw err;
+    }
   },
   updateAsset: (id, data) =>
   axiosInstance.put(

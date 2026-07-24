@@ -1,5 +1,5 @@
 import { useState,useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HiOutlineArrowLeft,
   HiOutlinePhone,
@@ -98,8 +98,14 @@ const StudentDetailsPage = () => {
     return formatted;
   };
 
-  const [activeTab, setActiveTab] =
-    useState('Overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'Overview';
+  const setActiveTab = (tab) => {
+    setSearchParams(prev => {
+      prev.set('tab', tab);
+      return prev;
+    }, { replace: true });
+  };
 
 useEffect(() => {
   setLoading(isLoading);
@@ -507,7 +513,23 @@ useEffect(() => {
 
   {activeTab === 'Subscription History' && (
     <section className="student-section">
-      <h3>Current Subscription</h3>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <h3 style={{ margin: 0 }}>Current Subscription</h3>
+        <button 
+          style={{
+            background: 'var(--color-primary, #6653AF)',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: '600'
+          }}
+          onClick={() => alert('Extend subscription clicked!')}
+        >
+          Extend
+        </button>
+      </div>
 
       <div className="info-list">
         <div className="info-item">
