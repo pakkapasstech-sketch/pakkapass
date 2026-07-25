@@ -6,6 +6,7 @@ export const MENU_ITEMS = [
   { title: 'Parents', path: '/parents', icon: 'parents', permission: PERMISSIONS.STUDENT_VIEW, roles: ['ADMIN'] },
   { title: 'Partners', path: '/partners', icon: 'partners', permission: PERMISSIONS.INSTITUTION_VIEW ,roles:['ADMIN']},
   { title: 'Content', path: '/content', icon: 'content', permission: PERMISSIONS.RESOURCE_VIEW ,roles: ['ADMIN']},
+  { title: 'Most Viewed', path: '/most-viewed', icon: 'trendingUp', permission: PERMISSIONS.RESOURCE_VIEW, roles: ['ADMIN'] },
   { title: 'Subscriptions', path: '/subscriptions', icon: 'subscriptions', permission: PERMISSIONS.COUPON_VIEW, roles: ['ADMIN'] },
   {
   title: 'Revenue and Payments',

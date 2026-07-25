@@ -489,15 +489,21 @@ useEffect(() => {
                     <span className="timeline-type">
                       {getActivityLabel(activity.actionType)}
                     </span>
-                    <span className="timeline-time">
-                      {new Date(activity.createdAt).toLocaleString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
+                    <div className="timeline-time-block">
+                      <span className="timeline-time">
+                        {new Date(activity.createdAt).toLocaleString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                      <div className="timeline-device-info">
+                        {activity.ipAddress && <span className="device-badge">[{activity.ipAddress}]</span>}
+                        {activity.deviceModel && <span className="device-badge">[{activity.deviceModel}]</span>}
+                      </div>
+                    </div>
                   </div>
                   <p className="timeline-desc">{formatActivityDescription(activity.description)}</p>
                 </div>

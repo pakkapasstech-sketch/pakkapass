@@ -16,6 +16,7 @@ const ImportStudentsPage = lazy(() => import('../pages/students/ImportStudentsPa
 const ReferralManagementPage = lazy(() => import('../pages/referral/ReferralManagementPage'));
 const SubscriptionManagementPage = lazy(() => import('../pages/subscription/SubscriptionManagementPage'));
 const ContentManagement = lazy(() => import('../pages/ContentManagement/ContentManagement'));
+const MostViewedPage = lazy(() => import('../pages/MostViewed/MostViewedPage'));
 const ParentsManagement = lazy(() => import('../pages/parents/ParentsManagement'));
 const SupportCentrePage = lazy(() => import('../pages/SupportCentrePage/SupportCentrePage'));
 const NotificationsPage = lazy(() => import('../pages/Notifications/NotificationsPage'));
@@ -76,6 +77,7 @@ const AppRoutes = () => (
 
         <Route element={<ProtectedRoute permission={PERMISSIONS.RESOURCE_VIEW} />}>
           <Route path="content" element={<ContentManagement />} />
+          <Route path="most-viewed" element={<MostViewedPage />} />
           <Route path="/admin/content-hierarchy" element={<ContentHierarchyPage />} />
           <Route path="/payments" element={<RecentPaymentsPage />} />
         </Route>

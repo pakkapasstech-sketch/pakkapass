@@ -204,6 +204,8 @@ const StudentExportModal = ({ isOpen, onClose, students = [], partnerMap = {}, f
             });
             rowBase.activityType = getActivityLabel(act.actionType);
             rowBase.activityDesc = act.description ? act.description.replace(/^[Yy]ou\s+/, '') : '—';
+            rowBase.deviceModel = act.deviceModel || '—';
+            rowBase.ipAddress = act.ipAddress || '—';
 
             exportRows.push(rowBase);
           });

@@ -9,78 +9,80 @@ const UploadContentModal = ({
   onUpload,
   onClose,
 }) => {
-  const [title, setTitle] =
-    useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [topicName, setTopicName] = useState(filters.section || '');
+  const [file, setFile] = useState(null);
+  const [uploadMode, setUploadMode] = useState('file'); // 'file' | 'url'
+  const [videoUrl, setVideoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
 
-  const [description, setDescription] =
-    useState('');
-  const [topicName, setTopicName] =
-  useState(filters.section || '');
-  const [file, setFile] =
-    useState(null);
+  const uploadedOn = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
 
-  const [uploading, setUploading] =
-    useState(false);
-
-  const uploadedOn =
-    new Date().toLocaleDateString(
-      'en-GB',
-      {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }
-    );
-
-  const handleFileChange = (
-    e
-  ) => {
-    const selected =
-      e.target.files[0];
-
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
     if (!selected) return;
 
     setFile(selected);
 
     if (!title) {
-      const name =
-        selected.name.replace(
-          /\.[^/.]+$/,
-          ''
-        );
-
+      const name = selected.name.replace(/\.[^/.]+$/, '');
       setTitle(name);
     }
   };
 
-  const handleUpload =
-    async () => {
-      if (!file) {
-        alert(
-          'Please select a file'
-        );
+  const handleUpload = async () => {
+    if (uploadMode === 'url') {
+      if (!videoUrl.trim()) {
+        alert('Please enter a valid Video URL / Link');
         return;
       }
-
       setUploading(true);
-
       try {
         await onUpload({
-  filters,
-  file,
-  title,
-  description,
-  topicName,
-  uploadedOn,
-  fileName: file.name,
-  fileSize:
-    formatFileSize(file.size),
-  contentType,
-});
+          filters,
+          file: videoUrl.trim(),
+          title: title || 'Video Link',
+          description,
+          topicName,
+          uploadedOn,
+          fileName: 'Video Link',
+          fileSize: 'Link',
+          contentType: contentType || 'video',
+        });
       } finally {
         setUploading(false);
       }
-    };
+      return;
+    }
+
+    if (!file) {
+      alert('Please select a file');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      await onUpload({
+        filters,
+        file,
+        title,
+        description,
+        topicName,
+        uploadedOn,
+        fileName: file.name,
+        fileSize: formatFileSize(file.size),
+        contentType,
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
  const heading =
   `Upload ${
@@ -218,70 +220,113 @@ const topicLabel =
           </div>
 
           <div className="form-group full-width">
-            <label>
-              Upload File
-            </label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <label style={{ margin: 0 }}>
+                {uploadMode === 'url' ? 'Video URL / Link' : 'Upload File'}
+              </label>
 
-            <label className="upload-dropzone">
-              <input
-                className="hidden-file-input"
-                type="file"
-                accept={
-  contentType === 'video'
-    ? 'video/*'
-    : '.pdf'
-}
-                onChange={
-                  handleFileChange
-                }
-              />
-
-              <div className="upload-placeholder">
-                <span className="upload-icon">
-                  📁
-                </span>
-
-                <h4>
-                  Click to
-                  Upload
-                </h4>
-
-                <p>
-                  {contentType === 'video'
-  ? 'MP4, AVI, MOV'
-  : 'PDF files only'}
-                </p>
-              </div>
-            </label>
-
-            {file && (
-              <div className="selected-file">
-                <div>
-                  <strong>
-                    {
-                      file.name
-                    }
-                  </strong>
-
-                  <p>
-                    {formatFileSize(
-                      file.size
-                    )}
-                  </p>
-                </div>
-
+              <div style={{ display: 'flex', gap: '6px' }}>
                 <button
                   type="button"
-                  className="remove-file-btn"
-                  onClick={() =>
-                    setFile(
-                      null
-                    )
-                  }
+                  onClick={() => setUploadMode('file')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    border: '1px solid #cbd5e1',
+                    background: uploadMode === 'file' ? '#2563eb' : '#ffffff',
+                    color: uploadMode === 'file' ? '#ffffff' : '#475569',
+                    cursor: 'pointer'
+                  }}
                 >
-                  ✕
+                  📁 File Upload
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('url')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    border: '1px solid #cbd5e1',
+                    background: uploadMode === 'url' ? '#2563eb' : '#ffffff',
+                    color: uploadMode === 'url' ? '#ffffff' : '#475569',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🔗 Video URL Link
                 </button>
               </div>
+            </div>
+
+            {uploadMode === 'url' ? (
+              <input
+                type="url"
+                placeholder="https://www.youtube.com/watch?v=... or video link"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  outline: 'none'
+                }}
+              />
+            ) : (
+              <>
+                <label className="upload-dropzone">
+                  <input
+                    className="hidden-file-input"
+                    type="file"
+                    accept={
+                      contentType === 'video'
+                        ? 'video/*'
+                        : '.pdf'
+                    }
+                    onChange={handleFileChange}
+                  />
+
+                  <div className="upload-placeholder">
+                    <span className="upload-icon">
+                      📁
+                    </span>
+
+                    <h4>
+                      Click to Upload
+                    </h4>
+
+                    <p>
+                      {contentType === 'video'
+                        ? 'MP4, AVI, MOV'
+                        : 'PDF files only'}
+                    </p>
+                  </div>
+                </label>
+
+                {file && (
+                  <div className="selected-file">
+                    <div>
+                      <strong>
+                        {file.name}
+                      </strong>
+
+                      <p>
+                        {formatFileSize(file.size)}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="remove-file-btn"
+                      onClick={() => setFile(null)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

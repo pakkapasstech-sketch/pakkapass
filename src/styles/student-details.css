@@ -736,7 +736,7 @@ font-size: 22px;
 .timeline-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 6px;
   flex-wrap: wrap;
   gap: 8px;
@@ -750,9 +750,35 @@ font-size: 22px;
   color: var(--color-primary);
 }
 
+.timeline-time-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .timeline-time {
   font-size: 12px;
   color: var(--color-text-secondary);
+}
+
+.timeline-device-info {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.device-badge {
+  background: var(--color-bg-secondary, #f1f5f9);
+  color: var(--color-text-secondary, #475569);
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: monospace, sans-serif;
+  letter-spacing: 0.2px;
 }
 
 .timeline-desc {
