@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineUpload, HiOutlineArrowLeft, HiOutlineX, HiOutlineDownload } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx-js-style';
 import Pagination from '../../components/tables/Pagination';
 import studentService from '../../services/student.service';
+import { getPlans } from '../../services/SubscriptionServices';
 import { useStudentFilterOptions } from '../../hooks/useStudents';
 import '../../styles/import-students.css';
 import '../../styles/table.css';
@@ -125,7 +126,11 @@ const ImportStudentsPage = () => {
       'City': 'city',
       'Parent Name': 'parentName',
       'Parent Email': 'parentEmail',
-      'Parent Mobile': 'parentMobile'
+      'Parent Mobile': 'parentMobile',
+      'Plan ID': 'planId',
+      'PlanId': 'planId',
+      'Plan id': 'planId',
+      'Plan': 'planId'
     };
 
     const studentsData = previewData.map(row => {
@@ -152,8 +157,22 @@ const ImportStudentsPage = () => {
     }
   };
 
+  const [availablePlans, setAvailablePlans] = useState([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const plans = await getPlans();
+        setAvailablePlans(plans || []);
+      } catch {
+        setAvailablePlans([]);
+      }
+    };
+    fetchPlans();
+  }, []);
+
   const handleDownloadTemplate = () => {
-    const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City']];
+    const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID']];
     const ws1 = XLSX.utils.aoa_to_sheet(headers);
 
     // Style headers for Student Data
@@ -170,6 +189,9 @@ const ImportStudentsPage = () => {
     const gradesList = [...new Set((optionsData?.grades || []).map(g => g.name || g.gradeName || g.grade || g).filter(Boolean))];
     const boardsList = [...new Set((optionsData?.boards || []).map(b => b.name || b.boardName || b.board || b).filter(Boolean))];
     const branchesList = [...new Set((optionsData?.branches || optionsData?.courses || []).map(b => b.name || b.branchName || b.courseName || b.branch || b).filter(Boolean))];
+    const plansString = availablePlans.length > 0
+      ? availablePlans.map(p => `ID ${p.id}: ${p.name || 'Plan'} (${p.durationDays || 365} days)`).join(' | ')
+      : 'Enter subscription plan ID (e.g. 1, 2)';
 
     const gradesString = gradesList.join(', ');
     const boardsString = boardsList.join(', ');
@@ -180,6 +202,7 @@ const ImportStudentsPage = () => {
       ['Available Grades', gradesString],
       ['Available Boards', boardsString],
       ['Available Branches', branchesString],
+      ['Available Plan IDs', plansString],
       ['Note for 11th Grade', 'For 11th, it is equivalent to +1 or Intermediate 1st Year'],
       ['Note for 12th Grade', 'For 12th, it is equivalent to +2 or Intermediate 2nd Year'],
       ['Note for 10th Grade and Below', 'Leave the branch column blank']
