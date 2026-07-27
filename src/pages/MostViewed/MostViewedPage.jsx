@@ -95,10 +95,9 @@ const MostViewedPage = () => {
       const views = item.uniqueStudents || item.viewCount || 0;
       const watchHrs = parseFloat(item.watchHours || 0).toFixed(1);
       const ratingNum = parseFloat(item.averageRating) || 0;
-      const ratingText = ratingNum > 0 ? ratingNum.toFixed(1) : 'no rating';
+      const ratingText = ratingNum > 0 ? ratingNum.toFixed(1) : '0';
       const tagText = globalRank <= 3 ? 'most viewed' : 'standard';
 
-      // Combine all table column fields for all-column search filtering
       const searchableFields = [
         `#${globalRank}`,
         String(globalRank),
@@ -148,25 +147,34 @@ const MostViewedPage = () => {
     });
   }, [topics, searchQuery, selectedSubject, selectedRating]);
 
-  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedSubject, selectedRating]);
 
-  // Pagination calculations (10 items per page)
+  const totalViewers = useMemo(() => {
+    return topics.reduce((acc, curr) => acc + (parseInt(curr.uniqueStudents || curr.viewCount || 0, 10) || 0), 0);
+  }, [topics]);
+
+  const avgOverallRating = useMemo(() => {
+    const validRatings = topics
+      .map((t) => parseFloat(t.averageRating) || 0)
+      .filter((r) => r > 0);
+    if (validRatings.length === 0) return 0;
+    const sum = validRatings.reduce((acc, curr) => acc + curr, 0);
+    return (sum / validRatings.length).toFixed(1);
+  }, [topics]);
+
+  const totalWatchHours = useMemo(() => {
+    const sum = combinedSubjectHours.reduce(
+      (acc, curr) => acc + (parseFloat(curr.totalWatchHours) || 0),
+      0
+    );
+    return sum.toFixed(1);
+  }, [combinedSubjectHours]);
+
   const totalPages = Math.ceil(filteredTopics.length / ITEMS_PER_PAGE) || 1;
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedTopics = filteredTopics.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  // Summary Metrics
-  const totalViewers = topics.reduce((acc, curr) => acc + (parseInt(curr.uniqueStudents) || 0), 0);
-  const avgOverallRating = topics.length
-    ? (
-        topics.reduce((acc, curr) => acc + (parseFloat(curr.averageRating) || 0), 0) / topics.length
-      ).toFixed(1)
-    : '0.0';
-
-  const totalWatchHours = hours.reduce((acc, curr) => acc + (parseFloat(curr.totalWatchHours) || 0), 0).toFixed(1);
 
   if (loading) {
     return (
@@ -186,7 +194,6 @@ const MostViewedPage = () => {
 
   return (
     <div className="most-viewed-container">
-      {/* Page Header */}
       <div className="most-viewed-header">
         <div>
           <h1>Most Viewed Content & Video Ratings</h1>
@@ -196,7 +203,6 @@ const MostViewedPage = () => {
         </div>
       </div>
 
-      {/* Top Stats Cards */}
       <div className="most-viewed-stats-grid">
         <div className="most-viewed-stat-card">
           <div className="stat-icon-wrapper stat-icon-blue">
@@ -204,7 +210,7 @@ const MostViewedPage = () => {
           </div>
           <div className="stat-content">
             <span className="stat-value">{totalViewers}</span>
-            <span className="stat-label">Total Video Views</span>
+            <span className="stat-label">Total Views</span>
           </div>
         </div>
 
@@ -213,7 +219,7 @@ const MostViewedPage = () => {
             <HiOutlineStar />
           </div>
           <div className="stat-content">
-            <span className="stat-value">{avgOverallRating} / 5.0</span>
+            <span className="stat-value">{avgOverallRating > 0 ? `${avgOverallRating} / 5.0` : '0'}</span>
             <span className="stat-label">Average Video Rating</span>
           </div>
         </div>
@@ -239,16 +245,14 @@ const MostViewedPage = () => {
         </div>
       </div>
 
-      {/* Main Content Card */}
       <div className="most-viewed-card">
         <div className="most-viewed-card-header">
           <div className="most-viewed-card-title">
-            <HiOutlineEye style={{ color: '#4f46e5', fontSize: 22 }} />
-            Content Performance Ranking
+            <HiOutlineTrendingUp style={{ color: '#2563eb', fontSize: 22 }} />
+            Most Viewed Content & Videos
           </div>
 
           <div className="most-viewed-controls">
-            {/* Subject Filter */}
             <CommonFilterDropdown
               placeholder="All Subjects"
               value={selectedSubject}
@@ -256,7 +260,6 @@ const MostViewedPage = () => {
               onChange={setSelectedSubject}
             />
 
-            {/* Rating Filter */}
             <CommonFilterDropdown
               placeholder="All Ratings"
               value={selectedRating}
@@ -271,7 +274,6 @@ const MostViewedPage = () => {
               onChange={setSelectedRating}
             />
 
-            {/* Search Input */}
             <div className="search-input-wrapper">
               <HiOutlineSearch style={{ position: 'absolute', left: 12, color: '#94a3b8', fontSize: 16 }} />
               <input
@@ -284,7 +286,6 @@ const MostViewedPage = () => {
           </div>
         </div>
 
-        {/* Clean Spacious Table */}
         <div style={{ overflowX: 'auto' }}>
           <table className="clean-data-table">
             <thead>
@@ -295,9 +296,9 @@ const MostViewedPage = () => {
                 <th>Board</th>
                 <th>Branch</th>
                 <th>Subject</th>
-                <th style={{ width: '120px' }}>Views</th>
-                <th style={{ width: '120px' }}>Watch Hrs</th>
-                <th style={{ width: '150px' }}>Avg Rating</th>
+                <th style={{ width: '130px', whiteSpace: 'nowrap' }}>Views</th>
+                <th style={{ width: '130px', whiteSpace: 'nowrap' }}>Watch Hrs</th>
+                <th style={{ width: '150px', whiteSpace: 'nowrap' }}>Avg Rating</th>
                 <th style={{ width: '130px' }}>Tag</th>
               </tr>
             </thead>
@@ -327,16 +328,16 @@ const MostViewedPage = () => {
                       <td style={{ color: '#475569' }}>{item.board || 'N/A'}</td>
                       <td style={{ color: '#475569' }}>{item.branch || 'N/A'}</td>
                       <td style={{ color: '#475569' }}>{item.subjectName}</td>
-                      <td>
+                      <td style={{ whiteSpace: 'nowrap' }}>
                         <span className="view-count-badge">
                           <HiOutlineEye style={{ fontSize: 15 }} />
                           {item.uniqueStudents || item.viewCount || 0} views
                         </span>
                       </td>
-                      <td style={{ color: '#475569' }}>
+                      <td style={{ color: '#475569', whiteSpace: 'nowrap' }}>
                         {parseFloat(item.watchHours || 0).toFixed(1)} hrs
                       </td>
-                      <td>
+                      <td style={{ whiteSpace: 'nowrap' }}>
                         <div className="rating-stars">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <HiStar
@@ -347,7 +348,7 @@ const MostViewedPage = () => {
                             />
                           ))}
                           <span className="rating-score">
-                            {rating > 0 ? rating.toFixed(1) : 'No rating'}
+                            {rating > 0 ? rating.toFixed(1) : 0}
                           </span>
                         </div>
                       </td>
