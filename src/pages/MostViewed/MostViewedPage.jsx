@@ -261,16 +261,20 @@ const MostViewedPage = () => {
               <tr>
                 <th style={{ width: '80px' }}>Rank</th>
                 <th>Topic / Video Title</th>
+                <th>Grade</th>
+                <th>Board</th>
+                <th>Branch</th>
                 <th>Subject</th>
-                <th style={{ width: '180px' }}>Unique Viewers</th>
-                <th style={{ width: '200px' }}>Average Rating</th>
-                <th style={{ width: '150px' }}>Content Tag</th>
+                <th style={{ width: '120px' }}>Views</th>
+                <th style={{ width: '120px' }}>Watch Hrs</th>
+                <th style={{ width: '150px' }}>Avg Rating</th>
+                <th style={{ width: '150px' }}>Tag</th>
               </tr>
             </thead>
             <tbody>
               {paginatedTopics.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '40px 16px', color: '#64748b' }}>
+                  <td colSpan="10" style={{ textAlign: 'center', padding: '40px 16px', color: '#64748b' }}>
                     <HiOutlineCollection style={{ fontSize: 36, color: '#cbd5e1', marginBottom: 8 }} />
                     <div>No content matches your search filter</div>
                   </td>
@@ -289,12 +293,18 @@ const MostViewedPage = () => {
                         </div>
                       </td>
                       <td style={{ fontWeight: 600, color: '#0f172a' }}>{item.topicName}</td>
+                      <td style={{ color: '#475569' }}>{item.grade || 'N/A'}</td>
+                      <td style={{ color: '#475569' }}>{item.board || 'N/A'}</td>
+                      <td style={{ color: '#475569' }}>{item.branch || 'N/A'}</td>
                       <td style={{ color: '#475569' }}>{item.subjectName}</td>
                       <td>
                         <span className="view-count-badge">
                           <HiOutlineEye style={{ fontSize: 15 }} />
-                          {item.uniqueStudents} views
+                          {item.uniqueStudents || item.viewCount || 0} views
                         </span>
+                      </td>
+                      <td style={{ color: '#475569' }}>
+                        {parseFloat(item.watchHours || 0).toFixed(1)} hrs
                       </td>
                       <td>
                         <div className="rating-stars">
