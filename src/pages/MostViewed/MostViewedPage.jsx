@@ -86,31 +86,62 @@ const MostViewedPage = () => {
     return list;
   }, [topics]);
 
-  // Filter topics based on search query, selected subject, and selected rating
+  // Filter topics based on search query across ALL columns, selected subject, and selected rating
   const filteredTopics = useMemo(() => {
-    return topics.filter((item) => {
+    const query = searchQuery.trim().toLowerCase();
+
+    return topics.filter((item, index) => {
+      const globalRank = index + 1;
+      const views = item.uniqueStudents || item.viewCount || 0;
+      const watchHrs = parseFloat(item.watchHours || 0).toFixed(1);
+      const ratingNum = parseFloat(item.averageRating) || 0;
+      const ratingText = ratingNum > 0 ? ratingNum.toFixed(1) : 'no rating';
+      const tagText = globalRank <= 3 ? 'most viewed' : 'standard';
+
+      // Combine all table column fields for all-column search filtering
+      const searchableFields = [
+        `#${globalRank}`,
+        String(globalRank),
+        item.topicName,
+        item.name,
+        item.title,
+        item.grade,
+        item.board,
+        item.branch,
+        item.subjectName,
+        item.subject,
+        String(views),
+        `${views} views`,
+        `${watchHrs} hrs`,
+        String(watchHrs),
+        ratingText,
+        tagText
+      ];
+
       const matchesSearch =
-        (item.topicName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.subjectName || '').toLowerCase().includes(searchQuery.toLowerCase());
+        !query ||
+        searchableFields.some(
+          (field) => field && String(field).toLowerCase().includes(query)
+        );
+
       const matchesSubject =
         !selectedSubject ||
         selectedSubject === 'All' ||
         selectedSubject === 'All Subjects' ||
-        item.subjectName === selectedSubject;
+        item.subjectName === selectedSubject ||
+        item.subject === selectedSubject;
       
-      const rating = parseFloat(item.averageRating) || 0;
       let matchesRating = true;
-
       if (selectedRating === '5 Stars (4.5+)' || selectedRating === '5') {
-        matchesRating = rating >= 4.5;
+        matchesRating = ratingNum >= 4.5;
       } else if (selectedRating === '4 Stars & above' || selectedRating === '4+') {
-        matchesRating = rating >= 4.0;
+        matchesRating = ratingNum >= 4.0;
       } else if (selectedRating === '3 Stars & above' || selectedRating === '3+') {
-        matchesRating = rating >= 3.0;
+        matchesRating = ratingNum >= 3.0;
       } else if (selectedRating === '2 Stars & above' || selectedRating === '2+') {
-        matchesRating = rating >= 2.0;
+        matchesRating = ratingNum >= 2.0;
       } else if (selectedRating === 'Unrated / No Rating' || selectedRating === 'unrated') {
-        matchesRating = rating === 0;
+        matchesRating = ratingNum === 0;
       }
 
       return matchesSearch && matchesSubject && matchesRating;
@@ -208,13 +239,12 @@ const MostViewedPage = () => {
         </div>
       </div>
 
-      {/* Main Full-Width Data Table */}
+      {/* Main Content Card */}
       <div className="most-viewed-card">
-        {/* Header Controls */}
         <div className="most-viewed-card-header">
           <div className="most-viewed-card-title">
-            <HiOutlineTrendingUp style={{ color: '#2563eb', fontSize: 22 }} />
-            Most Viewed Content & Videos
+            <HiOutlineEye style={{ color: '#4f46e5', fontSize: 22 }} />
+            Content Performance Ranking
           </div>
 
           <div className="most-viewed-controls">
@@ -246,7 +276,7 @@ const MostViewedPage = () => {
               <HiOutlineSearch style={{ position: 'absolute', left: 12, color: '#94a3b8', fontSize: 16 }} />
               <input
                 type="text"
-                placeholder="Search topic or subject..."
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -268,7 +298,7 @@ const MostViewedPage = () => {
                 <th style={{ width: '120px' }}>Views</th>
                 <th style={{ width: '120px' }}>Watch Hrs</th>
                 <th style={{ width: '150px' }}>Avg Rating</th>
-                <th style={{ width: '150px' }}>Tag</th>
+                <th style={{ width: '130px' }}>Tag</th>
               </tr>
             </thead>
             <tbody>
