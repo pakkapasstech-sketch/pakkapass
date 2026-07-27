@@ -32,12 +32,12 @@ const StatisticCard = ({
         {title}
       </p>
 
-      <p className="stat-value">
+      <div className="stat-value">
         {formattedValue ??
           (typeof value === 'number'
             ? value.toLocaleString('en-IN')
             : value)}
-      </p>
+      </div>
       {subtext && (
         <div style={{ width: '100%', fontSize: '13px' }}>
           {subtext}

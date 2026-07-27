@@ -312,8 +312,8 @@ useEffect(() => {
           title="Total Revenue"
           value={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
-              <span style={{ fontSize: 'clamp(1.5rem, 3vw, 1.875rem)', fontWeight: '700', lineHeight: 1.1 }}>₹{totalRevenue.toLocaleString('en-IN')}</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '12px', color: 'var(--color-text-secondary)', textAlign: 'right', fontWeight: 500 }}>
+              <span className="stat-value" style={{ marginTop: 0, fontSize: '0.875rem' }}>₹{totalRevenue.toLocaleString('en-IN')}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '11px', color: 'var(--color-text-secondary)', textAlign: 'right', fontWeight: 500, lineHeight: 1.3 }}>
                 <div><span>Online = </span>₹{onlineRevenue.toLocaleString('en-IN')}</div>
                 <div><span>Offline = </span>₹{offlineRevenue.toLocaleString('en-IN')}</div>
               </div>
