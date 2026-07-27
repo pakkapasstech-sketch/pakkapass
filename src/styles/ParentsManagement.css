@@ -70,7 +70,7 @@
 .stat-value {
   margin-top: 6px;
 
-  font-size: clamp(26px, 4vw, 30px);
+  font-size: 0.875rem;
   font-weight: 700;
 
   color: var(--color-text-primary);
