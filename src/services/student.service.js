@@ -35,6 +35,11 @@ export const studentService = {
     return data;
   },
 
+  extendPlan: async (studentId, days) => {
+    const { data } = await axiosInstance.put(`/admin/student/${studentId}/extend-plan`, { days });
+    return data;
+  },
+
   getParentStudents: async () => {
     const data = await parentService.getStudents();
     return data.students || [];

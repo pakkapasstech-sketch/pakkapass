@@ -133,7 +133,28 @@ const RecentPaymentsPage = () => {
       return matchesSearch && matchesPlan && matchesStatus && matchesDate;
     });
   }, [payments, search, selectedPlan, selectedStatus, startDate, endDate, students, planPriceMap, partnerMap]);
-  const totalRevenue = filteredPayments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+  const onlineRevenue = useMemo(() => {
+    return filteredPayments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+  }, [filteredPayments]);
+
+  const offlineRevenue = useMemo(() => {
+    if (!Array.isArray(plansData) || !Array.isArray(students)) return 0;
+    const privatePlans = plansData.filter((plan) => plan.isPublic === false || plan.isPublic === 0);
+    let totalOffline = 0;
+    privatePlans.forEach((plan) => {
+      const planPrice = Number(plan.price || 0);
+      const planNameLower = plan.name?.trim().toLowerCase();
+      const studentCount = students.filter((s) => {
+        if (Number(s.planId) === Number(plan.id)) return true;
+        if (planNameLower && s.plan?.trim().toLowerCase() === planNameLower) return true;
+        return false;
+      }).length;
+      totalOffline += planPrice * studentCount;
+    });
+    return totalOffline;
+  }, [plansData, students]);
+
+  const totalRevenue = onlineRevenue + offlineRevenue;
   const totalDiscount = useMemo(() => {
     return filteredPayments.reduce((sum, payment) => {
       const planPrice = planPriceMap[payment.plan?.trim().toLowerCase()];
@@ -272,6 +293,8 @@ useEffect(() => {
 
               const summaryData = [
                 { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}` },
+                { label: 'Online Revenue', value: `₹${onlineRevenue.toLocaleString('en-IN')}` },
+                { label: 'Offline Revenue', value: `₹${offlineRevenue.toLocaleString('en-IN')}` },
                 { label: 'Total Amount Discounted', value: `₹${totalDiscount.toLocaleString('en-IN')}` },
                 { label: 'Successful Payments', value: successfulPayments },
               ];
@@ -286,14 +309,14 @@ useEffect(() => {
       </div>
       <div className="dashboard-stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <StatisticCard
-          title="Online + Offline = Total Revenue"
+          title="Total Revenue"
           value={
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span>₹{totalRevenue.toLocaleString('en-IN')}</span>
-              <span style={{ fontWeight: 400, opacity: 0.5 }}>+</span>
-              <span>₹0</span>
-              <span style={{ fontWeight: 400, opacity: 0.5 }}>=</span>
-              <span>₹{totalRevenue.toLocaleString('en-IN')}</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+              <span style={{ fontSize: 'clamp(1.5rem, 3vw, 1.875rem)', fontWeight: '700', lineHeight: 1.1 }}>₹{totalRevenue.toLocaleString('en-IN')}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '12px', color: 'var(--color-text-secondary)', textAlign: 'right', fontWeight: 500 }}>
+                <div><span>Online = </span>₹{onlineRevenue.toLocaleString('en-IN')}</div>
+                <div><span>Offline = </span>₹{offlineRevenue.toLocaleString('en-IN')}</div>
+              </div>
             </div>
           }
           icon="commissions"

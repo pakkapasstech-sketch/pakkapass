@@ -22,12 +22,6 @@ const ImportStudentsPage = () => {
   const [previewHeaders, setPreviewHeaders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const [step, setStep] = useState(1);
-  const [planDetails, setPlanDetails] = useState({
-    name: '',
-    durationDays: 365,
-    price: 0
-  });
 
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0];
@@ -38,7 +32,7 @@ const ImportStudentsPage = () => {
     if (file) {
       const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'];
       const isValidExtension = file.name.endsWith('.csv') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx');
-      
+
       if (!validTypes.includes(file.type) && !isValidExtension) {
         toast.error('Please upload a valid Excel or CSV file.');
         setSelectedFile(null);
@@ -47,7 +41,7 @@ const ImportStudentsPage = () => {
         return;
       }
       setSelectedFile(file);
-      
+
       const reader = new FileReader();
       reader.onload = (evt) => {
         try {
@@ -56,7 +50,7 @@ const ImportStudentsPage = () => {
           const sheetName = workbook.SheetNames[0];
           const sheet = workbook.Sheets[sheetName];
           const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          
+
           if (data && data.length > 0) {
             setPreviewHeaders(data[0] || []);
             setPreviewData(data.slice(1).filter(row => row.length > 0)); // Remove empty rows
@@ -96,18 +90,8 @@ const ImportStudentsPage = () => {
       return;
     }
 
-    if (step === 1) {
-      setStep(2);
-      return;
-    }
-
-    if (!planDetails.name || !planDetails.durationDays) {
-      toast.error('Please provide valid plan details.');
-      return;
-    }
-
     setIsUploading(true);
-    
+
     // Convert previewData (array of arrays) into an array of objects
     const headerMapping = {
       'Name': 'name',
@@ -144,10 +128,9 @@ const ImportStudentsPage = () => {
 
     try {
       await studentService.importStudents({
-        studentsData,
-        planDetails
+        studentsData
       });
-      toast.success('Students imported and plan created successfully!');
+      toast.success('Students imported successfully!');
       navigate('/students');
     } catch (error) {
       console.error("Import error:", error);
@@ -205,7 +188,7 @@ const ImportStudentsPage = () => {
       ['Available Plan IDs', plansString],
       ['Note for 11th Grade', 'For 11th, it is equivalent to +1 or Intermediate 1st Year'],
       ['Note for 12th Grade', 'For 12th, it is equivalent to +2 or Intermediate 2nd Year'],
-      ['Note for 10th Grade and Below', 'Leave the branch column blank']
+      ['Format Rules', 'Name, Email, Grade, and Institute are mandatory. Plan ID is optional (must be a valid plan ID if provided).']
     ];
     const ws2 = XLSX.utils.aoa_to_sheet(instructionsData);
 
@@ -247,7 +230,7 @@ const ImportStudentsPage = () => {
     <div className="import-page-container">
       <div className="import-header">
         <div className="import-header-left">
-          <button 
+          <button
             className="import-back-btn"
             onClick={() => navigate('/students')}
           >
@@ -258,7 +241,7 @@ const ImportStudentsPage = () => {
             <p className="import-subtitle">Upload an Excel or CSV file to import student records.</p>
           </div>
         </div>
-        <button 
+        <button
           className="import-download-btn"
           onClick={handleDownloadTemplate}
         >
@@ -268,7 +251,7 @@ const ImportStudentsPage = () => {
       </div>
 
       <div className="import-card">
-        <div 
+        <div
           className={`import-dropzone ${dragActive ? "drag-active" : ""}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -282,16 +265,16 @@ const ImportStudentsPage = () => {
           <p>
             Excel or CSV formats up to 10MB
           </p>
-          
-          <input 
-            type="file" 
-            id="file-upload" 
-            accept=".xlsx, .xls, .csv" 
+
+          <input
+            type="file"
+            id="file-upload"
+            accept=".xlsx, .xls, .csv"
             onChange={handleFileChange}
             className="import-file-input"
           />
-          <label 
-            htmlFor="file-upload" 
+          <label
+            htmlFor="file-upload"
             className="import-browse-btn"
           >
             Browse File
@@ -303,8 +286,8 @@ const ImportStudentsPage = () => {
             <p>
               Selected File: <span>{selectedFile.name}</span>
             </p>
-            <button 
-              className="import-remove-btn" 
+            <button
+              className="import-remove-btn"
               onClick={() => {
                 setSelectedFile(null);
                 setPreviewData([]);
@@ -318,7 +301,7 @@ const ImportStudentsPage = () => {
         )}
       </div>
 
-      {step === 1 && previewData.length > 0 && (
+      {previewData.length > 0 && (
         <div className="import-preview-section" style={{ marginTop: '24px', border: '1px solid var(--color-border)', borderRadius: '8px', background: 'var(--color-surface)', width: '100%' }}>
           <h3 style={{ padding: '16px', borderBottom: '1px solid var(--color-border)', fontSize: '16px', fontWeight: '600' }}>
             Data Preview ({previewData.length} records found)
@@ -343,80 +326,37 @@ const ImportStudentsPage = () => {
                         <td key={colIndex}>{row[colIndex] !== undefined ? String(row[colIndex]) : ''}</td>
                       ))}
                     </tr>
-                ))}
+                  ))}
               </tbody>
             </table>
           </div>
-          
+
           <div style={{ padding: '16px', borderTop: '1px solid var(--color-border)' }}>
-            <Pagination 
-              page={currentPage} 
-              totalPages={Math.ceil(previewData.length / itemsPerPage)} 
-              onPageChange={setCurrentPage} 
+            <Pagination
+              page={currentPage}
+              totalPages={Math.ceil(previewData.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
             />
           </div>
         </div>
       )}
 
-      {step === 2 && (
-        <div className="import-preview-section" style={{ marginTop: '24px', border: '1px solid var(--color-border)', borderRadius: '8px', background: 'var(--color-surface)', width: '100%', padding: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>Step 2: Create Subscription Plan</h3>
-          <p style={{ marginBottom: '24px', color: 'var(--color-text-secondary)' }}>
-            Provide plan details for this imported batch. All {previewData.length} students will be subscribed to this plan.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '400px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Plan Name</label>
-              <input 
-                type="text" 
-                value={planDetails.name}
-                onChange={(e) => setPlanDetails(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="e.g. Batch 2026 Yearly Plan"
-                style={{ padding: '10px 12px', border: '1px solid var(--color-border)', borderRadius: '6px' }}
-              />
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Duration (Days)</label>
-              <input 
-                type="number" 
-                value={planDetails.durationDays}
-                onChange={(e) => setPlanDetails(prev => ({ ...prev, durationDays: parseInt(e.target.value) || 0 }))}
-                style={{ padding: '10px 12px', border: '1px solid var(--color-border)', borderRadius: '6px' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Price (Optional)</label>
-              <input 
-                type="number" 
-                value={planDetails.price}
-                onChange={(e) => setPlanDetails(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                style={{ padding: '10px 12px', border: '1px solid var(--color-border)', borderRadius: '6px' }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="import-actions" style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px', width: '100%' }}>
-        <button 
+        <button
           className="import-cancel-btn"
           onClick={() => {
-            if (step === 2) setStep(1);
-            else navigate('/students');
+            navigate('/students');
           }}
           disabled={isUploading}
         >
-          {step === 2 ? 'Back' : 'Cancel'}
+          Cancel
         </button>
-        <button 
+        <button
           className="import-submit-btn"
           onClick={handleImport}
-          disabled={!selectedFile || isUploading || (step === 2 && !planDetails.name)}
+          disabled={!selectedFile || isUploading}
         >
-          {isUploading ? 'Processing...' : (step === 1 ? 'Next: Create Plan' : 'Submit Import')}
+          {isUploading ? 'Processing...' : 'Submit Import'}
         </button>
       </div>
     </div>

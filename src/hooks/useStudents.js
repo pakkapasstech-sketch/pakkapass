@@ -149,7 +149,13 @@ const mapStudentDetail = (data) => {
     isFreeTrial = false;
   } else if (hasFreeTrial) {
     startDate = new Date(profile.freeTrialStartDate);
-    endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    
+    if (profile.planExpiryDate) {
+      endDate = new Date(profile.planExpiryDate);
+    } else {
+      endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    }
+    
     status = now > endDate ? 'Inactive' : 'Trial';
     planName = 'Free Trial';
     isFreeTrial = true;

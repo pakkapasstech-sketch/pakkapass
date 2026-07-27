@@ -337,6 +337,8 @@ const TopicResourceWorkspace = ({
     }
   };
 
+  const isExternalRef = String(contentType || '').trim().toUpperCase() === 'EXTERNAL REF';
+
   return (
     <div className="topic-workspace">
       {/* Top Bar with Back Link */}
@@ -369,9 +371,10 @@ const TopicResourceWorkspace = ({
       </div>
 
       {/* Upload Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isExternalRef ? '1fr' : 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '32px' }}>
         
         {/* Notes Upload Card */}
+        {!isExternalRef && (
         <div
           style={{
             background: 'var(--color-card, #ffffff)',
@@ -469,6 +472,7 @@ const TopicResourceWorkspace = ({
             </button>
           </form>
         </div>
+        )}
 
         {/* Video Upload Card */}
         <div

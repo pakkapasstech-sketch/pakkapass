@@ -255,6 +255,7 @@ const SubscriptionManagementPage = () => {
                 <th>Plan Name</th>
                 <th>Price</th>
                 <th>Duration</th>
+                <th>Visibility</th>
                 <th>Status</th>
                 <th>Created Date</th>
                 <th>view</th>
@@ -264,7 +265,7 @@ const SubscriptionManagementPage = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="empty-table">
+                  <td colSpan="8" className="empty-table">
                     Loading...
                   </td>
                 </tr>
@@ -275,7 +276,7 @@ const SubscriptionManagementPage = () => {
                     className="clickable-row"
                     onClick={() => navigate(`/subscriptions/plans/${plan.id}`)}
                   >
-                    <td>{startIndex + index + 1}</td>
+                    <td>{plan.id}</td>
 
                     <td>
                       <div className="student-user">
@@ -298,6 +299,16 @@ const SubscriptionManagementPage = () => {
 
                     <td>
                       <span className="plan-badge">{plan.durationDays} Days</span>
+                    </td>
+
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          plan.isPublic ? 'status-active' : 'status-inactive'
+                        }`}
+                      >
+                        {plan.isPublic ? 'Public' : 'Private'}
+                      </span>
                     </td>
 
                     <td>
@@ -327,7 +338,7 @@ const SubscriptionManagementPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="empty-table">
+                  <td colSpan="8" className="empty-table">
                     No plans found
                   </td>
                 </tr>

@@ -19,6 +19,8 @@ import '../../styles/table.css';
 import '../../styles/student-table.css';
 import useStudents, { useStudent, useStudentFilterOptions, useStudentActivities } from '../../hooks/useStudents';
 import { useLoading } from '../../contexts/LoadingContext';
+import { toast } from 'react-hot-toast';
+import { studentService } from '../../services/student.service';
 
 import ErrorState from '../../components/loaders/ErrorState';
 
@@ -105,6 +107,29 @@ const StudentDetailsPage = () => {
       prev.set('tab', tab);
       return prev;
     }, { replace: true });
+  };
+
+  const [isExtendModalOpen, setIsExtendModalOpen] = useState(false);
+  const [extendDays, setExtendDays] = useState(30);
+  const [isExtending, setIsExtending] = useState(false);
+
+  const handleExtendPlan = async () => {
+    if (!extendDays || extendDays <= 0) {
+      toast.error('Please enter a valid number of days');
+      return;
+    }
+    try {
+      setIsExtending(true);
+      await studentService.extendPlan(id, extendDays);
+      toast.success(`Plan extended by ${extendDays} days successfully`);
+      setIsExtendModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error extending plan:', error);
+      toast.error(error?.response?.data?.message || 'Failed to extend plan');
+    } finally {
+      setIsExtending(false);
+    }
   };
 
 useEffect(() => {
@@ -531,7 +556,7 @@ useEffect(() => {
             cursor: 'pointer',
             fontWeight: '600'
           }}
-          onClick={() => alert('Extend subscription clicked!')}
+          onClick={() => setIsExtendModalOpen(true)}
         >
           Extend
         </button>
@@ -627,6 +652,110 @@ useEffect(() => {
 </div>
 
       </div>
+
+      {isExtendModalOpen && (
+        <div 
+          className="modal-overlay" 
+          onClick={() => setIsExtendModalOpen(false)}
+          style={{ 
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+            backgroundColor: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
+            padding: '20px'
+          }}
+        >
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ 
+              maxWidth: '450px', backgroundColor: 'var(--color-surface, #fff)', 
+              padding: '32px', borderRadius: '16px', width: '100%', 
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' 
+            }}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '20px', fontWeight: '700', color: 'var(--color-text-primary)' }}>Extend Subscription</h3>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '24px', fontSize: '14px', lineHeight: '1.5' }}>
+              Add extra days to the student's current plan. The new expiry date will be automatically appended to the end of their existing billing cycle.
+            </p>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: 'var(--color-text-primary)' }}>
+                Quick Selection
+              </label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                {[
+                  { label: '+1 Month', value: 30 },
+                  { label: '+3 Months', value: 90 },
+                  { label: '+6 Months', value: 180 },
+                  { label: '+1 Year', value: 365 }
+                ].map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setExtendDays(option.value)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: extendDays === option.value ? '1px solid var(--color-primary, #6653AF)' : '1px solid var(--color-border)',
+                      backgroundColor: extendDays === option.value ? 'rgba(102, 83, 175, 0.1)' : 'transparent',
+                      color: extendDays === option.value ? 'var(--color-primary, #6653AF)' : 'var(--color-text-secondary)',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: 'var(--color-text-primary)' }}>
+                Custom Days
+              </label>
+              <input 
+                type="number" 
+                min="1"
+                value={extendDays}
+                onChange={(e) => setExtendDays(parseInt(e.target.value) || 0)}
+                style={{ 
+                  width: '100%', padding: '12px 16px', border: '1px solid var(--color-border)', 
+                  borderRadius: '8px', boxSizing: 'border-box', fontSize: '16px',
+                  transition: 'border-color 0.2s ease'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px' }}>
+              <button 
+                onClick={() => setIsExtendModalOpen(false)}
+                disabled={isExtending}
+                style={{
+                  padding: '10px 20px', borderRadius: '8px', border: '1px solid var(--color-border)',
+                  backgroundColor: 'transparent', color: 'var(--color-text-primary)',
+                  fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s ease'
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleExtendPlan}
+                disabled={isExtending || extendDays <= 0}
+                style={{
+                  padding: '10px 24px', borderRadius: '8px', border: 'none',
+                  backgroundColor: 'var(--color-primary, #6653AF)', color: '#fff',
+                  fontWeight: '600', cursor: (isExtending || extendDays <= 0) ? 'not-allowed' : 'pointer',
+                  opacity: (isExtending || extendDays <= 0) ? 0.7 : 1, transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(102, 83, 175, 0.3)'
+                }}
+              >
+                {isExtending ? 'Extending...' : 'Confirm Extension'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
