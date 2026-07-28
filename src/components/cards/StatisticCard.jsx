@@ -8,7 +8,8 @@ const StatisticCard = ({
   iconBg,
   iconColor,
   icon,
-  subtext
+  subtext,
+  topRight
 }) => {
 
 
@@ -20,12 +21,19 @@ const StatisticCard = ({
       transition={{ duration: 0.2 }}
       className="stat-card"
     >
-      <div
-        className={`icon-box icon-box-md ${iconBg}`}
-      >
-        <Icon
-          className={`icon ${iconColor}`}
-        />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '12px' }}>
+        <div
+          className={`icon-box icon-box-md ${iconBg}`}
+        >
+          <Icon
+            className={`icon ${iconColor}`}
+          />
+        </div>
+        {topRight && (
+          <div style={{ flexShrink: 0 }}>
+            {topRight}
+          </div>
+        )}
       </div>
 
       <p className="stat-title">

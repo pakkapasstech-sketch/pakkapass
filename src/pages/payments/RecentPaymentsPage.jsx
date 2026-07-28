@@ -310,13 +310,27 @@ useEffect(() => {
       <div className="dashboard-stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <StatisticCard
           title="Total Revenue"
-          value={
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
-              <span className="stat-value" style={{ marginTop: 0, fontSize: '0.875rem' }}>₹{totalRevenue.toLocaleString('en-IN')}</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '11px', color: 'var(--color-text-secondary)', textAlign: 'right', fontWeight: 500, lineHeight: 1.3 }}>
-                <div><span>Online = </span>₹{onlineRevenue.toLocaleString('en-IN')}</div>
-                <div><span>Offline = </span>₹{offlineRevenue.toLocaleString('en-IN')}</div>
-              </div>
+          value={`₹${totalRevenue.toLocaleString('en-IN')}`}
+          topRight={
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'auto auto auto',
+                gap: '3px 8px',
+                alignItems: 'center',
+                fontSize: '15px',
+                color: 'var(--color-text-secondary)',
+                fontWeight: 600,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <span>Online</span>
+              <span>=</span>
+              <span>₹{onlineRevenue.toLocaleString('en-IN')}</span>
+
+              <span>Offline</span>
+              <span>=</span>
+              <span>₹{offlineRevenue.toLocaleString('en-IN')}</span>
             </div>
           }
           icon="commissions"
