@@ -95,14 +95,20 @@ const AdminDashboard = () => {
 
   const totalContent = content.length;
 
-  const totalVideos = content.filter((item) => item.type === 'video').length;
+  const totalVideos = content.filter((item) => String(item.type || '').toLowerCase() === 'video').length;
 
-  const totalPDFs = content.filter((item) => item.type !== 'video').length;
+  const totalPDFs = content.filter((item) => String(item.type || '').toLowerCase() !== 'video').length;
 
 
-  const totalMindMaps = content.filter((item) => item.hierarchyType === 'Mind Maps').length;
+  const totalMindMaps = content.filter((item) => {
+    const hType = String(item.hierarchyType || '').toUpperCase();
+    return hType.includes('MIND') || hType.includes('MAP');
+  }).length;
 
-  const totalPYQ = content.filter((item) => item.hierarchyType === 'PYQ').length;
+  const totalPYQ = content.filter((item) => {
+    const hType = String(item.hierarchyType || '').toUpperCase();
+    return hType.includes('PYQ') || hType.includes('QUESTION') || hType.includes('PAPER');
+  }).length;
   const pageLoading =
   stats.isLoading ||
   registrations.isLoading ||
