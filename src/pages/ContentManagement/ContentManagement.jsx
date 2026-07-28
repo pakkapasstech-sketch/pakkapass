@@ -752,7 +752,7 @@ const ContentManagement = () => {
                   onClick={() => setActiveTopicWorkspace(null)}
                   style={{ cursor: activeTopicWorkspace ? 'pointer' : 'default', fontWeight: activeTopicWorkspace ? '400' : '700', color: activeTopicWorkspace ? 'inherit' : 'var(--color-primary, #6653AF)' }}
                 >
-                  Chapter: {selectedChapter.name}
+                  {activeContentType && activeContentType.trim().toLowerCase() !== 'chapter' ? 'Title' : 'Chapter'}: {selectedChapter.name}
                 </span>
               </>
             )}

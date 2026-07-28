@@ -54,7 +54,9 @@ const ChapterTopicCardWorkspace = ({
   refetchOptions,
 }) => {
   const [internalSelectedChapter, setInternalSelectedChapter] = useState(null);
-  const displayContentType = getString(contentType?.name || contentType) || 'Chapter';
+  const rawCt = getString(contentType?.name || contentType);
+  const isChapterType = !rawCt || rawCt.trim().toLowerCase() === 'chapter' || rawCt.trim().toLowerCase() === 'chapters';
+  const displayContentType = isChapterType ? 'Chapter' : 'Title';
 
   const selectedChapter = propSelectedChapter !== undefined ? propSelectedChapter : internalSelectedChapter;
   const setSelectedChapter = (val) => {
@@ -306,18 +308,18 @@ const ChapterTopicCardWorkspace = ({
   const handleAddChapter = async (e) => {
     e.preventDefault();
     if (!newChapterName.trim()) {
-      toast.error('Please enter a chapter name');
+      toast.error(`Please enter a ${displayContentType.toLowerCase()} name`);
       return;
     }
     const name = newChapterName.trim();
     if (allChaptersList.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
-      toast.error('Chapter with this name already exists');
+      toast.error(`${displayContentType} with this name already exists`);
       return;
     }
 
     // INSTANT UI update
     setCustomChapters((prev) => [...prev, name]);
-    toast.success(`Chapter "${name}" created!`);
+    toast.success(`${displayContentType} "${name}" created!`);
     setNewChapterName('');
     setShowCreateChapterModal(false);
 
@@ -430,7 +432,7 @@ const ChapterTopicCardWorkspace = ({
       toast.success(`Topic renamed to "${trimmed}"`);
     } else if (type === 'chapter') {
       setEditedChapterNames((prev) => ({ ...prev, [name]: trimmed }));
-      toast.success(`Chapter renamed to "${trimmed}"`);
+      toast.success(`${displayContentType} renamed to "${trimmed}"`);
     }
 
     setEditModalItem(null);
@@ -481,13 +483,13 @@ const ChapterTopicCardWorkspace = ({
   };
 
   const handleDeleteChapter = async (chapterName) => {
-    if (window.confirm(`Are you sure you want to delete chapter "${chapterName}"?`)) {
+    if (window.confirm(`Are you sure you want to delete ${displayContentType.toLowerCase()} "${chapterName}"?`)) {
       // INSTANT UI update
       setDeletedChapters((prev) => new Set([...prev, chapterName]));
       if (selectedChapter && (selectedChapter.name === chapterName || selectedChapter.rawName === chapterName)) {
         setSelectedChapter(null);
       }
-      toast.success(`Chapter "${chapterName}" deleted!`);
+      toast.success(`${displayContentType} "${chapterName}" deleted!`);
 
       try {
         const chapterObj = (options.chapters || []).find((c) => getString(c.name).trim().toLowerCase() === chapterName.trim().toLowerCase());
@@ -529,11 +531,11 @@ const ChapterTopicCardWorkspace = ({
               }}
             >
               <HiOutlineArrowLeft />
-              Back to Chapters
+              Back to {displayContentType}s
             </button>
             <div>
               <h2 style={{ fontSize: '20px', fontWeight: '700', margin: '0', color: 'var(--color-text-primary, #111827)' }}>
-                Chapter: {chName}
+                {displayContentType}: {chName}
               </h2>
             </div>
           </div>
@@ -1009,7 +1011,7 @@ const ChapterTopicCardWorkspace = ({
                             borderRadius: '4px',
                             cursor: 'pointer',
                           }}
-                          title="Edit Chapter"
+                          title={`Edit ${displayContentType}`}
                         >
                           <HiOutlinePencil size={16} />
                         </button>
@@ -1027,7 +1029,7 @@ const ChapterTopicCardWorkspace = ({
                             borderRadius: '4px',
                             cursor: 'pointer',
                           }}
-                          title="Delete Chapter"
+                          title={`Delete ${displayContentType}`}
                         >
                           <HiOutlineTrash size={16} />
                         </button>
@@ -1102,7 +1104,7 @@ const ChapterTopicCardWorkspace = ({
               </label>
               <input
                 type="text"
-                placeholder="e.g. Chapter 1: Introduction to Mechanics"
+                placeholder={isChapterType ? "e.g. Chapter 1: Introduction to Mechanics" : "e.g. 2025 Solved Question Papers"}
                 value={newChapterName}
                 onChange={(e) => setNewChapterName(e.target.value)}
                 style={{
