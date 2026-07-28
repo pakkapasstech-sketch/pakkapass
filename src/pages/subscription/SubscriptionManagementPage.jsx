@@ -258,7 +258,7 @@ const SubscriptionManagementPage = () => {
                 <th>Visibility</th>
                 <th>Status</th>
                 <th>Created Date</th>
-                <th>view</th>
+                <th>View</th>
               </tr>
             </thead>
 
@@ -318,16 +318,19 @@ const SubscriptionManagementPage = () => {
                         }`}
                       >
                         {plan.status}
-                      </span>{' '}
+                      </span>
                     </td>
 
                     <td>
                       {plan.createdAt ? new Date(plan.createdAt).toLocaleDateString('en-IN') : '-'}
                     </td>
-                    <td className="table-actions">
+                    <td>
                       <button
                         className="table-action-btn"
-                        onClick={() => navigate(`/subscriptions/plans/${plan.id}`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/subscriptions/plans/${plan.id}`);
+                        }}
                         title="View Plan"
                         aria-label={`View details for ${plan.name}`}
                       >

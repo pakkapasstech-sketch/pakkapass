@@ -330,6 +330,29 @@
     #dc2626;
 }
 
+.table-action-btn {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.table-action-btn svg {
+  font-size: 18px;
+  color: #4b5563;
+}
+
 /* Empty State */
 
 .empty-table {

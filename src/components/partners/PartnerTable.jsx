@@ -141,15 +141,16 @@ const PartnerTable = ({
 </td>
 <td>
   <button
-  onClick={(e) => {
-    e.stopPropagation();
-    navigate(`/partners/${partner.id}`);
-  }}
-  aria-label={`View details for ${partner.contactPerson}`}
-  title="View Partner"
->
-  <HiOutlineEye />
-</button>
+    className="table-action-btn"
+    onClick={(e) => {
+      e.stopPropagation();
+      navigate(`/partners/${partner.id}`);
+    }}
+    aria-label={`View details for ${partner.contactPerson}`}
+    title="View Partner"
+  >
+    <HiOutlineEye />
+  </button>
 </td>
               </tr>
             ))}

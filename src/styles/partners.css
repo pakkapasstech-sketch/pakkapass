@@ -691,3 +691,47 @@
   position: absolute;
   z-index: 99999;
 }
+
+/* ==========================================
+   TABLE ACTION BUTTON (EYE ICON)
+========================================== */
+
+.table-action-btn {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.table-action-btn svg {
+  font-size: 18px;
+  color: #4b5563;
+}
+
+.dark .table-action-btn,
+[data-theme='dark'] .table-action-btn {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .table-action-btn:hover,
+[data-theme='dark'] .table-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-border, #475569);
+}
+
+.dark .table-action-btn svg,
+[data-theme='dark'] .table-action-btn svg {
+  color: #94a3b8;
+}

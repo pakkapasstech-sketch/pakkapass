@@ -156,7 +156,10 @@ const StudentTable = ({
                   <td>
                     <button
                       className="table-action-btn"
-                      onClick={() => navigate(`/students/${student.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/students/${student.id}`);
+                      }}
                       title="View Student"
                       aria-label={`View details for ${student.name}`}
                     >
