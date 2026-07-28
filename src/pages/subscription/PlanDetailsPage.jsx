@@ -149,9 +149,19 @@ const PlanDetailsPage = () => {
         </div>
       </div>
 
-      <div className="page-title-card">
-        <h1>{plan.name}</h1>
-        <p>Subscription Plan</p>
+      <div className="page-title-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h1>{plan.name}</h1>
+          <p>Subscription Plan</p>
+        </div>
+        <span
+          className={`status-badge ${
+            plan.isPublic ? 'status-active' : 'status-inactive'
+          }`}
+          style={{ fontSize: '13px', padding: '6px 14px', borderRadius: '999px', fontWeight: '600' }}
+        >
+          {plan.isPublic ? 'Public' : 'Private'}
+        </span>
       </div>
 
       <div className="detail-card">
@@ -161,6 +171,19 @@ const PlanDetailsPage = () => {
           <div>
             <label>Status</label>
             <p>{plan.status}</p>
+          </div>
+
+          <div>
+            <label>Visibility</label>
+            <p>
+              <span
+                className={`status-badge ${
+                  plan.isPublic ? 'status-active' : 'status-inactive'
+                }`}
+              >
+                {plan.isPublic ? 'Public' : 'Private'}
+              </span>
+            </p>
           </div>
 
           <div>
