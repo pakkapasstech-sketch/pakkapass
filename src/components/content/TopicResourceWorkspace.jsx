@@ -148,6 +148,12 @@ const TopicResourceWorkspace = ({
     });
   }, [contentItems, grade, board, branch, subject, contentType, chapter, topic]);
 
+  const existingNotes = useMemo(() => {
+    return topicContent.filter((item) => isNotesType(item.type));
+  }, [topicContent]);
+
+  const hasMaxNotes = existingNotes.length >= 1;
+
   // Drag & Drop Reorderable state for resources list
   const [orderedItems, setOrderedItems] = useState([]);
   const [draggedIndex, setDraggedIndex] = useState(null);
@@ -236,6 +242,10 @@ const TopicResourceWorkspace = ({
 
   const handleNotesSubmit = async (e) => {
     e.preventDefault();
+    if (hasMaxNotes) {
+      toast.error('Only 1 Notes file can be uploaded per topic. Please delete the existing Notes file first to upload a new one.');
+      return;
+    }
     if (!notesTitle.trim()) {
       toast.error('Please enter a title for the notes');
       return;
@@ -398,6 +408,38 @@ const TopicResourceWorkspace = ({
             </div>
           </div>
 
+          <div style={{
+            background: 'rgba(102, 83, 175, 0.08)',
+            border: '1px solid rgba(102, 83, 175, 0.2)',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            marginBottom: '16px',
+            fontSize: '12px',
+            color: 'var(--color-primary, #6653AF)',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <span>📌</span>
+            <span><strong>Note:</strong> Only 1 Notes file can be uploaded per topic.</span>
+          </div>
+
+          {hasMaxNotes && (
+            <div style={{
+              background: '#fffbe6',
+              border: '1px solid #ffe58f',
+              borderRadius: '8px',
+              padding: '10px 12px',
+              marginBottom: '16px',
+              fontSize: '12.5px',
+              color: '#d48806',
+              lineHeight: '1.4'
+            }}>
+              ⚠️ A Notes file has already been uploaded for this topic (<strong>{existingNotes[0]?.title || existingNotes[0]?.fileName || existingNotes[0]?.name || '1 Notes File'}</strong>). Only 1 Notes file is allowed per topic. Delete the existing Notes file below to upload a replacement.
+            </div>
+          )}
+
           <form onSubmit={handleNotesSubmit}>
             <div style={{ marginBottom: '14px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
@@ -458,21 +500,21 @@ const TopicResourceWorkspace = ({
 
             <button
               type="submit"
-              disabled={isUploadingNotes}
+              disabled={isUploadingNotes || hasMaxNotes}
               style={{
                 width: '100%',
                 padding: '10px',
                 borderRadius: '10px',
                 border: 'none',
-                background: 'var(--color-primary, #6653AF)',
+                background: hasMaxNotes ? '#9ca3af' : 'var(--color-primary, #6653AF)',
                 color: '#ffffff',
                 fontWeight: '600',
                 fontSize: '14px',
-                cursor: isUploadingNotes ? 'not-allowed' : 'pointer',
-                opacity: isUploadingNotes ? 0.7 : 1,
+                cursor: (isUploadingNotes || hasMaxNotes) ? 'not-allowed' : 'pointer',
+                opacity: (isUploadingNotes || hasMaxNotes) ? 0.7 : 1,
               }}
             >
-              {isUploadingNotes ? 'Uploading Note...' : 'Upload Notes'}
+              {hasMaxNotes ? 'Notes Limit Reached (Max 1 Notes Per Topic)' : (isUploadingNotes ? 'Uploading Note...' : 'Upload Notes')}
             </button>
           </form>
         </div>

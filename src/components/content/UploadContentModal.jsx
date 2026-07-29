@@ -116,6 +116,23 @@ const topicLabel =
         </div>
 
         <div className="modal-body">
+          <div style={{
+            background: 'rgba(102, 83, 175, 0.08)',
+            border: '1px solid rgba(102, 83, 175, 0.2)',
+            borderRadius: '8px',
+            padding: '10px 14px',
+            marginBottom: '16px',
+            fontSize: '12.5px',
+            color: 'var(--color-primary, #6653AF)',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>📌</span>
+            <span><strong>Note:</strong> Only 1 Notes file can be uploaded per topic.</span>
+          </div>
+
           <div className="form-group full-width">
             <label>
               Title
