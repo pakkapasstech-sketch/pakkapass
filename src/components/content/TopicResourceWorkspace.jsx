@@ -22,10 +22,14 @@ const parseNumericId = (val) => {
 
 const getString = (val) => {
   if (!val) return '';
-  if (typeof val === 'string') return val;
-  if (typeof val === 'object' && val.name && typeof val.name === 'string') return val.name;
-  if (typeof val === 'object' && val.title && typeof val.title === 'string') return val.title;
-  return String(val);
+  if (typeof val === 'string') return val === '[object Object]' ? '' : val;
+  if (typeof val === 'object') {
+    if (val.name && typeof val.name === 'string' && val.name !== '[object Object]') return val.name;
+    if (val.title && typeof val.title === 'string' && val.title !== '[object Object]') return val.title;
+    if (val.topic && typeof val.topic === 'string' && val.topic !== '[object Object]') return val.topic;
+  }
+  const str = String(val);
+  return str === '[object Object]' ? '' : str;
 };
 
 const formatFileSize = (size) => {

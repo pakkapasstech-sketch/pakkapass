@@ -20,6 +20,16 @@ const parseNumericId = (val) => {
   return !isNaN(num) && Number.isInteger(num) && num > 0 ? num : undefined;
 };
 
+const extractTopicName = (top) => {
+  if (!top) return '';
+  if (typeof top === 'string') return top.trim() === '[object Object]' ? '' : top.trim();
+  if (typeof top === 'object') {
+    const val = top.name || top.title || top.topic;
+    if (typeof val === 'string' && val.trim() !== '[object Object]') return val.trim();
+  }
+  return '';
+};
+
 const ContentManagement = () => {
   const navigate = useNavigate();
   const { setLoading } = useLoading();
@@ -161,10 +171,11 @@ const ContentManagement = () => {
   }, [queryChapterId, options.chapters]);
 
   useEffect(() => {
-    if (queryTopicName && !activeTopicWorkspace) {
-      setActiveTopicWorkspace({ topic: queryTopicName });
+    const validTopicStr = extractTopicName(queryTopicName);
+    if (validTopicStr && (!activeTopicWorkspace || extractTopicName(activeTopicWorkspace.topic) !== validTopicStr)) {
+      setActiveTopicWorkspace({ chapter: selectedChapter, topic: validTopicStr });
     }
-  }, [queryTopicName]);
+  }, [queryTopicName, selectedChapter]);
 
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -196,7 +207,8 @@ const ContentManagement = () => {
       if (selectedChapter?.id) newParams.set('chapterId', selectedChapter.id);
       else newParams.delete('chapterId');
 
-      if (activeTopicWorkspace?.topic) newParams.set('topicName', activeTopicWorkspace.topic);
+      const topicStr = extractTopicName(activeTopicWorkspace?.topic);
+      if (topicStr) newParams.set('topicName', topicStr);
       else newParams.delete('topicName');
 
       return newParams.toString() !== prev.toString() ? newParams : prev;
@@ -761,7 +773,7 @@ const ContentManagement = () => {
               <>
                 <HiOutlineChevronRight size={14} />
                 <span style={{ fontWeight: '700', color: 'var(--color-primary, #6653AF)' }}>
-                  Topic: {typeof activeTopicWorkspace.topic === 'object' ? activeTopicWorkspace.topic.name : activeTopicWorkspace.topic}
+                  Topic: {extractTopicName(activeTopicWorkspace.topic)}
                 </span>
               </>
             )}
@@ -908,8 +920,9 @@ const ContentManagement = () => {
                 setSelectedChapter(null);
               }}
               onSelectTopic={(ch, top) => {
+                const topicStr = extractTopicName(top);
                 setSelectedChapter(ch);
-                setActiveTopicWorkspace({ chapter: ch, topic: top });
+                setActiveTopicWorkspace({ chapter: ch, topic: topicStr });
               }}
             />
           )}
