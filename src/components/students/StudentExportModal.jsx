@@ -193,7 +193,23 @@ const StudentExportModal = ({ isOpen, onClose, students = [], partnerMap = {}, f
         };
 
         if (filteredActivities.length > 0) {
-          filteredActivities.forEach((act, actIdx) => {
+          const groupedFilteredActivities = [];
+          filteredActivities.forEach((act) => {
+            const desc = act.description ? act.description.replace(/^[Yy]ou\s+/, '') : '';
+            const key = `${act.actionType || ''}___${desc.toLowerCase()}`;
+            if (groupedFilteredActivities.length > 0) {
+              const last = groupedFilteredActivities[groupedFilteredActivities.length - 1];
+              const lastDesc = last.description ? last.description.replace(/^[Yy]ou\s+/, '') : '';
+              const lastKey = `${last.actionType || ''}___${lastDesc.toLowerCase()}`;
+              if (lastKey === key) {
+                last.count = (last.count || 1) + 1;
+                return;
+              }
+            }
+            groupedFilteredActivities.push({ ...act, count: 1 });
+          });
+
+          groupedFilteredActivities.forEach((act, actIdx) => {
             const rowBase = actIdx === 0 ? { ...studentProfileObj } : { ...blankProfileObj };
             rowBase.activityDate = new Date(act.createdAt).toLocaleString('en-IN', {
               day: '2-digit',
@@ -203,7 +219,8 @@ const StudentExportModal = ({ isOpen, onClose, students = [], partnerMap = {}, f
               minute: '2-digit',
             });
             rowBase.activityType = getActivityLabel(act.actionType);
-            rowBase.activityDesc = act.description ? act.description.replace(/^[Yy]ou\s+/, '') : '—';
+            const baseDesc = act.description ? act.description.replace(/^[Yy]ou\s+/, '') : '—';
+            rowBase.activityDesc = act.count > 1 ? `${baseDesc} X${act.count}` : baseDesc;
             rowBase.deviceModel = act.deviceModel || '—';
             rowBase.ipAddress = act.ipAddress || '—';
 

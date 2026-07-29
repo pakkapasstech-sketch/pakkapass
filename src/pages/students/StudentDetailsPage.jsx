@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HiOutlineArrowLeft,
@@ -32,6 +32,15 @@ const tabs = [
   'Payment History',
 ];
 
+const formatActivityDescription = (description) => {
+  if (!description) return '';
+  let formatted = description.replace(/^[Yy]ou\s+/, '');
+  if (formatted.length > 0) {
+    formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  }
+  return formatted;
+};
+
 const StudentDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,6 +48,34 @@ const StudentDetailsPage = () => {
   const { data: student, isLoading, isError, refetch } = useStudent(id);
   const { data: filterOptions } = useStudentFilterOptions();
   const { data: activities = [] } = useStudentActivities(id);
+
+  const groupedActivities = useMemo(() => {
+    if (!activities || activities.length === 0) return [];
+
+    const grouped = [];
+    activities.forEach((activity) => {
+      const formattedDesc = formatActivityDescription(activity.description);
+      const key = `${activity.actionType || ''}___${formattedDesc.toLowerCase()}`;
+
+      if (grouped.length > 0) {
+        const last = grouped[grouped.length - 1];
+        const lastFormattedDesc = formatActivityDescription(last.description);
+        const lastKey = `${last.actionType || ''}___${lastFormattedDesc.toLowerCase()}`;
+
+        if (lastKey === key) {
+          last.count = (last.count || 1) + 1;
+          return;
+        }
+      }
+
+      grouped.push({
+        ...activity,
+        count: 1,
+      });
+    });
+
+    return grouped;
+  }, [activities]);
   const { data: allStudents } = useStudents();
   const currentStudentFromAll = allStudents?.find(s => String(s.id) === String(id));
   const deviceModel = currentStudentFromAll?.deviceModel || 'N/A';
@@ -89,15 +126,6 @@ const StudentDetailsPage = () => {
       default:
         return type?.replace('_', ' ') || '';
     }
-  };
-
-  const formatActivityDescription = (description) => {
-    if (!description) return '';
-    let formatted = description.replace(/^[Yy]ou\s+/, '');
-    if (formatted.length > 0) {
-      formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
-    }
-    return formatted;
   };
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -498,42 +526,65 @@ useEffect(() => {
         Detailed Activity Log
       </h3>
 
-      {activities.length > 0 ? (
+      {groupedActivities.length > 0 ? (
         <div className="activity-timeline-wrapper">
           <div className="activity-timeline">
-            {activities.map((activity) => (
-              <div 
-                key={activity.id} 
-                className={`timeline-event ${activity.actionType?.toLowerCase()}`}
-              >
-                <div className="timeline-icon-wrapper">
-                  {getActivityIcon(activity.actionType)}
-                </div>
-                <div className="timeline-content">
-                  <div className="timeline-header">
-                    <span className="timeline-type">
-                      {getActivityLabel(activity.actionType)}
-                    </span>
-                    <div className="timeline-time-block">
-                      <span className="timeline-time">
-                        {new Date(activity.createdAt).toLocaleString('en-IN', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+            {groupedActivities.map((activity) => {
+              const baseDesc = formatActivityDescription(activity.description);
+
+              return (
+                <div 
+                  key={activity.id} 
+                  className={`timeline-event ${activity.actionType?.toLowerCase()}`}
+                >
+                  <div className="timeline-icon-wrapper">
+                    {getActivityIcon(activity.actionType)}
+                  </div>
+                  <div className="timeline-content">
+                    <div className="timeline-header">
+                      <span className="timeline-type">
+                        {getActivityLabel(activity.actionType)}
                       </span>
-                      <div className="timeline-device-info">
-                        {activity.ipAddress && <span className="device-badge">[{activity.ipAddress}]</span>}
-                        {activity.deviceModel && <span className="device-badge">[{activity.deviceModel}]</span>}
+                      <div className="timeline-time-block">
+                        <span className="timeline-time">
+                          {new Date(activity.createdAt).toLocaleString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                        <div className="timeline-device-info">
+                          {activity.ipAddress && <span className="device-badge">[{activity.ipAddress}]</span>}
+                          {activity.deviceModel && <span className="device-badge">[{activity.deviceModel}]</span>}
+                        </div>
                       </div>
                     </div>
+                    <p className="timeline-desc">
+                      {baseDesc}
+                      {activity.count > 1 && (
+                        <span 
+                          style={{
+                            marginLeft: '8px',
+                            padding: '2px 8px',
+                            borderRadius: '12px',
+                            background: 'rgba(102, 83, 175, 0.12)',
+                            color: 'var(--color-primary, #6653AF)',
+                            fontWeight: '700',
+                            fontSize: '12px',
+                            display: 'inline-block',
+                            border: '1px solid rgba(102, 83, 175, 0.2)'
+                          }}
+                        >
+                          X{activity.count}
+                        </span>
+                      )}
+                    </p>
                   </div>
-                  <p className="timeline-desc">{formatActivityDescription(activity.description)}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ) : (
