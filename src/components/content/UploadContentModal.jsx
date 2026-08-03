@@ -23,9 +23,20 @@ const UploadContentModal = ({
     year: 'numeric',
   });
 
+  const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100 MB
+
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     if (!selected) return;
+
+    const isVideo = contentType === 'video' || selected.type?.startsWith('video/') || selected.name?.match(/\.(mp4|avi|mov|mkv|webm)$/i);
+
+    if (isVideo && selected.size > MAX_VIDEO_SIZE) {
+      alert('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
+      e.target.value = '';
+      setFile(null);
+      return;
+    }
 
     setFile(selected);
 
@@ -62,6 +73,12 @@ const UploadContentModal = ({
 
     if (!file) {
       alert('Please select a file');
+      return;
+    }
+
+    const isVideo = contentType === 'video' || file.type?.startsWith('video/') || file.name?.match(/\.(mp4|avi|mov|mkv|webm)$/i);
+    if (isVideo && file.size > MAX_VIDEO_SIZE) {
+      alert('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
       return;
     }
 
@@ -316,7 +333,7 @@ const topicLabel =
 
                     <p>
                       {contentType === 'video'
-                        ? 'MP4, AVI, MOV'
+                        ? 'MP4, AVI, MOV (Max 100 MB)'
                         : 'PDF files only'}
                     </p>
                   </div>

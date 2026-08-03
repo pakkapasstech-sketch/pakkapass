@@ -14,7 +14,7 @@ export const NAV_ITEMS = [
   icon: 'HiOutlineCollection',
 },
   { id: 'subscriptions', label: 'Subscription Management', icon: 'HiOutlineCreditCard', path: '/subscriptions' },
-  { id: 'payments', label: 'Payments & Revenue', icon: 'HiOutlineCurrencyRupee', path: '/payments' },
+  { id: 'payments', label: 'Revenue and Payments', icon: 'HiOutlineCurrencyRupee', path: '/payments' },
   { id: 'notifications', label: 'Notifications', icon: 'HiOutlineBell', path: '/notifications' },
   { id: 'support', label: 'Support Center', icon: 'HiOutlineSupport', path: '/support' },
   { id: 'settings', label: 'Settings', icon: 'HiOutlineCog', path: '/settings' },

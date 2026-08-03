@@ -207,11 +207,8 @@ useEffect(() => {
         style={{ marginBottom: '24px' }}
       >
         <div>
-          <h1
-            className="page-title"
-            style={{ fontSize: '24px', fontWeight: '700', color: 'var(--color-text-primary)' }}
-          >
-            Payment and Revenue
+          <h1 className="page-title">
+            Revenue and Payments
           </h1>
           <p
             className="page-subtitle"
