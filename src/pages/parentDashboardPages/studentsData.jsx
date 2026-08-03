@@ -68,14 +68,30 @@ const StudentsData = () => {
           const studentProfile = student?.profile || student;
           const gradeId = studentProfile?.gradeId || studentProfile?.grade?.id;
           const boardId = studentProfile?.boardId || studentProfile?.board?.id;
-          const branchId = studentProfile?.branchId || studentProfile?.courseId || studentProfile?.course?.id;
+          const branchId = studentProfile?.branchId || studentProfile?.courseId || studentProfile?.branch?.id || studentProfile?.course?.id;
 
-          // Find all subjects configured for student's grade/board/branch
+          // Strictly filter subjects matching student's exact branch, grade, and board
           const availableSubjects = (filterOptions?.subjects || []).filter((sub) => {
-            const matchGrade = !gradeId || !sub.gradeId || String(sub.gradeId) === String(gradeId);
-            const matchBoard = !boardId || !sub.boardId || String(sub.boardId) === String(boardId);
-            const matchBranch = !branchId || !sub.courseId || String(sub.courseId) === String(branchId);
-            return matchGrade && matchBoard && matchBranch;
+            const subGradeId = sub.gradeId || sub.grade?.id;
+            const subBoardId = sub.boardId || sub.board?.id;
+            const subBranchId = sub.courseId || sub.branchId || sub.course?.id || sub.branch?.id;
+
+            // Filter out subjects from different grades
+            if (gradeId && subGradeId && String(subGradeId) !== String(gradeId)) {
+              return false;
+            }
+
+            // Filter out subjects from different boards
+            if (boardId && subBoardId && String(subBoardId) !== String(boardId)) {
+              return false;
+            }
+
+            // Strictly filter out subjects from different branches
+            if (branchId && subBranchId && String(subBranchId) !== String(branchId)) {
+              return false;
+            }
+
+            return true;
           });
 
           const progressMap = new Map();
@@ -98,13 +114,6 @@ const StudentsData = () => {
                 return { name, progress };
               })
               .filter(Boolean);
-
-            (analytics?.subjectsProgress || []).forEach((item) => {
-              if (item.name && !seenNames.has(item.name.trim().toLowerCase())) {
-                seenNames.add(item.name.trim().toLowerCase());
-                subjects.push({ name: item.name, progress: Number(item.progress || 0) });
-              }
-            });
           } else {
             subjects = analytics?.subjectsProgress || [];
           }
