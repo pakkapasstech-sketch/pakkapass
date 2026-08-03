@@ -84,16 +84,23 @@ export const partnerService = {
       p => p.partnerId && String(p.partnerId) === String(partner.id) && (Number(p.discountAmount) > 0 || p.couponCode === partner.referralCode)
     );
 
-    const formattedPayments = filteredRaw.map(p => ({
-      id: String(p.id),
-      transactionId: p.transactionId || String(p.id),
-      student: p.student?.name || 'Unknown',
-      plan: p.plan?.name || 'N/A',
-      amount: p.amount || 0,
-      status: p.status || 'Paid', 
-      paymentDate: p.createdAt,
-      referralCode: data.partner?.referralCode || 'N/A',
-    }));
+    const formattedPayments = filteredRaw.map(p => {
+      const paidAmount = Number(p.amount) || 0;
+      const discountAmount = Number(p.discountAmount) || 0;
+      const planAmount = paidAmount + discountAmount;
+      return {
+        id: String(p.id),
+        transactionId: p.transactionId || String(p.id),
+        student: p.student?.name || 'Unknown',
+        plan: p.plan?.name || 'N/A',
+        planAmount,
+        discountAmount,
+        amount: paidAmount,
+        status: p.status || 'Paid', 
+        paymentDate: p.createdAt,
+        referralCode: data.partner?.referralCode || 'N/A',
+      };
+    });
     
     const summary = {
       totalPayments: formattedPayments.length,

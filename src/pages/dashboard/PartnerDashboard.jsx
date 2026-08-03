@@ -79,15 +79,22 @@ const PartnerDashboard = () => {
 
   const recentPayments = (dashboard?.recentPayments || [])
     .filter(p => p.partnerId && String(p.partnerId) === String(partner.id) && (Number(p.discountAmount) > 0 || p.couponCode === partner.referralCode))
-    .map(p => ({
-      id: p.id,
-      transactionId: p.transactionId || String(p.id),
-      student: p.student?.name || 'Unknown',
-      plan: p.plan?.name || 'N/A',
-      amount: `₹${p.amount || 0}`,
-      status: p.status || 'Paid',
-      paymentDate: p.createdAt,
-    }));
+    .map(p => {
+      const paidAmount = Number(p.amount) || 0;
+      const discountAmount = Number(p.discountAmount) || 0;
+      const planAmount = paidAmount + discountAmount;
+      return {
+        id: p.id,
+        transactionId: p.transactionId || String(p.id),
+        student: p.student?.name || 'Unknown',
+        plan: p.plan?.name || 'N/A',
+        planAmount,
+        discountAmount,
+        amount: paidAmount,
+        status: p.status || 'Paid',
+        paymentDate: p.createdAt,
+      };
+    });
   const statCards = [
     {
       id: 'total',
@@ -282,9 +289,11 @@ const PartnerDashboard = () => {
 
                   <th>Plan</th>
 
-                  <th>Amount</th>
+                  <th>Plan Amount</th>
 
-                 
+                  <th>Discount Amount</th>
+
+                  <th>Paid Amount</th>
 
                   <th>Status</th>
 
@@ -301,14 +310,16 @@ const PartnerDashboard = () => {
 
                     <td>{payment.plan}</td>
 
-                    <td>{payment.amount}</td>
+                    <td>₹{payment.planAmount.toLocaleString()}</td>
 
-                    
+                    <td>₹{payment.discountAmount.toLocaleString()}</td>
+
+                    <td>₹{payment.amount.toLocaleString()}</td>
 
                     <td>
                       <span
                         className={`partnerdashboard-status ${
-                          payment.status === 'Paid'
+                          payment.status === 'Paid' || payment.status === 'Success'
                             ? 'partnerdashboard-status-active'
                             : 'partnerdashboard-status-pending'
                         }`}

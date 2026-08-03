@@ -130,10 +130,17 @@ const [summary, setSummary] = useState({
       accessor: (r) => r.plan,
     },
     {
-      header: 'Amount',
-      accessor: (r) => r.amount,
+      header: 'Plan Amount',
+      accessor: (r) => `₹${(r.planAmount || 0).toLocaleString()}`,
     },
-    
+    {
+      header: 'Discount Amount',
+      accessor: (r) => `₹${(r.discountAmount || 0).toLocaleString()}`,
+    },
+    {
+      header: 'Paid Amount',
+      accessor: (r) => `₹${(r.amount || 0).toLocaleString()}`,
+    },
     {
       header: 'Status',
       accessor: (r) => r.status,
@@ -299,7 +306,9 @@ const [summary, setSummary] = useState({
                 <th>Transaction ID</th>
                 <th>Student</th>
                 <th>Plan</th>
-                <th>Amount</th>
+                <th>Plan Amount</th>
+                <th>Discount Amount</th>
+                <th>Paid Amount</th>
                 <th>Status</th>
                 <th>Payment Date</th>
               </tr>
@@ -315,9 +324,11 @@ const [summary, setSummary] = useState({
 
                     <td>{payment.plan}</td>
 
-                    <td>
-  ₹{Number(payment.amount).toLocaleString()}                  </td>
+                    <td>₹{(payment.planAmount || 0).toLocaleString()}</td>
 
+                    <td>₹{(payment.discountAmount || 0).toLocaleString()}</td>
+
+                    <td>₹{(payment.amount || 0).toLocaleString()}</td>
 
                     <td>
                       <span
@@ -333,14 +344,15 @@ const [summary, setSummary] = useState({
                       </span>
                     </td>
 
-  <td>
-    {new Date(payment.paymentDate).toLocaleDateString()}
-  </td>                </tr>
+                    <td>
+                      {new Date(payment.paymentDate).toLocaleDateString()}
+                    </td>
+                  </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="6"
+                    colSpan="8"
                     className="empty-table"
                   >
                     No payments found
