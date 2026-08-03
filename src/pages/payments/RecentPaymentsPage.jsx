@@ -467,7 +467,7 @@ useEffect(() => {
               <tr>
                 <th className="student-col-index">ID</th>
                 <th>Student</th>
-                <th style={{ textAlign: 'center' }}>Plan</th>
+                <th>Plan</th>
                 <th>Total Plan Amount</th>
                 <th>Actual Amount Paid</th>
                 <th>Discount Value</th>
@@ -519,7 +519,7 @@ useEffect(() => {
                           </div>
                         </div>
                       </td>
-                      <td style={{ textAlign: 'center' }}>
+                      <td>
                         <span className="plan-badge">{payment.plan}</span>
                       </td>
                       <td>₹{Number(planPriceMap[payment.plan?.trim().toLowerCase()] ?? payment.amount).toFixed(2)}</td>
