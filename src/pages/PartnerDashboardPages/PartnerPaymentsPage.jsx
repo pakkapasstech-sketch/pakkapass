@@ -310,7 +310,7 @@ const [summary, setSummary] = useState({
                 <th>S.No</th>
                 <th>Transaction ID</th>
                 <th>Student</th>
-                <th>Plan</th>
+                <th style={{ textAlign: 'center' }}>Plan</th>
                 <th>Plan Amount</th>
                 <th>Discount Amount</th>
                 <th>Paid Amount</th>
@@ -329,7 +329,7 @@ const [summary, setSummary] = useState({
 
                     <td>{payment.student}</td>
 
-                    <td>{payment.plan}</td>
+                    <td style={{ textAlign: 'center' }}>{payment.plan}</td>
 
                     <td>₹{(payment.planAmount || 0).toLocaleString()}</td>
 
