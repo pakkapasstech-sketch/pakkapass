@@ -29,6 +29,25 @@ const getString = (val) => {
   return String(val);
 };
 
+const sortWithSavedOrder = (list, savedOrderArray, getItemKey) => {
+  if (!savedOrderArray || !Array.isArray(savedOrderArray) || savedOrderArray.length === 0) return list;
+
+  const orderMap = new Map();
+  savedOrderArray.forEach((key, index) => {
+    orderMap.set(String(key).toLowerCase(), index);
+  });
+
+  return [...list].sort((a, b) => {
+    const keyA = String(getItemKey(a)).toLowerCase();
+    const keyB = String(getItemKey(b)).toLowerCase();
+
+    const orderA = orderMap.has(keyA) ? orderMap.get(keyA) : 999999;
+    const orderB = orderMap.has(keyB) ? orderMap.get(keyB) : 999999;
+
+    return orderA - orderB;
+  });
+};
+
 const normalizeContentType = (typeStr) => {
   const str = getString(typeStr);
   if (!str) return 'CHAPTER';
@@ -167,15 +186,6 @@ const ChapterTopicCardWorkspace = ({
     const namesSet = new Set();
     const list = [];
 
-    // Add custom created chapters FIRST so new chapters appear immediately
-    customChapters.forEach((chName) => {
-      const displayName = editedChapterNames[chName] || chName;
-      if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
-        namesSet.add(displayName.toLowerCase());
-        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName });
-      }
-    });
-
     // Add chapters from DB options
     dbChapters.forEach((ch) => {
       const rawName = getString(ch.name || ch.title);
@@ -195,8 +205,29 @@ const ChapterTopicCardWorkspace = ({
       }
     });
 
+    // Add custom created chapters AT THE LAST (Newly added chapters should be in the last)
+    customChapters.forEach((chName) => {
+      const displayName = editedChapterNames[chName] || chName;
+      if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
+        namesSet.add(displayName.toLowerCase());
+        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName });
+      }
+    });
+
+    // Sort chapters with saved drag-and-drop order from localStorage (new items stay at the LAST)
+    const storageKey = `pakka_chapter_order_${getString(subject?.name || subject)}_${getString(contentType?.name || contentType)}`;
+    try {
+      const savedOrderRaw = localStorage.getItem(storageKey);
+      if (savedOrderRaw) {
+        const savedOrder = JSON.parse(savedOrderRaw);
+        return sortWithSavedOrder(list, savedOrder, (item) => item.rawName || item.name);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     return list;
-  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters]);
+  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters, subject, contentType]);
 
   // 4. Combine all topics for the selected chapter filtering out deleted topics
   const allTopicNames = useMemo(() => {
@@ -240,16 +271,30 @@ const ChapterTopicCardWorkspace = ({
       }
     });
 
-    // From custom topics created for this chapter
+    // From custom topics created for this chapter AT THE LAST
     const customList = customTopics[chName] || customTopics[rawChName] || [];
     customList.forEach((topName) => {
       const displayTopName = editedTopicNames[topName] || topName;
-      if (displayTopName && !deletedTopics.has(topName) && !deletedTopics.has(displayTopName)) {
+      if (displayTopName && !deletedTopics.has(topName) && !deletedTopics.has(displayTopName) && !topicsSet.has(displayTopName.toLowerCase())) {
         topicsSet.add(displayTopName);
       }
     });
 
-    return Array.from(topicsSet);
+    const topicList = Array.from(topicsSet);
+
+    // Sort topics with saved drag-and-drop order from localStorage (new items stay at the LAST)
+    const storageKey = `pakka_topic_order_${chName}`;
+    try {
+      const savedOrderRaw = localStorage.getItem(storageKey);
+      if (savedOrderRaw) {
+        const savedOrder = JSON.parse(savedOrderRaw);
+        return sortWithSavedOrder(topicList, savedOrder, (item) => item);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    return topicList;
   }, [selectedChapter, options.topics, contentChaptersMap, customTopics, editedTopicNames, deletedTopics]);
 
   const [orderedChapters, setOrderedChapters] = useState([]);
@@ -280,6 +325,16 @@ const ChapterTopicCardWorkspace = ({
       const copy = [...prev];
       const [draggedItem] = copy.splice(draggedChapterIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
+
+      // Save new chapter drag & drop order to localStorage
+      const storageKey = `pakka_chapter_order_${getString(subject?.name || subject)}_${getString(contentType?.name || contentType)}`;
+      try {
+        const keysOrder = copy.map((item) => item.rawName || item.name);
+        localStorage.setItem(storageKey, JSON.stringify(keysOrder));
+      } catch (err) {
+        console.error(err);
+      }
+
       return copy;
     });
     setDraggedChapterIndex(null);
@@ -300,6 +355,18 @@ const ChapterTopicCardWorkspace = ({
       const copy = [...prev];
       const [draggedItem] = copy.splice(draggedTopicIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
+
+      // Save new topic drag & drop order to localStorage
+      if (selectedChapter) {
+        const chName = selectedChapter.rawName || selectedChapter.name;
+        const storageKey = `pakka_topic_order_${chName}`;
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(copy));
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
       return copy;
     });
     setDraggedTopicIndex(null);

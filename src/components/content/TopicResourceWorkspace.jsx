@@ -32,6 +32,25 @@ const getString = (val) => {
   return str === '[object Object]' ? '' : str;
 };
 
+const sortWithSavedOrder = (list, savedOrderArray, getItemKey) => {
+  if (!savedOrderArray || !Array.isArray(savedOrderArray) || savedOrderArray.length === 0) return list;
+
+  const orderMap = new Map();
+  savedOrderArray.forEach((key, index) => {
+    orderMap.set(String(key).toLowerCase(), index);
+  });
+
+  return [...list].sort((a, b) => {
+    const keyA = String(getItemKey(a)).toLowerCase();
+    const keyB = String(getItemKey(b)).toLowerCase();
+
+    const orderA = orderMap.has(keyA) ? orderMap.get(keyA) : 999999;
+    const orderB = orderMap.has(keyB) ? orderMap.get(keyB) : 999999;
+
+    return orderA - orderB;
+  });
+};
+
 const formatFileSize = (size) => {
   if (!size) return '';
   if (typeof size === 'string' && (size.toLowerCase().includes('kb') || size.toLowerCase().includes('mb') || size.toLowerCase().includes('gb') || size.toLowerCase().includes('link'))) {
@@ -154,13 +173,24 @@ const TopicResourceWorkspace = ({
 
   const hasMaxNotes = existingNotes.length >= 1;
 
-  // Drag & Drop Reorderable state for resources list
-  const [orderedItems, setOrderedItems] = useState([]);
-  const [draggedIndex, setDraggedIndex] = useState(null);
+  const storageKey = useMemo(() => {
+    return `pakka_resource_order_${getString(chapter?.name || chapter)}_${getString(topic?.name || topic)}`;
+  }, [chapter, topic]);
 
   useEffect(() => {
+    try {
+      const savedOrderRaw = localStorage.getItem(storageKey);
+      if (savedOrderRaw) {
+        const savedOrder = JSON.parse(savedOrderRaw);
+        const sorted = sortWithSavedOrder(topicContent, savedOrder, (item) => item.id || item.title || item.name);
+        setOrderedItems(sorted);
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
     setOrderedItems(topicContent);
-  }, [topicContent]);
+  }, [topicContent, storageKey]);
 
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
@@ -180,6 +210,14 @@ const TopicResourceWorkspace = ({
       const copy = [...prev];
       const [draggedItem] = copy.splice(draggedIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
+
+      try {
+        const keysOrder = copy.map((item) => item.id || item.title || item.name);
+        localStorage.setItem(storageKey, JSON.stringify(keysOrder));
+      } catch (err) {
+        console.error(err);
+      }
+
       return copy;
     });
     setDraggedIndex(null);
