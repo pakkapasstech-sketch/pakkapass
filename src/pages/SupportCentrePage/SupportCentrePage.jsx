@@ -521,19 +521,19 @@ const SupportCentrePage = () => {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                <div className="support-modal-actions">
                   {isAdmin && (
                     <button
-                      className="primary-btn"
-                      style={{ height: '44px' }}
+                      type="button"
+                      className="support-btn-primary"
                       onClick={() => handleStatusChange(adminStatusInput)}
                     >
                       Update & Send
                     </button>
                   )}
                   <button
-                    className="primary-btn"
-                    style={{ height: '44px', backgroundColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                    type="button"
+                    className="support-btn-secondary"
                     onClick={() => setActiveTicket(null)}
                   >
                     Close

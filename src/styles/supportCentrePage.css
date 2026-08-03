@@ -476,3 +476,67 @@ align-self:flex-start;
   color: white;
   border-color: var(--color-primary);
 }
+
+/* ==========================================
+   Support Ticket Modal Action Buttons
+========================================== */
+.support-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.support-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary, #6653AF);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 83, 175, 0.25);
+  transition: all 0.2s ease;
+}
+
+.support-btn-primary:hover {
+  background: #54439b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 83, 175, 0.35);
+}
+
+.support-btn-primary:active {
+  transform: translateY(0);
+}
+
+.support-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: 10px;
+  background: var(--color-card, #ffffff);
+  color: var(--color-text-primary, #1e293b);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.support-btn-secondary:hover {
+  background: var(--color-surface, #f8fafc);
+  border-color: #94a3b8;
+}
+
+.support-btn-secondary:active {
+  transform: translateY(0);
+}
