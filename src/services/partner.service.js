@@ -86,6 +86,7 @@ export const partnerService = {
 
     const formattedPayments = filteredRaw.map(p => ({
       id: String(p.id),
+      transactionId: p.transactionId || String(p.id),
       student: p.student?.name || 'Unknown',
       plan: p.plan?.name || 'N/A',
       amount: p.amount || 0,

@@ -70,6 +70,7 @@ const [summary, setSummary] = useState({
         searchTerm === '' ||
         payment.student.toLowerCase().includes(searchTerm) ||
         payment.referralCode.toLowerCase().includes(searchTerm) ||
+        (payment.transactionId && payment.transactionId.toLowerCase().includes(searchTerm)) ||
         payment.id.toLowerCase().includes(searchTerm);
 
       const matchesStatus =
@@ -117,8 +118,8 @@ const [summary, setSummary] = useState({
 
   const exportColumns = [
     {
-      header: 'Payment ID',
-      accessor: (r) => r.id,
+      header: 'Transaction ID',
+      accessor: (r) => r.transactionId || r.id,
     },
     {
       header: 'Student',
@@ -295,7 +296,7 @@ const [summary, setSummary] = useState({
           <table className="parents-table">
             <thead>
               <tr>
-                <th>Payment ID</th>
+                <th>Transaction ID</th>
                 <th>Student</th>
                 <th>Plan</th>
                 <th>Amount</th>
@@ -308,7 +309,7 @@ const [summary, setSummary] = useState({
               {currentPayments.length > 0 ? (
                 currentPayments.map((payment) => (
                   <tr key={payment.id}>
-                    <td>{payment.id}</td>
+                    <td>{payment.transactionId || payment.id}</td>
 
                     <td>{payment.student}</td>
 

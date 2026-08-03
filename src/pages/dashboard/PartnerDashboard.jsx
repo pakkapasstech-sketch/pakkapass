@@ -81,6 +81,7 @@ const PartnerDashboard = () => {
     .filter(p => p.partnerId && String(p.partnerId) === String(partner.id) && (Number(p.discountAmount) > 0 || p.couponCode === partner.referralCode))
     .map(p => ({
       id: p.id,
+      transactionId: p.transactionId || String(p.id),
       student: p.student?.name || 'Unknown',
       plan: p.plan?.name || 'N/A',
       amount: `₹${p.amount || 0}`,
@@ -275,6 +276,8 @@ const PartnerDashboard = () => {
             <table className="partnerdashboard-data-table">
               <thead>
                 <tr>
+                  <th>Transaction ID</th>
+
                   <th>Student</th>
 
                   <th>Plan</th>
@@ -292,6 +295,8 @@ const PartnerDashboard = () => {
               <tbody>
                 {recentPayments.map((payment) => (
                   <tr key={payment.id}>
+                    <td>{payment.transactionId}</td>
+
                     <td>{payment.student}</td>
 
                     <td>{payment.plan}</td>
