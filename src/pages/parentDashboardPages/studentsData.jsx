@@ -66,29 +66,46 @@ const StudentsData = () => {
           const analytics = data.analytics;
 
           const studentProfile = student?.profile || student;
+
           const gradeId = studentProfile?.gradeId || studentProfile?.grade?.id;
+          const gradeName = (studentProfile?.grade?.name || studentProfile?.grade || student?.class || '').toString().trim().toLowerCase();
+
           const boardId = studentProfile?.boardId || studentProfile?.board?.id;
+          const boardName = (studentProfile?.board?.name || studentProfile?.board || student?.board || '').toString().trim().toLowerCase();
+
           const branchId = studentProfile?.branchId || studentProfile?.courseId || studentProfile?.branch?.id || studentProfile?.course?.id;
+          const branchName = (studentProfile?.branch?.name || studentProfile?.course?.name || studentProfile?.branch || studentProfile?.course || student?.branch || '').toString().trim().toLowerCase();
 
-          // Strictly filter subjects matching student's exact branch, grade, and board
+          // Strictly filter subjects matching student's exact Grade, Board, and Branch
           const availableSubjects = (filterOptions?.subjects || []).filter((sub) => {
-            const subGradeId = sub.gradeId || sub.grade?.id;
+            const subGradeId = sub.gradeId || sub.grade?.id || sub.classId;
+            const subGradeName = (sub.grade?.name || sub.grade || sub.class || '').toString().trim().toLowerCase();
+
             const subBoardId = sub.boardId || sub.board?.id;
+            const subBoardName = (sub.board?.name || sub.board || '').toString().trim().toLowerCase();
+
             const subBranchId = sub.courseId || sub.branchId || sub.course?.id || sub.branch?.id;
+            const subBranchName = (sub.course?.name || sub.branch?.name || sub.course || sub.branch || '').toString().trim().toLowerCase();
 
-            // Filter out subjects from different grades
-            if (gradeId && subGradeId && String(subGradeId) !== String(gradeId)) {
-              return false;
+            // Match Grade strictly by ID or Name
+            if (gradeId && subGradeId) {
+              if (String(subGradeId) !== String(gradeId)) return false;
+            } else if (gradeName && subGradeName) {
+              if (subGradeName !== gradeName) return false;
             }
 
-            // Filter out subjects from different boards
-            if (boardId && subBoardId && String(subBoardId) !== String(boardId)) {
-              return false;
+            // Match Board strictly by ID or Name
+            if (boardId && subBoardId) {
+              if (String(subBoardId) !== String(boardId)) return false;
+            } else if (boardName && subBoardName) {
+              if (subBoardName !== boardName) return false;
             }
 
-            // Strictly filter out subjects from different branches
-            if (branchId && subBranchId && String(subBranchId) !== String(branchId)) {
-              return false;
+            // Match Branch strictly by ID or Name
+            if (branchId && subBranchId) {
+              if (String(subBranchId) !== String(branchId)) return false;
+            } else if (branchName && subBranchName) {
+              if (subBranchName !== branchName) return false;
             }
 
             return true;
