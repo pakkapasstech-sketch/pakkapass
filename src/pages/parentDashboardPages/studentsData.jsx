@@ -6,15 +6,21 @@ import { useLoading } from '../../contexts/LoadingContext';
 
 const StudentsData = () => {
   const [studentsData, setStudentsData] = useState([]);
+  const [filterOptions, setFilterOptions] = useState(null);
   const { setLoading } = useLoading();
 
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         setLoading(true);
-        const linkedStudents = await studentService.getParentStudents();
+        const [linkedStudents, options] = await Promise.all([
+          studentService.getParentStudents(),
+          studentService.getFilterOptions().catch(() => null),
+        ]);
 
-        if (linkedStudents.length === 0) {
+        setFilterOptions(options);
+
+        if (!linkedStudents || linkedStudents.length === 0) {
           setStudentsData([]);
           return;
         }
@@ -58,7 +64,50 @@ const StudentsData = () => {
         studentsData.map((data, index) => {
           const student = data.profile;
           const analytics = data.analytics;
-          const subjects = analytics?.subjectsProgress || [];
+
+          const studentProfile = student?.profile || student;
+          const gradeId = studentProfile?.gradeId || studentProfile?.grade?.id;
+          const boardId = studentProfile?.boardId || studentProfile?.board?.id;
+          const branchId = studentProfile?.branchId || studentProfile?.courseId || studentProfile?.course?.id;
+
+          // Find all subjects configured for student's grade/board/branch
+          const availableSubjects = (filterOptions?.subjects || []).filter((sub) => {
+            const matchGrade = !gradeId || !sub.gradeId || String(sub.gradeId) === String(gradeId);
+            const matchBoard = !boardId || !sub.boardId || String(sub.boardId) === String(boardId);
+            const matchBranch = !branchId || !sub.courseId || String(sub.courseId) === String(branchId);
+            return matchGrade && matchBoard && matchBranch;
+          });
+
+          const progressMap = new Map();
+          (analytics?.subjectsProgress || []).forEach((item) => {
+            if (item.name) {
+              progressMap.set(item.name.trim().toLowerCase(), Number(item.progress || 0));
+            }
+          });
+
+          let subjects = [];
+          if (availableSubjects.length > 0) {
+            const seenNames = new Set();
+            subjects = availableSubjects
+              .map((sub) => {
+                const name = sub.name;
+                const normName = name.trim().toLowerCase();
+                if (seenNames.has(normName)) return null;
+                seenNames.add(normName);
+                const progress = progressMap.has(normName) ? progressMap.get(normName) : 0;
+                return { name, progress };
+              })
+              .filter(Boolean);
+
+            (analytics?.subjectsProgress || []).forEach((item) => {
+              if (item.name && !seenNames.has(item.name.trim().toLowerCase())) {
+                seenNames.add(item.name.trim().toLowerCase());
+                subjects.push({ name: item.name, progress: Number(item.progress || 0) });
+              }
+            });
+          } else {
+            subjects = analytics?.subjectsProgress || [];
+          }
 
           const statCards = [
             {
