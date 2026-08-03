@@ -118,6 +118,10 @@ const [summary, setSummary] = useState({
 
   const exportColumns = [
     {
+      header: 'S.No',
+      accessor: (_, index) => index + 1,
+    },
+    {
       header: 'Transaction ID',
       accessor: (r) => r.transactionId || r.id,
     },
@@ -303,6 +307,7 @@ const [summary, setSummary] = useState({
           <table className="parents-table">
             <thead>
               <tr>
+                <th>S.No</th>
                 <th>Transaction ID</th>
                 <th>Student</th>
                 <th>Plan</th>
@@ -316,8 +321,10 @@ const [summary, setSummary] = useState({
 
             <tbody>
               {currentPayments.length > 0 ? (
-                currentPayments.map((payment) => (
+                currentPayments.map((payment, index) => (
                   <tr key={payment.id}>
+                    <td>{startIndex + index + 1}</td>
+
                     <td>{payment.transactionId || payment.id}</td>
 
                     <td>{payment.student}</td>
@@ -352,7 +359,7 @@ const [summary, setSummary] = useState({
               ) : (
                 <tr>
                   <td
-                    colSpan="8"
+                    colSpan="9"
                     className="empty-table"
                   >
                     No payments found

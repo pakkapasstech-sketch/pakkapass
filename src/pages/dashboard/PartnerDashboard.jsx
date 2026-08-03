@@ -283,6 +283,8 @@ const PartnerDashboard = () => {
             <table className="partnerdashboard-data-table">
               <thead>
                 <tr>
+                  <th>S.No</th>
+
                   <th>Transaction ID</th>
 
                   <th>Student</th>
@@ -302,8 +304,10 @@ const PartnerDashboard = () => {
               </thead>
 
               <tbody>
-                {recentPayments.map((payment) => (
+                {recentPayments.map((payment, index) => (
                   <tr key={payment.id}>
+                    <td>{index + 1}</td>
+
                     <td>{payment.transactionId}</td>
 
                     <td>{payment.student}</td>
