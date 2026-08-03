@@ -405,14 +405,48 @@ const ChapterTopicCardWorkspace = ({
     }
   };
 
+  const findChapterId = (chItem) => {
+    if (typeof chItem === 'object' && chItem !== null) {
+      const numId = parseNumericId(chItem.id);
+      if (numId) return numId;
+    }
+    const nameStr = typeof chItem === 'object' ? (chItem.rawName || chItem.name) : String(chItem || '');
+    if (!nameStr) return undefined;
+
+    const found = (options?.chapters || []).find((c) => {
+      const cName = getString(c.name || c.title || c.chapterName || c).trim().toLowerCase();
+      return cName === nameStr.trim().toLowerCase();
+    });
+
+    return parseNumericId(found?.id);
+  };
+
+  const findTopicId = (topicItem) => {
+    if (typeof topicItem === 'object' && topicItem !== null) {
+      const numId = parseNumericId(topicItem.id);
+      if (numId) return numId;
+    }
+    const nameStr = typeof topicItem === 'object' ? (topicItem.rawName || topicItem.name) : String(topicItem || '');
+    if (!nameStr) return undefined;
+
+    const found = (options?.topics || []).find((t) => {
+      const tName = getString(t.name || t.title || t.topicName || t).trim().toLowerCase();
+      return tName === nameStr.trim().toLowerCase();
+    });
+
+    return parseNumericId(found?.id);
+  };
+
   // Chapter & Topic Action Handlers (Edit & Delete)
-  const handleOpenEditTopicModal = (topicName) => {
-    setEditModalItem({ type: 'topic', name: topicName });
+  const handleOpenEditTopicModal = (topicItem) => {
+    const topicName = typeof topicItem === 'object' ? (topicItem.name || topicItem.title) : String(topicItem || '');
+    setEditModalItem({ type: 'topic', name: topicName, item: topicItem });
     setEditNameInput(topicName);
   };
 
-  const handleOpenEditChapterModal = (chapterName) => {
-    setEditModalItem({ type: 'chapter', name: chapterName });
+  const handleOpenEditChapterModal = (chItem) => {
+    const chapterName = typeof chItem === 'object' ? (chItem.name || chItem.rawName) : String(chItem || '');
+    setEditModalItem({ type: 'chapter', name: chapterName, item: chItem });
     setEditNameInput(chapterName);
   };
 
@@ -424,7 +458,7 @@ const ChapterTopicCardWorkspace = ({
     }
 
     const trimmed = editNameInput.trim();
-    const { type, name } = editModalItem;
+    const { type, name, item } = editModalItem;
 
     // INSTANT UI update
     if (type === 'topic') {
@@ -442,15 +476,13 @@ const ChapterTopicCardWorkspace = ({
       setIsSavingEdit(true);
 
       if (type === 'topic') {
-        const topicObj = (options.topics || []).find((t) => getString(t.name).trim().toLowerCase() === name.trim().toLowerCase());
-        const topicIdNum = parseNumericId(topicObj?.id);
+        const topicIdNum = findTopicId(item || name);
         if (topicIdNum) {
           await entityService.updateTopic(topicIdNum, { name: trimmed });
         }
         if (refetchOptions) await refetchOptions();
       } else if (type === 'chapter') {
-        const chapterObj = (options.chapters || []).find((c) => getString(c.name).trim().toLowerCase() === name.trim().toLowerCase());
-        const chapterIdNum = parseNumericId(chapterObj?.id);
+        const chapterIdNum = findChapterId(item || name);
         if (chapterIdNum) {
           await entityService.updateChapter(chapterIdNum, { name: trimmed });
         }
@@ -463,15 +495,17 @@ const ChapterTopicCardWorkspace = ({
     }
   };
 
-  const handleDeleteTopic = async (topicName) => {
+  const handleDeleteTopic = async (topicItem) => {
+    const topicName = typeof topicItem === 'object' ? (topicItem.name || topicItem.title) : String(topicItem || '');
+    if (!topicName) return;
+
     if (window.confirm(`Are you sure you want to delete topic "${topicName}"?`)) {
       // INSTANT UI update
       setDeletedTopics((prev) => new Set([...prev, topicName]));
       toast.success(`Topic "${topicName}" deleted!`);
 
       try {
-        const topicObj = (options.topics || []).find((t) => getString(t.name).trim().toLowerCase() === topicName.trim().toLowerCase());
-        const topicIdNum = parseNumericId(topicObj?.id);
+        const topicIdNum = findTopicId(topicItem);
         if (topicIdNum) {
           await entityService.deleteTopic(topicIdNum);
         }
@@ -482,18 +516,22 @@ const ChapterTopicCardWorkspace = ({
     }
   };
 
-  const handleDeleteChapter = async (chapterName) => {
+  const handleDeleteChapter = async (chItem) => {
+    const chapterName = typeof chItem === 'object' ? (chItem.name || chItem.rawName) : String(chItem || '');
+    if (!chapterName) return;
+
     if (window.confirm(`Are you sure you want to delete ${displayContentType.toLowerCase()} "${chapterName}"?`)) {
+      const rawName = typeof chItem === 'object' ? (chItem.rawName || chItem.name) : chapterName;
+
       // INSTANT UI update
-      setDeletedChapters((prev) => new Set([...prev, chapterName]));
-      if (selectedChapter && (selectedChapter.name === chapterName || selectedChapter.rawName === chapterName)) {
+      setDeletedChapters((prev) => new Set([...prev, chapterName, rawName]));
+      if (selectedChapter && (selectedChapter.name === chapterName || selectedChapter.rawName === chapterName || selectedChapter.name === rawName)) {
         setSelectedChapter(null);
       }
       toast.success(`${displayContentType} "${chapterName}" deleted!`);
 
       try {
-        const chapterObj = (options.chapters || []).find((c) => getString(c.name).trim().toLowerCase() === chapterName.trim().toLowerCase());
-        const chapterIdNum = parseNumericId(chapterObj?.id);
+        const chapterIdNum = findChapterId(chItem);
         if (chapterIdNum) {
           await entityService.deleteChapter(chapterIdNum);
         }
@@ -1001,7 +1039,7 @@ const ChapterTopicCardWorkspace = ({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleOpenEditChapterModal(rawChName);
+                            handleOpenEditChapterModal(ch);
                           }}
                           style={{
                             background: 'transparent',
@@ -1019,7 +1057,7 @@ const ChapterTopicCardWorkspace = ({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteChapter(rawChName);
+                            handleDeleteChapter(ch);
                           }}
                           style={{
                             background: 'transparent',
