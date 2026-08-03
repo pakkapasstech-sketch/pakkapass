@@ -170,12 +170,17 @@ const ContentManagement = () => {
     }
   }, [queryChapterId, options.chapters]);
 
+  // Only hydrate topic workspace once from URL on initial mount
+  const [hasHydratedTopic, setHasHydratedTopic] = useState(false);
   useEffect(() => {
-    const validTopicStr = extractTopicName(queryTopicName);
-    if (validTopicStr && (!activeTopicWorkspace || extractTopicName(activeTopicWorkspace.topic) !== validTopicStr)) {
-      setActiveTopicWorkspace({ chapter: selectedChapter, topic: validTopicStr });
+    if (!hasHydratedTopic && queryTopicName) {
+      const validTopicStr = extractTopicName(queryTopicName);
+      if (validTopicStr) {
+        setActiveTopicWorkspace({ chapter: selectedChapter, topic: validTopicStr });
+      }
+      setHasHydratedTopic(true);
     }
-  }, [queryTopicName, selectedChapter]);
+  }, [queryTopicName, selectedChapter, hasHydratedTopic]);
 
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -867,6 +872,13 @@ const ContentManagement = () => {
                   setActiveContentType(typeTab);
                   setActiveTopicWorkspace(null);
                   setSelectedChapter(null);
+                  setSearchParams(prev => {
+                    const newParams = new URLSearchParams(prev);
+                    newParams.delete('chapterId');
+                    newParams.delete('topicName');
+                    newParams.set('contentType', typeTab);
+                    return newParams;
+                  }, { replace: true });
                 }}
                 style={{
                   padding: '10px 20px',
