@@ -458,12 +458,16 @@ const ContentManagement = () => {
   };
 
   const handleDeleteBoard = async (board) => {
-    const boardName = board.name || board.displayName;
+    const boardName = typeof board === 'object' ? (board.name || board.displayName) : String(board || '');
     if (window.confirm(`Are you sure you want to delete board "${boardName}"?`)) {
-      const boardId = board.id || boardName;
-      const numId = parseNumericId(board.id);
+      const boardId = typeof board === 'object' ? (board.id || boardName) : boardName;
+      let numId = typeof board === 'object' ? parseNumericId(board.id) : undefined;
+      if (!numId) {
+        const found = (options?.boards || []).find((b) => (b.name || b.displayName || b).trim().toLowerCase() === boardName.trim().toLowerCase());
+        numId = parseNumericId(found?.id);
+      }
 
-      setDeletedBoards((prev) => new Set([...prev, boardId]));
+      setDeletedBoards((prev) => new Set([...prev, boardId, boardName]));
       toast.success(`Board "${boardName}" deleted!`);
 
       try {
@@ -509,13 +513,17 @@ const ContentManagement = () => {
   };
 
   const handleDeleteBranch = async (branch) => {
-    const branchName = branch.name || branch.displayName;
+    const branchName = typeof branch === 'object' ? (branch.name || branch.displayName) : String(branch || '');
     if (window.confirm(`Are you sure you want to delete branch "${branchName}"?`)) {
-      const branchId = branch.id || branchName;
-      const numId = parseNumericId(branch.id);
+      const branchId = typeof branch === 'object' ? (branch.id || branchName) : branchName;
+      let numId = typeof branch === 'object' ? parseNumericId(branch.id) : undefined;
+      if (!numId) {
+        const found = (options?.branches || []).find((br) => (br.name || br.displayName || br).trim().toLowerCase() === branchName.trim().toLowerCase());
+        numId = parseNumericId(found?.id);
+      }
 
       // INSTANT UI update
-      setDeletedBranches((prev) => new Set([...prev, branchId]));
+      setDeletedBranches((prev) => new Set([...prev, branchId, branchName]));
       toast.success(`Branch "${branchName}" deleted!`);
 
       try {
@@ -601,13 +609,17 @@ const ContentManagement = () => {
   };
 
   const handleDeleteSubject = async (subject) => {
-    const subName = subject.name || subject.displayName;
+    const subName = typeof subject === 'object' ? (subject.name || subject.displayName) : String(subject || '');
     if (window.confirm(`Are you sure you want to delete subject "${subName}"?`)) {
-      const subId = subject.id || subName;
-      const numId = parseNumericId(subject.id);
+      const subId = typeof subject === 'object' ? (subject.id || subName) : subName;
+      let numId = typeof subject === 'object' ? parseNumericId(subject.id) : undefined;
+      if (!numId) {
+        const found = (options?.subjects || []).find((s) => (s.name || s.displayName || s).trim().toLowerCase() === subName.trim().toLowerCase());
+        numId = parseNumericId(found?.id);
+      }
 
       // INSTANT UI update
-      setDeletedSubjects((prev) => new Set([...prev, subId]));
+      setDeletedSubjects((prev) => new Set([...prev, subId, subName]));
       toast.success(`Subject "${subName}" deleted!`);
 
       try {
