@@ -69,40 +69,10 @@ const ChapterTopicCardWorkspace = ({
 
   // Edited & deleted state for Chapter and Topic cards
   const [editedChapterNames, setEditedChapterNames] = useState({}); // { [oldName]: newName }
-  const [deletedChapters, setDeletedChapters] = useState(() => {
-    try {
-      const saved = localStorage.getItem('pakka_deleted_chapters');
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('pakka_deleted_chapters', JSON.stringify(Array.from(deletedChapters)));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [deletedChapters]);
+  const [deletedChapters, setDeletedChapters] = useState(new Set()); // Set of deleted chapter names
 
   const [editedTopicNames, setEditedTopicNames] = useState({}); // { [oldName]: newName }
-  const [deletedTopics, setDeletedTopics] = useState(() => {
-    try {
-      const saved = localStorage.getItem('pakka_deleted_topics');
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('pakka_deleted_topics', JSON.stringify(Array.from(deletedTopics)));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [deletedTopics]);
+  const [deletedTopics, setDeletedTopics] = useState(new Set()); // Set of deleted topic names
 
   // Modal / Form state for Creating Chapter
   const [showCreateChapterModal, setShowCreateChapterModal] = useState(false);
