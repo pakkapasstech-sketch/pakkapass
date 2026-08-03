@@ -11,7 +11,8 @@ import {
   HiOutlineX,
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import entityService from '../../services/entity.service';
+import entityService from '../services/entity.service';
+import contentService from '../services/content.service';
 
 const parseNumericId = (val) => {
   if (val === null || val === undefined) return undefined;
@@ -451,6 +452,24 @@ const ChapterTopicCardWorkspace = ({
         if (topicIdNum) {
           await entityService.deleteTopic(topicIdNum);
         }
+
+        // Also delete any uploaded content assets linked to this topic in contentItems
+        const matchingAssets = (contentItems || []).filter((item) => {
+          const itemTop = getString(item.section).trim().toLowerCase();
+          return itemTop === topicName.trim().toLowerCase();
+        });
+
+        if (matchingAssets.length > 0) {
+          await Promise.all(
+            matchingAssets.map((asset) => {
+              if (asset.id) {
+                return contentService.deleteAsset(asset.id).catch(() => {});
+              }
+              return Promise.resolve();
+            })
+          );
+        }
+
         if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete topic from DB:', err);
@@ -477,6 +496,24 @@ const ChapterTopicCardWorkspace = ({
         if (chapterIdNum) {
           await entityService.deleteChapter(chapterIdNum);
         }
+
+        // Also delete any uploaded content assets linked to this chapter in contentItems
+        const matchingAssets = (contentItems || []).filter((item) => {
+          const itemCh = getString(item.chapter).trim().toLowerCase();
+          return itemCh === chapterName.trim().toLowerCase() || (rawName && itemCh === rawName.trim().toLowerCase());
+        });
+
+        if (matchingAssets.length > 0) {
+          await Promise.all(
+            matchingAssets.map((asset) => {
+              if (asset.id) {
+                return contentService.deleteAsset(asset.id).catch(() => {});
+              }
+              return Promise.resolve();
+            })
+          );
+        }
+
         if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete chapter from DB:', err);
