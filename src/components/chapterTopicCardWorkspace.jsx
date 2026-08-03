@@ -28,21 +28,10 @@ const getString = (val) => {
   return String(val);
 };
 
-const sortWithSavedOrder = (list, savedOrderArray, getItemKey) => {
-  if (!savedOrderArray || !Array.isArray(savedOrderArray) || savedOrderArray.length === 0) return list;
-
-  const orderMap = new Map();
-  savedOrderArray.forEach((key, index) => {
-    orderMap.set(String(key).toLowerCase(), index);
-  });
-
+const sortByDatabaseOrder = (list) => {
   return [...list].sort((a, b) => {
-    const keyA = String(getItemKey(a)).toLowerCase();
-    const keyB = String(getItemKey(b)).toLowerCase();
-
-    const orderA = orderMap.has(keyA) ? orderMap.get(keyA) : 999999;
-    const orderB = orderMap.has(keyB) ? orderMap.get(keyB) : 999999;
-
+    const orderA = Number(a.order ?? a.orderIndex ?? a.position ?? 999999);
+    const orderB = Number(b.order ?? b.orderIndex ?? b.position ?? 999999);
     return orderA - orderB;
   });
 };
@@ -76,6 +65,75 @@ const ChapterTopicCardWorkspace = ({
 
   const selectedChapter = propSelectedChapter !== undefined ? propSelectedChapter : internalSelectedChapter;
   const setSelectedChapter = (val) => {
+    const handleDropChapter = async (e, dropIndex) => {
+      e.preventDefault();
+      if (draggedChapterIndex === null || draggedChapterIndex === dropIndex) return;
+
+      let updatedList = [];
+      setOrderedChapters((prev) => {
+        const copy = [...prev];
+        const [draggedItem] = copy.splice(draggedChapterIndex, 1);
+        copy.splice(dropIndex, 0, draggedItem);
+        updatedList = copy;
+        return copy;
+      });
+      setDraggedChapterIndex(null);
+
+      // Save order globally to PostgreSQL Database via API
+      try {
+        await Promise.all(
+          updatedList.map((ch, idx) => {
+            const numId = findChapterId(ch);
+            if (numId) {
+              return entityService.updateChapter(numId, { order: idx + 1 }).catch(() => {});
+            }
+            return Promise.resolve();
+          })
+        );
+        if (refetchOptions) refetchOptions();
+      } catch (err) {
+        console.error('Failed to update chapter order in DB:', err);
+      }
+    };
+    const handleDragEndChapter = () => setDraggedChapterIndex(null);
+
+    const handleDragStartTopic = (e, index) => {
+      setDraggedTopicIndex(index);
+      e.dataTransfer.effectAllowed = 'move';
+    };
+    const handleDragOverTopic = (e, index) => {
+      e.preventDefault();
+    };
+    const handleDropTopic = async (e, dropIndex) => {
+      e.preventDefault();
+      if (draggedTopicIndex === null || draggedTopicIndex === dropIndex) return;
+
+      let updatedList = [];
+      setOrderedTopics((prev) => {
+        const copy = [...prev];
+        const [draggedItem] = copy.splice(draggedTopicIndex, 1);
+        copy.splice(dropIndex, 0, draggedItem);
+        updatedList = copy;
+        return copy;
+      });
+      setDraggedTopicIndex(null);
+
+      // Save order globally to PostgreSQL Database via API
+      try {
+        await Promise.all(
+          updatedList.map((topName, idx) => {
+            const numId = findTopicId(topName);
+            if (numId) {
+              return entityService.updateTopic(numId, { order: idx + 1 }).catch(() => {});
+            }
+            return Promise.resolve();
+          })
+        );
+        if (refetchOptions) refetchOptions();
+      } catch (err) {
+        console.error('Failed to update topic order in DB:', err);
+      }
+    };
     if (propOnSelectChapter) {
       propOnSelectChapter(val);
     }
@@ -206,24 +264,12 @@ const ChapterTopicCardWorkspace = ({
       const displayName = editedChapterNames[chName] || chName;
       if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
         namesSet.add(displayName.toLowerCase());
-        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName });
+        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName, order: 999999 });
       }
     });
 
-    // Sort chapters with saved drag-and-drop order from localStorage (new items stay at the LAST)
-    const storageKey = `pakka_chapter_order_${getString(subject?.name || subject)}_${getString(contentType?.name || contentType)}`;
-    try {
-      const savedOrderRaw = localStorage.getItem(storageKey);
-      if (savedOrderRaw) {
-        const savedOrder = JSON.parse(savedOrderRaw);
-        return sortWithSavedOrder(list, savedOrder, (item) => item.rawName || item.name);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    return list;
-  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters, subject, contentType]);
+    return sortByDatabaseOrder(list);
+  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters]);
 
   // 4. Combine all topics for the selected chapter filtering out deleted topics
   const allTopicNames = useMemo(() => {
@@ -276,21 +322,7 @@ const ChapterTopicCardWorkspace = ({
       }
     });
 
-    const topicList = Array.from(topicsSet);
-
-    // Sort topics with saved drag-and-drop order from localStorage (new items stay at the LAST)
-    const storageKey = `pakka_topic_order_${chName}`;
-    try {
-      const savedOrderRaw = localStorage.getItem(storageKey);
-      if (savedOrderRaw) {
-        const savedOrder = JSON.parse(savedOrderRaw);
-        return sortWithSavedOrder(topicList, savedOrder, (item) => item);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    return topicList;
+    return Array.from(topicsSet);
   }, [selectedChapter, options.topics, contentChaptersMap, customTopics, editedTopicNames, deletedTopics]);
 
   const handleAddChapter = async (e) => {
@@ -760,8 +792,8 @@ const ChapterTopicCardWorkspace = ({
                       </span>
                     </div>
 
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary, #6653AF)' }}>
-                      Open &rarr;
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary, #6653AF)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <HiOutlinePlus size={14} /> Add Content &rarr;
                     </span>
                   </div>
                 </div>
