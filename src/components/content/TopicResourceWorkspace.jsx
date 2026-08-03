@@ -173,24 +173,20 @@ const TopicResourceWorkspace = ({
 
   const hasMaxNotes = existingNotes.length >= 1;
 
-  const storageKey = useMemo(() => {
-    return `pakka_resource_order_${getString(chapter?.name || chapter)}_${getString(topic?.name || topic)}`;
-  }, [chapter, topic]);
+  const [orderedItems, setOrderedItems] = useState([]);
+  const [draggedIndex, setDraggedIndex] = useState(null);
+
+  const sortedContent = useMemo(() => {
+    return [...topicContent].sort((a, b) => {
+      const orderA = Number(a.order ?? a.orderIndex ?? a.position ?? 999999);
+      const orderB = Number(b.order ?? b.orderIndex ?? b.position ?? 999999);
+      return orderA - orderB;
+    });
+  }, [topicContent]);
 
   useEffect(() => {
-    try {
-      const savedOrderRaw = localStorage.getItem(storageKey);
-      if (savedOrderRaw) {
-        const savedOrder = JSON.parse(savedOrderRaw);
-        const sorted = sortWithSavedOrder(topicContent, savedOrder, (item) => item.id || item.title || item.name);
-        setOrderedItems(sorted);
-        return;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    setOrderedItems(topicContent);
-  }, [topicContent, storageKey]);
+    setOrderedItems(sortedContent);
+  }, [sortedContent]);
 
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
@@ -202,25 +198,33 @@ const TopicResourceWorkspace = ({
     if (draggedIndex === null || draggedIndex === index) return;
   };
 
-  const handleDrop = (e, dropIndex) => {
+  const handleDrop = async (e, dropIndex) => {
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === dropIndex) return;
 
+    let updatedList = [];
     setOrderedItems((prev) => {
       const copy = [...prev];
       const [draggedItem] = copy.splice(draggedIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
-
-      try {
-        const keysOrder = copy.map((item) => item.id || item.title || item.name);
-        localStorage.setItem(storageKey, JSON.stringify(keysOrder));
-      } catch (err) {
-        console.error(err);
-      }
-
+      updatedList = copy;
       return copy;
     });
     setDraggedIndex(null);
+
+    // Save order globally to PostgreSQL Database via API
+    try {
+      await Promise.all(
+        updatedList.map((item, idx) => {
+          if (item.id) {
+            return entityService.updateContentAsset(item.id, { order: idx + 1 }).catch(() => {});
+          }
+          return Promise.resolve();
+        })
+      );
+    } catch (err) {
+      console.error('Failed to update content asset order in DB:', err);
+    }
   };
 
   const handleDragEnd = () => {
