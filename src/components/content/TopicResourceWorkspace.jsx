@@ -184,9 +184,24 @@ const TopicResourceWorkspace = ({
     });
   }, [topicContent]);
 
+  const storageKey = useMemo(() => {
+    return `pakka_resource_order_${getString(chapter?.name || chapter)}_${getString(topic?.name || topic)}`;
+  }, [chapter, topic]);
+
   useEffect(() => {
+    try {
+      const savedOrderRaw = localStorage.getItem(storageKey);
+      if (savedOrderRaw) {
+        const savedOrder = JSON.parse(savedOrderRaw);
+        const sorted = sortWithSavedOrder(topicContent, savedOrder, (item) => item.id || item.title || item.name);
+        setOrderedItems(sorted);
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
     setOrderedItems(sortedContent);
-  }, [sortedContent]);
+  }, [topicContent, sortedContent, storageKey]);
 
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
@@ -208,6 +223,14 @@ const TopicResourceWorkspace = ({
       const [draggedItem] = copy.splice(draggedIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
       updatedList = copy;
+
+      try {
+        const keysOrder = copy.map((item) => item.id || item.title || item.name);
+        localStorage.setItem(storageKey, JSON.stringify(keysOrder));
+      } catch (err) {
+        console.error(err);
+      }
+
       return copy;
     });
     setDraggedIndex(null);
@@ -342,13 +365,12 @@ const TopicResourceWorkspace = ({
       toast.error('Please enter a title for the video');
       return;
     }
-    if (!isVideoLinkMode && !videoFile) {
-      toast.error('Please select or drop a video file');
-      return;
-    }
-    if (isVideoLinkMode && !videoUrl.trim()) {
-      toast.error('Please enter a video URL');
-      return;
+    if (!isVideoLinkMode && videoFile) {
+      const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100 MB
+      if (videoFile.size > MAX_VIDEO_SIZE) {
+        toast.error('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
+        return;
+      }
     }
 
     try {
@@ -651,7 +673,12 @@ const TopicResourceWorkspace = ({
                 onDrop={(e) => {
                   e.preventDefault();
                   if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    setVideoFile(e.dataTransfer.files[0]);
+                    const selected = e.dataTransfer.files[0];
+                    if (selected.size > 100 * 1024 * 1024) {
+                      toast.error('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
+                      return;
+                    }
+                    setVideoFile(selected);
                   }
                 }}
                 style={{
@@ -669,7 +696,7 @@ const TopicResourceWorkspace = ({
                 <p style={{ fontSize: '13px', fontWeight: '600', margin: '0 0 4px 0', color: 'var(--color-text-primary, #111827)' }}>
                   {videoFile ? `${videoFile.name} (${formatFileSize(videoFile.size)})` : 'Drag & drop MP4/WebM Video here, or browse'}
                 </p>
-                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #6b7280)' }}>Supports .mp4, .webm (Max 2GB)</span>
+                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #6b7280)' }}>Supports .mp4, .webm (Max 100 MB)</span>
                 <input
                   id="video-file-input"
                   type="file"
@@ -677,7 +704,14 @@ const TopicResourceWorkspace = ({
                   style={{ display: 'none' }}
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
-                      setVideoFile(e.target.files[0]);
+                      const selected = e.target.files[0];
+                      if (selected.size > 100 * 1024 * 1024) {
+                        toast.error('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
+                        e.target.value = '';
+                        setVideoFile(null);
+                        return;
+                      }
+                      setVideoFile(selected);
                     }
                   }}
                 />

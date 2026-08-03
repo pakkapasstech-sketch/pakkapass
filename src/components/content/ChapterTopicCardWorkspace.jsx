@@ -37,6 +37,25 @@ const sortByDatabaseOrder = (list) => {
   });
 };
 
+const sortWithSavedOrder = (list, savedOrderArray, getItemKey) => {
+  if (!savedOrderArray || !Array.isArray(savedOrderArray) || savedOrderArray.length === 0) return list;
+
+  const orderMap = new Map();
+  savedOrderArray.forEach((key, index) => {
+    orderMap.set(String(key).toLowerCase(), index);
+  });
+
+  return [...list].sort((a, b) => {
+    const keyA = String(getItemKey(a)).toLowerCase();
+    const keyB = String(getItemKey(b)).toLowerCase();
+
+    const orderA = orderMap.has(keyA) ? orderMap.get(keyA) : Number(a.order ?? a.orderIndex ?? a.position ?? 999999);
+    const orderB = orderMap.has(keyB) ? orderMap.get(keyB) : Number(b.order ?? b.orderIndex ?? b.position ?? 999999);
+
+    return orderA - orderB;
+  });
+};
+
 const normalizeContentType = (typeStr) => {
   const str = getString(typeStr);
   if (!str) return 'CHAPTER';
@@ -203,8 +222,20 @@ const ChapterTopicCardWorkspace = ({
       }
     });
 
+    // Sort chapters with saved drag-and-drop order (new items stay at the LAST)
+    const storageKey = `pakka_chapter_order_${getString(subject?.name || subject)}_${getString(contentType?.name || contentType)}`;
+    try {
+      const savedOrderRaw = localStorage.getItem(storageKey);
+      if (savedOrderRaw) {
+        const savedOrder = JSON.parse(savedOrderRaw);
+        return sortWithSavedOrder(list, savedOrder, (item) => item.rawName || item.name);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     return sortByDatabaseOrder(list);
-  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters]);
+  }, [dbChapters, contentChaptersMap, customChapters, editedChapterNames, deletedChapters, subject, contentType]);
 
   // 4. Combine all topics for the selected chapter filtering out deleted topics
   const allTopicNames = useMemo(() => {
@@ -257,7 +288,21 @@ const ChapterTopicCardWorkspace = ({
       }
     });
 
-    return Array.from(topicsSet);
+    const topicList = Array.from(topicsSet);
+
+    // Sort topics with saved drag-and-drop order (new items stay at the LAST)
+    const storageKey = `pakka_topic_order_${chName}`;
+    try {
+      const savedOrderRaw = localStorage.getItem(storageKey);
+      if (savedOrderRaw) {
+        const savedOrder = JSON.parse(savedOrderRaw);
+        return sortWithSavedOrder(topicList, savedOrder, (item) => item);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    return topicList;
   }, [selectedChapter, options.topics, contentChaptersMap, customTopics, editedTopicNames, deletedTopics]);
 
   const [orderedChapters, setOrderedChapters] = useState([]);
@@ -291,11 +336,21 @@ const ChapterTopicCardWorkspace = ({
       const [draggedItem] = copy.splice(draggedChapterIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
       updatedList = copy;
+
+      // Save new chapter drag & drop order sequence
+      const storageKey = `pakka_chapter_order_${getString(subject?.name || subject)}_${getString(contentType?.name || contentType)}`;
+      try {
+        const keysOrder = copy.map((item) => item.rawName || item.name);
+        localStorage.setItem(storageKey, JSON.stringify(keysOrder));
+      } catch (err) {
+        console.error(err);
+      }
+
       return copy;
     });
     setDraggedChapterIndex(null);
 
-    // Save order globally to PostgreSQL Database via API
+    // Save order globally to PostgreSQL Database via API as well
     try {
       await Promise.all(
         updatedList.map((ch, idx) => {
@@ -306,7 +361,6 @@ const ChapterTopicCardWorkspace = ({
           return Promise.resolve();
         })
       );
-      if (refetchOptions) refetchOptions();
     } catch (err) {
       console.error('Failed to update chapter order in DB:', err);
     }
@@ -330,11 +384,23 @@ const ChapterTopicCardWorkspace = ({
       const [draggedItem] = copy.splice(draggedTopicIndex, 1);
       copy.splice(dropIndex, 0, draggedItem);
       updatedList = copy;
+
+      // Save new topic drag & drop order sequence
+      if (selectedChapter) {
+        const chName = selectedChapter.rawName || selectedChapter.name;
+        const storageKey = `pakka_topic_order_${chName}`;
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(copy));
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
       return copy;
     });
     setDraggedTopicIndex(null);
 
-    // Save order globally to PostgreSQL Database via API
+    // Save order globally to PostgreSQL Database via API as well
     try {
       await Promise.all(
         updatedList.map((topName, idx) => {
@@ -345,7 +411,6 @@ const ChapterTopicCardWorkspace = ({
           return Promise.resolve();
         })
       );
-      if (refetchOptions) refetchOptions();
     } catch (err) {
       console.error('Failed to update topic order in DB:', err);
     }
