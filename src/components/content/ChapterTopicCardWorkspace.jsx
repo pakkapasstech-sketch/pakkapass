@@ -197,6 +197,15 @@ const ChapterTopicCardWorkspace = ({
     const namesSet = new Set();
     const list = [];
 
+    // Add custom created chapters FIRST so new chapters appear immediately
+    customChapters.forEach((chName) => {
+      const displayName = editedChapterNames[chName] || chName;
+      if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
+        namesSet.add(displayName.toLowerCase());
+        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName });
+      }
+    });
+
     // Add chapters from DB options
     dbChapters.forEach((ch) => {
       const rawName = getString(ch.name || ch.title);
@@ -213,15 +222,6 @@ const ChapterTopicCardWorkspace = ({
       if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
         namesSet.add(displayName.toLowerCase());
         list.push({ id: `ch_content_${chName}`, name: displayName, rawName: chName });
-      }
-    });
-
-    // Add custom created chapters
-    customChapters.forEach((chName) => {
-      const displayName = editedChapterNames[chName] || chName;
-      if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
-        namesSet.add(displayName.toLowerCase());
-        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName });
       }
     });
 
@@ -350,6 +350,11 @@ const ChapterTopicCardWorkspace = ({
 
     // INSTANT UI update
     setCustomChapters((prev) => [...prev, name]);
+    setDeletedChapters((prev) => {
+      const next = new Set(prev);
+      next.delete(name);
+      return next;
+    });
     toast.success(`${displayContentType} "${name}" created!`);
     setNewChapterName('');
     setShowCreateChapterModal(false);
@@ -358,7 +363,8 @@ const ChapterTopicCardWorkspace = ({
       setIsCreatingChapter(true);
       const dbSub = (options?.subjects || []).find((s) => getString(s.name).trim().toLowerCase() === getString(subject?.name || subject).trim().toLowerCase());
       const subIdNum = parseNumericId(subject?.id) || parseNumericId(dbSub?.id);
-      const matchCt = (options?.contentTypes || []).find((ct) => getString(ct.name).trim().toLowerCase() === String(contentType).trim().toLowerCase());
+      const targetType = normalizeContentType(contentType);
+      const matchCt = (options?.contentTypes || []).find((ct) => normalizeContentType(ct.name) === targetType);
 
       const chapterPayload = {
         name,
@@ -366,7 +372,7 @@ const ChapterTopicCardWorkspace = ({
         boardName: getString(board?.name || board),
         branchName: getString(branch?.name || branch),
         subjectName: getString(subject?.name || subject),
-        contentTypeName: contentType,
+        contentTypeName: matchCt?.name || contentType,
       };
 
       if (subIdNum) chapterPayload.subjectId = subIdNum;
@@ -405,6 +411,11 @@ const ChapterTopicCardWorkspace = ({
       ...prev,
       [chName]: [...(prev[chName] || []), topName],
     }));
+    setDeletedTopics((prev) => {
+      const next = new Set(prev);
+      next.delete(topName);
+      return next;
+    });
     toast.success(`Topic "${topName}" created under ${chName}!`);
     setNewTopicName('');
     setShowCreateTopicModal(false);
