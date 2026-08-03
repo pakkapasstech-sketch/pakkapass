@@ -664,6 +664,17 @@ const ContentManagement = () => {
     }
   };
 
+  const handleRefetchAll = async () => {
+    try {
+      if (refetchOptions) await refetchOptions();
+      if (refetch) await refetch();
+      await queryClient.invalidateQueries({ queryKey: ['content'] });
+      await queryClient.invalidateQueries({ queryKey: ['student-filter-options'] });
+    } catch (e) {
+      console.error('Error refetching options and content:', e);
+    }
+  };
+
   useEffect(() => {
     setLoading(isLoading);
     return () => setLoading(false);
@@ -926,7 +937,7 @@ const ContentManagement = () => {
               options={options}
               selectedChapter={selectedChapter}
               onSelectChapter={setSelectedChapter}
-              refetchOptions={refetchOptions}
+              refetchOptions={handleRefetchAll}
               onBackToSubjects={() => {
                 setSelectedSubject(null);
                 setSelectedChapter(null);
