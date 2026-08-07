@@ -290,7 +290,12 @@ const SubscriptionManagementPage = () => {
                         />
 
                         <div>
-                          <div className="student-name">{plan.name}</div>
+                          <div className="student-name" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {plan.name}
+                            {plan.isSupply && (
+                              <span style={{ fontSize: '10px', background: '#3b82f6', color: 'white', padding: '2px 6px', borderRadius: '4px' }}>Supply</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>

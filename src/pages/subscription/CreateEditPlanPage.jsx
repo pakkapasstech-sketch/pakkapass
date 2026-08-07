@@ -20,6 +20,8 @@ const initialForm = {
   boards: [],
   branches: [],
   features: [],
+  isSupply: false,
+  subjectId: '',
 };
 
 const CreateEditPlanPage = () => {
@@ -47,7 +49,7 @@ const CreateEditPlanPage = () => {
     },
   });
 
-  const { grades, boards, branches } = options;
+  const { grades, boards, branches, subjects } = options;
 
   const filteredBoards = formData.classes.length > 0 
     ? boards.filter(b => formData.classes.includes(b.gradeId))
@@ -57,6 +59,13 @@ const CreateEditPlanPage = () => {
     const matchClass = formData.classes.length === 0 || !branch.gradeId || formData.classes.includes(branch.gradeId);
     const matchBoard = formData.boards.length === 0 || !branch.boardId || formData.boards.includes(branch.boardId);
     return matchClass && matchBoard;
+  });
+
+  const filteredSubjects = subjects?.filter((sub) => {
+    const matchClass = formData.classes.length === 0 || !sub.gradeId || formData.classes.includes(sub.gradeId);
+    const matchBoard = formData.boards.length === 0 || !sub.boardId || formData.boards.includes(sub.boardId);
+    const matchBranch = formData.branches.length === 0 || !sub.branchId || formData.branches.includes(sub.branchId);
+    return matchClass && matchBoard && matchBranch;
   });
   useEffect(() => {
     if (!isEdit) {
@@ -78,6 +87,8 @@ const CreateEditPlanPage = () => {
           boards: selectedPlan.boardIds || [],
           branches: selectedPlan.branchIds || [],
           features: selectedPlan.features || [],
+          isSupply: selectedPlan.isSupply ?? false,
+          subjectId: selectedPlan.subjectId || '',
         });
       } catch (err) {
         console.error(err);
@@ -141,6 +152,8 @@ const CreateEditPlanPage = () => {
         features: formData.features,
         status: formData.status,
         isPublic: formData.isPublic,
+        isSupply: formData.isSupply,
+        subjectId: formData.isSupply ? (formData.subjectId || null) : null,
       };
 
       if (isEdit) {
@@ -350,9 +363,50 @@ const CreateEditPlanPage = () => {
               />
             </div>
           </div>
+
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <label style={{ margin: 0, minWidth: '100px' }}>
+              Supply (Carry) Plan
+              <span className="tooltip" title="Enable this if this plan is specifically for a supplementary subject purchase">ℹ️</span>
+            </label>
+            <div className="options" style={{ margin: 0 }}>
+              <button
+                type="button"
+                className={`option ${formData.isSupply ? 'selected' : ''}`}
+                onClick={() => updateField('isSupply', true)}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                className={`option ${!formData.isSupply ? 'selected' : ''}`}
+                onClick={() => updateField('isSupply', false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          {formData.isSupply && (
+            <div className="form-group">
+              <label>Select Subject</label>
+              <select
+                value={formData.subjectId}
+                onChange={(e) => updateField('subjectId', e.target.value)}
+                required={formData.isSupply}
+              >
+                <option value="">Select a subject...</option>
+                {filteredSubjects?.map((sub) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.name} ({sub.grade?.name || 'N/A'}{sub.board?.name ? ` - ${sub.board.name}` : ''})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
-        {/* Features */}
+        {/* Status */}
 
         <div className="form-card">
           <h3>Features</h3>
