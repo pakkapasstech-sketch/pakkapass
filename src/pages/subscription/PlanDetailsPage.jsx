@@ -27,6 +27,7 @@ const PlanDetailsPage = () => {
     grades: [],
     boards: [],
     branches: [],
+    subjects: [],
   });
 
   const [plan, setPlan] = useState(null);
@@ -93,6 +94,13 @@ const PlanDetailsPage = () => {
       .filter((b) => ids.includes(b.id))
       .map((b) => b.name);
 
+  const getSubjectName = (subjectId) => {
+    if (plan?.subject?.name) return plan.subject.name;
+    if (!subjectId || !options.subjects) return null;
+    const found = options.subjects.find((s) => String(s.id) === String(subjectId));
+    return found ? found.name : null;
+  };
+
   const handleDelete = async () => {
     const confirmed = window.confirm('Delete this plan?');
 
@@ -151,8 +159,21 @@ const PlanDetailsPage = () => {
 
       <div className="page-title-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1>{plan.name}</h1>
-          <p>Subscription Plan</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <h1 style={{ margin: 0 }}>{plan.name}</h1>
+            {plan.isSupply ? (
+              <span style={{ fontSize: '12px', background: '#3b82f6', color: 'white', padding: '4px 10px', borderRadius: '12px', fontWeight: '600' }}>
+                Supply (Carry) Plan
+              </span>
+            ) : (
+              <span style={{ fontSize: '12px', background: '#e2e8f0', color: '#475569', padding: '4px 10px', borderRadius: '12px', fontWeight: '600' }}>
+                Standard Plan
+              </span>
+            )}
+          </div>
+          <p style={{ margin: '4px 0 0 0' }}>
+            {plan.isSupply ? 'Subject Supply Subscription Plan' : 'Standard Subscription Plan'}
+          </p>
         </div>
         <span
           className={`status-badge ${
@@ -168,6 +189,33 @@ const PlanDetailsPage = () => {
         <h3>Basic Information</h3>
 
         <div className="detail-grid">
+          <div>
+            <label>Plan Type</label>
+            <p>
+              <span
+                style={{
+                  fontSize: '12px',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  fontWeight: '600',
+                  background: plan.isSupply ? '#e0e7ff' : '#f1f5f9',
+                  color: plan.isSupply ? '#4338ca' : '#334155',
+                }}
+              >
+                {plan.isSupply ? 'Supply (Carry) Plan' : 'Standard Plan'}
+              </span>
+            </p>
+          </div>
+
+          {plan.isSupply && (
+            <div>
+              <label>Subject Taken / Covered</label>
+              <p style={{ fontWeight: '700', color: '#1e293b', fontSize: '15px' }}>
+                {getSubjectName(plan.subjectId) || 'Subject Not Specified'}
+              </p>
+            </div>
+          )}
+
           <div>
             <label>Status</label>
             <p>{plan.status}</p>

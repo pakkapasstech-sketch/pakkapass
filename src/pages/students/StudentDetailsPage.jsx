@@ -85,6 +85,49 @@ const StudentDetailsPage = () => {
   const boardName = filterOptions?.boards?.find(b => String(b.id) === String(student?.boardId))?.name || student?.board || 'N/A';
   const branchName = filterOptions?.branches?.find(br => String(br.id) === String(student?.branchId))?.name || student?.branch || 'N/A';
 
+  const supplyPlans = useMemo(() => {
+    if (!student?.payments || !Array.isArray(student.payments)) return [];
+    return student.payments
+      .filter((p) => {
+        const isSupPlan = p.plan?.isSupply || p.isSupply || (p.plan?.name && (p.plan.name.toLowerCase().includes('supply') || p.plan.name.toLowerCase().includes('carry')));
+        return isSupPlan;
+      })
+      .map((p) => {
+        let subjName = p.plan?.subject?.name || p.subjectName || null;
+        if (!subjName && p.plan?.subjectId && filterOptions?.subjects) {
+          const found = filterOptions.subjects.find((s) => String(s.id) === String(p.plan.subjectId));
+          if (found) subjName = found.name;
+        }
+        if (!subjName && p.plan?.name) {
+          subjName = p.plan.name.replace(/\s*[-_]?\s*(Supply|Carry|Plan).*/i, '').trim();
+        }
+        return {
+          id: p.id,
+          planName: p.plan?.name || 'Supply Plan',
+          subject: subjName || p.plan?.name || 'Supply Subject',
+          amount: p.amount,
+          status: p.status === 'Success' ? 'Active' : p.status,
+          date: p.createdAt,
+        };
+      });
+  }, [student?.payments, filterOptions?.subjects]);
+
+  const normalSubjectUsage = useMemo(() => {
+    if (!student?.subjectWiseUsage || !Array.isArray(student.subjectWiseUsage)) return [];
+    return student.subjectWiseUsage;
+  }, [student?.subjectWiseUsage]);
+
+  const supplySubjectUsage = useMemo(() => {
+    if (!supplyPlans || supplyPlans.length === 0) return [];
+    return supplyPlans.map((sp) => ({
+      subject: sp.subject || sp.planName,
+      percentage: 0,
+      hours: '0.00',
+      isSupply: true,
+      planName: sp.planName,
+    }));
+  }, [supplyPlans]);
+
   const getActivityIcon = (type) => {
     switch (type) {
       case 'LOGIN':
@@ -498,8 +541,8 @@ useEffect(() => {
         Subject Wise Usage
       </h3>
 
-      {student.subjectWiseUsage?.length > 0 ? (
-        student.subjectWiseUsage.map((subject) => (
+      {normalSubjectUsage?.length > 0 ? (
+        normalSubjectUsage.map((subject) => (
           <div
             className="usage-item"
             key={subject.subject}
@@ -519,7 +562,40 @@ useEffect(() => {
           </div>
         ))
       ) : (
-        <p>No study activity recorded yet.</p>
+        <p>No study activity recorded for normal plan subjects yet.</p>
+      )}
+
+      {supplySubjectUsage?.length > 0 && (
+        <>
+          <h3 className="usage-title" style={{ marginTop: '28px' }}>
+            Supply Subject Usage
+          </h3>
+
+          {supplySubjectUsage.map((subject) => (
+            <div
+              className="usage-item"
+              key={`supply_${subject.subject}`}
+            >
+              <div className="usage-header">
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {subject.subject}
+                  <span style={{ fontSize: '10px', background: '#3b82f6', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: '500' }}>
+                    Supply
+                  </span>
+                </span>
+                <span>{subject.percentage ?? subject.hours ?? 0}%</span>
+              </div>
+
+              <div className="bar">
+                <span
+                  style={{
+                    width: `${subject.percentage ?? 0}%`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </>
       )}
 
       <h3 className="usage-title" style={{ marginTop: '32px' }}>
@@ -613,7 +689,7 @@ useEffect(() => {
         </button>
       </div>
 
-      <div className="info-list">
+      <div className="info-list" style={{ marginBottom: '24px' }}>
         <div className="info-item">
           <span>Current Plan</span>
           <strong>{student.plan === 'Free Trial' ? 'Free Trial' : `${student.plan} ${student.isFreeTrial ? '(Free Trial)' : ''}`.trim()}</strong>
@@ -643,6 +719,54 @@ useEffect(() => {
           <strong>{student.daysLeft} Days</strong>
         </div>
       </div>
+
+      {supplyPlans && supplyPlans.length > 0 && (
+        <div style={{ marginTop: '24px', marginBottom: '24px' }}>
+          <h3 style={{ margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>Supply (Carry) Plans Purchased</span>
+            <span style={{ fontSize: '12px', background: '#3b82f6', color: 'white', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
+              {supplyPlans.length} Active
+            </span>
+          </h3>
+
+          <div className="student-table-wrapper" style={{ overflowX: 'auto' }}>
+            <table className="student-table" style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th>Supply Plan</th>
+                  <th>Subject</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Purchase Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {supplyPlans.map((sp, idx) => (
+                  <tr key={sp.id || idx}>
+                    <td>
+                      <strong style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {sp.planName}
+                        <span style={{ fontSize: '10px', background: '#e0e7ff', color: '#4338ca', padding: '2px 6px', borderRadius: '4px' }}>
+                          Supply
+                        </span>
+                      </strong>
+                    </td>
+                    <td>{sp.subject || '—'}</td>
+                    <td>₹{Number(sp.amount || 0).toFixed(2)}</td>
+                    <td>
+                      <span className="status-badge status-active">
+                        {sp.status || 'Active'}
+                      </span>
+                    </td>
+                    <td>{sp.date ? new Date(sp.date).toLocaleDateString('en-IN') : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
     </section>
   )}
 

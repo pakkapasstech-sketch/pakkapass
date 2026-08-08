@@ -47,6 +47,13 @@ const SubscriptionManagementPage = () => {
   const getBranchNames = (ids = []) =>
     options.branches.filter((b) => ids.includes(b.id)).map((b) => b.name);
 
+  const getSubjectName = (subjectId, plan) => {
+    if (plan?.subject?.name) return plan.subject.name;
+    if (!subjectId || !options.subjects) return '';
+    const found = options.subjects.find((s) => String(s.id) === String(subjectId));
+    return found ? found.name : '';
+  };
+
   const filteredPlans = useMemo(() => {
     return plans.filter((plan) => {
       const searchTerm = search.trim().toLowerCase();
@@ -290,10 +297,16 @@ const SubscriptionManagementPage = () => {
                         />
 
                         <div>
-                          <div className="student-name" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className="student-name" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             {plan.name}
-                            {plan.isSupply && (
-                              <span style={{ fontSize: '10px', background: '#3b82f6', color: 'white', padding: '2px 6px', borderRadius: '4px' }}>Supply</span>
+                            {plan.isSupply ? (
+                              <span style={{ fontSize: '10px', background: '#3b82f6', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: '500' }}>
+                                Supply {getSubjectName(plan.subjectId, plan) ? `(${getSubjectName(plan.subjectId, plan)})` : ''}
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: '10px', background: '#e2e8f0', color: '#475569', padding: '2px 6px', borderRadius: '4px', fontWeight: '500' }}>
+                                Standard
+                              </span>
                             )}
                           </div>
                         </div>
