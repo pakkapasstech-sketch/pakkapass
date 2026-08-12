@@ -189,19 +189,8 @@ const TopicResourceWorkspace = ({
   }, [chapter, topic]);
 
   useEffect(() => {
-    try {
-      const savedOrderRaw = localStorage.getItem(storageKey);
-      if (savedOrderRaw) {
-        const savedOrder = JSON.parse(savedOrderRaw);
-        const sorted = sortWithSavedOrder(topicContent, savedOrder, (item) => item.id || item.title || item.name);
-        setOrderedItems(sorted);
-        return;
-      }
-    } catch (e) {
-      console.error(e);
-    }
     setOrderedItems(sortedContent);
-  }, [topicContent, sortedContent, storageKey]);
+  }, [sortedContent]);
 
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
@@ -217,34 +206,19 @@ const TopicResourceWorkspace = ({
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === dropIndex) return;
 
-    let updatedList = [];
-    setOrderedItems((prev) => {
-      const copy = [...prev];
-      const [draggedItem] = copy.splice(draggedIndex, 1);
-      copy.splice(dropIndex, 0, draggedItem);
-      updatedList = copy;
-
-      try {
-        const keysOrder = copy.map((item) => item.id || item.title || item.name);
-        localStorage.setItem(storageKey, JSON.stringify(keysOrder));
-      } catch (err) {
-        console.error(err);
-      }
-
-      return copy;
-    });
+    const copy = [...orderedItems];
+    const [draggedItem] = copy.splice(draggedIndex, 1);
+    copy.splice(dropIndex, 0, draggedItem);
+    
+    setOrderedItems(copy);
     setDraggedIndex(null);
 
     // Save order globally to PostgreSQL Database via API
     try {
-      await Promise.all(
-        updatedList.map((item, idx) => {
-          if (item.id) {
-            return entityService.updateContentAsset(item.id, { order: idx + 1 }).catch(() => {});
-          }
-          return Promise.resolve();
-        })
-      );
+      const orderedIds = copy.map(item => item.id).filter(id => id != null);
+      if (orderedIds.length > 0) {
+        await contentService.reorderContentAssets(orderedIds);
+      }
     } catch (err) {
       console.error('Failed to update content asset order in DB:', err);
     }
