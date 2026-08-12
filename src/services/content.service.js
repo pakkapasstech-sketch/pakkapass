@@ -26,6 +26,9 @@ export const mapContentFromApi = (
                 description:
                   asset.description,
 
+                order:
+                  asset.order,
+
                 type:
                   asset.assetType,
 
@@ -185,6 +188,9 @@ deleteAsset: (id) =>
   axiosInstance.delete(
     `/admin/content-asset/${id}`
   ),
+
+  reorderContentAssets: (orderedIds) =>
+    axiosInstance.put('/admin/content-assets/reorder', { orderedIds }),
 };
 
 export default contentService;
