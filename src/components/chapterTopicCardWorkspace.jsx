@@ -531,7 +531,7 @@ const ChapterTopicCardWorkspace = ({
     return parseNumericId(found?.id);
   };
 
-  const findTopicId = (topicItem) => {
+  const findTopicId = (topicItem, currentChapter = selectedChapter) => {
     if (typeof topicItem === 'object' && topicItem !== null) {
       const numId = parseNumericId(topicItem.id);
       if (numId) return numId;
@@ -539,9 +539,22 @@ const ChapterTopicCardWorkspace = ({
     const nameStr = typeof topicItem === 'object' ? (topicItem.rawName || topicItem.name) : String(topicItem || '');
     if (!nameStr) return undefined;
 
+    const chId = findChapterId(currentChapter);
+    const chName = typeof currentChapter === 'object' ? (currentChapter.rawName || currentChapter.name) : String(currentChapter || '');
+
     const found = (options?.topics || []).find((t) => {
       const tName = getString(t.name || t.title || t.topicName || t).trim().toLowerCase();
-      return tName === nameStr.trim().toLowerCase();
+      if (tName !== nameStr.trim().toLowerCase()) return false;
+
+      if (chId && t.chapterId) {
+        return String(t.chapterId) === String(chId);
+      }
+
+      if (chName && t.chapter?.name) {
+        return t.chapter.name.trim().toLowerCase() === chName.trim().toLowerCase();
+      }
+
+      return true;
     });
 
     return parseNumericId(found?.id);
