@@ -22,6 +22,21 @@ import { useLoading } from '../../contexts/LoadingContext';
 import { toast } from 'react-hot-toast';
 import { studentService } from '../../services/student.service';
 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Legend as RechartsLegend,
+  LabelList,
+} from 'recharts';
+
 import ErrorState from '../../components/loaders/ErrorState';
 
 const tabs = [
@@ -127,6 +142,109 @@ const StudentDetailsPage = () => {
       planName: sp.planName,
     }));
   }, [supplyPlans]);
+
+  const [barTimeframe, setBarTimeframe] = useState('daily');
+
+  const pieChartData = useMemo(() => {
+    if (student?.analytics?.timeSpentBySubject && Array.isArray(student.analytics.timeSpentBySubject) && student.analytics.timeSpentBySubject.length > 0) {
+      return student.analytics.timeSpentBySubject.map((item, idx) => ({
+        name: item.name,
+        value: item.percent || 0,
+        hours: item.hours || '0 min',
+        color: item.color || ['#6653AF', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6'][idx % 7]
+      }));
+    }
+
+    const combined = [...(normalSubjectUsage || []), ...(supplySubjectUsage || [])];
+    if (combined.length === 0) return [];
+
+    return combined.map((s, idx) => ({
+      name: s.subject,
+      value: s.percentage ?? Math.round(100 / combined.length),
+      hours: `${s.percentage ?? 0}%`,
+      color: ['#6653AF', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6'][idx % 7]
+    }));
+  }, [student?.analytics?.timeSpentBySubject, normalSubjectUsage, supplySubjectUsage]);
+
+  const barChartData = useMemo(() => {
+    const dailyLogs = student?.analytics?.dailyMinutes || {};
+    const now = new Date();
+
+    if (barTimeframe === 'daily') {
+      const result = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short' });
+        const minutes = dailyLogs[dateStr] || 0;
+        const hoursVal = parseFloat((minutes / 60).toFixed(1));
+        result.push({
+          label: dayLabel,
+          fullDate: dateStr,
+          minutes: minutes,
+          hoursVal: hoursVal,
+          hours: `${hoursVal}h`,
+        });
+      }
+      return result;
+    }
+
+    if (barTimeframe === 'weekly') {
+      const result = [
+        { label: 'Week 1', minutes: 0 },
+        { label: 'Week 2', minutes: 0 },
+        { label: 'Week 3', minutes: 0 },
+        { label: 'Week 4', minutes: 0 },
+      ];
+
+      Object.entries(dailyLogs).forEach(([dateStr, mins]) => {
+        const d = new Date(dateStr);
+        if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+          const dateNum = d.getDate();
+          if (dateNum <= 7) result[0].minutes += mins;
+          else if (dateNum <= 14) result[1].minutes += mins;
+          else if (dateNum <= 21) result[2].minutes += mins;
+          else result[3].minutes += mins;
+        }
+      });
+
+      return result.map((w) => {
+        const hVal = parseFloat((w.minutes / 60).toFixed(1));
+        return { ...w, hoursVal: hVal, hours: `${hVal}h` };
+      });
+    }
+
+    if (barTimeframe === 'monthly') {
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthMap = {};
+      monthNames.forEach((m) => {
+        monthMap[m] = 0;
+      });
+
+      Object.entries(dailyLogs).forEach(([dateStr, mins]) => {
+        const d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+          const mName = monthNames[d.getMonth()];
+          if (monthMap[mName] !== undefined) {
+            monthMap[mName] += mins;
+          }
+        }
+      });
+
+      return monthNames.map((m) => {
+        const hVal = parseFloat((monthMap[m] / 60).toFixed(1));
+        return {
+          label: m,
+          minutes: monthMap[m],
+          hoursVal: hVal,
+          hours: `${hVal}h`,
+        };
+      });
+    }
+
+    return [];
+  }, [student?.analytics?.dailyMinutes, barTimeframe]);
 
   const getActivityIcon = (type) => {
     switch (type) {
@@ -525,7 +643,7 @@ useEffect(() => {
     <section className="student-section">
       <h3>Activity Analytics</h3>
 
-      <div className="activity-list">
+      <div className="activity-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
         <div className="activity-item">
           <span>Total Study Hours</span>
           <strong>{student.totalHours}h</strong>
@@ -535,6 +653,103 @@ useEffect(() => {
           <span>Today's Study Hours</span>
           <strong>{student.todayHours}h</strong>
         </div>
+
+        <div className="activity-item">
+          <span>Study Streak</span>
+          <strong>{student.analytics?.streak || 0} Days</strong>
+        </div>
+
+        <div className="activity-item">
+          <span>Syllabus Completed</span>
+          <strong>{student.analytics?.completionPercent || 0}%</strong>
+        </div>
+      </div>
+
+      {/* Visual Analytics Charts: Pie Chart + Bar Chart */}
+      <div className="analytics-charts-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+        
+        {/* Pie Chart: Subject Usage */}
+        <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', padding: '20px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+          <h4 style={{ fontSize: '15px', fontWeight: '700', margin: '0 0 16px 0', color: 'var(--color-text-primary, #111827)' }}>
+            Subject Usage (Pie Chart)
+          </h4>
+          {pieChartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={pieChartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={48}
+                  outerRadius={80}
+                  paddingAngle={3}
+                >
+                  {pieChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <RechartsTooltip formatter={(value, name, props) => [`${value}% (${props.payload.hours})`, name]} />
+                <RechartsLegend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: '14px' }}>
+              No subject activity recorded yet.
+            </div>
+          )}
+        </div>
+
+        {/* Bar Chart: Daily, Weekly, Monthly Study Activity */}
+        <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', padding: '20px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+            <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)' }}>
+              Study Duration
+            </h4>
+            <div style={{ display: 'inline-flex', background: 'var(--color-main-bg, #f3f4f6)', borderRadius: '8px', padding: '3px' }}>
+              {['daily', 'weekly', 'monthly'].map((tf) => (
+                <button
+                  key={tf}
+                  type="button"
+                  onClick={() => setBarTimeframe(tf)}
+                  style={{
+                    border: 'none',
+                    background: barTimeframe === tf ? 'var(--color-primary, #6653AF)' : 'transparent',
+                    color: barTimeframe === tf ? '#ffffff' : 'var(--color-text-secondary, #4b5563)',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textTransform: 'capitalize',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {tf}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={barChartData} margin={{ top: 25, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} unit="h" />
+              <RechartsTooltip formatter={(value) => [`${value}h`, 'Study Time']} />
+              <Bar dataKey="hoursVal" fill="var(--color-primary, #6653AF)" radius={[6, 6, 0, 0]}>
+                <LabelList
+                  dataKey="hoursVal"
+                  position="top"
+                  formatter={(val) => (val > 0 ? `${val}h` : '')}
+                  style={{ fontSize: '11px', fontWeight: '700', fill: '#4b5563' }}
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
       </div>
 
       <h3 className="usage-title">
