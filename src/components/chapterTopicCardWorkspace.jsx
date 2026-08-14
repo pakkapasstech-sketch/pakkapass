@@ -30,9 +30,25 @@ const getString = (val) => {
 
 const sortByDatabaseOrder = (list) => {
   return [...list].sort((a, b) => {
-    const orderA = Number(a.order ?? a.orderIndex ?? a.position ?? 999999);
-    const orderB = Number(b.order ?? b.orderIndex ?? b.position ?? 999999);
-    return orderA - orderB;
+    const hasOrderA = a.order !== undefined && a.order !== null && a.order !== '' && !isNaN(Number(a.order)) && Number(a.order) !== 999999;
+    const hasOrderB = b.order !== undefined && b.order !== null && b.order !== '' && !isNaN(Number(b.order)) && Number(b.order) !== 999999;
+
+    if (hasOrderA && hasOrderB) {
+      return Number(a.order) - Number(b.order);
+    }
+    if (hasOrderA) return -1;
+    if (hasOrderB) return 1;
+
+    const numIdA = typeof a.id === 'number' ? a.id : (typeof a.id === 'string' && /^\d+$/.test(a.id) ? Number(a.id) : null);
+    const numIdB = typeof b.id === 'number' ? b.id : (typeof b.id === 'string' && /^\d+$/.test(b.id) ? Number(b.id) : null);
+
+    if (numIdA !== null && numIdB !== null) {
+      return numIdA - numIdB;
+    }
+    if (numIdA !== null) return -1;
+    if (numIdB !== null) return 1;
+
+    return 0;
   });
 };
 
@@ -408,7 +424,7 @@ const ChapterTopicCardWorkspace = ({
     }
     if (!selectedChapter) return;
 
-    const chName = selectedChapter.name;
+    const chName = selectedChapter.name || selectedChapter.rawName;
     const topName = newTopicName.trim();
 
     if (allTopicNames.some((t) => t.toLowerCase() === topName.toLowerCase())) {
@@ -432,8 +448,47 @@ const ChapterTopicCardWorkspace = ({
 
     try {
       setIsCreatingTopic(true);
-      const dbCh = (options?.chapters || []).find((c) => getString(c.name || c.title).trim().toLowerCase() === chName.trim().toLowerCase());
-      const chapterIdNum = parseNumericId(selectedChapter?.id) || parseNumericId(dbCh?.id);
+      const dbCh = (options?.chapters || []).find((c) => {
+        const cName = getString(c.name || c.title || c.chapterName).trim().toLowerCase();
+        return cName === chName.trim().toLowerCase();
+      }) || (dbChapters || []).find((c) => {
+        const cName = getString(c.name || c.title || c.chapterName).trim().toLowerCase();
+        return cName === chName.trim().toLowerCase();
+      });
+
+      const dbSub = (options?.subjects || []).find((s) => getString(s.name).trim().toLowerCase() === getString(subject?.name || subject).trim().toLowerCase());
+      const dbGrade = (options?.grades || []).find((g) => getString(g.name).trim().toLowerCase() === getString(grade?.name || grade).trim().toLowerCase());
+      const dbBoard = (options?.boards || []).find((b) => getString(b.name).trim().toLowerCase() === getString(board?.name || board).trim().toLowerCase());
+      const dbBranch = (options?.branches || []).find((br) => getString(br.name).trim().toLowerCase() === getString(branch?.name || branch).trim().toLowerCase());
+
+      let chapterIdNum = parseNumericId(selectedChapter?.id) || parseNumericId(dbCh?.id) || findChapterId(selectedChapter);
+      const subIdNum = parseNumericId(subject?.id) || parseNumericId(dbSub?.id) || parseNumericId(dbCh?.subjectId);
+      const gradeIdNum = parseNumericId(grade?.id) || parseNumericId(dbGrade?.id) || parseNumericId(dbCh?.gradeId);
+      const boardIdNum = parseNumericId(board?.id) || parseNumericId(dbBoard?.id) || parseNumericId(dbCh?.boardId);
+      const branchIdNum = parseNumericId(branch?.id) || parseNumericId(dbBranch?.id) || parseNumericId(dbCh?.branchId);
+
+      if (!chapterIdNum) {
+        const targetType = normalizeContentType(contentType);
+        const matchCt = (options?.contentTypes || []).find((ct) => normalizeContentType(ct.name) === targetType);
+
+        const chapterPayload = {
+          name: chName,
+          gradeName: getString(grade?.name || grade),
+          boardName: getString(board?.name || board),
+          branchName: getString(branch?.name || branch),
+          subjectName: getString(subject?.name || subject),
+          contentTypeName: matchCt?.name || contentType,
+        };
+
+        if (subIdNum) chapterPayload.subjectId = subIdNum;
+        if (boardIdNum) chapterPayload.boardId = boardIdNum;
+        if (gradeIdNum) chapterPayload.gradeId = gradeIdNum;
+        if (branchIdNum) chapterPayload.branchId = branchIdNum;
+        if (matchCt?.id) chapterPayload.contentTypeId = matchCt.id;
+
+        const chRes = await entityService.addChapter(chapterPayload);
+        chapterIdNum = parseNumericId(chRes?.data?.chapter?.id);
+      }
 
       const topicPayload = {
         name: topName,
@@ -444,14 +499,17 @@ const ChapterTopicCardWorkspace = ({
         branchName: getString(branch?.name || branch),
       };
 
-      if (chapterIdNum) {
-        topicPayload.chapterId = chapterIdNum;
-      }
+      if (chapterIdNum) topicPayload.chapterId = chapterIdNum;
+      if (subIdNum) topicPayload.subjectId = subIdNum;
+      if (gradeIdNum) topicPayload.gradeId = gradeIdNum;
+      if (boardIdNum) topicPayload.boardId = boardIdNum;
+      if (branchIdNum) topicPayload.branchId = branchIdNum;
 
       await entityService.addTopic(topicPayload);
       if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error('Failed to add topic to DB:', err);
+      toast.error(err.response?.data?.message || 'Failed to persist topic to database');
     } finally {
       setIsCreatingTopic(false);
     }
