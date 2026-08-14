@@ -733,10 +733,10 @@ useEffect(() => {
           </div>
 
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={barChartData} margin={{ top: 25, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={barChartData} margin={{ top: 25, right: 15, left: 10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} unit="h" />
+              <YAxis width={45} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} unit="h" />
               <RechartsTooltip formatter={(value) => [`${value}h`, 'Study Time']} />
               <Bar dataKey="hoursVal" fill="var(--color-primary, #6653AF)" radius={[6, 6, 0, 0]}>
                 <LabelList
