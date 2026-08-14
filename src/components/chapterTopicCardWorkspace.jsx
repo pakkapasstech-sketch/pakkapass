@@ -30,14 +30,12 @@ const getString = (val) => {
 
 const sortByDatabaseOrder = (list) => {
   return [...list].sort((a, b) => {
-    const hasOrderA = a.order !== undefined && a.order !== null && a.order !== '' && !isNaN(Number(a.order)) && Number(a.order) !== 999999;
-    const hasOrderB = b.order !== undefined && b.order !== null && b.order !== '' && !isNaN(Number(b.order)) && Number(b.order) !== 999999;
+    const orderA = a.order !== undefined && a.order !== null && a.order !== '' && !isNaN(Number(a.order)) ? Number(a.order) : 500000;
+    const orderB = b.order !== undefined && b.order !== null && b.order !== '' && !isNaN(Number(b.order)) ? Number(b.order) : 500000;
 
-    if (hasOrderA && hasOrderB) {
-      return Number(a.order) - Number(b.order);
+    if (orderA !== orderB) {
+      return orderA - orderB;
     }
-    if (hasOrderA) return -1;
-    if (hasOrderB) return 1;
 
     const numIdA = typeof a.id === 'number' ? a.id : (typeof a.id === 'string' && /^\d+$/.test(a.id) ? Number(a.id) : null);
     const numIdB = typeof b.id === 'number' ? b.id : (typeof b.id === 'string' && /^\d+$/.test(b.id) ? Number(b.id) : null);
@@ -277,7 +275,13 @@ const ChapterTopicCardWorkspace = ({
       const displayName = editedChapterNames[rawName] || rawName;
       if (displayName && !deletedChapters.has(rawName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
         namesSet.add(displayName.toLowerCase());
-        list.push({ ...ch, name: displayName, rawName });
+        const isNewlyCreatedCustom = customChapters.some(c => c.toLowerCase() === rawName.toLowerCase() || c.toLowerCase() === displayName.toLowerCase());
+        list.push({
+          ...ch,
+          name: displayName,
+          rawName,
+          order: isNewlyCreatedCustom ? 999999999 : ch.order,
+        });
       }
     });
 
@@ -286,7 +290,13 @@ const ChapterTopicCardWorkspace = ({
       const displayName = editedChapterNames[chName] || chName;
       if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
         namesSet.add(displayName.toLowerCase());
-        list.push({ id: `ch_content_${chName}`, name: displayName, rawName: chName });
+        const isNewlyCreatedCustom = customChapters.some(c => c.toLowerCase() === chName.toLowerCase() || c.toLowerCase() === displayName.toLowerCase());
+        list.push({
+          id: `ch_content_${chName}`,
+          name: displayName,
+          rawName: chName,
+          order: isNewlyCreatedCustom ? 999999999 : undefined,
+        });
       }
     });
 
@@ -295,7 +305,7 @@ const ChapterTopicCardWorkspace = ({
       const displayName = editedChapterNames[chName] || chName;
       if (displayName && !deletedChapters.has(chName) && !deletedChapters.has(displayName) && !namesSet.has(displayName.toLowerCase())) {
         namesSet.add(displayName.toLowerCase());
-        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName, order: 999999 });
+        list.push({ id: `custom_ch_${chName}`, name: displayName, rawName: chName, order: 999999999 });
       }
     });
 
