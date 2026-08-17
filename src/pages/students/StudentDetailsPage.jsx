@@ -97,6 +97,9 @@ const StudentDetailsPage = () => {
   const ipAddress = currentStudentFromAll?.ipAddress || 'N/A';
 
   const gradeName = filterOptions?.grades?.find(g => String(g.id) === String(student?.gradeId))?.name || student?.class || 'N/A';
+  const previousGradeName = filterOptions?.grades?.find(g => String(g.id) === String(student?.previousGradeId))?.name || student?.previousGrade?.name || null;
+  const previousBoardName = filterOptions?.boards?.find(b => String(b.id) === String(student?.previousBoardId))?.name || student?.previousBoard?.name || null;
+  const previousBranchName = filterOptions?.branches?.find(br => String(br.id) === String(student?.previousBranchId))?.name || student?.previousBranch?.name || null;
   const boardName = filterOptions?.boards?.find(b => String(b.id) === String(student?.boardId))?.name || student?.board || 'N/A';
   const branchName = filterOptions?.branches?.find(br => String(br.id) === String(student?.branchId))?.name || student?.branch || 'N/A';
 
@@ -527,17 +530,38 @@ useEffect(() => {
 
           <div className="info-item">
             <span>Class</span>
-            <strong>{gradeName}</strong>
+            <strong>
+              {gradeName}
+              {previousGradeName && (
+                <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
+                  (Upgraded from {previousGradeName})
+                </span>
+              )}
+            </strong>
           </div>
 
           <div className="info-item">
             <span>Board</span>
-            <strong>{boardName}</strong>
+            <strong>
+              {boardName}
+              {previousBoardName && (
+                <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
+                  (Upgraded from {previousBoardName})
+                </span>
+              )}
+            </strong>
           </div>
 
           <div className="info-item">
             <span>Branch</span>
-            <strong>{branchName}</strong>
+            <strong>
+              {branchName}
+              {previousBranchName && (
+                <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
+                  (Upgraded from {previousBranchName})
+                </span>
+              )}
+            </strong>
           </div>
 
           <div className="info-item">
