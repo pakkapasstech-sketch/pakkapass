@@ -153,9 +153,9 @@ const ChapterTopicCardWorkspace = ({
 
       const matchesGrade = !targetGrade || chGrade === targetGrade;
       const matchesBoard = !targetBoard || chBoard === targetBoard;
-      const matchesBranch = !targetBranch || targetBranch === 'general' || chBranch === targetBranch;
+      const matchesBranch = !targetBranch || chBranch === targetBranch || (!chBranch && !ch.branchId);
       const matchesSubject = !targetSubject || chSubject === targetSubject;
-      const matchesType = !targetType || chType === targetType;
+      const matchesType = !targetType || !chType || chType === targetType;
 
       return matchesGrade && matchesBoard && matchesBranch && matchesSubject && matchesType;
     });
