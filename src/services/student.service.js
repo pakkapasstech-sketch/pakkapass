@@ -89,26 +89,28 @@ export const studentService = {
     return profilePromises[studentId];
   },
 
-  getAnalytics: async (studentId) => {
+  getAnalytics: async (studentId, filter) => {
+    const cacheKey = filter ? `${studentId}_${filter}` : studentId;
     const now = Date.now();
-    if (analyticsCaches[studentId] && (now - analyticsCacheTimes[studentId] < CACHE_DURATION)) {
-      return analyticsCaches[studentId];
+    if (analyticsCaches[cacheKey] && (now - analyticsCacheTimes[cacheKey] < CACHE_DURATION)) {
+      return analyticsCaches[cacheKey];
     }
-    if (analyticsPromises[studentId]) {
-      return analyticsPromises[studentId];
+    if (analyticsPromises[cacheKey]) {
+      return analyticsPromises[cacheKey];
     }
-    analyticsPromises[studentId] = axiosInstance.get(`/student/${studentId}/analytics`)
+    const url = `/student/${studentId}/analytics${filter ? `?filter=${filter}` : ''}`;
+    analyticsPromises[cacheKey] = axiosInstance.get(url)
       .then(res => {
-        analyticsCaches[studentId] = res.data;
-        analyticsCacheTimes[studentId] = Date.now();
-        analyticsPromises[studentId] = null;
+        analyticsCaches[cacheKey] = res.data;
+        analyticsCacheTimes[cacheKey] = Date.now();
+        analyticsPromises[cacheKey] = null;
         return res.data;
       })
       .catch(err => {
-        analyticsPromises[studentId] = null;
+        analyticsPromises[cacheKey] = null;
         throw err;
       });
-    return analyticsPromises[studentId];
+    return analyticsPromises[cacheKey];
   },
 
 

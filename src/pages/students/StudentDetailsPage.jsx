@@ -144,10 +144,30 @@ const StudentDetailsPage = () => {
   }, [supplyPlans]);
 
   const [barTimeframe, setBarTimeframe] = useState('daily');
+  const [timeframeAnalytics, setTimeframeAnalytics] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (id && barTimeframe) {
+      studentService.getAnalytics(id, barTimeframe)
+        .then((data) => {
+          if (isMounted && data) {
+            setTimeframeAnalytics(data);
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to fetch timeframe analytics:', err);
+        });
+    }
+    return () => { isMounted = false; };
+  }, [id, barTimeframe]);
+
+  const activeAnalytics = timeframeAnalytics || student?.analytics;
 
   const pieChartData = useMemo(() => {
-    if (student?.analytics?.timeSpentBySubject && Array.isArray(student.analytics.timeSpentBySubject) && student.analytics.timeSpentBySubject.length > 0) {
-      return student.analytics.timeSpentBySubject.map((item, idx) => ({
+    const timeSpent = activeAnalytics?.timeSpentBySubject;
+    if (timeSpent && Array.isArray(timeSpent) && timeSpent.length > 0) {
+      return timeSpent.map((item, idx) => ({
         name: item.name,
         value: item.percent || 0,
         hours: item.hours || '0 min',
@@ -164,10 +184,10 @@ const StudentDetailsPage = () => {
       hours: `${s.percentage ?? 0}%`,
       color: ['#6653AF', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6'][idx % 7]
     }));
-  }, [student?.analytics?.timeSpentBySubject, normalSubjectUsage, supplySubjectUsage]);
+  }, [activeAnalytics?.timeSpentBySubject, normalSubjectUsage, supplySubjectUsage]);
 
   const barChartData = useMemo(() => {
-    const dailyLogs = student?.analytics?.dailyMinutes || {};
+    const dailyLogs = activeAnalytics?.dailyMinutes || student?.analytics?.dailyMinutes || {};
     const now = new Date();
 
     if (barTimeframe === 'daily') {
@@ -244,7 +264,7 @@ const StudentDetailsPage = () => {
     }
 
     return [];
-  }, [student?.analytics?.dailyMinutes, barTimeframe]);
+  }, [activeAnalytics?.dailyMinutes, student?.analytics?.dailyMinutes, barTimeframe]);
 
   const getActivityIcon = (type) => {
     switch (type) {
@@ -641,7 +661,32 @@ useEffect(() => {
 
   {activeTab === 'Activity Analytics' && (
     <section className="student-section">
-      <h3>Activity Analytics</h3>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
+        <h3 style={{ margin: 0 }}>Activity Analytics</h3>
+        <div style={{ display: 'inline-flex', background: 'var(--color-main-bg, #f3f4f6)', borderRadius: '8px', padding: '3px', border: '1px solid var(--color-border, #e5e7eb)' }}>
+          {['daily', 'weekly', 'monthly'].map((tf) => (
+            <button
+              key={tf}
+              type="button"
+              onClick={() => setBarTimeframe(tf)}
+              style={{
+                border: 'none',
+                background: barTimeframe === tf ? 'var(--color-primary, #6653AF)' : 'transparent',
+                color: barTimeframe === tf ? '#ffffff' : 'var(--color-text-secondary, #4b5563)',
+                padding: '5px 12px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+                transition: 'all 0.2s',
+              }}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="activity-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
         <div className="activity-item">
@@ -670,9 +715,34 @@ useEffect(() => {
         
         {/* Pie Chart: Subject Usage */}
         <div style={{ background: 'var(--color-card, #ffffff)', borderRadius: '16px', padding: '20px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-          <h4 style={{ fontSize: '15px', fontWeight: '700', margin: '0 0 16px 0', color: 'var(--color-text-primary, #111827)' }}>
-            Subject Usage (Pie Chart)
-          </h4>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+            <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)' }}>
+              Subject Usage (Pie Chart)
+            </h4>
+            <div style={{ display: 'inline-flex', background: 'var(--color-main-bg, #f3f4f6)', borderRadius: '8px', padding: '3px' }}>
+              {['daily', 'weekly', 'monthly'].map((tf) => (
+                <button
+                  key={tf}
+                  type="button"
+                  onClick={() => setBarTimeframe(tf)}
+                  style={{
+                    border: 'none',
+                    background: barTimeframe === tf ? 'var(--color-primary, #6653AF)' : 'transparent',
+                    color: barTimeframe === tf ? '#ffffff' : 'var(--color-text-secondary, #4b5563)',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textTransform: 'capitalize',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {tf}
+                </button>
+              ))}
+            </div>
+          </div>
           {pieChartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
