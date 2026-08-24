@@ -154,7 +154,19 @@ const ImportStudentsPage = () => {
     fetchPlans();
   }, []);
 
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
+    let currentPlans = availablePlans;
+    try {
+      const fetchedPlans = await getPlans();
+      if (fetchedPlans && Array.isArray(fetchedPlans)) {
+        currentPlans = fetchedPlans;
+        setAvailablePlans(fetchedPlans);
+      }
+    } catch (err) {
+      console.error("Could not fetch real-time plans:", err);
+    }
+
+    // Sheet 1: Student Data
     const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID']];
     const ws1 = XLSX.utils.aoa_to_sheet(headers);
 
@@ -169,12 +181,69 @@ const ImportStudentsPage = () => {
     }
     ws1['!cols'] = Array(headers[0].length).fill({ wch: 20 });
 
+    // Sheet 2: Available Plans (Real-time detailed table)
+    const planTableHeaders = [['Plan ID', 'Plan Name', 'Price (Rupees)', 'Duration (Days)', 'Type (Public / Private)', 'Category (Supply / Standard)', 'Status']];
+    const planTableRows = (currentPlans || []).map((p) => [
+      p.id,
+      p.name || 'Unnamed Plan',
+      p.price !== undefined && p.price !== null ? `₹${p.price}` : 'Free',
+      p.durationDays ? `${p.durationDays} Days` : 'N/A',
+      p.isPublic === false ? 'Private' : 'Public',
+      p.isSupply ? 'Supply Plan' : 'Standard Plan',
+      p.status || 'Active',
+    ]);
+
+    const wsPlansData = [...planTableHeaders, ...planTableRows];
+    const wsPlans = XLSX.utils.aoa_to_sheet(wsPlansData);
+
+    // Style headers for Available Plans
+    for (let c = 0; c < planTableHeaders[0].length; c++) {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c });
+      if (wsPlans[cellRef]) {
+        wsPlans[cellRef].s = {
+          font: { bold: true },
+          alignment: { horizontal: "center", vertical: "center" }
+        };
+      }
+    }
+
+    // Set column widths for Available Plans
+    wsPlans['!cols'] = [
+      { wch: 10 }, // Plan ID
+      { wch: 30 }, // Plan Name
+      { wch: 16 }, // Price (Rupees)
+      { wch: 16 }, // Duration (Days)
+      { wch: 22 }, // Type
+      { wch: 24 }, // Category
+      { wch: 12 }  // Status
+    ];
+
+    // Style data cells for Available Plans
+    for (let r = 1; r < wsPlansData.length; r++) {
+      for (let c = 0; c < wsPlansData[r].length; c++) {
+        const cellRef = XLSX.utils.encode_cell({ r, c });
+        if (wsPlans[cellRef]) {
+          wsPlans[cellRef].s = {
+            alignment: { vertical: "center", horizontal: c === 0 || c === 2 || c === 3 || c === 4 || c === 5 || c === 6 ? "center" : "left" }
+          };
+        }
+      }
+    }
+
+    // Sheet 3: Instructions
     const gradesList = [...new Set((optionsData?.grades || []).map(g => g.name || g.gradeName || g.grade || g).filter(Boolean))];
     const boardsList = [...new Set((optionsData?.boards || []).map(b => b.name || b.boardName || b.board || b).filter(Boolean))];
     const branchesList = [...new Set((optionsData?.branches || optionsData?.courses || []).map(b => b.name || b.branchName || b.courseName || b.branch || b).filter(Boolean))];
-    const plansString = availablePlans.length > 0
-      ? availablePlans.map(p => `ID ${p.id}: ${p.name || 'Plan'} (${p.durationDays || 365} days)`).join(' | ')
-      : 'Enter subscription plan ID (e.g. 1, 2)';
+    
+    const plansSummaryString = currentPlans.length > 0
+      ? currentPlans.map(p => {
+          const typeStr = p.isPublic === false ? 'Private' : 'Public';
+          const supplyStr = p.isSupply ? 'Supply Plan' : 'Standard Plan';
+          const priceStr = `₹${p.price ?? 0}`;
+          const daysStr = `${p.durationDays || 365} Days`;
+          return `ID ${p.id}: ${p.name || 'Plan'} [${typeStr} | ${supplyStr} | ${priceStr} | ${daysStr}]`;
+        }).join(' \n')
+      : 'Enter subscription plan ID (e.g. 1, 2). See Available Plans sheet.';
 
     const gradesString = gradesList.join(', ');
     const boardsString = boardsList.join(', ');
@@ -185,10 +254,10 @@ const ImportStudentsPage = () => {
       ['Available Grades', gradesString],
       ['Available Boards', boardsString],
       ['Available Branches', branchesString],
-      ['Available Plan IDs', plansString],
+      ['Available Subscription Plans', plansSummaryString],
       ['Note for 11th Grade', 'For 11th, it is equivalent to +1 or Intermediate 1st Year'],
       ['Note for 12th Grade', 'For 12th, it is equivalent to +2 or Intermediate 2nd Year'],
-      ['Format Rules', 'Name, Email, Grade, and Institute are mandatory. Plan ID is optional (must be a valid plan ID if provided).']
+      ['Format Rules', 'Name, Email, Grade, and Institute are mandatory. Plan ID is optional (must be a valid plan ID from the "Available Plans" sheet if provided).']
     ];
     const ws2 = XLSX.utils.aoa_to_sheet(instructionsData);
 
@@ -205,7 +274,7 @@ const ImportStudentsPage = () => {
     // Set column widths for Instructions
     ws2['!cols'] = [
       { wch: 30 }, // Category
-      { wch: 100 }  // Details
+      { wch: 110 }  // Details
     ];
 
     // Style data cells for Instructions
@@ -221,6 +290,7 @@ const ImportStudentsPage = () => {
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws1, "Student Data");
+    XLSX.utils.book_append_sheet(wb, wsPlans, "Available Plans");
     XLSX.utils.book_append_sheet(wb, ws2, "Instructions");
 
     XLSX.writeFile(wb, "student_import_template.xlsx");
