@@ -305,8 +305,8 @@ const MostViewedPage = () => {
             <tbody>
               {paginatedTopics.length === 0 ? (
                 <tr>
-                  <td colSpan="10" style={{ textAlign: 'center', padding: '40px 16px', color: '#64748b' }}>
-                    <HiOutlineCollection style={{ fontSize: 36, color: '#cbd5e1', marginBottom: 8 }} />
+                  <td colSpan="10" style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--color-text-secondary, #64748b)' }}>
+                    <HiOutlineCollection style={{ fontSize: 36, color: 'var(--color-text-muted, #cbd5e1)', marginBottom: 8 }} />
                     <div>No content matches your search filter</div>
                   </td>
                 </tr>
@@ -323,18 +323,18 @@ const MostViewedPage = () => {
                           #{globalRank}
                         </div>
                       </td>
-                      <td style={{ fontWeight: 600, color: '#0f172a' }}>{item.topicName}</td>
-                      <td style={{ color: '#475569' }}>{item.grade || 'N/A'}</td>
-                      <td style={{ color: '#475569' }}>{item.board || 'N/A'}</td>
-                      <td style={{ color: '#475569' }}>{item.branch || 'N/A'}</td>
-                      <td style={{ color: '#475569' }}>{item.subjectName}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--color-text-primary, #0f172a)' }}>{item.topicName}</td>
+                      <td style={{ color: 'var(--color-text-secondary, #475569)' }}>{item.grade || 'N/A'}</td>
+                      <td style={{ color: 'var(--color-text-secondary, #475569)' }}>{item.board || 'N/A'}</td>
+                      <td style={{ color: 'var(--color-text-secondary, #475569)' }}>{item.branch || 'N/A'}</td>
+                      <td style={{ color: 'var(--color-text-secondary, #475569)' }}>{item.subjectName}</td>
                       <td style={{ whiteSpace: 'nowrap' }}>
                         <span className="view-count-badge">
                           <HiOutlineEye style={{ fontSize: 15 }} />
                           {item.uniqueStudents || item.viewCount || 0} views
                         </span>
                       </td>
-                      <td style={{ color: '#475569', whiteSpace: 'nowrap' }}>
+                      <td style={{ color: 'var(--color-text-secondary, #475569)', whiteSpace: 'nowrap' }}>
                         {parseFloat(item.watchHours || 0).toFixed(1)} hrs
                       </td>
                       <td style={{ whiteSpace: 'nowrap' }}>
@@ -343,7 +343,7 @@ const MostViewedPage = () => {
                             <HiStar
                               key={star}
                               style={{
-                                color: star <= Math.round(rating) ? '#f59e0b' : '#e2e8f0'
+                                color: star <= Math.round(rating) ? '#f59e0b' : 'var(--color-border, #e2e8f0)'
                               }}
                             />
                           ))}
@@ -397,7 +397,7 @@ const MostViewedPage = () => {
         </div>
 
         {combinedSubjectHours.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#64748b', padding: '24px' }}>
+          <div style={{ textAlign: 'center', color: 'var(--color-text-secondary, #64748b)', padding: '24px' }}>
             No subject watch hour data available.
           </div>
         ) : (
