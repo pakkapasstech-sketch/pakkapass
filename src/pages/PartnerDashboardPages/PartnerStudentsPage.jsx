@@ -12,9 +12,11 @@ import '../../styles/ParentsManagement.css';
 import { useEffect } from 'react';
 import partnerService from '../../services/partner.service';
 import { useLoading } from '../../contexts/LoadingContext';
+import { useStudentFilterOptions } from '../../hooks/useStudents';
 
 export default function PartnerStudentsPage() {
   const { setLoading } = useLoading();
+  const { data: filterOptions } = useStudentFilterOptions();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -37,6 +39,13 @@ export default function PartnerStudentsPage() {
     loadStudents();
   }, [setLoading]);
 
+  const classesOptions = useMemo(() => {
+    const backendGrades = (filterOptions?.grades || []).map((g) => g.name || g.gradeName || g.grade || g).filter(Boolean);
+    const studentGrades = students.map((s) => s.class).filter((c) => c && c !== 'N/A');
+    const combined = Array.from(new Set([...backendGrades, ...studentGrades]));
+    return ['All Classes', ...combined];
+  }, [filterOptions?.grades, students]);
+
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
       const searchTerm = search.trim().toLowerCase();
@@ -46,7 +55,13 @@ export default function PartnerStudentsPage() {
         student.name.toLowerCase().includes(searchTerm) ||
         student.id.toLowerCase().includes(searchTerm) ||
         (student.referralCode || '').toLowerCase().includes(searchTerm);
-      const matchesClass = classFilter === '' || student.class === classFilter;
+
+      const matchesClass =
+        classFilter === '' ||
+        student.class === classFilter ||
+        String(student.class).toLowerCase() === classFilter.toLowerCase() ||
+        String(student.class).toLowerCase().includes(classFilter.toLowerCase()) ||
+        classFilter.toLowerCase().includes(String(student.class).toLowerCase());
 
       const matchesStatus = statusFilter === '' || student.status === statusFilter;
 
@@ -198,7 +213,7 @@ export default function PartnerStudentsPage() {
         <CommonFilterDropdown
           placeholder="All Classes"
           value={classFilter || 'All Classes'}
-          options={['All Classes', '7', '8', '9', '10']}
+          options={classesOptions}
           onChange={(value) => setClassFilter(value === 'All Classes' ? '' : value)}
         />
 
