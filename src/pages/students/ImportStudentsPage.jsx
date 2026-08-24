@@ -166,41 +166,12 @@ const ImportStudentsPage = () => {
       console.error("Could not fetch real-time plans:", err);
     }
 
-    // Sheet 1: Student Data + Side-by-side Real-time Available Plans Reference
-    const studentHeaders = ['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID'];
-    const planRefHeaders = ['', 'PLAN REFERENCE', 'Plan ID', 'Plan Name', 'Price (Rupees)', 'Duration (Days)', 'Type (Public / Private)', 'Category (Supply / Standard)'];
-    
-    const combinedHeaderRow = [...studentHeaders, ...planRefHeaders];
-    const sampleStudentRow = [
-      'Rahul Sharma', '9876543210', 'rahul@gmail.com', 'Grade 10', 'CBSE', 'Science',
-      'Rajesh Sharma', '9876543211', 'parent@gmail.com', 'DPS Public School',
-      'Delhi', 'Central', 'New Delhi', currentPlans[0]?.id || 1
-    ];
+    // Sheet 1: Student Data (Restored to clean original header format)
+    const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID']];
+    const ws1 = XLSX.utils.aoa_to_sheet(headers);
 
-    const maxRows = Math.max(1, (currentPlans || []).length);
-    const ws1Rows = [combinedHeaderRow];
-
-    for (let i = 0; i < maxRows; i++) {
-      const studentPart = i === 0 ? sampleStudentRow : Array(studentHeaders.length).fill('');
-      const p = currentPlans[i];
-      const planPart = p ? [
-        '',
-        `Ref #${i + 1}`,
-        p.id,
-        p.name || 'Plan',
-        p.price !== undefined && p.price !== null ? `₹${p.price}` : 'Free',
-        p.durationDays ? `${p.durationDays} Days` : 'N/A',
-        p.isPublic === false ? 'Private' : 'Public',
-        p.isSupply ? 'Supply Plan' : 'Standard Plan'
-      ] : ['', '', '', '', '', '', '', ''];
-
-      ws1Rows.push([...studentPart, ...planPart]);
-    }
-
-    const ws1 = XLSX.utils.aoa_to_sheet(ws1Rows);
-
-    // Style headers for Sheet 1
-    for (let c = 0; c < combinedHeaderRow.length; c++) {
+    // Style headers for Student Data
+    for (let c = 0; c < headers[0].length; c++) {
       const cellRef = XLSX.utils.encode_cell({ r: 0, c });
       if (!ws1[cellRef]) continue;
       ws1[cellRef].s = {
@@ -208,14 +179,7 @@ const ImportStudentsPage = () => {
         alignment: { horizontal: "center", vertical: "center" }
       };
     }
-    
-    // Set column widths for Sheet 1 (A-N student fields + P-V plan reference)
-    ws1['!cols'] = [
-      { wch: 18 }, { wch: 15 }, { wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
-      { wch: 18 }, { wch: 15 }, { wch: 22 }, { wch: 20 }, { wch: 14 }, { wch: 14 },
-      { wch: 14 }, { wch: 10 }, { wch: 4 },  { wch: 16 }, { wch: 10 }, { wch: 26 },
-      { wch: 16 }, { wch: 16 }, { wch: 22 }, { wch: 24 }
-    ];
+    ws1['!cols'] = Array(headers[0].length).fill({ wch: 20 });
 
     // Sheet 2: Available Plans (Real-time detailed standalone table)
     const planTableHeaders = [['Plan ID', 'Plan Name', 'Price (Rupees)', 'Duration (Days)', 'Type (Public / Private)', 'Category (Supply / Standard)', 'Status']];
