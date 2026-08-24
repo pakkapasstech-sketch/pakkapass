@@ -787,13 +787,13 @@ const TopicResourceWorkspace = ({
           <div style={{ overflowX: 'auto', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', border: '1px solid var(--color-border, #e2e8f0)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--color-card, #ffffff)', minWidth: '800px' }}>
               <thead>
-                <tr style={{ background: 'var(--color-bg, #f8fafc)', borderBottom: '1px solid var(--color-border, #e2e8f0)' }}>
-                  <th style={{ width: '50px', padding: '16px 20px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: '#475569' }}></th>
-                  <th style={{ width: '60px', padding: '16px 10px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Order</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resource Name</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Size</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
+                <tr style={{ background: 'var(--color-surface, #f8fafc)', borderBottom: '1px solid var(--color-border, #e2e8f0)' }}>
+                  <th style={{ width: '50px', padding: '16px 20px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-secondary, #475569)' }}></th>
+                  <th style={{ width: '60px', padding: '16px 10px', textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-secondary, #475569)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Order</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-secondary, #475569)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resource Name</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-secondary, #475569)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-secondary, #475569)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Size</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: 'var(--color-text-secondary, #475569)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -849,7 +849,7 @@ const TopicResourceWorkspace = ({
                             {isVid ? <HiOutlineVideoCamera size={20} /> : <HiOutlineDocumentText size={20} />}
                           </div>
                           <div style={{ overflow: 'hidden', flex: 1 }}>
-                            <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #0f172a)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {item.title || item.name || item.fileName || item.description || 'Uploaded Content'}
                             </h4>
                             <p style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)', margin: '4px 0 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -976,7 +976,7 @@ const TopicResourceWorkspace = ({
 
             <form onSubmit={handleSaveEditResource}>
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--color-text-primary, #111827)' }}>
                   Resource Title <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
@@ -987,7 +987,9 @@ const TopicResourceWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+                    border: '1px solid var(--color-border, #e5e7eb)',
+                    background: 'var(--color-surface, #f8fafc)',
+                    color: 'var(--color-text-primary, #111827)',
                     fontSize: '13px',
                   }}
                   required
@@ -995,7 +997,7 @@ const TopicResourceWorkspace = ({
               </div>
 
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--color-text-primary, #111827)' }}>
                   Description
                 </label>
                 <textarea
@@ -1006,7 +1008,9 @@ const TopicResourceWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+                    border: '1px solid var(--color-border, #e5e7eb)',
+                    background: 'var(--color-surface, #f8fafc)',
+                    color: 'var(--color-text-primary, #111827)',
                     fontSize: '13px',
                     resize: 'vertical',
                   }}
@@ -1014,7 +1018,7 @@ const TopicResourceWorkspace = ({
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--color-text-primary, #111827)' }}>
                   File URL / Link
                 </label>
                 <input
@@ -1025,7 +1029,9 @@ const TopicResourceWorkspace = ({
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+                    border: '1px solid var(--color-border, #e5e7eb)',
+                    background: 'var(--color-surface, #f8fafc)',
+                    color: 'var(--color-text-primary, #111827)',
                     fontSize: '13px',
                   }}
                 />

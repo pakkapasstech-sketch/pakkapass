@@ -789,7 +789,7 @@ const ChapterTopicCardWorkspace = ({
         {allTopicNames.length > 0 ? (
           <div style={{ overflowX: 'auto', background: 'var(--color-card, #ffffff)', borderRadius: '8px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-              <thead style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border, #e5e7eb)' }}>
+              <thead style={{ background: 'var(--color-surface, #f8fafc)', borderBottom: '2px solid var(--color-border, #e5e7eb)' }}>
                 <tr>
                   <th style={{ width: '40px', padding: '14px 10px', textAlign: 'center' }}></th>
                   <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>S.No</th>
@@ -821,7 +821,7 @@ const ChapterTopicCardWorkspace = ({
                         background: isBeingDragged ? 'rgba(102, 83, 175, 0.05)' : 'transparent',
                         opacity: isBeingDragged ? 0.6 : 1
                       }}
-                      onMouseEnter={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = '#f1f5f9')}
+                      onMouseEnter={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = 'var(--color-surface, #f1f5f9)')}
                       onMouseLeave={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       <td style={{ padding: '16px 10px', textAlign: 'center', color: 'var(--color-text-muted, #9ca3af)' }}>
@@ -829,10 +829,10 @@ const ChapterTopicCardWorkspace = ({
                           <HiOutlineSelector size={20} />
                         </div>
                       </td>
-                      <td style={{ padding: '16px 20px', fontSize: '14px', color: '#334155' }}>
+                      <td style={{ padding: '16px 20px', fontSize: '14px', color: 'var(--color-text-secondary, #334155)' }}>
                         {idx + 1}
                       </td>
-                      <td style={{ padding: '16px 20px', fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>
+                      <td style={{ padding: '16px 20px', fontSize: '15px', fontWeight: '600', color: 'var(--color-text-primary, #0f172a)' }}>
                         {topName}
                       </td>
                       <td style={{ padding: '16px 20px', fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)' }}>
@@ -1157,7 +1157,7 @@ const ChapterTopicCardWorkspace = ({
       {allChaptersList.length > 0 ? (
         <div style={{ overflowX: 'auto', background: 'var(--color-card, #ffffff)', borderRadius: '8px', border: '1px solid var(--color-border, #e5e7eb)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border, #e5e7eb)' }}>
+            <thead style={{ background: 'var(--color-surface, #f8fafc)', borderBottom: '2px solid var(--color-border, #e5e7eb)' }}>
               <tr>
                 <th style={{ width: '40px', padding: '14px 10px', textAlign: 'center' }}></th>
                 <th style={{ padding: '14px 20px', color: 'var(--color-text-secondary, #6b7280)', fontWeight: '600', fontSize: '13px' }}>S.No</th>
@@ -1206,7 +1206,7 @@ const ChapterTopicCardWorkspace = ({
                       background: isBeingDragged ? 'rgba(102, 83, 175, 0.05)' : 'transparent',
                       opacity: isBeingDragged ? 0.6 : 1
                     }}
-                    onMouseEnter={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = '#f1f5f9')}
+                    onMouseEnter={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = 'var(--color-surface, #f1f5f9)')}
                     onMouseLeave={(e) => !isBeingDragged && (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <td style={{ padding: '16px 10px', textAlign: 'center', color: 'var(--color-text-muted, #9ca3af)' }}>
@@ -1214,10 +1214,10 @@ const ChapterTopicCardWorkspace = ({
                         <HiOutlineSelector size={20} />
                       </div>
                     </td>
-                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#334155' }}>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: 'var(--color-text-secondary, #334155)' }}>
                       {idx + 1}
                     </td>
-                    <td style={{ padding: '16px 20px', fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>
+                    <td style={{ padding: '16px 20px', fontSize: '15px', fontWeight: '600', color: 'var(--color-text-primary, #0f172a)' }}>
                       {chName}
                     </td>
                     <td style={{ padding: '16px 20px', fontSize: '14px', color: 'var(--color-text-secondary, #6b7280)' }}>
