@@ -594,3 +594,94 @@
     font-size: 12px;
   }
 }
+
+/* ==========================================
+   DARK MODE
+========================================== */
+
+.dark .upload-modal,
+[data-theme='dark'] .upload-modal {
+  background: var(--color-card, #1e293b);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.dark .modal-header,
+.dark .modal-footer,
+[data-theme='dark'] .modal-header,
+[data-theme='dark'] .modal-footer {
+  background: var(--color-card, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .modal-header h2,
+[data-theme='dark'] .modal-header h2 {
+  color: var(--color-text-primary, #f8fafc);
+}
+
+.dark .modal-close-btn,
+[data-theme='dark'] .modal-close-btn {
+  color: var(--color-text-secondary, #94a3b8);
+}
+
+.dark .modal-close-btn:hover,
+[data-theme='dark'] .modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary, #ffffff);
+}
+
+.dark .upload-dropzone,
+[data-theme='dark'] .upload-dropzone {
+  background: var(--color-surface, #111827);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .upload-dropzone:hover,
+[data-theme='dark'] .upload-dropzone:hover {
+  background: rgba(102, 83, 175, 0.1);
+  border-color: var(--color-primary, #6653af);
+}
+
+.dark .upload-placeholder h4,
+[data-theme='dark'] .upload-placeholder h4 {
+  color: var(--color-text-primary, #f8fafc);
+}
+
+.dark .upload-placeholder p,
+[data-theme='dark'] .upload-placeholder p {
+  color: var(--color-text-secondary, #94a3b8);
+}
+
+.dark .form-group label,
+[data-theme='dark'] .form-group label {
+  color: var(--color-text-primary, #f8fafc);
+}
+
+.dark .form-group input,
+.dark .form-group select,
+.dark .form-group textarea,
+[data-theme='dark'] .form-group input,
+[data-theme='dark'] .form-group select,
+[data-theme='dark'] .form-group textarea {
+  background: var(--color-surface, #111827);
+  color: var(--color-text-primary, #f8fafc);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .form-group input::placeholder,
+.dark .form-group textarea::placeholder,
+[data-theme='dark'] .form-group input::placeholder,
+[data-theme='dark'] .form-group textarea::placeholder {
+  color: var(--color-text-muted, #64748b);
+}
+
+.dark .cancel-btn,
+[data-theme='dark'] .cancel-btn {
+  background: var(--color-surface, #111827);
+  color: var(--color-text-primary, #f8fafc);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .cancel-btn:hover,
+[data-theme='dark'] .cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}

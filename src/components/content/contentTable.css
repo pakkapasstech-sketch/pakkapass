@@ -367,40 +367,48 @@
    DARK MODE
 ========================================== */
 
-.dark .data-table-container {
-  background: #111827;
-  border-color: #374151;
+.dark .data-table-container,
+[data-theme='dark'] .data-table-container {
+  background: var(--color-card, #1e293b);
+  border-color: var(--color-border, #334155);
 }
 
-.dark .content-search-input {
-  background: #1f2937;
-  border-color: #374151;
-  color: #ffffff;
+.dark .content-search-input,
+[data-theme='dark'] .content-search-input {
+  background: var(--color-surface, #111827);
+  border-color: var(--color-border, #334155);
+  color: var(--color-text-primary, #f8fafc);
 }
 
-.dark .data-table thead {
-  background: #1f2937;
+.dark .data-table thead,
+[data-theme='dark'] .data-table thead {
+  background: var(--color-surface, #111827);
 }
 
 .dark .data-table th,
-.dark .data-table td {
-  border-color: #374151;
-  color: #f8fafc;
+.dark .data-table td,
+[data-theme='dark'] .data-table th,
+[data-theme='dark'] .data-table td {
+  border-color: var(--color-border, #334155);
+  color: var(--color-text-primary, #f8fafc);
 }
 
-.dark .data-table tbody tr:hover {
-  background: #1f2937;
+.dark .data-table tbody tr:hover,
+[data-theme='dark'] .data-table tbody tr:hover {
+  background: rgba(51, 65, 85, 0.5);
 }
 
-.dark .table-actions button {
-  background: #1f2937;
-  color: #ffffff;
+.dark .table-actions button,
+[data-theme='dark'] .table-actions button {
+  background: var(--color-surface, #111827);
+  color: var(--color-text-primary, #ffffff);
 }
 
-.dark .table-pagination button {
-  background: #1f2937;
-  border-color: #374151;
-  color: #ffffff;
+.dark .table-pagination button,
+[data-theme='dark'] .table-pagination button {
+  background: var(--color-surface, #111827);
+  border-color: var(--color-border, #334155);
+  color: var(--color-text-primary, #ffffff);
 }
 
 /* ==========================================

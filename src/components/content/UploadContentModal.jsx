@@ -267,9 +267,9 @@ const topicLabel =
                     padding: '4px 10px',
                     borderRadius: '6px',
                     fontSize: '12px',
-                    border: '1px solid #cbd5e1',
-                    background: uploadMode === 'file' ? '#2563eb' : '#ffffff',
-                    color: uploadMode === 'file' ? '#ffffff' : '#475569',
+                    border: '1px solid var(--color-border, #cbd5e1)',
+                    background: uploadMode === 'file' ? '#2563eb' : 'var(--color-card, #ffffff)',
+                    color: uploadMode === 'file' ? '#ffffff' : 'var(--color-text-primary, #475569)',
                     cursor: 'pointer'
                   }}
                 >
@@ -282,9 +282,9 @@ const topicLabel =
                     padding: '4px 10px',
                     borderRadius: '6px',
                     fontSize: '12px',
-                    border: '1px solid #cbd5e1',
-                    background: uploadMode === 'url' ? '#2563eb' : '#ffffff',
-                    color: uploadMode === 'url' ? '#ffffff' : '#475569',
+                    border: '1px solid var(--color-border, #cbd5e1)',
+                    background: uploadMode === 'url' ? '#2563eb' : 'var(--color-card, #ffffff)',
+                    color: uploadMode === 'url' ? '#ffffff' : 'var(--color-text-primary, #475569)',
                     cursor: 'pointer'
                   }}
                 >
