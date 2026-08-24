@@ -480,7 +480,7 @@ const TopicResourceWorkspace = ({
 
           <form onSubmit={handleNotesSubmit}>
             <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--color-text-primary, #111827)' }}>
                 Note Title <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
@@ -492,9 +492,10 @@ const TopicResourceWorkspace = ({
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+                  border: '1px solid var(--color-border, #e5e7eb)',
                   fontSize: '13px',
-                  background: 'var(--color-bg, #f9fafb)',
+                  background: 'var(--color-surface, #f9fafb)',
+                  color: 'var(--color-text-primary, #111827)',
                 }}
               />
             </div>
@@ -512,7 +513,7 @@ const TopicResourceWorkspace = ({
                 borderRadius: '12px',
                 padding: '12px',
                 textAlign: 'center',
-                background: 'rgba(102, 83, 175, 0.03)',
+                background: 'var(--color-surface, rgba(102, 83, 175, 0.03))',
                 cursor: 'pointer',
                 marginBottom: '16px',
               }}
@@ -564,7 +565,7 @@ const TopicResourceWorkspace = ({
             background: 'var(--color-card, #ffffff)',
             borderRadius: '16px',
             padding: '20px',
-            border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+            border: '1px solid var(--color-border, #e5e7eb)',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
           }}
         >
@@ -574,7 +575,7 @@ const TopicResourceWorkspace = ({
                 <HiOutlineVideoCamera size={22} />
               </div>
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0 }}>Upload Videos</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--color-text-primary, #111827)' }}>Upload Videos</h3>
                 <p style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>MP4 Video Files or External Video Links</p>
               </div>
             </div>
@@ -599,7 +600,7 @@ const TopicResourceWorkspace = ({
 
           <form onSubmit={handleVideoSubmit}>
             <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--color-text-primary, #111827)' }}>
                 Video Title <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
@@ -611,19 +612,20 @@ const TopicResourceWorkspace = ({
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid var(--color-border, var(--color-border, #e5e7eb))',
+                  border: '1px solid var(--color-border, #e5e7eb)',
                   fontSize: '13px',
-                  background: 'var(--color-bg, #f9fafb)',
+                  background: 'var(--color-surface, #f9fafb)',
+                  color: 'var(--color-text-primary, #111827)',
                 }}
               />
             </div>
 
             {isVideoLinkMode ? (
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--color-text-primary, #111827)' }}>
                   Video URL / YouTube Link <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border, var(--color-border, #e5e7eb))', borderRadius: '8px', padding: '0 12px', background: 'var(--color-bg, #f9fafb)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border, #e5e7eb)', borderRadius: '8px', padding: '0 12px', background: 'var(--color-surface, #f9fafb)' }}>
                   <HiOutlineLink style={{ color: 'var(--color-primary, #6653AF)' }} />
                   <input
                     type="url"
@@ -636,6 +638,7 @@ const TopicResourceWorkspace = ({
                       border: 'none',
                       outline: 'none',
                       background: 'transparent',
+                      color: 'var(--color-text-primary, #111827)',
                       fontSize: '13px',
                     }}
                   />
@@ -660,7 +663,7 @@ const TopicResourceWorkspace = ({
                   borderRadius: '12px',
                   padding: '12px',
                   textAlign: 'center',
-                  background: 'rgba(102, 83, 175, 0.03)',
+                  background: 'var(--color-surface, rgba(102, 83, 175, 0.03))',
                   cursor: 'pointer',
                   marginBottom: '16px',
                 }}
