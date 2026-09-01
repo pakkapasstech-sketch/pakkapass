@@ -156,15 +156,46 @@ const ImportStudentsPage = () => {
 
   const handleDownloadTemplate = async () => {
     let currentPlans = availablePlans;
+    let currentOptions = optionsData;
     try {
-      const fetchedPlans = await getPlans();
+      const [fetchedPlans, fetchedOptions] = await Promise.all([
+        getPlans(),
+        studentService.getFilterOptions()
+      ]);
       if (fetchedPlans && Array.isArray(fetchedPlans)) {
         currentPlans = fetchedPlans;
         setAvailablePlans(fetchedPlans);
       }
+      if (fetchedOptions) {
+        currentOptions = fetchedOptions;
+      }
     } catch (err) {
-      console.error("Could not fetch real-time plans:", err);
+      console.error("Could not fetch real-time data for template:", err);
     }
+
+    const getGradeNames = (ids = []) => {
+      if (!ids || !Array.isArray(ids) || ids.length === 0) return 'All Grades';
+      const names = (currentOptions?.grades || [])
+        .filter((g) => ids.includes(g.id))
+        .map((g) => g.name);
+      return names.length > 0 ? names.join(', ') : 'All Grades';
+    };
+
+    const getBoardNames = (ids = []) => {
+      if (!ids || !Array.isArray(ids) || ids.length === 0) return 'All Boards';
+      const names = (currentOptions?.boards || [])
+        .filter((b) => ids.includes(b.id))
+        .map((b) => b.name);
+      return names.length > 0 ? names.join(', ') : 'All Boards';
+    };
+
+    const getBranchNames = (ids = []) => {
+      if (!ids || !Array.isArray(ids) || ids.length === 0) return 'All Branches';
+      const names = (currentOptions?.branches || currentOptions?.courses || [])
+        .filter((b) => ids.includes(b.id))
+        .map((b) => b.name);
+      return names.length > 0 ? names.join(', ') : 'All Branches';
+    };
 
     // Sheet 1: Student Data (Restored to clean original header format)
     const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID']];
@@ -181,15 +212,30 @@ const ImportStudentsPage = () => {
     }
     ws1['!cols'] = Array(headers[0].length).fill({ wch: 20 });
 
-    // Sheet 2: Available Plans (Real-time detailed standalone table)
-    const planTableHeaders = [['Plan ID', 'Plan Name', 'Price (Rupees)', 'Duration (Days)', 'Type (Public / Private)', 'Category (Supply / Standard)', 'Status']];
+    // Sheet 2: Available Plans (Real-time detailed standalone table with grade, board, branch, supply, public/private)
+    const planTableHeaders = [[
+      'Plan ID',
+      'Plan Name',
+      'Grade',
+      'Board',
+      'Branch',
+      'Plan Type (Public / Private)',
+      'Category (Supply / Standard)',
+      'Price (Rupees)',
+      'Duration (Days)',
+      'Status'
+    ]];
+
     const planTableRows = (currentPlans || []).map((p) => [
       p.id,
       p.name || 'Unnamed Plan',
-      p.price !== undefined && p.price !== null ? `₹${p.price}` : 'Free',
-      p.durationDays ? `${p.durationDays} Days` : 'N/A',
+      getGradeNames(p.gradeIds),
+      getBoardNames(p.boardIds),
+      getBranchNames(p.branchIds),
       p.isPublic === false ? 'Private' : 'Public',
       p.isSupply ? 'Supply Plan' : 'Standard Plan',
+      p.price !== undefined && p.price !== null ? `₹${p.price}` : 'Free',
+      p.durationDays ? `${p.durationDays} Days` : 'N/A',
       p.status || 'Active',
     ]);
 
@@ -210,11 +256,14 @@ const ImportStudentsPage = () => {
     // Set column widths for Available Plans
     wsPlans['!cols'] = [
       { wch: 10 }, // Plan ID
-      { wch: 30 }, // Plan Name
+      { wch: 28 }, // Plan Name
+      { wch: 22 }, // Grade
+      { wch: 22 }, // Board
+      { wch: 22 }, // Branch
+      { wch: 24 }, // Plan Type
+      { wch: 26 }, // Category
       { wch: 16 }, // Price (Rupees)
       { wch: 16 }, // Duration (Days)
-      { wch: 22 }, // Type
-      { wch: 24 }, // Category
       { wch: 12 }  // Status
     ];
 
@@ -224,25 +273,31 @@ const ImportStudentsPage = () => {
         const cellRef = XLSX.utils.encode_cell({ r, c });
         if (wsPlans[cellRef]) {
           wsPlans[cellRef].s = {
-            alignment: { vertical: "center", horizontal: c === 0 || c === 2 || c === 3 || c === 4 || c === 5 || c === 6 ? "center" : "left" }
+            alignment: {
+              vertical: "center",
+              horizontal: [0, 5, 6, 7, 8, 9].includes(c) ? "center" : "left"
+            }
           };
         }
       }
     }
 
     // Sheet 3: Instructions
-    const gradesList = [...new Set((optionsData?.grades || []).map(g => g.name || g.gradeName || g.grade || g).filter(Boolean))];
-    const boardsList = [...new Set((optionsData?.boards || []).map(b => b.name || b.boardName || b.board || b).filter(Boolean))];
-    const branchesList = [...new Set((optionsData?.branches || optionsData?.courses || []).map(b => b.name || b.branchName || b.courseName || b.branch || b).filter(Boolean))];
+    const gradesList = [...new Set((currentOptions?.grades || []).map(g => g.name || g.gradeName || g.grade || g).filter(Boolean))];
+    const boardsList = [...new Set((currentOptions?.boards || []).map(b => b.name || b.boardName || b.board || b).filter(Boolean))];
+    const branchesList = [...new Set((currentOptions?.branches || currentOptions?.courses || []).map(b => b.name || b.branchName || b.courseName || b.branch || b).filter(Boolean))];
     
     const plansSummaryString = currentPlans.length > 0
       ? currentPlans.map(p => {
+          const gradeStr = getGradeNames(p.gradeIds);
+          const boardStr = getBoardNames(p.boardIds);
+          const branchStr = getBranchNames(p.branchIds);
           const typeStr = p.isPublic === false ? 'Private' : 'Public';
           const supplyStr = p.isSupply ? 'Supply Plan' : 'Standard Plan';
-          const priceStr = `₹${p.price ?? 0}`;
+          const priceStr = p.price !== undefined && p.price !== null ? `₹${p.price}` : 'Free';
           const daysStr = `${p.durationDays || 365} Days`;
-          return `ID ${p.id}: ${p.name || 'Plan'} [${typeStr} | ${supplyStr} | ${priceStr} | ${daysStr}]`;
-        }).join(' \n')
+          return `ID ${p.id}: ${p.name || 'Plan'} [Grade: ${gradeStr} | Board: ${boardStr} | Branch: ${branchStr} | Type: ${typeStr} | Category: ${supplyStr} | ${priceStr} | ${daysStr}]`;
+        }).join('\n')
       : 'Enter subscription plan ID (e.g. 1, 2). See Available Plans sheet.';
 
     const gradesString = gradesList.join(', ');
