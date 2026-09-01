@@ -203,7 +203,7 @@ const ImportStudentsPage = () => {
     };
 
     // Sheet 1: Student Data (Restored to clean original header format)
-    const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID', 'Referral Code']];
+    const headers = [['Name', 'Phone', 'Email', 'Grade', 'Board', 'Branch', 'Parent Name', 'Parent Mobile', 'Parent Email', 'Institute', 'State', 'District', 'City', 'Plan ID']];
     const ws1 = XLSX.utils.aoa_to_sheet(headers);
 
     // Style headers for Student Data
@@ -317,7 +317,7 @@ const ImportStudentsPage = () => {
       ['Available Subscription Plans', plansSummaryString],
       ['Note for 11th Grade', 'For 11th, it is equivalent to +1 or Intermediate 1st Year'],
       ['Note for 12th Grade', 'For 12th, it is equivalent to +2 or Intermediate 2nd Year'],
-      ['Format Rules', 'Name, Email, Grade, and Institute are mandatory. Plan ID and Referral Code are optional (Plan ID must be valid from the "Available Plans" reference table if provided).']
+      ['Format Rules', 'Name, Email, Grade, and Institute are mandatory. Plan ID is optional (must be a valid plan ID from the "Available Plans" reference table if provided).']
     ];
     const ws2 = XLSX.utils.aoa_to_sheet(instructionsData);
 
