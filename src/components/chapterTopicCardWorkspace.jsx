@@ -12,7 +12,6 @@ import {
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import entityService from '../services/entity.service';
-import contentService from '../services/content.service';
 
 const parseNumericId = (val) => {
   if (val === null || val === undefined) return undefined;
@@ -523,7 +522,8 @@ const ChapterTopicCardWorkspace = ({
     const nameStr = typeof chItem === 'object' ? (chItem.rawName || chItem.name) : String(chItem || '');
     if (!nameStr) return undefined;
 
-    const found = (options?.chapters || []).find((c) => {
+    // Only match within the current grade/board/branch/subject; chapter names repeat across them
+    const found = dbChapters.find((c) => {
       const cName = getString(c.name || c.title || c.chapterName || c).trim().toLowerCase();
       return cName === nameStr.trim().toLowerCase();
     });
@@ -554,7 +554,8 @@ const ChapterTopicCardWorkspace = ({
         return t.chapter.name.trim().toLowerCase() === chName.trim().toLowerCase();
       }
 
-      return true;
+      // Topic names repeat across chapters, so a name match alone is never enough
+      return false;
     });
 
     return parseNumericId(found?.id);
@@ -633,23 +634,7 @@ const ChapterTopicCardWorkspace = ({
           await entityService.deleteTopic(topicIdNum);
         }
 
-        // Also delete any uploaded content assets linked to this topic in contentItems
-        const matchingAssets = (contentItems || []).filter((item) => {
-          const itemTop = getString(item.section).trim().toLowerCase();
-          return itemTop === topicName.trim().toLowerCase();
-        });
-
-        if (matchingAssets.length > 0) {
-          await Promise.all(
-            matchingAssets.map((asset) => {
-              if (asset.id) {
-                return contentService.deleteAsset(asset.id).catch(() => {});
-              }
-              return Promise.resolve();
-            })
-          );
-        }
-
+        // The backend removes this topic's own assets by topicId; never delete by name here
         if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete topic from DB:', err);
@@ -677,23 +662,7 @@ const ChapterTopicCardWorkspace = ({
           await entityService.deleteChapter(chapterIdNum);
         }
 
-        // Also delete any uploaded content assets linked to this chapter in contentItems
-        const matchingAssets = (contentItems || []).filter((item) => {
-          const itemCh = getString(item.chapter).trim().toLowerCase();
-          return itemCh === chapterName.trim().toLowerCase() || (rawName && itemCh === rawName.trim().toLowerCase());
-        });
-
-        if (matchingAssets.length > 0) {
-          await Promise.all(
-            matchingAssets.map((asset) => {
-              if (asset.id) {
-                return contentService.deleteAsset(asset.id).catch(() => {});
-              }
-              return Promise.resolve();
-            })
-          );
-        }
-
+        // The backend removes this chapter's own topics and assets by id; never delete by name here
         if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete chapter from DB:', err);
