@@ -621,6 +621,11 @@ const ChapterTopicCardWorkspace = ({
     setEditModalItem(null);
     setEditNameInput('');
 
+    const chKeys = [selectedChapter?.name, selectedChapter?.rawName].filter(Boolean);
+    const isCustomOnly = type === 'topic'
+      ? chKeys.some((k) => (customTopics[k] || []).includes(name))
+      : customChapters.includes(name);
+
     try {
       setIsSavingEdit(true);
 
@@ -628,18 +633,52 @@ const ChapterTopicCardWorkspace = ({
         const topicIdNum = findTopicId(item || name);
         if (topicIdNum) {
           await entityService.updateTopic(topicIdNum, { name: trimmed });
+        } else if (!isCustomOnly) {
+          toast.error(`Could not rename topic "${name}". Please refresh and try again.`);
         }
         if (refetchOptions) await refetchOptions();
       } else if (type === 'chapter') {
         const chapterIdNum = findChapterId(item || name);
         if (chapterIdNum) {
           await entityService.updateChapter(chapterIdNum, { name: trimmed });
+        } else if (!isCustomOnly) {
+          toast.error(`Could not rename ${displayContentType.toLowerCase()} "${name}". Please refresh and try again.`);
         }
         if (refetchOptions) await refetchOptions();
       }
     } catch (err) {
       console.error(`Failed to update ${type} in DB:`, err);
+      toast.error(`Failed to rename "${name}"`);
     } finally {
+      // The rename overlay is keyed by name only. Drop it once the server data is reloaded,
+      // otherwise every same-named item elsewhere keeps showing the new name.
+      if (type === 'topic') {
+        setCustomTopics((prev) => {
+          const next = { ...prev };
+          chKeys.forEach((k) => {
+            if (next[k]) next[k] = next[k].map((t) => (t === name ? trimmed : t));
+          });
+          return next;
+        });
+        setEditedTopicNames((prev) => {
+          const next = { ...prev };
+          delete next[name];
+          return next;
+        });
+      } else if (type === 'chapter') {
+        setCustomChapters((prev) => prev.map((c) => (c === name ? trimmed : c)));
+        setCustomTopics((prev) => {
+          if (!prev[name]) return prev;
+          const next = { ...prev, [trimmed]: prev[name] };
+          delete next[name];
+          return next;
+        });
+        setEditedChapterNames((prev) => {
+          const next = { ...prev };
+          delete next[name];
+          return next;
+        });
+      }
       setIsSavingEdit(false);
     }
   };
@@ -653,16 +692,37 @@ const ChapterTopicCardWorkspace = ({
       setDeletedTopics((prev) => new Set([...prev, topicName]));
       toast.success(`Topic "${topicName}" deleted!`);
 
+      const chKeys = [selectedChapter?.name, selectedChapter?.rawName].filter(Boolean);
+      const isCustomOnly = chKeys.some((k) => (customTopics[k] || []).includes(topicName));
+
       try {
         const topicIdNum = findTopicId(topicItem);
         if (topicIdNum) {
           await entityService.deleteTopic(topicIdNum);
+        } else if (!isCustomOnly) {
+          toast.error(`Could not delete topic "${topicName}". Please refresh and try again.`);
         }
 
         // The backend removes this topic's own assets by topicId; never delete by name here
         if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete topic from DB:', err);
+        toast.error(`Failed to delete topic "${topicName}"`);
+      } finally {
+        // The hide is keyed by name only. Drop it once the server data is reloaded,
+        // otherwise same-named topics in other chapters stay hidden until a page refresh.
+        setCustomTopics((prev) => {
+          const next = { ...prev };
+          chKeys.forEach((k) => {
+            if (next[k]) next[k] = next[k].filter((t) => t !== topicName);
+          });
+          return next;
+        });
+        setDeletedTopics((prev) => {
+          const next = new Set(prev);
+          next.delete(topicName);
+          return next;
+        });
       }
     }
   };
@@ -681,16 +741,37 @@ const ChapterTopicCardWorkspace = ({
       }
       toast.success(`${displayContentType} "${chapterName}" deleted!`);
 
+      const isCustomOnly = customChapters.includes(chapterName) || customChapters.includes(rawName);
+
       try {
         const chapterIdNum = findChapterId(chItem);
         if (chapterIdNum) {
           await entityService.deleteChapter(chapterIdNum);
+        } else if (!isCustomOnly) {
+          toast.error(`Could not delete ${displayContentType.toLowerCase()} "${chapterName}". Please refresh and try again.`);
         }
 
         // The backend removes this chapter's own topics and assets by id; never delete by name here
         if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete chapter from DB:', err);
+        toast.error(`Failed to delete ${displayContentType.toLowerCase()} "${chapterName}"`);
+      } finally {
+        // The hide is keyed by name only. Drop it once the server data is reloaded,
+        // so the list always reflects what is actually in the database.
+        setCustomChapters((prev) => prev.filter((c) => c !== chapterName && c !== rawName));
+        setCustomTopics((prev) => {
+          const next = { ...prev };
+          delete next[chapterName];
+          delete next[rawName];
+          return next;
+        });
+        setDeletedChapters((prev) => {
+          const next = new Set(prev);
+          next.delete(chapterName);
+          next.delete(rawName);
+          return next;
+        });
       }
     }
   };
