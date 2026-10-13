@@ -468,7 +468,10 @@ const ContentManagement = () => {
       const boardId = typeof board === 'object' ? (board.id || boardName) : boardName;
       let numId = typeof board === 'object' ? parseNumericId(board.id) : undefined;
       if (!numId) {
-        const found = (options?.boards || []).find((b) => (b.name || b.displayName || b).trim().toLowerCase() === boardName.trim().toLowerCase());
+        // Board names repeat across grades, so only match a board of the current grade
+        const found = (options?.boards || []).find((b) =>
+          String(b.gradeId) === String(currentGrade?.id) &&
+          (b.name || b.displayName || '').trim().toLowerCase() === boardName.trim().toLowerCase());
         numId = parseNumericId(found?.id);
       }
 
@@ -523,7 +526,10 @@ const ContentManagement = () => {
       const branchId = typeof branch === 'object' ? (branch.id || branchName) : branchName;
       let numId = typeof branch === 'object' ? parseNumericId(branch.id) : undefined;
       if (!numId) {
-        const found = (options?.branches || []).find((br) => (br.name || br.displayName || br).trim().toLowerCase() === branchName.trim().toLowerCase());
+        // Branch names repeat across grades, so only match a branch of the current grade
+        const found = (options?.branches || []).find((br) =>
+          String(br.gradeId) === String(currentGrade?.id) &&
+          (br.name || br.displayName || '').trim().toLowerCase() === branchName.trim().toLowerCase());
         numId = parseNumericId(found?.id);
       }
 
@@ -619,7 +625,12 @@ const ContentManagement = () => {
       const subId = typeof subject === 'object' ? (subject.id || subName) : subName;
       let numId = typeof subject === 'object' ? parseNumericId(subject.id) : undefined;
       if (!numId) {
-        const found = (options?.subjects || []).find((s) => (s.name || s.displayName || s).trim().toLowerCase() === subName.trim().toLowerCase());
+        // Subject names repeat across grades, boards and branches, so only match inside the current selection
+        const found = (options?.subjects || []).find((s) =>
+          String(s.gradeId) === String(currentGrade?.id) &&
+          String(s.boardId) === String(selectedBoard?.id) &&
+          (!selectedBranch || s.branchId == null || String(s.branchId) === String(selectedBranch.id)) &&
+          (s.name || s.displayName || '').trim().toLowerCase() === subName.trim().toLowerCase());
         numId = parseNumericId(found?.id);
       }
 

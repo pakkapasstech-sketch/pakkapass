@@ -386,6 +386,37 @@ const ChapterTopicCardWorkspace = ({
   };
   const handleDragEndTopic = () => setDraggedTopicIndex(null);
 
+  // Board, branch and subject names repeat across grades and boards, so a name
+  // may only be resolved to an id inside the current grade/board/branch selection
+  const resolveScopeIds = () => {
+    const sameName = (a, b) => getString(a).trim().toLowerCase() === getString(b).trim().toLowerCase();
+    const sameId = (a, b) => String(a) === String(b);
+
+    const dbGrade = (options?.grades || []).find((g) => sameName(g.name, grade?.name || grade));
+    const gradeIdNum = parseNumericId(grade?.id) || parseNumericId(dbGrade?.id);
+
+    const dbBoard = gradeIdNum
+      ? (options?.boards || []).find((b) => sameName(b.name, board?.name || board) && sameId(b.gradeId, gradeIdNum))
+      : undefined;
+    const boardIdNum = parseNumericId(board?.id) || parseNumericId(dbBoard?.id);
+
+    const dbBranch = gradeIdNum
+      ? (options?.branches || []).find((br) => sameName(br.name, branch?.name || branch) && sameId(br.gradeId, gradeIdNum))
+      : undefined;
+    const branchIdNum = parseNumericId(branch?.id) || parseNumericId(dbBranch?.id);
+
+    const dbSub = gradeIdNum && boardIdNum
+      ? (options?.subjects || []).find((sub) =>
+          sameName(sub.name, subject?.name || subject) &&
+          sameId(sub.gradeId, gradeIdNum) &&
+          sameId(sub.boardId, boardIdNum) &&
+          (!branchIdNum || sub.branchId == null || sameId(sub.branchId, branchIdNum)))
+      : undefined;
+    const subIdNum = parseNumericId(subject?.id) || parseNumericId(dbSub?.id);
+
+    return { gradeIdNum, boardIdNum, branchIdNum, subIdNum };
+  };
+
   const handleAddChapter = async (e) => {
     e.preventDefault();
     if (!newChapterName.trim()) {
@@ -411,8 +442,7 @@ const ChapterTopicCardWorkspace = ({
 
     try {
       setIsCreatingChapter(true);
-      const dbSub = (options?.subjects || []).find((s) => getString(s.name).trim().toLowerCase() === getString(subject?.name || subject).trim().toLowerCase());
-      const subIdNum = parseNumericId(subject?.id) || parseNumericId(dbSub?.id);
+      const { subIdNum } = resolveScopeIds();
       const targetType = normalizeContentType(contentType);
       const matchCt = (options?.contentTypes || []).find((ct) => normalizeContentType(ct.name) === targetType);
 
@@ -472,24 +502,19 @@ const ChapterTopicCardWorkspace = ({
 
     try {
       setIsCreatingTopic(true);
-      const dbCh = (options?.chapters || []).find((c) => {
-        const cName = getString(c.name || c.title || c.chapterName).trim().toLowerCase();
-        return cName === chName.trim().toLowerCase();
-      }) || (dbChapters || []).find((c) => {
+      // Chapter names repeat across subjects, so only look inside the current selection
+      const dbCh = (dbChapters || []).find((c) => {
         const cName = getString(c.name || c.title || c.chapterName).trim().toLowerCase();
         return cName === chName.trim().toLowerCase();
       });
 
-      const dbSub = (options?.subjects || []).find((s) => getString(s.name).trim().toLowerCase() === getString(subject?.name || subject).trim().toLowerCase());
-      const dbGrade = (options?.grades || []).find((g) => getString(g.name).trim().toLowerCase() === getString(grade?.name || grade).trim().toLowerCase());
-      const dbBoard = (options?.boards || []).find((b) => getString(b.name).trim().toLowerCase() === getString(board?.name || board).trim().toLowerCase());
-      const dbBranch = (options?.branches || []).find((br) => getString(br.name).trim().toLowerCase() === getString(branch?.name || branch).trim().toLowerCase());
+      const scope = resolveScopeIds();
 
-      let chapterIdNum = parseNumericId(selectedChapter?.id) || parseNumericId(dbCh?.id) || findChapterId(selectedChapter);
-      const subIdNum = parseNumericId(subject?.id) || parseNumericId(dbSub?.id) || parseNumericId(dbCh?.subjectId);
-      const gradeIdNum = parseNumericId(grade?.id) || parseNumericId(dbGrade?.id) || parseNumericId(dbCh?.gradeId);
-      const boardIdNum = parseNumericId(board?.id) || parseNumericId(dbBoard?.id) || parseNumericId(dbCh?.boardId);
-      const branchIdNum = parseNumericId(branch?.id) || parseNumericId(dbBranch?.id) || parseNumericId(dbCh?.branchId);
+      let chapterIdNum = parseNumericId(selectedChapter?.id) || parseNumericId(dbCh?.id);
+      const subIdNum = scope.subIdNum || parseNumericId(dbCh?.subjectId);
+      const gradeIdNum = scope.gradeIdNum || parseNumericId(dbCh?.gradeId);
+      const boardIdNum = scope.boardIdNum || parseNumericId(dbCh?.boardId);
+      const branchIdNum = scope.branchIdNum || parseNumericId(dbCh?.branchId);
 
       if (!chapterIdNum) {
         const targetType = normalizeContentType(contentType);
