@@ -235,7 +235,10 @@ const ContentManagement = () => {
 
       return newParams.toString() !== prev.toString() ? newParams : prev;
     }, { replace: !levelChanged });
-  }, [selectedBoard, selectedBranch, selectedSubject, activeContentType, selectedChapter, activeTopicWorkspace, setSearchParams]);
+    // Runs only when the selection changes. It must not run when just the URL changes
+    // (setSearchParams gets a new identity then): it would write the old selection back
+    // over a Back/Forward step and the two would overwrite each other forever.
+  }, [selectedBoard, selectedBranch, selectedSubject, activeContentType, selectedChapter, activeTopicWorkspace]);
 
   const currentGrade = selectedGrade || options.grades[0] || { name: 'Class' };
 
