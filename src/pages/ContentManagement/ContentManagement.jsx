@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,6 +29,32 @@ const extractTopicName = (top) => {
   }
   return '';
 };
+
+// Keeps one level of the selection (board, branch, subject, chapter) in step with its
+// id in the URL. The URL can change without a click on this page: refresh, a deep link,
+// the sidebar, or the browser Back/Forward buttons.
+const useSelectionFromUrl = (queryId, list, selected, setSelected) => {
+  const lastQueryId = useRef(queryId);
+  useEffect(() => {
+    const urlChanged = lastQueryId.current !== queryId;
+    lastQueryId.current = queryId;
+    if (!list) return;
+
+    if (!queryId) {
+      // Only clear when the id was just removed from the URL. A selection made by a
+      // click is written to the URL a moment later and must not be wiped before that.
+      if (urlChanged && selected) setSelected(null);
+      return;
+    }
+    if (String(selected?.id) !== String(queryId)) {
+      const found = list.find((item) => String(item.id) === String(queryId));
+      if (found) setSelected(found);
+    }
+  }, [queryId, list]);
+};
+
+// The levels that count as "a different page" for the browser history
+const LEVEL_PARAMS = ['boardId', 'branchId', 'subjectId', 'chapterId', 'topicName'];
 
 const ContentManagement = () => {
   const navigate = useNavigate();
@@ -136,26 +162,9 @@ const ContentManagement = () => {
     }
   }, [queryGradeId, queryGradeName, options.grades]);
 
-  useEffect(() => {
-    if (options.boards && queryBoardId && !selectedBoard) {
-      const found = options.boards.find((b) => String(b.id) === String(queryBoardId));
-      if (found) setSelectedBoard(found);
-    }
-  }, [queryBoardId, options.boards]);
-
-  useEffect(() => {
-    if (options.branches && queryBranchId && !selectedBranch) {
-      const found = options.branches.find((b) => String(b.id) === String(queryBranchId));
-      if (found) setSelectedBranch(found);
-    }
-  }, [queryBranchId, options.branches]);
-
-  useEffect(() => {
-    if (options.subjects && querySubjectId && !selectedSubject) {
-      const found = options.subjects.find((s) => String(s.id) === String(querySubjectId));
-      if (found) setSelectedSubject(found);
-    }
-  }, [querySubjectId, options.subjects]);
+  useSelectionFromUrl(queryBoardId, options.boards, selectedBoard, setSelectedBoard);
+  useSelectionFromUrl(queryBranchId, options.branches, selectedBranch, setSelectedBranch);
+  useSelectionFromUrl(querySubjectId, options.subjects, selectedSubject, setSelectedSubject);
 
   useEffect(() => {
     if (queryContentType && queryContentType !== activeContentType) {
@@ -163,24 +172,18 @@ const ContentManagement = () => {
     }
   }, [queryContentType]);
 
-  useEffect(() => {
-    if (options.chapters && queryChapterId && !selectedChapter) {
-      const found = options.chapters.find((c) => String(c.id) === String(queryChapterId));
-      if (found) setSelectedChapter(found);
-    }
-  }, [queryChapterId, options.chapters]);
+  useSelectionFromUrl(queryChapterId, options.chapters, selectedChapter, setSelectedChapter);
 
-  // Only hydrate topic workspace once from URL on initial mount
-  const [hasHydratedTopic, setHasHydratedTopic] = useState(false);
+  // Open or close the topic page when the topic in the URL changes (initial load,
+  // Back/Forward). The chapter itself is taken from selectedChapter when rendering.
+  const lastTopicQuery = useRef(undefined);
   useEffect(() => {
-    if (!hasHydratedTopic && queryTopicName) {
-      const validTopicStr = extractTopicName(queryTopicName);
-      if (validTopicStr) {
-        setActiveTopicWorkspace({ chapter: selectedChapter, topic: validTopicStr });
-      }
-      setHasHydratedTopic(true);
-    }
-  }, [queryTopicName, selectedChapter, hasHydratedTopic]);
+    const urlTopic = extractTopicName(queryTopicName);
+    const urlChanged = lastTopicQuery.current !== urlTopic;
+    lastTopicQuery.current = urlTopic;
+    if (!urlChanged || urlTopic === extractTopicName(activeTopicWorkspace?.topic)) return;
+    setActiveTopicWorkspace(urlTopic ? { chapter: selectedChapter, topic: urlTopic } : null);
+  }, [queryTopicName]);
 
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -194,6 +197,20 @@ const ContentManagement = () => {
   // Sync state changes back to URL
   useEffect(() => {
     if (!isHydrated) return;
+
+    const topicForUrl = extractTopicName(activeTopicWorkspace?.topic);
+    const nextLevels = {
+      boardId: selectedBoard?.id,
+      branchId: selectedBranch?.id,
+      subjectId: selectedSubject?.id,
+      chapterId: selectedChapter?.id,
+      topicName: topicForUrl,
+    };
+    // Moving to another level adds a history entry so the browser Back button goes up
+    // one level; anything else (such as switching the content-type tab) replaces it.
+    const levelChanged = LEVEL_PARAMS.some(
+      (key) => String(searchParams.get(key) || '') !== String(nextLevels[key] || '')
+    );
 
     setSearchParams(prev => {
       const newParams = new URLSearchParams(prev);
@@ -217,7 +234,7 @@ const ContentManagement = () => {
       else newParams.delete('topicName');
 
       return newParams.toString() !== prev.toString() ? newParams : prev;
-    }, { replace: true });
+    }, { replace: !levelChanged });
   }, [selectedBoard, selectedBranch, selectedSubject, activeContentType, selectedChapter, activeTopicWorkspace, setSearchParams]);
 
   const currentGrade = selectedGrade || options.grades[0] || { name: 'Class' };
@@ -995,7 +1012,7 @@ const ContentManagement = () => {
           {activeTopicWorkspace ? (
             <TopicResourceWorkspace
               topic={activeTopicWorkspace.topic}
-              chapter={activeTopicWorkspace.chapter}
+              chapter={activeTopicWorkspace.chapter || selectedChapter}
               subject={selectedSubject}
               branch={selectedBranch || { name: 'General', id: '' }}
               board={selectedBoard}
