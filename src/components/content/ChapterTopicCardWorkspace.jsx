@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
   HiOutlineFolder,
   HiOutlineBookOpen,
@@ -421,6 +421,15 @@ const ChapterTopicCardWorkspace = ({
     return { gradeIdNum, boardIdNum, branchIdNum, subIdNum };
   };
 
+  // Ids of chapters created in this session, keyed by where they were created.
+  // The options list reloads a moment after a create, so a topic added straight
+  // away would otherwise not know the new chapter's id yet.
+  const createdChapterIds = useRef(new Map());
+  const chapterScopeKey = (chapterName) =>
+    [grade?.name || grade, board?.name || board, branch?.name || branch, subject?.name || subject, normalizeContentType(contentType), chapterName]
+      .map((part) => getString(part).trim().toLowerCase())
+      .join('|');
+
   const handleAddChapter = async (e) => {
     e.preventDefault();
     if (!newChapterName.trim()) {
@@ -465,10 +474,15 @@ const ChapterTopicCardWorkspace = ({
       if (parseNumericId(branch?.id)) chapterPayload.branchId = parseNumericId(branch.id);
       if (matchCt?.id) chapterPayload.contentTypeId = matchCt.id;
 
-      await entityService.addChapter(chapterPayload);
+      const creating = entityService.addChapter(chapterPayload).then((res) => parseNumericId(res?.data?.chapter?.id));
+      createdChapterIds.current.set(chapterScopeKey(name), creating.catch(() => undefined));
+      await creating;
       if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error('Failed to add chapter to DB:', err);
+      createdChapterIds.current.delete(chapterScopeKey(name));
+      setCustomChapters((prev) => prev.filter((c) => c !== name));
+      toast.error(err.response?.data?.message || `Could not create ${displayContentType.toLowerCase()} "${name}". Please try again.`);
     } finally {
       setIsCreatingChapter(false);
     }
@@ -514,7 +528,10 @@ const ChapterTopicCardWorkspace = ({
 
       const scope = resolveScopeIds();
 
-      let chapterIdNum = parseNumericId(selectedChapter?.id) || parseNumericId(dbCh?.id);
+      let chapterIdNum =
+        parseNumericId(selectedChapter?.id) ||
+        parseNumericId(dbCh?.id) ||
+        (await createdChapterIds.current.get(chapterScopeKey(chName)));
       const subIdNum = scope.subIdNum || parseNumericId(dbCh?.subjectId);
       const gradeIdNum = scope.gradeIdNum || parseNumericId(dbCh?.gradeId);
       const boardIdNum = scope.boardIdNum || parseNumericId(dbCh?.boardId);
@@ -539,8 +556,15 @@ const ChapterTopicCardWorkspace = ({
         if (branchIdNum) chapterPayload.branchId = branchIdNum;
         if (matchCt?.id) chapterPayload.contentTypeId = matchCt.id;
 
-        const chRes = await entityService.addChapter(chapterPayload);
-        chapterIdNum = parseNumericId(chRes?.data?.chapter?.id);
+        try {
+          const chRes = await entityService.addChapter(chapterPayload);
+          chapterIdNum = parseNumericId(chRes?.data?.chapter?.id);
+        } catch (chErr) {
+          // The chapter is already on the server (the list here was just out of date).
+          // Carry on: the server finds it by name inside this subject.
+          const alreadyExists = chErr.response?.status === 400 && /already exists/i.test(chErr.response?.data?.message || '');
+          if (!alreadyExists) throw chErr;
+        }
       }
 
       const topicPayload = {
