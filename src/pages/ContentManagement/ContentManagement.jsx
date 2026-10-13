@@ -395,6 +395,9 @@ const ContentManagement = () => {
     setEditNameInput(item.name || item.displayName || '');
   };
 
+  // Server message when there is one, otherwise a plain fallback
+  const apiErrorMessage = (err, fallback) => err?.response?.data?.message || fallback;
+
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     if (!editNameInput.trim()) {
@@ -416,7 +419,6 @@ const ContentManagement = () => {
       setEditedSubjects((prev) => ({ ...prev, [itemId]: newName }));
     }
 
-    toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} renamed to "${newName}"`);
     setEditItemModal(null);
     setEditNameInput('');
 
@@ -429,8 +431,18 @@ const ContentManagement = () => {
         await entityService.updateSubject(numId, { name: newName });
       }
       if (refetchOptions) await refetchOptions();
+      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} renamed to "${newName}"`);
     } catch (err) {
       console.error(`Failed to update ${type} in DB:`, err);
+      const undo = (prev) => {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      };
+      if (type === 'board') setEditedBoards(undo);
+      else if (type === 'branch') setEditedBranches(undo);
+      else if (type === 'subject') setEditedSubjects(undo);
+      toast.error(apiErrorMessage(err, `Could not rename the ${type}. Please try again.`));
     }
   };
 
@@ -450,15 +462,17 @@ const ContentManagement = () => {
     };
 
     setCustomBoards((prev) => [...prev, newBoardObj]);
-    toast.success(`Board "${boardName}" added!`);
     setNewBoardName('');
     setShowAddBoardModal(false);
 
     try {
       await entityService.addBoard(boardName, currentGrade?.name);
       if (refetchOptions) await refetchOptions();
+      toast.success(`Board "${boardName}" added!`);
     } catch (err) {
       console.error('Failed to save board in DB:', err);
+      setCustomBoards((prev) => prev.filter((item) => item.id !== newBoardObj.id));
+      toast.error(apiErrorMessage(err, `Could not add board "${boardName}". Please try again.`));
     }
   };
 
@@ -476,15 +490,23 @@ const ContentManagement = () => {
       }
 
       setDeletedBoards((prev) => new Set([...prev, boardId, boardName]));
-      toast.success(`Board "${boardName}" deleted!`);
 
       try {
         if (numId) {
           await entityService.deleteBoard(numId);
         }
         if (refetchOptions) await refetchOptions();
+        toast.success(`Board "${boardName}" deleted!`);
       } catch (err) {
         console.error('Failed to delete board from DB:', err);
+        // Nothing was deleted on the server, so show the card again
+        setDeletedBoards((prev) => {
+          const next = new Set(prev);
+          next.delete(boardId);
+          next.delete(boardName);
+          return next;
+        });
+        toast.error(apiErrorMessage(err, `Could not delete board "${boardName}". Please try again.`));
       }
     }
   };
@@ -508,15 +530,17 @@ const ContentManagement = () => {
 
     // INSTANT UI update so it appears immediately!
     setCustomBranches((prev) => [...prev, newBranchObj]);
-    toast.success(`Branch "${branchName}" added!`);
     setNewBranchName('');
     setShowAddBranchModal(false);
 
     try {
       await entityService.addBranch(branchName, currentGrade?.name);
       if (refetchOptions) await refetchOptions();
+      toast.success(`Branch "${branchName}" added!`);
     } catch (err) {
       console.error('Failed to save branch in DB:', err);
+      setCustomBranches((prev) => prev.filter((item) => item.id !== newBranchObj.id));
+      toast.error(apiErrorMessage(err, `Could not add branch "${branchName}". Please try again.`));
     }
   };
 
@@ -535,15 +559,23 @@ const ContentManagement = () => {
 
       // INSTANT UI update
       setDeletedBranches((prev) => new Set([...prev, branchId, branchName]));
-      toast.success(`Branch "${branchName}" deleted!`);
 
       try {
         if (numId) {
           await entityService.deleteBranch(numId);
         }
         if (refetchOptions) await refetchOptions();
+        toast.success(`Branch "${branchName}" deleted!`);
       } catch (err) {
         console.error('Failed to delete branch from DB:', err);
+        // Nothing was deleted on the server, so show the card again
+        setDeletedBranches((prev) => {
+          const next = new Set(prev);
+          next.delete(branchId);
+          next.delete(branchName);
+          return next;
+        });
+        toast.error(apiErrorMessage(err, `Could not delete branch "${branchName}". Please try again.`));
       }
     }
   };
@@ -569,7 +601,6 @@ const ContentManagement = () => {
 
     // INSTANT UI update so it appears immediately!
     setCustomSubjects((prev) => [...prev, newSubObj]);
-    toast.success(`Subject "${subName}" added!`);
     setNewSubjectName('');
     setShowAddSubjectModal(false);
 
@@ -586,8 +617,11 @@ const ContentManagement = () => {
 
       await entityService.addSubject(subjectPayload);
       if (refetchOptions) await refetchOptions();
+      toast.success(`Subject "${subName}" added!`);
     } catch (err) {
       console.error('Failed to save subject in DB:', err);
+      setCustomSubjects((prev) => prev.filter((item) => item.id !== newSubObj.id));
+      toast.error(apiErrorMessage(err, `Could not add subject "${subName}". Please try again.`));
     }
   };
 
@@ -607,15 +641,17 @@ const ContentManagement = () => {
     setCustomContentTypes((prev) => [...prev, trimmed]);
     setActiveContentType(trimmed);
     setActiveTopicWorkspace(null);
-    toast.success(`Content Type "${trimmed}" created!`);
     setNewContentTypeName('');
     setShowAddContentTypeModal(false);
 
     try {
       await entityService.addContentType(trimmed);
       if (refetchOptions) await refetchOptions();
+      toast.success(`Content Type "${trimmed}" created!`);
     } catch (err) {
       console.error('Failed to add content type to DB:', err);
+      setCustomContentTypes((prev) => prev.filter((t) => t !== trimmed));
+      toast.error(apiErrorMessage(err, `Could not create content type "${trimmed}". Please try again.`));
     }
   };
 
@@ -636,15 +672,23 @@ const ContentManagement = () => {
 
       // INSTANT UI update
       setDeletedSubjects((prev) => new Set([...prev, subId, subName]));
-      toast.success(`Subject "${subName}" deleted!`);
 
       try {
         if (numId) {
           await entityService.deleteSubject(numId);
         }
         if (refetchOptions) await refetchOptions();
+        toast.success(`Subject "${subName}" deleted!`);
       } catch (err) {
         console.error('Failed to delete subject from DB:', err);
+        // Nothing was deleted on the server, so show the card again
+        setDeletedSubjects((prev) => {
+          const next = new Set(prev);
+          next.delete(subId);
+          next.delete(subName);
+          return next;
+        });
+        toast.error(apiErrorMessage(err, `Could not delete subject "${subName}". Please try again.`));
       }
     }
   };

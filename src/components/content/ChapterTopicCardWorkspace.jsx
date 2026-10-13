@@ -339,13 +339,15 @@ const ChapterTopicCardWorkspace = ({
         updatedList.map((ch, idx) => {
           const numId = findChapterId(ch);
           if (numId) {
-            return entityService.updateChapter(numId, { order: idx + 1 }).catch(() => {});
+            return entityService.updateChapter(numId, { order: idx + 1 });
           }
           return Promise.resolve();
         })
       );
     } catch (err) {
       console.error('Failed to update chapter order in DB:', err);
+      toast.error('Could not save the new order. Please try again.');
+      if (refetchOptions) await refetchOptions();
     }
   };
   const handleDragEndChapter = () => setDraggedChapterIndex(null);
@@ -375,13 +377,15 @@ const ChapterTopicCardWorkspace = ({
         updatedList.map((topName, idx) => {
           const numId = findTopicId(topName);
           if (numId) {
-            return entityService.updateTopic(numId, { order: idx + 1 }).catch(() => {});
+            return entityService.updateTopic(numId, { order: idx + 1 });
           }
           return Promise.resolve();
         })
       );
     } catch (err) {
       console.error('Failed to update topic order in DB:', err);
+      toast.error('Could not save the new order. Please try again.');
+      if (refetchOptions) await refetchOptions();
     }
   };
   const handleDragEndTopic = () => setDraggedTopicIndex(null);

@@ -14,6 +14,13 @@ import {
 import toast from 'react-hot-toast';
 import { contentService } from '../../services/content.service';
 
+// Keep these in step with the server's upload filter (middlewares/upload.js)
+const isAllowedNotesFile = (file) => file.type === 'application/pdf' || (!file.type && /\.pdf$/i.test(file.name));
+const isAllowedVideoFile = (file) =>
+  ['video/mp4', 'video/webm', 'video/ogg'].includes(file.type) || (!file.type && /\.(mp4|webm|ogg|ogv)$/i.test(file.name));
+const NOTES_TYPE_ERROR = 'Only PDF files can be uploaded as notes.';
+const VIDEO_TYPE_ERROR = 'Only MP4, WebM or OGG videos can be uploaded. Please convert the file or use a Video URL / Link.';
+
 const parseNumericId = (val) => {
   if (val === null || val === undefined) return undefined;
   const num = Number(val);
@@ -290,7 +297,7 @@ const TopicResourceWorkspace = ({
       return;
     }
     if (!notesFile) {
-      toast.error('Please select or drop a notes file (PDF/Doc)');
+      toast.error('Please select or drop a notes file (PDF)');
       return;
     }
 
@@ -442,7 +449,7 @@ const TopicResourceWorkspace = ({
             </div>
             <div>
               <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0 }}>Upload Notes</h3>
-              <p style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>PDFs, Docs, and Presentation Slides</p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-secondary, #6b7280)', margin: 0 }}>PDF files</p>
             </div>
           </div>
 
@@ -505,6 +512,10 @@ const TopicResourceWorkspace = ({
               onDrop={(e) => {
                 e.preventDefault();
                 if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  if (!isAllowedNotesFile(e.dataTransfer.files[0])) {
+                    toast.error(NOTES_TYPE_ERROR);
+                    return;
+                  }
                   setNotesFile(e.dataTransfer.files[0]);
                 }
               }}
@@ -523,14 +534,20 @@ const TopicResourceWorkspace = ({
               <p style={{ fontSize: '13px', fontWeight: '600', margin: '0 0 4px 0', color: 'var(--color-text-primary, #111827)' }}>
                 {notesFile ? `${notesFile.name} (${formatFileSize(notesFile.size)})` : 'Drag & drop Notes PDF here, or browse'}
               </p>
-              <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #6b7280)' }}>Supports .pdf, .doc, .docx (Max 50MB)</span>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #6b7280)' }}>Supports .pdf (Max 50MB)</span>
               <input
                 id="notes-file-input"
                 type="file"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf,application/pdf"
                 style={{ display: 'none' }}
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
+                    if (!isAllowedNotesFile(e.target.files[0])) {
+                      toast.error(NOTES_TYPE_ERROR);
+                      e.target.value = '';
+                      setNotesFile(null);
+                      return;
+                    }
                     setNotesFile(e.target.files[0]);
                   }
                 }}
@@ -651,6 +668,10 @@ const TopicResourceWorkspace = ({
                   e.preventDefault();
                   if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                     const selected = e.dataTransfer.files[0];
+                    if (!isAllowedVideoFile(selected)) {
+                      toast.error(VIDEO_TYPE_ERROR);
+                      return;
+                    }
                     if (selected.size > 100 * 1024 * 1024) {
                       toast.error('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
                       return;
@@ -673,15 +694,21 @@ const TopicResourceWorkspace = ({
                 <p style={{ fontSize: '13px', fontWeight: '600', margin: '0 0 4px 0', color: 'var(--color-text-primary, #111827)' }}>
                   {videoFile ? `${videoFile.name} (${formatFileSize(videoFile.size)})` : 'Drag & drop MP4/WebM Video here, or browse'}
                 </p>
-                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #6b7280)' }}>Supports .mp4, .webm (Max 100 MB)</span>
+                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #6b7280)' }}>Supports .mp4, .webm, .ogg (Max 100 MB)</span>
                 <input
                   id="video-file-input"
                   type="file"
-                  accept="video/*"
+                  accept="video/mp4,video/webm,video/ogg"
                   style={{ display: 'none' }}
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       const selected = e.target.files[0];
+                      if (!isAllowedVideoFile(selected)) {
+                        toast.error(VIDEO_TYPE_ERROR);
+                        e.target.value = '';
+                        setVideoFile(null);
+                        return;
+                      }
                       if (selected.size > 100 * 1024 * 1024) {
                         toast.error('Video file size exceeds maximum limit of 100 MB. Please upload a smaller video or use a Video URL / Link.');
                         e.target.value = '';
