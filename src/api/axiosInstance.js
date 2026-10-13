@@ -36,8 +36,28 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+// Services that keep their own short-lived copies of server lists subscribe here,
+// so a copy is dropped as soon as anything is added, changed or deleted.
+const writeListeners = new Set();
+const onApiWrite = (listener) => {
+  writeListeners.add(listener);
+  return () => writeListeners.delete(listener);
+};
+
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const method = (response.config?.method || 'get').toLowerCase();
+    if (method !== 'get') {
+      writeListeners.forEach((listener) => {
+        try {
+          listener(response.config);
+        } catch (err) {
+          console.error('API write listener failed:', err);
+        }
+      });
+    }
+    return response;
+  },
   async (error) => {
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
@@ -67,5 +87,5 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export { getToken, getRefreshToken, setTokens, clearTokens };
+export { getToken, getRefreshToken, setTokens, clearTokens, onApiWrite };
 export default axiosInstance;

@@ -1,9 +1,10 @@
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance, { onApiWrite } from '../api/axiosInstance';
 import parentService from './parent.service';
 
 let optionsPromise = null;
 let optionsCache = null;
 let optionsCacheTime = 0;
+let optionsVersion = 0; // bumped on every invalidation so an older in-flight response is not cached
 const CACHE_DURATION = 15000; // 15 seconds cache duration
 
 const profilePromises = {};
@@ -18,6 +19,8 @@ export const studentService = {
   invalidateCache: () => {
     optionsCache = null;
     optionsCacheTime = 0;
+    optionsPromise = null;
+    optionsVersion += 1;
   },
 
   getAll: async () => {
@@ -53,18 +56,23 @@ export const studentService = {
     if (optionsPromise) {
       return optionsPromise;
     }
-    optionsPromise = axiosInstance.get('/admin/content/options')
+    const version = optionsVersion;
+    const request = axiosInstance.get('/admin/content/options')
       .then(res => {
-        optionsCache = res.data;
-        optionsCacheTime = Date.now();
-        optionsPromise = null;
+        // Only keep the copy if nothing was changed on the server while this was loading
+        if (version === optionsVersion) {
+          optionsCache = res.data;
+          optionsCacheTime = Date.now();
+          optionsPromise = null;
+        }
         return res.data;
       })
       .catch(err => {
-        optionsPromise = null;
+        if (version === optionsVersion) optionsPromise = null;
         throw err;
       });
-    return optionsPromise;
+    optionsPromise = request;
+    return request;
   },
 
   getProfile: async (studentId) => {
@@ -200,5 +208,9 @@ getActivities: async (studentId) => {
   return data;
 },
 };
+
+// The options list (boards, subjects, chapters, topics) changes with almost every admin
+// write, so never serve the short-lived copy after one.
+onApiWrite(() => studentService.invalidateCache());
 
 export default studentService;
