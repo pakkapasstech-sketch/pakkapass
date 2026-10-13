@@ -468,7 +468,12 @@ const ContentManagement = () => {
     try {
       await entityService.addBoard(boardName, currentGrade?.name);
       toast.success(`Board "${boardName}" added!`);
-      if (refetchOptions) await refetchOptions();
+      const reloaded = refetchOptions ? await refetchOptions() : null;
+      // The saved board now comes from the server list, so drop the temporary card.
+      // Otherwise it shows up again as a second card if the saved one is later renamed.
+      if (reloaded?.isSuccess) {
+        setCustomBoards((prev) => prev.filter((item) => item.id !== newBoardObj.id));
+      }
     } catch (err) {
       console.error('Failed to save board in DB:', err);
       setCustomBoards((prev) => prev.filter((item) => item.id !== newBoardObj.id));
@@ -536,7 +541,12 @@ const ContentManagement = () => {
     try {
       await entityService.addBranch(branchName, currentGrade?.name);
       toast.success(`Branch "${branchName}" added!`);
-      if (refetchOptions) await refetchOptions();
+      const reloaded = refetchOptions ? await refetchOptions() : null;
+      // The saved branch now comes from the server list, so drop the temporary card.
+      // Otherwise it shows up again as a second card if the saved one is later renamed.
+      if (reloaded?.isSuccess) {
+        setCustomBranches((prev) => prev.filter((item) => item.id !== newBranchObj.id));
+      }
     } catch (err) {
       console.error('Failed to save branch in DB:', err);
       setCustomBranches((prev) => prev.filter((item) => item.id !== newBranchObj.id));
@@ -617,7 +627,12 @@ const ContentManagement = () => {
 
       await entityService.addSubject(subjectPayload);
       toast.success(`Subject "${subName}" added!`);
-      if (refetchOptions) await refetchOptions();
+      const reloaded = refetchOptions ? await refetchOptions() : null;
+      // The saved subject now comes from the server list, so drop the temporary card.
+      // Otherwise it shows up again as a second card if the saved one is later renamed.
+      if (reloaded?.isSuccess) {
+        setCustomSubjects((prev) => prev.filter((item) => item.id !== newSubObj.id));
+      }
     } catch (err) {
       console.error('Failed to save subject in DB:', err);
       setCustomSubjects((prev) => prev.filter((item) => item.id !== newSubObj.id));
