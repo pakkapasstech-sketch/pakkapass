@@ -430,8 +430,8 @@ const ContentManagement = () => {
       } else if (type === 'subject' && numId) {
         await entityService.updateSubject(numId, { name: newName });
       }
-      if (refetchOptions) await refetchOptions();
       toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} renamed to "${newName}"`);
+      if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error(`Failed to update ${type} in DB:`, err);
       const undo = (prev) => {
@@ -467,8 +467,8 @@ const ContentManagement = () => {
 
     try {
       await entityService.addBoard(boardName, currentGrade?.name);
-      if (refetchOptions) await refetchOptions();
       toast.success(`Board "${boardName}" added!`);
+      if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error('Failed to save board in DB:', err);
       setCustomBoards((prev) => prev.filter((item) => item.id !== newBoardObj.id));
@@ -495,8 +495,8 @@ const ContentManagement = () => {
         if (numId) {
           await entityService.deleteBoard(numId);
         }
-        if (refetchOptions) await refetchOptions();
         toast.success(`Board "${boardName}" deleted!`);
+        if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete board from DB:', err);
         // Nothing was deleted on the server, so show the card again
@@ -535,8 +535,8 @@ const ContentManagement = () => {
 
     try {
       await entityService.addBranch(branchName, currentGrade?.name);
-      if (refetchOptions) await refetchOptions();
       toast.success(`Branch "${branchName}" added!`);
+      if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error('Failed to save branch in DB:', err);
       setCustomBranches((prev) => prev.filter((item) => item.id !== newBranchObj.id));
@@ -564,8 +564,8 @@ const ContentManagement = () => {
         if (numId) {
           await entityService.deleteBranch(numId);
         }
-        if (refetchOptions) await refetchOptions();
         toast.success(`Branch "${branchName}" deleted!`);
+        if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete branch from DB:', err);
         // Nothing was deleted on the server, so show the card again
@@ -616,8 +616,8 @@ const ContentManagement = () => {
       if (parseNumericId(selectedBranch?.id)) subjectPayload.branchId = parseNumericId(selectedBranch.id);
 
       await entityService.addSubject(subjectPayload);
-      if (refetchOptions) await refetchOptions();
       toast.success(`Subject "${subName}" added!`);
+      if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error('Failed to save subject in DB:', err);
       setCustomSubjects((prev) => prev.filter((item) => item.id !== newSubObj.id));
@@ -646,8 +646,8 @@ const ContentManagement = () => {
 
     try {
       await entityService.addContentType(trimmed);
-      if (refetchOptions) await refetchOptions();
       toast.success(`Content Type "${trimmed}" created!`);
+      if (refetchOptions) await refetchOptions();
     } catch (err) {
       console.error('Failed to add content type to DB:', err);
       setCustomContentTypes((prev) => prev.filter((t) => t !== trimmed));
@@ -677,8 +677,8 @@ const ContentManagement = () => {
         if (numId) {
           await entityService.deleteSubject(numId);
         }
-        if (refetchOptions) await refetchOptions();
         toast.success(`Subject "${subName}" deleted!`);
+        if (refetchOptions) await refetchOptions();
       } catch (err) {
         console.error('Failed to delete subject from DB:', err);
         // Nothing was deleted on the server, so show the card again
@@ -726,10 +726,11 @@ const ContentManagement = () => {
 
   const handleRefetchAll = async () => {
     try {
-      if (refetchOptions) await refetchOptions();
-      if (refetch) await refetch();
-      await queryClient.invalidateQueries({ queryKey: ['content'] });
-      await queryClient.invalidateQueries({ queryKey: ['student-filter-options'] });
+      // Reload both lists once, side by side (each is a large download)
+      await Promise.all([
+        refetchOptions ? refetchOptions() : Promise.resolve(),
+        refetch ? refetch() : Promise.resolve(),
+      ]);
     } catch (e) {
       console.error('Error refetching options and content:', e);
     }
